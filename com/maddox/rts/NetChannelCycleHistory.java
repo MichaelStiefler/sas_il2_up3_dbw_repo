@@ -1,70 +1,89 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetChannel.java
+
 package com.maddox.rts;
+
 
 class NetChannelCycleHistory
 {
-  public int[] seq;
-  public long[] time;
-  public int head;
-  public int tail;
 
-  private void expand()
-  {
-    int[] arrayOfInt = this.seq;
-    long[] arrayOfLong = this.time;
-    int i = this.seq.length - 1;
-    this.seq = new int[arrayOfInt.length * 2];
-    this.time = new long[arrayOfInt.length * 2];
-    int j = this.tail;
-    this.head = (this.tail = 0);
-    while (i-- >= 0) {
-      int k = this.head++ & this.seq.length - 1;
-      int m = j++ & arrayOfInt.length - 1;
-      this.seq[k] = arrayOfInt[m];
-      this.time[k] = arrayOfLong[m];
+    private void expand()
+    {
+        int ai[] = seq;
+        long al[] = time;
+        int i = seq.length - 1;
+        seq = new int[ai.length * 2];
+        time = new long[ai.length * 2];
+        int j = tail;
+        head = tail = 0;
+        while(i-- >= 0) 
+        {
+            int k = head++ & seq.length - 1;
+            int l = j++ & ai.length - 1;
+            seq[k] = ai[l];
+            time[k] = al[l];
+        }
     }
-  }
 
-  public double speed(long paramLong1, long paramLong2, double paramDouble) {
-    if (this.head == this.tail) return paramDouble;
-    int i = this.head;
-    long l = paramLong2;
-    int j = 0;
-    int k = 1;
-    while (true) { i--; if ((i < this.tail) || (k == 0)) break;
-      if (this.time[(i & this.seq.length - 1)] < paramLong1) k = 0;
-      l = this.time[(i & this.seq.length - 1)];
-      j += (this.seq[(i & this.seq.length - 1)] >> 16);
+    public double speed(long l, long l1, double d)
+    {
+        if(head == tail)
+            return d;
+        int i = head;
+        long l2 = l1;
+        int j = 0;
+        for(boolean flag = true; --i >= tail && flag;)
+        {
+            if(time[i & seq.length - 1] < l)
+                flag = false;
+            l2 = time[i & seq.length - 1];
+            j += seq[i & seq.length - 1] >> 16;
+        }
+
+        l2 = l1 - l2;
+        if(l2 <= 0L)
+            return d;
+        else
+            return (double)j / (double)l2;
     }
-    l = paramLong2 - l;
-    if (l <= 0L) return paramDouble;
-    return j / l;
-  }
 
-  public void put(int paramInt1, int paramInt2, long paramLong) {
-    if (this.head - this.tail == this.seq.length - 1) expand();
-    int i = this.head++ & this.seq.length - 1;
-    this.seq[i] = (paramInt1 & 0x3FFF | (paramInt2 & 0xFFFF) << 16);
-    this.time[i] = paramLong;
-  }
-
-  public int getIndex(int paramInt) {
-    paramInt &= 16383;
-    int i = this.head;
-    while (true) { i--; if (i < this.tail) break;
-      if ((this.seq[(i & this.seq.length - 1)] & 0x3FFF) == paramInt) {
-        this.tail = i;
-        return i & this.seq.length - 1;
-      }
+    public void put(int i, int j, long l)
+    {
+        if(head - tail == seq.length - 1)
+            expand();
+        int k = head++ & seq.length - 1;
+        seq[k] = i & 0x3fff | (j & 0xffff) << 16;
+        time[k] = l;
     }
-    return -1;
-  }
-  public long getTime(int paramInt) {
-    return this.time[paramInt];
-  }
 
-  public NetChannelCycleHistory(int paramInt)
-  {
-    this.seq = new int[paramInt];
-    this.time = new long[paramInt];
-  }
+    public int getIndex(int i)
+    {
+        i &= 0x3fff;
+        for(int j = head; --j >= tail;)
+            if((seq[j & seq.length - 1] & 0x3fff) == i)
+            {
+                tail = j;
+                return j & seq.length - 1;
+            }
+
+        return -1;
+    }
+
+    public long getTime(int i)
+    {
+        return time[i];
+    }
+
+    public NetChannelCycleHistory(int i)
+    {
+        seq = new int[i];
+        time = new long[i];
+    }
+
+    public int seq[];
+    public long time[];
+    public int head;
+    public int tail;
 }

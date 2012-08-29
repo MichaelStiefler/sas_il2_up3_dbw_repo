@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdSFS.java
+
 package com.maddox.rts.cmd;
 
 import com.maddox.rts.Cmd;
@@ -7,52 +12,67 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdSFS extends Cmd
+public class CmdSFS extends com.maddox.rts.Cmd
 {
-  public static final String MOUNT = "MOUNT";
-  public static final String UNMOUNT = "UNMOUNT";
-  public static boolean bMountError = false;
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    int i = 0;
-    String str1;
-    if (nargs(paramMap, "MOUNT") > 0) {
-      str1 = arg(paramMap, "MOUNT", 0);
-      String str2 = null;
-      if (nargs(paramMap, "MOUNT") > 1)
-        str2 = arg(paramMap, "MOUNT", 1);
-      try {
-        if (str2 != null) SFS.mountAs(str1, str2, 0); else
-          SFS.mount(str1, 0);
-      } catch (Exception localException2) {
-        bMountError = true;
-        ERR_HARD("SFS library (" + str1 + ") NOT Mounted: " + localException2.getMessage());
-        localException2.printStackTrace();
-      }
-      i = 1;
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        boolean flag = false;
+        if(com.maddox.rts.cmd.CmdSFS.nargs(map, "MOUNT") > 0)
+        {
+            java.lang.String s = com.maddox.rts.cmd.CmdSFS.arg(map, "MOUNT", 0);
+            java.lang.String s2 = null;
+            if(com.maddox.rts.cmd.CmdSFS.nargs(map, "MOUNT") > 1)
+                s2 = com.maddox.rts.cmd.CmdSFS.arg(map, "MOUNT", 1);
+            try
+            {
+                if(s2 != null)
+                    com.maddox.rts.SFS.mountAs(s, s2, 0);
+                else
+                    com.maddox.rts.SFS.mount(s, 0);
+            }
+            catch(java.lang.Exception exception1)
+            {
+                bMountError = true;
+                ERR_HARD("SFS library (" + s + ") NOT Mounted: " + exception1.getMessage());
+                exception1.printStackTrace();
+            }
+            flag = true;
+        }
+        if(com.maddox.rts.cmd.CmdSFS.nargs(map, "UNMOUNT") > 0)
+        {
+            java.lang.String s1 = com.maddox.rts.cmd.CmdSFS.arg(map, "UNMOUNT", 0);
+            try
+            {
+                com.maddox.rts.SFS.unMount(s1);
+            }
+            catch(java.lang.Exception exception)
+            {
+                ERR_HARD("SFS library (" + s1 + ") NOT UnMounted: " + exception.getMessage());
+                exception.printStackTrace();
+            }
+            flag = true;
+        }
+        if(flag)
+        {
+            return com.maddox.rts.CmdEnv.RETURN_OK;
+        } else
+        {
+            ERR_HARD("Bad command format");
+            return null;
+        }
     }
-    if (nargs(paramMap, "UNMOUNT") > 0) {
-      str1 = arg(paramMap, "UNMOUNT", 0);
-      try {
-        SFS.unMount(str1);
-      } catch (Exception localException1) {
-        ERR_HARD("SFS library (" + str1 + ") NOT UnMounted: " + localException1.getMessage());
-        localException1.printStackTrace();
-      }
-      i = 1;
+
+    public CmdSFS()
+    {
+        param.put("MOUNT", null);
+        param.put("UNMOUNT", null);
+        _properties.put("NAME", "sfs");
+        _levelAccess = 0;
     }
 
-    if (i != 0)
-      return CmdEnv.RETURN_OK;
-    ERR_HARD("Bad command format");
-    return null;
-  }
+    public static final java.lang.String MOUNT = "MOUNT";
+    public static final java.lang.String UNMOUNT = "UNMOUNT";
+    public static boolean bMountError = false;
 
-  public CmdSFS() {
-    this.param.put("MOUNT", null);
-    this.param.put("UNMOUNT", null);
-    this._properties.put("NAME", "sfs");
-    this._levelAccess = 0;
-  }
 }

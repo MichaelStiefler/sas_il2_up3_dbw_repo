@@ -1,14 +1,24 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MsgOwnerListener.java
+
 package com.maddox.il2.engine;
 
-public abstract interface MsgOwnerListener
+
+// Referenced classes of package com.maddox.il2.engine:
+//            Actor
+
+public interface MsgOwnerListener
 {
-  public abstract void msgOwnerAttach(Actor paramActor);
 
-  public abstract void msgOwnerDetach(Actor paramActor);
+    public abstract void msgOwnerAttach(com.maddox.il2.engine.Actor actor);
 
-  public abstract void msgOwnerDied(Actor paramActor);
+    public abstract void msgOwnerDetach(com.maddox.il2.engine.Actor actor);
 
-  public abstract void msgOwnerTaskComplete(Actor paramActor);
+    public abstract void msgOwnerDied(com.maddox.il2.engine.Actor actor);
 
-  public abstract void msgOwnerChange(Actor paramActor1, Actor paramActor2);
+    public abstract void msgOwnerTaskComplete(com.maddox.il2.engine.Actor actor);
+
+    public abstract void msgOwnerChange(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1);
 }

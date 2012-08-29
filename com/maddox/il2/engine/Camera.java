@@ -1,112 +1,131 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Camera.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Point3f;
 import com.maddox.rts.Message;
 
-public abstract class Camera extends Actor
+// Referenced classes of package com.maddox.il2.engine:
+//            Actor, ActorPosMove, Orient, GObj
+
+public abstract class Camera extends com.maddox.il2.engine.Actor
 {
-  public float ZNear;
-  public float ZFar;
-  public float XOffset;
-  public float YOffset;
-  protected static float[] tmpOr = new float[2];
-  protected static float[] tmp = new float[16];
-  protected static double[] tmpd = new double[16];
-  protected static Point3d tmpP = new Point3d();
-  protected static Orient tmpO = new Orient();
 
-  public void set(float paramFloat1, float paramFloat2)
-  {
-    this.ZNear = paramFloat1; this.ZFar = paramFloat2;
-  }
+    public void set(float f, float f1)
+    {
+        ZNear = f;
+        ZFar = f1;
+    }
 
-  public abstract boolean activate(float paramFloat, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, int paramInt9, int paramInt10);
+    public abstract boolean activate(float f, int i, int j, int k, int l, int i1, int j1, 
+            int k1, int l1, int i2, int j2);
 
-  protected final boolean activate(float paramFloat, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6)
-  {
-    return activate(paramFloat, paramInt1, paramInt2, paramInt3, paramInt4, paramInt5, paramInt6, paramInt3, paramInt4, paramInt5, paramInt6);
-  }
+    protected final boolean activate(float f, int i, int j, int k, int l, int i1, int j1)
+    {
+        return activate(f, i, j, k, l, i1, j1, k, l, i1, j1);
+    }
 
-  public boolean isSphereVisible(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
-  {
-    return isSphereVisibleF(paramFloat1, paramFloat2, paramFloat3, paramFloat4);
-  }
+    public boolean isSphereVisible(float f, float f1, float f2, float f3)
+    {
+        return com.maddox.il2.engine.Camera.isSphereVisibleF(f, f1, f2, f3);
+    }
 
-  public boolean isSphereVisible(double paramDouble1, double paramDouble2, double paramDouble3, float paramFloat)
-  {
-    return isSphereVisibleD(paramDouble1, paramDouble2, paramDouble3, paramFloat);
-  }
+    public boolean isSphereVisible(double d, double d1, double d2, float f)
+    {
+        return com.maddox.il2.engine.Camera.isSphereVisibleD(d, d1, d2, f);
+    }
 
-  public boolean isSphereVisible(float[] paramArrayOfFloat, float paramFloat)
-  {
-    return isSphereVisible(paramArrayOfFloat[0], paramArrayOfFloat[1], paramArrayOfFloat[2], paramFloat);
-  }
+    public boolean isSphereVisible(float af[], float f)
+    {
+        return isSphereVisible(af[0], af[1], af[2], f);
+    }
 
-  public boolean isSphereVisible(double[] paramArrayOfDouble, float paramFloat) {
-    return isSphereVisible(paramArrayOfDouble[0], paramArrayOfDouble[1], paramArrayOfDouble[2], paramFloat);
-  }
+    public boolean isSphereVisible(double ad[], float f)
+    {
+        return isSphereVisible(ad[0], ad[1], ad[2], f);
+    }
 
-  public boolean isSphereVisible(Point3f paramPoint3f, float paramFloat)
-  {
-    return isSphereVisible(paramPoint3f.x, paramPoint3f.y, paramPoint3f.z, paramFloat);
-  }
+    public boolean isSphereVisible(com.maddox.JGP.Point3f point3f, float f)
+    {
+        return isSphereVisible(point3f.x, point3f.y, point3f.z, f);
+    }
 
-  public boolean isSphereVisible(Point3d paramPoint3d, float paramFloat)
-  {
-    return isSphereVisible(paramPoint3d.x, paramPoint3d.y, paramPoint3d.z, paramFloat);
-  }
+    public boolean isSphereVisible(com.maddox.JGP.Point3d point3d, float f)
+    {
+        return isSphereVisible(point3d.x, point3d.y, point3d.z, f);
+    }
 
-  public Object getSwitchListener(Message paramMessage) {
-    return this;
-  }
-  protected Camera() {
-    this.flags |= 24576;
-    this.ZNear = 0.0F;
-    this.ZFar = 1.0F;
-    this.pos = new ActorPosMove(this);
-  }
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
 
-  protected void createActorHashCode() {
-    makeActorRealHashCode();
-  }
+    protected Camera()
+    {
+        flags |= 0x6000;
+        ZNear = 0.0F;
+        ZFar = 1.0F;
+        pos = new ActorPosMove(this);
+    }
 
-  public void activateWorldMode(int paramInt) {
-    ActivateWorldMode(paramInt);
-  }
+    protected void createActorHashCode()
+    {
+        makeActorRealHashCode();
+    }
 
-  public void deactivateWorldMode() {
-    DeactivateWorldMode();
-  }
+    public void activateWorldMode(int i)
+    {
+        com.maddox.il2.engine.Camera.ActivateWorldMode(i);
+    }
 
-  public static native void SetTargetSpeed(float paramFloat1, float paramFloat2, float paramFloat3);
+    public void deactivateWorldMode()
+    {
+        com.maddox.il2.engine.Camera.DeactivateWorldMode();
+    }
 
-  public static native void GetUniformDistParams(float[] paramArrayOfFloat);
+    public static native void SetTargetSpeed(float f, float f1, float f2);
 
-  protected static native void ActivateWorldMode(int paramInt);
+    public static native void GetUniformDistParams(float af[]);
 
-  protected static native void DeactivateWorldMode();
+    protected static native void ActivateWorldMode(int i);
 
-  protected static native void GetVirtOrigin(float[] paramArrayOfFloat);
+    protected static native void DeactivateWorldMode();
 
-  protected static native boolean SetViewportCrop(float paramFloat, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, int paramInt9, int paramInt10);
+    protected static native void GetVirtOrigin(float af[]);
 
-  protected static native void SetCameraPos(double[] paramArrayOfDouble);
+    protected static native boolean SetViewportCrop(float f, int i, int j, int k, int l, int i1, int j1, int k1, 
+            int l1, int i2, int j2);
 
-  protected static native void SetOrtho2D(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6);
+    protected static native void SetCameraPos(double ad[]);
 
-  protected static native void SetOrtho(float paramFloat1, float paramFloat2, float paramFloat3);
+    protected static native void SetOrtho2D(float f, float f1, float f2, float f3, float f4, float f5);
 
-  protected static native void SetZOrder(float paramFloat);
+    protected static native void SetOrtho(float f, float f1, float f2);
 
-  protected static native void SetFOV(float paramFloat1, float paramFloat2, float paramFloat3);
+    protected static native void SetZOrder(float f);
 
-  protected static native boolean isSphereVisibleF(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4);
+    protected static native void SetFOV(float f, float f1, float f2);
 
-  protected static native boolean isSphereVisibleD(double paramDouble1, double paramDouble2, double paramDouble3, float paramFloat);
+    protected static native boolean isSphereVisibleF(float f, float f1, float f2, float f3);
 
-  static
-  {
-    GObj.loadNative();
-  }
+    protected static native boolean isSphereVisibleD(double d, double d1, double d2, float f);
+
+    public float ZNear;
+    public float ZFar;
+    public float XOffset;
+    public float YOffset;
+    protected static float tmpOr[] = new float[2];
+    protected static float tmp[] = new float[16];
+    protected static double tmpd[] = new double[16];
+    protected static com.maddox.JGP.Point3d tmpP = new Point3d();
+    protected static com.maddox.il2.engine.Orient tmpO = new Orient();
+
+    static 
+    {
+        com.maddox.il2.engine.GObj.loadNative();
+    }
 }

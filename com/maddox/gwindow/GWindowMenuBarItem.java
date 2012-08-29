@@ -1,88 +1,134 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowMenuBarItem.java
+
 package com.maddox.gwindow;
 
-public class GWindowMenuBarItem extends GWindow
+
+// Referenced classes of package com.maddox.gwindow:
+//            GWindow, GWindowMenuBar, GCaption, GWindowLookAndFeel, 
+//            GRegion, GWindowMenu, GSize
+
+public class GWindowMenuBarItem extends com.maddox.gwindow.GWindow
 {
-  public GWindowMenu subMenu;
-  public GCaption cap;
-  public String toolTip;
 
-  public GWindowMenuBar menuBar()
-  {
-    return (GWindowMenuBar)this.parentWindow; } 
-  public GWindowMenu subMenu() { return this.subMenu; }
-
-  public void mouseEnter() {
-    super.mouseEnter();
-    menuBar().setOver(this);
-    if (menuBar().selected != null)
-      menuBar().setSelected(this); 
-  }
-
-  public void mouseLeave() {
-    super.mouseLeave();
-    if (menuBar().over == this)
-      menuBar().setOver(menuBar().selected); 
-  }
-
-  public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-    super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-    if ((paramBoolean) && (paramInt == 0)) {
-      menuBar().setOver(this);
-      menuBar().setSelected(menuBar().selected == this ? null : this);
+    public com.maddox.gwindow.GWindowMenuBar menuBar()
+    {
+        return (com.maddox.gwindow.GWindowMenuBar)parentWindow;
     }
-  }
 
-  public void select() {
-    activateWindow();
-    if (this.subMenu == null) return;
-    lAF().soundPlay("MenuPoolDown");
-    this.subMenu.setPos(0.0F, this.win.dy);
-    this.subMenu.activateWindow();
-  }
-  public void unSelect() {
-    if (this.subMenu == null) return;
-    lAF().soundPlay("MenuCloseUp");
-    this.subMenu.setSelected(null);
-    this.subMenu.hideWindow();
-  }
+    public com.maddox.gwindow.GWindowMenu subMenu()
+    {
+        return subMenu;
+    }
 
-  public void keyboardKey(int paramInt, boolean paramBoolean) {
-    menuBar().keyboardKey(paramInt, paramBoolean);
-  }
-  public void keyboardChar(char paramChar) {
-    menuBar().keyboardChar(paramChar);
-  }
+    public void mouseEnter()
+    {
+        super.mouseEnter();
+        menuBar().setOver(this);
+        if(menuBar().selected != null)
+            menuBar().setSelected(this);
+    }
 
-  public void render() {
-    lookAndFeel().render(this);
-  }
-  public GSize getMinSize(GSize paramGSize) {
-    return lookAndFeel().getMinSize(this, paramGSize);
-  }
-  public GRegion getClientRegion(GRegion paramGRegion, float paramFloat) {
-    return lookAndFeel().getClientRegion(this, paramGRegion, paramFloat);
-  }
+    public void mouseLeave()
+    {
+        super.mouseLeave();
+        if(menuBar().over == this)
+            menuBar().setOver(menuBar().selected);
+    }
 
-  public void resolutionChanged() {
-    if ((this.cap != null) && (this.cap.offsetHotKey > 0))
-      this.cap.offsetHotKey = -1;
-    GSize localGSize = getMinSize();
-    this.win.dx = localGSize.dx;
-    this.win.dy = localGSize.dy;
-    if (this.subMenu != null)
-      this.subMenu.resolutionChanged();
-  }
+    public void mouseButton(int i, boolean flag, float f, float f1)
+    {
+        super.mouseButton(i, flag, f, f1);
+        if(flag && i == 0)
+        {
+            menuBar().setOver(this);
+            menuBar().setSelected(menuBar().selected != this ? this : null);
+        }
+    }
 
-  public void created() {
-    super.created();
-    GSize localGSize = getMinSize();
-    this.win.dx = localGSize.dx;
-    this.win.dy = localGSize.dy;
-  }
+    public void select()
+    {
+        activateWindow();
+        if(subMenu == null)
+        {
+            return;
+        } else
+        {
+            lAF().soundPlay("MenuPoolDown");
+            subMenu.setPos(0.0F, win.dy);
+            subMenu.activateWindow();
+            return;
+        }
+    }
 
-  public GWindowMenuBarItem(GWindowMenuBar paramGWindowMenuBar, String paramString1, String paramString2) {
-    this.cap = new GCaption(paramString1);
-    this.toolTip = paramString2;
-    doNew(paramGWindowMenuBar, 0.0F, 0.0F, 1.0F, 1.0F, false);
-  }
+    public void unSelect()
+    {
+        if(subMenu == null)
+        {
+            return;
+        } else
+        {
+            lAF().soundPlay("MenuCloseUp");
+            subMenu.setSelected(null);
+            subMenu.hideWindow();
+            return;
+        }
+    }
+
+    public void keyboardKey(int i, boolean flag)
+    {
+        menuBar().keyboardKey(i, flag);
+    }
+
+    public void keyboardChar(char c)
+    {
+        menuBar().keyboardChar(c);
+    }
+
+    public void render()
+    {
+        lookAndFeel().render(this);
+    }
+
+    public com.maddox.gwindow.GSize getMinSize(com.maddox.gwindow.GSize gsize)
+    {
+        return lookAndFeel().getMinSize(this, gsize);
+    }
+
+    public com.maddox.gwindow.GRegion getClientRegion(com.maddox.gwindow.GRegion gregion, float f)
+    {
+        return lookAndFeel().getClientRegion(this, gregion, f);
+    }
+
+    public void resolutionChanged()
+    {
+        if(cap != null && cap.offsetHotKey > 0)
+            cap.offsetHotKey = -1;
+        com.maddox.gwindow.GSize gsize = getMinSize();
+        win.dx = gsize.dx;
+        win.dy = gsize.dy;
+        if(subMenu != null)
+            subMenu.resolutionChanged();
+    }
+
+    public void created()
+    {
+        super.created();
+        com.maddox.gwindow.GSize gsize = getMinSize();
+        win.dx = gsize.dx;
+        win.dy = gsize.dy;
+    }
+
+    public GWindowMenuBarItem(com.maddox.gwindow.GWindowMenuBar gwindowmenubar, java.lang.String s, java.lang.String s1)
+    {
+        cap = new GCaption(s);
+        toolTip = s1;
+        doNew(gwindowmenubar, 0.0F, 0.0F, 1.0F, 1.0F, false);
+    }
+
+    public com.maddox.gwindow.GWindowMenu subMenu;
+    public com.maddox.gwindow.GCaption cap;
+    public java.lang.String toolTip;
 }

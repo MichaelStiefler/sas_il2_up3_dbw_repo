@@ -1,19 +1,30 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CannonPaK43.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.il2.engine.BulletProperties;
 import com.maddox.il2.engine.GunProperties;
 
-public class CannonPaK43 extends CannonTankGeneric
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            CannonTankGeneric
+
+public class CannonPaK43 extends com.maddox.il2.objects.weapons.CannonTankGeneric
 {
-  protected float Specify(GunProperties paramGunProperties)
-  {
-    BulletProperties localBulletProperties = paramGunProperties.bullet[0];
-    localBulletProperties.kalibr = 0.088F;
-    localBulletProperties.massa = 10.2F;
-    localBulletProperties.speed = 1000.0F;
 
-    paramGunProperties.sound = "weapon.Cannon85t";
+    public CannonPaK43()
+    {
+    }
 
-    return 71.599998F;
-  }
+    protected float Specify(com.maddox.il2.engine.GunProperties gunproperties)
+    {
+        com.maddox.il2.engine.BulletProperties bulletproperties = gunproperties.bullet[0];
+        bulletproperties.kalibr = 0.088F;
+        bulletproperties.massa = 10.2F;
+        bulletproperties.speed = 1000F;
+        gunproperties.sound = "weapon.Cannon85t";
+        return 71.6F;
+    }
 }

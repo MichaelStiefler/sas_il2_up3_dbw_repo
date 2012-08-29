@@ -1,196 +1,229 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Animator.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.rts.Message;
 import com.maddox.rts.MsgInvokeMethod;
 import com.maddox.rts.Time;
 
-public class Animator extends Interpolate
+// Referenced classes of package com.maddox.il2.engine:
+//            Interpolate, AnimatedActor, Loc, Actor, 
+//            Animate, Animates, ActorPos, Hook
+
+public class Animator extends com.maddox.il2.engine.Interpolate
 {
-  protected Animates moves;
-  protected Animate move;
-  protected Hook landHook;
-  protected double lenToEnd;
-  protected double lenStep;
-  protected double countMoves;
-  protected double speed;
-  protected long time0;
-  protected Loc loc0 = new Loc();
 
-  public boolean isRun() {
-    return this.bExecuted;
-  }
-
-  public String getCur()
-  {
-    return this.bExecuted ? this.move.name : null;
-  }
-
-  public AnimatedActor animatedActor()
-  {
-    return (AnimatedActor)this.actor;
-  }
-
-  public Hook getLandHook()
-  {
-    if (this.landHook == null)
-      this.landHook = this.actor.findHook("ground_level");
-    return this.landHook;
-  }
-
-  public void start(String paramString, double paramDouble1, double paramDouble2)
-  {
-    start(paramString, paramDouble1, paramDouble2, (Message)null, 1.0D);
-  }
-
-  public void start(String paramString1, double paramDouble1, double paramDouble2, String paramString2)
-  {
-    start(paramString1, paramDouble1, paramDouble2, paramString2, 1.0D);
-  }
-
-  public void start(String paramString, double paramDouble1, double paramDouble2, Message paramMessage)
-  {
-    start(paramString, paramDouble1, paramDouble2, paramMessage, 1.0D);
-  }
-
-  public void start(String paramString1, double paramDouble1, double paramDouble2, String paramString2, double paramDouble3)
-  {
-    MsgInvokeMethod localMsgInvokeMethod = null;
-    if (paramString2 != null)
-      localMsgInvokeMethod = new MsgInvokeMethod(paramString2);
-    start(paramString1, paramDouble1, paramDouble2, localMsgInvokeMethod, paramDouble3);
-  }
-
-  public void start(String paramString, double paramDouble1, double paramDouble2, Message paramMessage, double paramDouble3)
-  {
-    if (isRun()) stop(false);
-    this.msgEnd = paramMessage;
-    this.speed = paramDouble3;
-    this.move = this.moves.get(paramString);
-    this.bExecuted = true;
-    this.countMoves = 0.0D;
-    this.time0 = timeCurrent();
-    this.actor.pos.getAbs(this.loc0);
-    this.lenStep = this.move.fullStepLen(this, paramDouble3);
-    this.lenToEnd = this.move.setup(this, this.loc0, paramDouble1, paramDouble2, paramDouble3);
-    if ((this.lenToEnd > 0.001D) && (this.lenStep > 0.001D)) {
-      tick();
-    } else {
-      this.countMoves = 1.0D;
-      tick();
-      stop(true);
-    }
-  }
-
-  public void start(String paramString, double paramDouble)
-  {
-    start(paramString, paramDouble, (Message)null, 1.0D);
-  }
-
-  public void start(String paramString1, double paramDouble, String paramString2)
-  {
-    start(paramString1, paramDouble, paramString2, 1.0D);
-  }
-
-  public void start(String paramString, double paramDouble, Message paramMessage)
-  {
-    start(paramString, paramDouble, paramMessage, 1.0D);
-  }
-
-  public void start(String paramString1, double paramDouble1, String paramString2, double paramDouble2)
-  {
-    MsgInvokeMethod localMsgInvokeMethod = null;
-    if (paramString2 != null)
-      localMsgInvokeMethod = new MsgInvokeMethod(paramString2);
-    start(paramString1, paramDouble1, localMsgInvokeMethod, paramDouble2);
-  }
-
-  public void start(String paramString, double paramDouble1, Message paramMessage, double paramDouble2)
-  {
-    if (isRun()) stop(false);
-    this.msgEnd = paramMessage;
-    this.speed = paramDouble2;
-    this.move = this.moves.get(paramString);
-    this.bExecuted = true;
-    this.countMoves = paramDouble1;
-    this.time0 = timeCurrent();
-    this.actor.pos.getAbs(this.loc0);
-    if (paramDouble1 != 0.0D) {
-      tick();
-    } else {
-      this.countMoves = 1.0D;
-      tick();
-      stop(true);
-    }
-  }
-
-  public void stop()
-  {
-    stop(false);
-  }
-
-  public void stop(boolean paramBoolean)
-  {
-    if (!this.bExecuted) return;
-    this.bExecuted = false;
-    if ((paramBoolean) && (this.msgEnd != null)) {
-      if ((!this.msgEnd.busy()) && (Actor.isValid(this.actor))) {
-        this.msgEnd.setListener(this.actor);
-        this.msgEnd.setTime(timeCurrent());
-        this.msgEnd.setSender(this);
-        this.msgEnd.post();
-      }
-      this.msgEnd = null;
-    }
-  }
-
-  protected long timeCurrent() {
-    return this.actor.isRealTime() ? Time.currentReal() : Time.current();
-  }
-
-  public boolean tick() {
-    long l = timeCurrent();
-    if (l < this.time0) l = this.time0;
-    double d = (l - this.time0) / this.move.time;
-
-    if (this.countMoves != 0.0D) {
-      if ((this.countMoves > 0.0D) && (d >= this.countMoves)) {
-        d = this.countMoves;
-        stop(true);
-      }
-      while (d > 1.0D) {
-        d -= 1.0D;
-        this.time0 += this.move.time;
-        if (this.countMoves > 0.0D)
-          this.countMoves -= 1.0D;
-        this.move.fullStep(this, this.loc0, this.speed);
-      }
+    public boolean isRun()
+    {
+        return bExecuted;
     }
 
-    if (d * this.lenStep >= this.lenToEnd) {
-      d = this.lenToEnd / this.lenStep;
-      stop(true);
-    }
-    while (d > 1.0D) {
-      d -= 1.0D;
-      this.time0 += this.move.time;
-      this.lenToEnd -= this.lenStep;
-      this.move.fullStep(this, this.loc0, this.speed);
+    public java.lang.String getCur()
+    {
+        return bExecuted ? move.name : null;
     }
 
-    this.move.step(this, this.loc0, getLandHook(), this.speed, d);
-    return true;
-  }
+    public com.maddox.il2.engine.AnimatedActor animatedActor()
+    {
+        return (com.maddox.il2.engine.AnimatedActor)actor;
+    }
 
-  public Animator(AnimatedActor paramAnimatedActor, Animates paramAnimates)
-  {
-    this(paramAnimatedActor, paramAnimates, "AnimatorMoves");
-  }
+    public com.maddox.il2.engine.Hook getLandHook()
+    {
+        if(landHook == null)
+            landHook = actor.findHook("ground_level");
+        return landHook;
+    }
 
-  public Animator(AnimatedActor paramAnimatedActor, Animates paramAnimates, String paramString)
-  {
-    if (paramAnimatedActor.getAnimator() != null)
-      return;
-    this.moves = paramAnimates;
-    ((Actor)paramAnimatedActor).interpPut(this, paramString, -1L, null);
-  }
+    public void start(java.lang.String s, double d, double d1)
+    {
+        start(s, d, d1, (com.maddox.rts.Message)null, 1.0D);
+    }
+
+    public void start(java.lang.String s, double d, double d1, java.lang.String s1)
+    {
+        start(s, d, d1, s1, 1.0D);
+    }
+
+    public void start(java.lang.String s, double d, double d1, com.maddox.rts.Message message)
+    {
+        start(s, d, d1, message, 1.0D);
+    }
+
+    public void start(java.lang.String s, double d, double d1, java.lang.String s1, double d2)
+    {
+        com.maddox.rts.MsgInvokeMethod msginvokemethod = null;
+        if(s1 != null)
+            msginvokemethod = new MsgInvokeMethod(s1);
+        start(s, d, d1, ((com.maddox.rts.Message) (msginvokemethod)), d2);
+    }
+
+    public void start(java.lang.String s, double d, double d1, com.maddox.rts.Message message, double d2)
+    {
+        if(isRun())
+            stop(false);
+        msgEnd = message;
+        speed = d2;
+        move = moves.get(s);
+        bExecuted = true;
+        countMoves = 0.0D;
+        time0 = timeCurrent();
+        actor.pos.getAbs(loc0);
+        lenStep = move.fullStepLen(this, d2);
+        lenToEnd = move.setup(this, loc0, d, d1, d2);
+        if(lenToEnd > 0.001D && lenStep > 0.001D)
+        {
+            tick();
+        } else
+        {
+            countMoves = 1.0D;
+            tick();
+            stop(true);
+        }
+    }
+
+    public void start(java.lang.String s, double d)
+    {
+        start(s, d, (com.maddox.rts.Message)null, 1.0D);
+    }
+
+    public void start(java.lang.String s, double d, java.lang.String s1)
+    {
+        start(s, d, s1, 1.0D);
+    }
+
+    public void start(java.lang.String s, double d, com.maddox.rts.Message message)
+    {
+        start(s, d, message, 1.0D);
+    }
+
+    public void start(java.lang.String s, double d, java.lang.String s1, double d1)
+    {
+        com.maddox.rts.MsgInvokeMethod msginvokemethod = null;
+        if(s1 != null)
+            msginvokemethod = new MsgInvokeMethod(s1);
+        start(s, d, ((com.maddox.rts.Message) (msginvokemethod)), d1);
+    }
+
+    public void start(java.lang.String s, double d, com.maddox.rts.Message message, double d1)
+    {
+        if(isRun())
+            stop(false);
+        msgEnd = message;
+        speed = d1;
+        move = moves.get(s);
+        bExecuted = true;
+        countMoves = d;
+        time0 = timeCurrent();
+        actor.pos.getAbs(loc0);
+        if(d != 0.0D)
+        {
+            tick();
+        } else
+        {
+            countMoves = 1.0D;
+            tick();
+            stop(true);
+        }
+    }
+
+    public void stop()
+    {
+        stop(false);
+    }
+
+    public void stop(boolean flag)
+    {
+        if(!bExecuted)
+            return;
+        bExecuted = false;
+        if(flag && msgEnd != null)
+        {
+            if(!msgEnd.busy() && com.maddox.il2.engine.Actor.isValid(actor))
+            {
+                msgEnd.setListener(actor);
+                msgEnd.setTime(timeCurrent());
+                msgEnd.setSender(this);
+                msgEnd.post();
+            }
+            msgEnd = null;
+        }
+    }
+
+    protected long timeCurrent()
+    {
+        return actor.isRealTime() ? com.maddox.rts.Time.currentReal() : com.maddox.rts.Time.current();
+    }
+
+    public boolean tick()
+    {
+        long l = timeCurrent();
+        if(l < time0)
+            l = time0;
+        double d = (double)(l - time0) / (double)move.time;
+        if(countMoves != 0.0D)
+        {
+            if(countMoves > 0.0D && d >= countMoves)
+            {
+                d = countMoves;
+                stop(true);
+            }
+            while(d > 1.0D) 
+            {
+                d--;
+                time0 += move.time;
+                if(countMoves > 0.0D)
+                    countMoves--;
+                move.fullStep(this, loc0, speed);
+            }
+        } else
+        {
+            if(d * lenStep >= lenToEnd)
+            {
+                d = lenToEnd / lenStep;
+                stop(true);
+            }
+            while(d > 1.0D) 
+            {
+                d--;
+                time0 += move.time;
+                lenToEnd -= lenStep;
+                move.fullStep(this, loc0, speed);
+            }
+        }
+        move.step(this, loc0, getLandHook(), speed, d);
+        return true;
+    }
+
+    public Animator(com.maddox.il2.engine.AnimatedActor animatedactor, com.maddox.il2.engine.Animates animates)
+    {
+        this(animatedactor, animates, "AnimatorMoves");
+    }
+
+    public Animator(com.maddox.il2.engine.AnimatedActor animatedactor, com.maddox.il2.engine.Animates animates, java.lang.String s)
+    {
+        loc0 = new Loc();
+        if(animatedactor.getAnimator() != null)
+        {
+            return;
+        } else
+        {
+            moves = animates;
+            ((com.maddox.il2.engine.Actor)animatedactor).interpPut(this, s, -1L, null);
+            return;
+        }
+    }
+
+    protected com.maddox.il2.engine.Animates moves;
+    protected com.maddox.il2.engine.Animate move;
+    protected com.maddox.il2.engine.Hook landHook;
+    protected double lenToEnd;
+    protected double lenStep;
+    protected double countMoves;
+    protected double speed;
+    protected long time0;
+    protected com.maddox.il2.engine.Loc loc0;
 }

@@ -1,27 +1,45 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CfgMusFlags.java
+
 package com.maddox.sound;
 
 import com.maddox.rts.CmdEnv;
 
-public class CfgMusFlags extends SoundFlags
+// Referenced classes of package com.maddox.sound:
+//            SoundFlags
+
+public class CfgMusFlags extends com.maddox.sound.SoundFlags
 {
-  public String name()
-  {
-    return "MusFlags";
-  }
 
-  public int countFlags() {
-    return 1;
-  }
-
-  public String nameFlag(int paramInt) {
-    switch (paramInt) { case 0:
-      return "play";
+    public CfgMusFlags()
+    {
     }
-    return null;
-  }
 
-  public int apply(int paramInt) {
-    CmdEnv.top().exec("music APPLY");
-    return 0;
-  }
+    public java.lang.String name()
+    {
+        return "MusFlags";
+    }
+
+    public int countFlags()
+    {
+        return 1;
+    }
+
+    public java.lang.String nameFlag(int i)
+    {
+        switch(i)
+        {
+        case 0: // '\0'
+            return "play";
+        }
+        return null;
+    }
+
+    public int apply(int i)
+    {
+        com.maddox.rts.CmdEnv.top().exec("music APPLY");
+        return 0;
+    }
 }

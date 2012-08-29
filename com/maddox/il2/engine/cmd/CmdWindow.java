@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdWindow.java
+
 package com.maddox.il2.engine.cmd;
 
 import com.maddox.il2.ai.World;
@@ -27,186 +32,203 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdWindow extends Cmd
+public class CmdWindow extends com.maddox.rts.Cmd
 {
-  public static final String FULL = "FULL";
-  public static final String NOFULL = "NOFULL";
-  public static final String PROVIDER = "PROVIDER";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    if (!(RTSConf.cur instanceof RTSConfWin)) {
-      ERR_HARD("This command is valid only on Win32 main window");
-      return null;
-    }
-    Object localObject = CmdEnv.RETURN_OK;
-    if ((paramMap.containsKey("_$$")) || (paramMap.containsKey("FULL")) || (paramMap.containsKey("PROVIDER")) || (paramMap.containsKey("NOFULL")))
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
     {
-      int i = 0;
-      String str1 = null;
-      String str2 = Provider.isGLloaded() ? Provider.GLname() : "";
-      if (nargs(paramMap, "PROVIDER") > 0) {
-        str1 = arg(paramMap, "PROVIDER", 0);
-        if ((!Provider.isGLloaded()) || (str1.compareToIgnoreCase(str2) != 0)) {
-          i = 1;
-        }
-      }
-      boolean bool1 = paramMap.containsKey("FULL");
-      int i2;
-      int j;
-      if (paramMap.containsKey("_$$")) {
-        i2 = bool1 ? 2560 : ScreenMode.startup().width();
-        j = arg(paramMap, "_$$", 0, 640, 160, i2);
-      } else {
-        j = Config.cur.windowWidth;
-      }
-      int k;
-      if (nargs(paramMap, "_$$") > 1) {
-        i2 = bool1 ? 1820 : ScreenMode.startup().height();
-        k = arg(paramMap, "_$$", 1, 480, 120, 1820);
-      } else {
-        k = j * 3 / 4;
-      }
-      int m;
-      if (nargs(paramMap, "_$$") > 2) {
-        if (bool1) m = arg(paramMap, "_$$", 2, 16, 16, 32); else
-          m = ScreenMode.startup().colourBits();
-      }
-      else if (bool1) m = Config.cur.windowColourBits; else
-        m = ScreenMode.startup().colourBits();
-      int n;
-      if (nargs(paramMap, "_$$") > 3) {
-        n = arg(paramMap, "_$$", 3, 16, 16, 32);
-      }
-      else if (m == Config.cur.windowColourBits)
-        n = Config.cur.windowDepthBits;
-      else
-        n = m;
-      int i1;
-      if (nargs(paramMap, "_$$") > 4)
-        i1 = arg(paramMap, "_$$", 4, 0, 0, 8);
-      else {
-        i1 = Config.cur.windowStencilBits;
-      }
-
-      if ((bool1 == Config.cur.windowChangeScreenRes) && (!bool1) && (m == Config.cur.windowColourBits) && (n == Config.cur.windowDepthBits) && (i1 == Config.cur.windowStencilBits) && (i == 0))
-      {
-        if ((j != Config.cur.windowWidth) || (k != Config.cur.windowHeight)) {
-          if (bool1) {
-            ScreenMode.set(j, k, m);
-            RTSConf.cur.mainWindow.setSize(ScreenMode.current().width(), ScreenMode.current().height());
-          } else {
-            RTSConf.cur.mainWindow.setSize(j, k);
-          }
-          Config.cur.windowWidth = ((MainWin32)RTSConf.cur.mainWindow).Width();
-          Config.cur.windowHeight = ((MainWin32)RTSConf.cur.mainWindow).Height();
-        }
-      } else {
-        if (Provider.countContexts() > 1) {
-          ERR_HARD("Many (" + Provider.countContexts() + ") OpenGL is opened");
-          return null;
-        }
-
-        Config.cur.endSound();
-        MainWindow.adapter().setMessagesEnable(false);
-        RendersMain.glContext().setMessagesEnable(false);
-        RendersMain.glContext().destroy();
-        ((MainWin32)RTSConf.cur.mainWindow).destroy();
-        RTSConf.cur.stop();
-        RenderContext.deactivate();
-        try {
-          if (i != 0)
-            Provider.GLload(str1);
-          Config.cur.createGlContext(RendersMain.glContext(), bool1, bool1, j, k, m, n, i1);
-        } catch (Exception localException1) {
-          ERR_HARD(localException1.toString());
-          localObject = null;
-          if (i != 0) {
-            i = 0;
-            try {
-              Provider.GLload(str2);
-            } catch (Exception localException2) {
-              ERR_HARD(localException2.toString());
-              ERR_HARD("Error restore provider");
-              RTSConf.setRequestExitApp(true);
-              return null;
-            }
-          }
-          try {
-            Config.cur.createGlContext(RendersMain.glContext(), Config.cur.windowChangeScreenRes, Config.cur.windowFullScreen, Config.cur.windowWidth, Config.cur.windowHeight, Config.cur.windowColourBits, Config.cur.windowDepthBits, Config.cur.windowStencilBits);
-          }
-          catch (Exception localException3)
-          {
-            ERR_HARD(localException3.toString());
-            ERR_HARD("Error restore window mode");
-            RTSConf.setRequestExitApp(true);
+        if(!(com.maddox.rts.RTSConf.cur instanceof com.maddox.rts.RTSConfWin))
+        {
+            ERR_HARD("This command is valid only on Win32 main window");
             return null;
-          }
         }
-        if (i != 0) {
-          Config.cur.glLib = str1;
+        java.lang.Object obj = com.maddox.rts.CmdEnv.RETURN_OK;
+        if(map.containsKey("_$$") || map.containsKey("FULL") || map.containsKey("PROVIDER") || map.containsKey("NOFULL"))
+        {
+            boolean flag = false;
+            java.lang.String s = null;
+            java.lang.String s1 = com.maddox.opengl.Provider.isGLloaded() ? com.maddox.opengl.Provider.GLname() : "";
+            if(com.maddox.il2.engine.cmd.CmdWindow.nargs(map, "PROVIDER") > 0)
+            {
+                s = com.maddox.il2.engine.cmd.CmdWindow.arg(map, "PROVIDER", 0);
+                if(!com.maddox.opengl.Provider.isGLloaded() || s.compareToIgnoreCase(s1) != 0)
+                    flag = true;
+            }
+            boolean flag1 = map.containsKey("FULL");
+            int i;
+            if(map.containsKey("_$$"))
+            {
+                int j1 = flag1 ? 2560 : com.maddox.rts.ScreenMode.startup().width();
+                i = com.maddox.il2.engine.cmd.CmdWindow.arg(map, "_$$", 0, 640, 160, j1);
+            } else
+            {
+                i = com.maddox.il2.engine.Config.cur.windowWidth;
+            }
+            int j;
+            if(com.maddox.il2.engine.cmd.CmdWindow.nargs(map, "_$$") > 1)
+            {
+                int k1 = flag1 ? 1820 : com.maddox.rts.ScreenMode.startup().height();
+                j = com.maddox.il2.engine.cmd.CmdWindow.arg(map, "_$$", 1, 480, 120, 1820);
+            } else
+            {
+                j = (i * 3) / 4;
+            }
+            int k;
+            if(com.maddox.il2.engine.cmd.CmdWindow.nargs(map, "_$$") > 2)
+            {
+                if(flag1)
+                    k = com.maddox.il2.engine.cmd.CmdWindow.arg(map, "_$$", 2, 16, 16, 32);
+                else
+                    k = com.maddox.rts.ScreenMode.startup().colourBits();
+            } else
+            if(flag1)
+                k = com.maddox.il2.engine.Config.cur.windowColourBits;
+            else
+                k = com.maddox.rts.ScreenMode.startup().colourBits();
+            int l;
+            if(com.maddox.il2.engine.cmd.CmdWindow.nargs(map, "_$$") > 3)
+                l = com.maddox.il2.engine.cmd.CmdWindow.arg(map, "_$$", 3, 16, 16, 32);
+            else
+            if(k == com.maddox.il2.engine.Config.cur.windowColourBits)
+                l = com.maddox.il2.engine.Config.cur.windowDepthBits;
+            else
+                l = k;
+            int i1;
+            if(com.maddox.il2.engine.cmd.CmdWindow.nargs(map, "_$$") > 4)
+                i1 = com.maddox.il2.engine.cmd.CmdWindow.arg(map, "_$$", 4, 0, 0, 8);
+            else
+                i1 = com.maddox.il2.engine.Config.cur.windowStencilBits;
+            if(flag1 == com.maddox.il2.engine.Config.cur.windowChangeScreenRes && !flag1 && k == com.maddox.il2.engine.Config.cur.windowColourBits && l == com.maddox.il2.engine.Config.cur.windowDepthBits && i1 == com.maddox.il2.engine.Config.cur.windowStencilBits && !flag)
+            {
+                if(i != com.maddox.il2.engine.Config.cur.windowWidth || j != com.maddox.il2.engine.Config.cur.windowHeight)
+                {
+                    if(flag1)
+                    {
+                        com.maddox.rts.ScreenMode.set(i, j, k);
+                        com.maddox.rts.RTSConf.cur.mainWindow.setSize(com.maddox.rts.ScreenMode.current().width(), com.maddox.rts.ScreenMode.current().height());
+                    } else
+                    {
+                        com.maddox.rts.RTSConf.cur.mainWindow.setSize(i, j);
+                    }
+                    com.maddox.il2.engine.Config.cur.windowWidth = ((com.maddox.rts.MainWin32)com.maddox.rts.RTSConf.cur.mainWindow).Width();
+                    com.maddox.il2.engine.Config.cur.windowHeight = ((com.maddox.rts.MainWin32)com.maddox.rts.RTSConf.cur.mainWindow).Height();
+                }
+            } else
+            {
+                if(com.maddox.opengl.Provider.countContexts() > 1)
+                {
+                    ERR_HARD("Many (" + com.maddox.opengl.Provider.countContexts() + ") OpenGL is opened");
+                    return null;
+                }
+                com.maddox.il2.engine.Config.cur.endSound();
+                com.maddox.rts.MainWindow.adapter().setMessagesEnable(false);
+                com.maddox.il2.engine.RendersMain.glContext().setMessagesEnable(false);
+                com.maddox.il2.engine.RendersMain.glContext().destroy();
+                ((com.maddox.rts.MainWin32)com.maddox.rts.RTSConf.cur.mainWindow).destroy();
+                com.maddox.rts.RTSConf.cur.stop();
+                com.maddox.il2.engine.RenderContext.deactivate();
+                try
+                {
+                    if(flag)
+                        com.maddox.opengl.Provider.GLload(s);
+                    com.maddox.il2.engine.Config.cur.createGlContext(com.maddox.il2.engine.RendersMain.glContext(), flag1, flag1, i, j, k, l, i1);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    ERR_HARD(exception.toString());
+                    obj = null;
+                    if(flag)
+                    {
+                        flag = false;
+                        try
+                        {
+                            com.maddox.opengl.Provider.GLload(s1);
+                        }
+                        catch(java.lang.Exception exception1)
+                        {
+                            ERR_HARD(exception1.toString());
+                            ERR_HARD("Error restore provider");
+                            com.maddox.rts.RTSConf.setRequestExitApp(true);
+                            return null;
+                        }
+                    }
+                    try
+                    {
+                        com.maddox.il2.engine.Config.cur.createGlContext(com.maddox.il2.engine.RendersMain.glContext(), com.maddox.il2.engine.Config.cur.windowChangeScreenRes, com.maddox.il2.engine.Config.cur.windowFullScreen, com.maddox.il2.engine.Config.cur.windowWidth, com.maddox.il2.engine.Config.cur.windowHeight, com.maddox.il2.engine.Config.cur.windowColourBits, com.maddox.il2.engine.Config.cur.windowDepthBits, com.maddox.il2.engine.Config.cur.windowStencilBits);
+                    }
+                    catch(java.lang.Exception exception2)
+                    {
+                        ERR_HARD(exception2.toString());
+                        ERR_HARD("Error restore window mode");
+                        com.maddox.rts.RTSConf.setRequestExitApp(true);
+                        return null;
+                    }
+                }
+                if(flag)
+                    com.maddox.il2.engine.Config.cur.glLib = s;
+                com.maddox.rts.MainWindow.adapter().setMessagesEnable(true);
+                com.maddox.il2.engine.RendersMain.glContext().setMessagesEnable(true);
+                if(flag)
+                    com.maddox.il2.engine.Config.cur.loadEngine(null);
+                else
+                    com.maddox.il2.engine.Config.cur.loadEngine();
+                com.maddox.il2.engine.RenderContext.activate(com.maddox.il2.engine.RendersMain.glContext());
+                com.maddox.il2.engine.Mat.enableDeleteTextureID(false);
+                com.maddox.rts.CmdEnv.top().exec("fobj *.font RELOAD");
+                com.maddox.il2.engine.GObj.DeleteCppObjects();
+                com.maddox.rts.RTSConf.cur.mainWindow.SendAction(4);
+                com.maddox.rts.RTSConf.cur.mainWindow.SendAction(8);
+                boolean flag2 = com.maddox.il2.engine.ConsoleGL0.isActive();
+                com.maddox.il2.engine.ConsoleGL0.activate(true);
+                com.maddox.il2.engine.Render render = (com.maddox.il2.engine.Render)com.maddox.il2.engine.Actor.getByName("renderConsoleGL0");
+                com.maddox.il2.engine.RendersMain.glContext().sendAction(8);
+                java.lang.System.out.println("Reload all textures of landscape ...");
+                if(com.maddox.il2.game.Main3D.cur3D().isUseStartLog())
+                {
+                    if(render != null)
+                        com.maddox.il2.engine.Engine.rendersMain().paint(render);
+                } else
+                {
+                    com.maddox.il2.engine.ConsoleGL0.exclusiveDraw("gui/background0.mat");
+                    com.maddox.il2.engine.ConsoleGL0.exclusiveDrawStep(null, 0);
+                }
+                try
+                {
+                    com.maddox.il2.ai.World.land().ReLoadMap();
+                }
+                catch(java.lang.Exception exception3)
+                {
+                    ERR_HARD(exception3.toString());
+                    ERR_HARD("Error reload landscape");
+                    com.maddox.rts.RTSConf.setRequestExitApp(true);
+                    return null;
+                }
+                com.maddox.il2.engine.GObj.DeleteCppObjects();
+                java.lang.System.out.println("Reload all textures of objects ...");
+                if(com.maddox.il2.game.Main3D.cur3D().isUseStartLog() && render != null)
+                    com.maddox.il2.engine.Engine.rendersMain().paint(render);
+                com.maddox.rts.CmdEnv.top().exec("fobj *.tga *.txa RELOAD");
+                com.maddox.il2.engine.GObj.DeleteCppObjects();
+                com.maddox.il2.engine.Mat.enableDeleteTextureID(true);
+                com.maddox.il2.engine.ConsoleGL0.activate(flag2);
+                com.maddox.rts.RTSConf.cur.start();
+                com.maddox.il2.engine.Config.cur.beginSound();
+            }
         }
-        MainWindow.adapter().setMessagesEnable(true);
-        RendersMain.glContext().setMessagesEnable(true);
-        if (i != 0)
-          Config.cur.loadEngine(null);
-        else
-          Config.cur.loadEngine();
-        RenderContext.activate(RendersMain.glContext());
-
-        Mat.enableDeleteTextureID(false);
-        CmdEnv.top().exec("fobj *.font RELOAD");
-        GObj.DeleteCppObjects();
-        RTSConf.cur.mainWindow.SendAction(4);
-        RTSConf.cur.mainWindow.SendAction(8);
-
-        boolean bool2 = ConsoleGL0.isActive();
-        ConsoleGL0.activate(true);
-        Render localRender = (Render)Actor.getByName("renderConsoleGL0");
-
-        RendersMain.glContext().sendAction(8);
-
-        System.out.println("Reload all textures of landscape ...");
-        if (Main3D.cur3D().isUseStartLog()) {
-          if (localRender != null) Engine.rendersMain().paint(localRender); 
-        }
-        else {
-          ConsoleGL0.exclusiveDraw("gui/background0.mat");
-          ConsoleGL0.exclusiveDrawStep(null, 0);
-        }
-        try {
-          World.land().ReLoadMap();
-        } catch (Exception localException4) {
-          ERR_HARD(localException4.toString());
-          ERR_HARD("Error reload landscape");
-          RTSConf.setRequestExitApp(true);
-          return null;
-        }
-        GObj.DeleteCppObjects();
-
-        System.out.println("Reload all textures of objects ...");
-        if ((Main3D.cur3D().isUseStartLog()) && 
-          (localRender != null)) Engine.rendersMain().paint(localRender);
-        CmdEnv.top().exec("fobj *.tga *.txa RELOAD");
-        GObj.DeleteCppObjects();
-
-        Mat.enableDeleteTextureID(true);
-        ConsoleGL0.activate(bool2);
-        RTSConf.cur.start();
-
-        Config.cur.beginSound();
-      }
+        INFO_HARD("  " + com.maddox.il2.engine.Config.cur.windowWidth + "x" + com.maddox.il2.engine.Config.cur.windowHeight + "x" + com.maddox.il2.engine.Config.cur.windowColourBits + " " + com.maddox.il2.engine.Config.cur.windowDepthBits + " " + com.maddox.il2.engine.Config.cur.windowStencilBits + " " + (com.maddox.opengl.Provider.isGLloaded() ? com.maddox.opengl.Provider.GLname() : ""));
+        return obj;
     }
-    INFO_HARD("  " + Config.cur.windowWidth + "x" + Config.cur.windowHeight + "x" + Config.cur.windowColourBits + " " + Config.cur.windowDepthBits + " " + Config.cur.windowStencilBits + " " + (Provider.isGLloaded() ? Provider.GLname() : ""));
 
-    return localObject;
-  }
+    public CmdWindow()
+    {
+        param.put("FULL", null);
+        param.put("NOFULL", null);
+        param.put("PROVIDER", null);
+        _properties.put("NAME", "window");
+        _levelAccess = 1;
+    }
 
-  public CmdWindow() {
-    this.param.put("FULL", null);
-    this.param.put("NOFULL", null);
-    this.param.put("PROVIDER", null);
-    this._properties.put("NAME", "window");
-    this._levelAccess = 1;
-  }
+    public static final java.lang.String FULL = "FULL";
+    public static final java.lang.String NOFULL = "NOFULL";
+    public static final java.lang.String PROVIDER = "PROVIDER";
 }

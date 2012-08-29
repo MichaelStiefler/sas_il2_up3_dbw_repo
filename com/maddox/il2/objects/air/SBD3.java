@@ -1,152 +1,216 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SBD3.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.fm.EnginesInterface;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Motor;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class SBD3 extends SBD
-  implements TypeStormovik, TypeDiveBomber
+// Referenced classes of package com.maddox.il2.objects.air:
+//            SBD, PaintSchemeFMPar01, TypeStormovik, TypeDiveBomber, 
+//            NetAircraft
+
+public class SBD3 extends com.maddox.il2.objects.air.SBD
+    implements com.maddox.il2.objects.air.TypeStormovik, com.maddox.il2.objects.air.TypeDiveBomber
 {
-  private static final float[] angles = { 4.0F, 5.5F, 5.5F, 7.0F, 10.5F, 15.5F, 24.0F, 33.0F, 40.0F, 46.0F, 52.5F, 59.0F, 64.5F, 69.0F, 69.0F, 69.0F, 69.0F, 69.0F, 69.0F, 69.0F, 69.0F, 69.0F, 69.0F, 66.5F, 62.5F, 55.0F, 49.5F, -40.0F, -74.5F, -77.0F, -77.0F, -77.0F, -77.0F, -77.0F, -77.0F, -77.0F, -77.0F };
 
-  private float flapps = 0.0F;
-
-  public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
-  {
-    boolean bool = super.turretAngles(paramInt, paramArrayOfFloat);
-
-    float f1 = -paramArrayOfFloat[0]; float f2 = paramArrayOfFloat[1];
-    switch (paramInt) {
-    case 0:
-      if (f1 < -135.0F) f1 = -135.0F;
-      if (f1 > 135.0F) f1 = 135.0F;
-      if (f2 < -69.0F) {
-        f2 = -69.0F;
-        bool = false;
-      }
-      if (f2 > 45.0F) {
-        f2 = 45.0F;
-        bool = false;
-      }
-      float f3 = Math.abs(f1);
-      while (f3 > 180.0F) {
-        f3 -= 180.0F;
-      }
-      if (f2 >= -floatindex(cvt(f3, 0.0F, 180.0F, 0.0F, 36.0F), paramArrayOfFloat)) break;
-      f2 = -floatindex(cvt(f3, 0.0F, 180.0F, 0.0F, 36.0F), paramArrayOfFloat);
+    public SBD3()
+    {
+        flapps = 0.0F;
     }
 
-    paramArrayOfFloat[0] = (-f1); paramArrayOfFloat[1] = f2;
-    return bool;
-  }
-  private static final float floatindex(float paramFloat, float[] paramArrayOfFloat) {
-    int i = (int)paramFloat;
-    if (i >= paramArrayOfFloat.length - 1) return paramArrayOfFloat[(paramArrayOfFloat.length - 1)];
-    if (i < 0) return paramArrayOfFloat[0];
-    if (i == 0) {
-      if (paramFloat > 0.0F) return paramArrayOfFloat[0] + paramFloat * (paramArrayOfFloat[1] - paramArrayOfFloat[0]);
-      return paramArrayOfFloat[0];
+    public boolean turretAngles(int i, float af[])
+    {
+        boolean flag = super.turretAngles(i, af);
+        float f = -af[0];
+        float f1 = af[1];
+        switch(i)
+        {
+        case 0: // '\0'
+            if(f < -135F)
+                f = -135F;
+            if(f > 135F)
+                f = 135F;
+            if(f1 < -69F)
+            {
+                f1 = -69F;
+                flag = false;
+            }
+            if(f1 > 45F)
+            {
+                f1 = 45F;
+                flag = false;
+            }
+            float f2;
+            for(f2 = java.lang.Math.abs(f); f2 > 180F; f2 -= 180F);
+            if(f1 < -com.maddox.il2.objects.air.SBD3.floatindex(com.maddox.il2.objects.air.SBD3.cvt(f2, 0.0F, 180F, 0.0F, 36F), af))
+                f1 = -com.maddox.il2.objects.air.SBD3.floatindex(com.maddox.il2.objects.air.SBD3.cvt(f2, 0.0F, 180F, 0.0F, 36F), af);
+            break;
+        }
+        af[0] = -f;
+        af[1] = f1;
+        return flag;
     }
-    return paramArrayOfFloat[i] + paramFloat % i * (paramArrayOfFloat[(i + 1)] - paramArrayOfFloat[i]);
-  }
 
-  public boolean typeDiveBomberToggleAutomation()
-  {
-    return false;
-  }
-
-  public void typeDiveBomberAdjAltitudeReset()
-  {
-  }
-
-  public void typeDiveBomberAdjAltitudePlus()
-  {
-  }
-
-  public void typeDiveBomberAdjAltitudeMinus()
-  {
-  }
-
-  public void typeDiveBomberAdjVelocityReset()
-  {
-  }
-
-  public void typeDiveBomberAdjVelocityPlus()
-  {
-  }
-
-  public void typeDiveBomberAdjVelocityMinus() {
-  }
-
-  public void typeDiveBomberAdjDiveAngleReset() {
-  }
-
-  public void typeDiveBomberAdjDiveAnglePlus() {
-  }
-
-  public void typeDiveBomberAdjDiveAngleMinus() {
-  }
-
-  public void typeDiveBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-  }
-
-  public void typeDiveBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-  }
-
-  public void update(float paramFloat) {
-    super.update(paramFloat);
-    float f = this.FM.EI.engines[0].getControlRadiator();
-    if (Math.abs(this.flapps - f) > 0.01F) {
-      this.flapps = f;
-      hierMesh().chunkSetAngles("Oil_D0", 0.0F, -22.0F * f, 0.0F);
-      for (int i = 1; i < 7; i++)
-        hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -22.0F * f, 0.0F);
+    private static final float floatindex(float f, float af[])
+    {
+        int i = (int)f;
+        if(i >= af.length - 1)
+            return af[af.length - 1];
+        if(i < 0)
+            return af[0];
+        if(i == 0)
+        {
+            if(f > 0.0F)
+                return af[0] + f * (af[1] - af[0]);
+            else
+                return af[0];
+        } else
+        {
+            return af[i] + (f % (float)i) * (af[i + 1] - af[i]);
+        }
     }
-  }
 
-  static
-  {
-    Class localClass = SBD3.class;
-    new NetAircraft.SPAWN(localClass);
+    public boolean typeDiveBomberToggleAutomation()
+    {
+        return false;
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "SBD");
-    Property.set(localClass, "meshName", "3DO/Plane/SBD-3(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar01());
-    Property.set(localClass, "meshName_us", "3DO/Plane/SBD-3(USA)/hier.him");
-    Property.set(localClass, "PaintScheme_us", new PaintSchemeFMPar01());
+    public void typeDiveBomberAdjAltitudeReset()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1942.0F);
-    Property.set(localClass, "yearExpired", 1946.5F);
+    public void typeDiveBomberAdjAltitudePlus()
+    {
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/SBD-3.fmd");
-    Property.set(localClass, "cockpitClass", new Class[] { CockpitSBD3.class, CockpitSBD3_TGunner.class });
+    public void typeDiveBomberAdjAltitudeMinus()
+    {
+    }
 
-    Property.set(localClass, "LOSElevation", 1.1058F);
+    public void typeDiveBomberAdjVelocityReset()
+    {
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 10, 10, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb01" });
+    public void typeDiveBomberAdjVelocityPlus()
+    {
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", null, null, null });
+    public void typeDiveBomberAdjVelocityMinus()
+    {
+    }
 
-    weaponsRegister(localClass, "1x250", new String[] { "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", null, null, "BombGun250lbs" });
+    public void typeDiveBomberAdjDiveAngleReset()
+    {
+    }
 
-    weaponsRegister(localClass, "2x250", new String[] { "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", "BombGun250lbs", "BombGun250lbs", null });
+    public void typeDiveBomberAdjDiveAnglePlus()
+    {
+    }
 
-    weaponsRegister(localClass, "3x250", new String[] { "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", "BombGun250lbs", "BombGun250lbs", "BombGun250lbs" });
+    public void typeDiveBomberAdjDiveAngleMinus()
+    {
+    }
 
-    weaponsRegister(localClass, "1x500", new String[] { "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", null, null, "BombGun500lbs" });
+    public void typeDiveBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+    }
 
-    weaponsRegister(localClass, "2x500", new String[] { "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", "BombGun500lbs", "BombGun500lbs", null });
+    public void typeDiveBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+    }
 
-    weaponsRegister(localClass, "3x500", new String[] { "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", "BombGun500lbs", "BombGun500lbs", "BombGun500lbs" });
+    public void update(float f)
+    {
+        super.update(f);
+        float f1 = FM.EI.engines[0].getControlRadiator();
+        if(java.lang.Math.abs(flapps - f1) > 0.01F)
+        {
+            flapps = f1;
+            hierMesh().chunkSetAngles("Oil_D0", 0.0F, -22F * f1, 0.0F);
+            for(int i = 1; i < 7; i++)
+                hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -22F * f1, 0.0F);
 
-    weaponsRegister(localClass, "1x1000", new String[] { "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", null, null, "BombGun1000lbs" });
+        }
+    }
 
-    weaponsRegister(localClass, "1x1600", new String[] { "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", null, null, "BombGun1600lbs" });
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null });
-  }
+    private static final float angles[] = {
+        4F, 5.5F, 5.5F, 7F, 10.5F, 15.5F, 24F, 33F, 40F, 46F, 
+        52.5F, 59F, 64.5F, 69F, 69F, 69F, 69F, 69F, 69F, 69F, 
+        69F, 69F, 69F, 66.5F, 62.5F, 55F, 49.5F, -40F, -74.5F, -77F, 
+        -77F, -77F, -77F, -77F, -77F, -77F, -77F
+    };
+    private float flapps;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.SBD3.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "SBD");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/SBD-3(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
+        com.maddox.rts.Property.set(class1, "meshName_us", "3DO/Plane/SBD-3(USA)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_us", new PaintSchemeFMPar01());
+        com.maddox.rts.Property.set(class1, "yearService", 1942F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1946.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/SBD-3.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", new java.lang.Class[] {
+            com.maddox.il2.objects.air.CockpitSBD3.class, com.maddox.il2.objects.air.CockpitSBD3_TGunner.class
+        });
+        com.maddox.rts.Property.set(class1, "LOSElevation", 1.1058F);
+        com.maddox.il2.objects.air.SBD3.weaponTriggersRegister(class1, new int[] {
+            0, 0, 10, 10, 3, 3, 3
+        });
+        com.maddox.il2.objects.air.SBD3.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb01"
+        });
+        com.maddox.il2.objects.air.SBD3.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", null, null, null
+        });
+        com.maddox.il2.objects.air.SBD3.weaponsRegister(class1, "1x250", new java.lang.String[] {
+            "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", null, null, "BombGun250lbs"
+        });
+        com.maddox.il2.objects.air.SBD3.weaponsRegister(class1, "2x250", new java.lang.String[] {
+            "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", "BombGun250lbs", "BombGun250lbs", null
+        });
+        com.maddox.il2.objects.air.SBD3.weaponsRegister(class1, "3x250", new java.lang.String[] {
+            "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", "BombGun250lbs", "BombGun250lbs", "BombGun250lbs"
+        });
+        com.maddox.il2.objects.air.SBD3.weaponsRegister(class1, "1x500", new java.lang.String[] {
+            "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", null, null, "BombGun500lbs"
+        });
+        com.maddox.il2.objects.air.SBD3.weaponsRegister(class1, "2x500", new java.lang.String[] {
+            "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", "BombGun500lbs", "BombGun500lbs", null
+        });
+        com.maddox.il2.objects.air.SBD3.weaponsRegister(class1, "3x500", new java.lang.String[] {
+            "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", "BombGun500lbs", "BombGun500lbs", "BombGun500lbs"
+        });
+        com.maddox.il2.objects.air.SBD3.weaponsRegister(class1, "1x1000", new java.lang.String[] {
+            "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", null, null, "BombGun1000lbs"
+        });
+        com.maddox.il2.objects.air.SBD3.weaponsRegister(class1, "1x1600", new java.lang.String[] {
+            "MGunBrowning50s 350", "MGunBrowning50s 350", "MGunBrowning303t 500", "MGunBrowning303t 500", null, null, "BombGun1600lbs"
+        });
+        com.maddox.il2.objects.air.SBD3.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null
+        });
+    }
 }

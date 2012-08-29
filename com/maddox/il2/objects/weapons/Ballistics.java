@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Ballistics.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.AxisAngle4d;
@@ -12,194 +17,185 @@ import com.maddox.il2.fm.Atmosphere;
 import com.maddox.il2.fm.Wind;
 import com.maddox.rts.Time;
 
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Bomb
+
 public class Ballistics
 {
-  private static Point3d pos = new Point3d();
-  private static Orient or = new Orient();
-  private static Orient orW = new Orient();
-  private static Vector3d v = new Vector3d();
-  private static Vector3d dir = new Vector3d();
-  private static Vector3d dirC = new Vector3d();
-  private static Vector3d dirW = new Vector3d();
-  private static Vector3d force = new Vector3d();
-  private static AxisAngle4d axAn = new AxisAngle4d();
 
-  private static float KD(float paramFloat)
-  {
-    return 1.0F + paramFloat * (-9.59387E-005F + paramFloat * (3.53118E-009F + paramFloat * -5.83556E-014F));
-  }
-
-  private static float KF(float paramFloat)
-  {
-    return (608.5F + (-1.81327F + 0.0016511F * paramFloat) * paramFloat) * paramFloat;
-  }
-
-  public static void updateBomb(Bomb paramBomb, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
-  {
-    float f1 = Time.tickLenFs();
-
-    float f2 = (float)paramBomb.getSpeed(v);
-
-    paramBomb.pos.getAbs(pos, or);
-    dirC.set(1.0D, 0.0D, 0.0D);
-    or.transform(dirC);
-
-    if (f2 < 0.001F) {
-      dirW.set(0.0D, 0.0D, -1.0D);
-    } else {
-      dirW.set(v);
-      dirW.scale(1.0F / f2);
-    }
-
-    float f3 = (float)dirC.dot(dirW);
-    float f4;
-    if (f2 > 330.0F)
-      f4 = KF(f2) * KD((float)pos.z) * paramFloat2;
-    else {
-      f4 = 0.06F * paramFloat2 * 1.225F * KD((float)pos.z) * f2 * f2 / 2.0F;
-    }
-    float f5 = f4 / paramFloat1;
-
-    dir.scale(6.0F * f3, dirC);
-    dir.x += -7.0D * dirW.x;
-    dir.y += -7.0D * dirW.y;
-    dir.z += -7.0D * dirW.z;
-    dir.scale(f5 * f1);
-
-    if (!World.cur().diffCur.Realistic_Gunnery) {
-      dir.set(0.0D, 0.0D, 0.0D);
-    }
-
-    v.add(dir);
-    v.z -= f1 * Atmosphere.g();
-    paramBomb.setSpeed(v);
-
-    pos.x += v.x * f1;
-    pos.y += v.y * f1;
-    pos.z += v.z * f1;
-
-    if ((paramFloat1 > 35.0F) && 
-      (World.cur().diffCur.Wind_N_Turbulence) && (World.cur().diffCur.Realistic_Gunnery)) {
-      Vector3d localVector3d = new Vector3d();
-      World.wind().getVectorWeapon(pos, localVector3d);
-      pos.x += localVector3d.x * f1;
-      pos.y += localVector3d.y * f1;
-    }
-
-    if (paramBomb.curTm > 0.35F)
+    public Ballistics()
     {
-      float f6 = (float)Math.sqrt(1.0F - f3 * f3);
-      if (f3 <= -0.996F) {
-        f6 = 0.08F;
-      }
-
-      float f7 = f4 * 0.07F * f6;
-
-      force.set(dirW);
-      force.scale(-f7);
-
-      dirW.set(dirC);
-      dirW.scale(-paramFloat4);
-
-      dirW.cross(dirW, force);
-      dirW.scale(1.0F / paramFloat3);
-      dirW.scale(f1);
-
-      paramBomb.rotAxis.add(dirW);
-
-      paramBomb.rotAxis.scale(0.96D);
     }
 
-    axAn.set(paramBomb.rotAxis);
-    axAn.angle *= f1;
-    axAn.rotateRightHanded(dirC);
-
-    or.setAT0(dirC);
-
-    paramBomb.pos.setAbs(pos, or);
-  }
-
-  public static void updateRocketBomb(Actor paramActor, float paramFloat1, float paramFloat2, float paramFloat3, boolean paramBoolean)
-  {
-    float f1 = Time.tickLenFs();
-    float f2 = (float)paramActor.getSpeed(v);
-    paramActor.pos.getAbs(pos, or);
-    dir.set(1.0D, 0.0D, 0.0D);
-    or.transform(dir);
-    float f3;
-    if (f2 > 330.0F)
-      f3 = KF(f2) * KD((float)pos.z) * paramFloat2;
-    else {
-      f3 = 0.2F * paramFloat2 * 1.225F * KD((float)pos.z) * f2 * f2 / 2.0F;
-    }
-    float f4 = (paramFloat3 - f3) / paramFloat1;
-    dir.scale(f4 * f1);
-    v.add(dir);
-    if (paramBoolean)
-      v.z -= f1 * Atmosphere.g();
-    paramActor.setSpeed(v);
-    pos.x += v.x * f1;
-    pos.y += v.y * f1;
-    pos.z += v.z * f1;
-    if (paramFloat3 < 1000000.0F)
-      or.setAT0(v);
-    paramActor.pos.setAbs(pos, or);
-  }
-
-  public static void update(Actor paramActor, float paramFloat1, float paramFloat2)
-  {
-    update(paramActor, paramFloat1, paramFloat2, 0.0F, true);
-  }
-
-  public static void update(Actor paramActor, float paramFloat1, float paramFloat2, float paramFloat3, boolean paramBoolean)
-  {
-    float f4 = Time.tickLenFs();
-    float f1 = (float)paramActor.getSpeed(v);
-    paramActor.pos.getAbs(pos, or);
-    dir.set(1.0D, 0.0D, 0.0D); or.transform(dir);
-    float f2;
-    if (f1 > 330.0F) f2 = KF(f1) * KD((float)pos.z) * paramFloat2;
-    else {
-      f2 = 0.2F * paramFloat2 * 1.225F * KD((float)pos.z) * f1 * f1 / 2.0F;
-    }
-    float f3 = (paramFloat3 - f2) / paramFloat1;
-    dir.scale(f3 * f4);
-    v.add(dir);
-    if (paramBoolean) v.z -= f4 * Atmosphere.g();
-    paramActor.setSpeed(v);
-    pos.x += v.x * f4;
-    pos.y += v.y * f4;
-    pos.z += v.z * f4;
-
-    if ((World.cur().diffCur.Wind_N_Turbulence) && (World.cur().diffCur.Realistic_Gunnery)) {
-      Vector3d localVector3d = new Vector3d();
-      World.wind().getVectorWeapon(pos, localVector3d);
-      pos.x += localVector3d.x * f4;
-      pos.y += localVector3d.y * f4;
+    private static float KD(float f)
+    {
+        return 1.0F + f * (-9.59387E-005F + f * (3.53118E-009F + f * -5.83556E-014F));
     }
 
-    if (paramFloat3 < 1.0F)
-      or.setAT0(v);
-    paramActor.pos.setAbs(pos, or);
-  }
-
-  public static void update(Point3d paramPoint3d, Orient paramOrient, Vector3d paramVector3d, float paramFloat1, float paramFloat2, float paramFloat3, boolean paramBoolean, float paramFloat4)
-  {
-    float f1 = (float)paramVector3d.length();
-    dir.set(1.0D, 0.0D, 0.0D); paramOrient.transform(dir);
-    float f2;
-    if (f1 > 330.0F) f2 = KF(f1) * KD((float)paramPoint3d.z) * paramFloat2;
-    else {
-      f2 = 0.2F * paramFloat2 * 1.225F * KD((float)paramPoint3d.z) * f1 * f1 / 2.0F;
+    private static float KF(float f)
+    {
+        return (608.5F + (-1.81327F + 0.00165114F * f) * f) * f;
     }
-    float f3 = (paramFloat3 - f2) / paramFloat1;
-    dir.scale(f3 * paramFloat4);
-    paramVector3d.add(dir);
-    if (paramBoolean) paramVector3d.z -= paramFloat4 * Atmosphere.g();
-    paramPoint3d.x += paramVector3d.x * paramFloat4;
-    paramPoint3d.y += paramVector3d.y * paramFloat4;
-    paramPoint3d.z += paramVector3d.z * paramFloat4;
-    if (paramFloat3 < 1.0F)
-      paramOrient.setAT0(paramVector3d);
-  }
+
+    public static void updateBomb(com.maddox.il2.objects.weapons.Bomb bomb, float f, float f1, float f2, float f3)
+    {
+        float f4 = com.maddox.rts.Time.tickLenFs();
+        float f5 = (float)bomb.getSpeed(v);
+        bomb.pos.getAbs(pos, or);
+        dirC.set(1.0D, 0.0D, 0.0D);
+        or.transform(dirC);
+        if(f5 < 0.001F)
+        {
+            dirW.set(0.0D, 0.0D, -1D);
+        } else
+        {
+            dirW.set(v);
+            dirW.scale(1.0F / f5);
+        }
+        float f6 = (float)dirC.dot(dirW);
+        float f7;
+        if(f5 > 330F)
+            f7 = com.maddox.il2.objects.weapons.Ballistics.KF(f5) * com.maddox.il2.objects.weapons.Ballistics.KD((float)pos.z) * f1;
+        else
+            f7 = (0.06F * f1 * 1.225F * com.maddox.il2.objects.weapons.Ballistics.KD((float)pos.z) * f5 * f5) / 2.0F;
+        float f8 = f7 / f;
+        dir.scale(6F * f6, dirC);
+        dir.x += -7D * dirW.x;
+        dir.y += -7D * dirW.y;
+        dir.z += -7D * dirW.z;
+        dir.scale(f8 * f4);
+        if(!com.maddox.il2.ai.World.cur().diffCur.Realistic_Gunnery)
+            dir.set(0.0D, 0.0D, 0.0D);
+        v.add(dir);
+        v.z -= f4 * com.maddox.il2.fm.Atmosphere.g();
+        bomb.setSpeed(v);
+        pos.x += v.x * (double)f4;
+        pos.y += v.y * (double)f4;
+        pos.z += v.z * (double)f4;
+        if(f > 35F && com.maddox.il2.ai.World.cur().diffCur.Wind_N_Turbulence && com.maddox.il2.ai.World.cur().diffCur.Realistic_Gunnery)
+        {
+            com.maddox.JGP.Vector3d vector3d = new Vector3d();
+            com.maddox.il2.ai.World.wind().getVectorWeapon(pos, vector3d);
+            pos.x += vector3d.x * (double)f4;
+            pos.y += vector3d.y * (double)f4;
+        }
+        if(bomb.curTm > 0.35F)
+        {
+            float f9 = (float)java.lang.Math.sqrt(1.0F - f6 * f6);
+            if(f6 <= -0.996F)
+                f9 = 0.08F;
+            float f10 = f7 * 0.07F * f9;
+            force.set(dirW);
+            force.scale(-f10);
+            dirW.set(dirC);
+            dirW.scale(-f3);
+            dirW.cross(dirW, force);
+            dirW.scale(1.0F / f2);
+            dirW.scale(f4);
+            bomb.rotAxis.add(dirW);
+            bomb.rotAxis.scale(0.95999999999999996D);
+        }
+        axAn.set(bomb.rotAxis);
+        axAn.angle *= f4;
+        axAn.rotateRightHanded(dirC);
+        or.setAT0(dirC);
+        bomb.pos.setAbs(pos, or);
+    }
+
+    public static void updateRocketBomb(com.maddox.il2.engine.Actor actor, float f, float f1, float f2, boolean flag)
+    {
+        float f3 = com.maddox.rts.Time.tickLenFs();
+        float f4 = (float)actor.getSpeed(v);
+        actor.pos.getAbs(pos, or);
+        dir.set(1.0D, 0.0D, 0.0D);
+        or.transform(dir);
+        float f5;
+        if(f4 > 330F)
+            f5 = com.maddox.il2.objects.weapons.Ballistics.KF(f4) * com.maddox.il2.objects.weapons.Ballistics.KD((float)pos.z) * f1;
+        else
+            f5 = (0.2F * f1 * 1.225F * com.maddox.il2.objects.weapons.Ballistics.KD((float)pos.z) * f4 * f4) / 2.0F;
+        float f6 = (f2 - f5) / f;
+        dir.scale(f6 * f3);
+        v.add(dir);
+        if(flag)
+            v.z -= f3 * com.maddox.il2.fm.Atmosphere.g();
+        actor.setSpeed(v);
+        pos.x += v.x * (double)f3;
+        pos.y += v.y * (double)f3;
+        pos.z += v.z * (double)f3;
+        if(f2 < 1000000F)
+            or.setAT0(v);
+        actor.pos.setAbs(pos, or);
+    }
+
+    public static void update(com.maddox.il2.engine.Actor actor, float f, float f1)
+    {
+        com.maddox.il2.objects.weapons.Ballistics.update(actor, f, f1, 0.0F, true);
+    }
+
+    public static void update(com.maddox.il2.engine.Actor actor, float f, float f1, float f2, boolean flag)
+    {
+        float f6 = com.maddox.rts.Time.tickLenFs();
+        float f3 = (float)actor.getSpeed(v);
+        actor.pos.getAbs(pos, or);
+        dir.set(1.0D, 0.0D, 0.0D);
+        or.transform(dir);
+        float f4;
+        if(f3 > 330F)
+            f4 = com.maddox.il2.objects.weapons.Ballistics.KF(f3) * com.maddox.il2.objects.weapons.Ballistics.KD((float)pos.z) * f1;
+        else
+            f4 = (0.2F * f1 * 1.225F * com.maddox.il2.objects.weapons.Ballistics.KD((float)pos.z) * f3 * f3) / 2.0F;
+        float f5 = (f2 - f4) / f;
+        dir.scale(f5 * f6);
+        v.add(dir);
+        if(flag)
+            v.z -= f6 * com.maddox.il2.fm.Atmosphere.g();
+        actor.setSpeed(v);
+        pos.x += v.x * (double)f6;
+        pos.y += v.y * (double)f6;
+        pos.z += v.z * (double)f6;
+        if(com.maddox.il2.ai.World.cur().diffCur.Wind_N_Turbulence && com.maddox.il2.ai.World.cur().diffCur.Realistic_Gunnery)
+        {
+            com.maddox.JGP.Vector3d vector3d = new Vector3d();
+            com.maddox.il2.ai.World.wind().getVectorWeapon(pos, vector3d);
+            pos.x += vector3d.x * (double)f6;
+            pos.y += vector3d.y * (double)f6;
+        }
+        if(f2 < 1.0F)
+            or.setAT0(v);
+        actor.pos.setAbs(pos, or);
+    }
+
+    public static void update(com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Orient orient, com.maddox.JGP.Vector3d vector3d, float f, float f1, float f2, boolean flag, float f3)
+    {
+        float f4 = (float)vector3d.length();
+        dir.set(1.0D, 0.0D, 0.0D);
+        orient.transform(dir);
+        float f5;
+        if(f4 > 330F)
+            f5 = com.maddox.il2.objects.weapons.Ballistics.KF(f4) * com.maddox.il2.objects.weapons.Ballistics.KD((float)point3d.z) * f1;
+        else
+            f5 = (0.2F * f1 * 1.225F * com.maddox.il2.objects.weapons.Ballistics.KD((float)point3d.z) * f4 * f4) / 2.0F;
+        float f6 = (f2 - f5) / f;
+        dir.scale(f6 * f3);
+        vector3d.add(dir);
+        if(flag)
+            vector3d.z -= f3 * com.maddox.il2.fm.Atmosphere.g();
+        point3d.x += vector3d.x * (double)f3;
+        point3d.y += vector3d.y * (double)f3;
+        point3d.z += vector3d.z * (double)f3;
+        if(f2 < 1.0F)
+            orient.setAT0(vector3d);
+    }
+
+    private static com.maddox.JGP.Point3d pos = new Point3d();
+    private static com.maddox.il2.engine.Orient or = new Orient();
+    private static com.maddox.il2.engine.Orient orW = new Orient();
+    private static com.maddox.JGP.Vector3d v = new Vector3d();
+    private static com.maddox.JGP.Vector3d dir = new Vector3d();
+    private static com.maddox.JGP.Vector3d dirC = new Vector3d();
+    private static com.maddox.JGP.Vector3d dirW = new Vector3d();
+    private static com.maddox.JGP.Vector3d force = new Vector3d();
+    private static com.maddox.JGP.AxisAngle4d axAn = new AxisAngle4d();
+
 }

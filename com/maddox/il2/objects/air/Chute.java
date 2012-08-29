@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Chute.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
@@ -23,292 +28,293 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.rts.Message;
 import com.maddox.rts.Time;
 
-public class Chute extends ActorMesh
-  implements MsgCollisionRequestListener, MsgCollisionListener, MsgExplosionListener, MsgShotListener
+// Referenced classes of package com.maddox.il2.objects.air:
+//            Aircraft, Paratrooper
+
+public class Chute extends com.maddox.il2.engine.ActorMesh
+    implements com.maddox.il2.engine.MsgCollisionRequestListener, com.maddox.il2.engine.MsgCollisionListener, com.maddox.il2.ai.MsgExplosionListener, com.maddox.il2.ai.MsgShotListener
 {
-  private static final int FPS = 30;
-  private static final int PARAUP_START_FRAME = 0;
-  private static final int PARAUP_LAST_FRAME = 35;
-  private static final int PARAUP_N_FRAMES = 36;
-  private static final int PARAUP_CYCLE_TIME = 1166;
-  private static final int FALL_START_FRAME = 35;
-  private static final int FALL_LAST_FRAME = 76;
-  private static final int FALL_N_FRAMES = 42;
-  private static final int FALL_CYCLE_TIME = 1366;
-  private static final int TANGLE_START_FRAME = 77;
-  private static final int TANGLE_LAST_FRAME = 122;
-  private static final int TANGLE_N_FRAMES = 46;
-  private static final int TANGLE_CYCLE_TIME = 1500;
-  private static final int FALLTANGLE_START_FRAME = 45;
-  private static final int FALLTANGLE_LAST_FRAME = 76;
-  private static final int FALLTANGLE_N_FRAMES = 32;
-  private static final int FALLTANGLE_CYCLE_TIME = 1033;
-  private static final int ST_PARAUP = 0;
-  private static final int ST_FALL = 1;
-  private static final int ST_TANGLE = 2;
-  private static final int ST_FALLTANGLE = 3;
-  private int st = 0;
-  private long animStartTime;
-  private long disappearTime;
-  private static Point3d p = new Point3d();
-  private static Orient o = new Orient();
-  private static Vector3f n = new Vector3f();
-
-  public void msgCollisionRequest(Actor paramActor, boolean[] paramArrayOfBoolean)
-  {
-    if (((paramActor instanceof Aircraft)) && (paramActor.isNet()) && (paramActor.isNetMirror()))
+    class Move extends com.maddox.il2.engine.Interpolate
     {
-      paramArrayOfBoolean[0] = false;
-    }
 
-    if (paramActor == getOwner()) {
-      paramArrayOfBoolean[0] = false;
-    }
-
-    if ((paramActor != null) && ((paramActor instanceof Paratrooper)) && ((this.st == 1) || (this.st == 3)))
-    {
-      paramArrayOfBoolean[0] = false;
-    }
-  }
-
-  public void msgCollision(Actor paramActor, String paramString1, String paramString2)
-  {
-    if (this.st != 0) {
-      return;
-    }
-    TangleChute(paramActor);
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    paramShot.bodyMaterial = 3;
-
-    if (this.st != 0) {
-      return;
-    }
-
-    if (paramShot.power <= 0.0F) {
-      return;
-    }
-
-    if (paramShot.powerType == 1)
-    {
-      DieChute(paramShot.initiator);
-      return;
-    }
-
-    if (paramShot.v.length() < 40.0D) {
-      return;
-    }
-
-    DieChute(paramShot.initiator);
-  }
-
-  public void msgExplosion(Explosion paramExplosion)
-  {
-    if (this.st != 0) {
-      return;
-    }
-
-    float f1 = 0.01F;
-    float f2 = 0.09F;
-
-    if (Explosion.killable(this, paramExplosion.receivedTNT_1meter(this), f1, f2, 0.0F))
-    {
-      DieChute(paramExplosion.initiator);
-    }
-  }
-
-  private void DieChute(Actor paramActor)
-  {
-    TangleChute(paramActor);
-  }
-
-  private void TangleChute(Actor paramActor)
-  {
-    TangleChute(paramActor, true);
-  }
-
-  private void TangleChute(Actor paramActor, boolean paramBoolean) {
-    tangling();
-    if ((getOwner() instanceof Paratrooper)) {
-      Paratrooper localParatrooper = (Paratrooper)getOwner();
-      if (Actor.isValid(localParatrooper))
-        localParatrooper.chuteTangled(paramActor, paramBoolean);
-    }
-  }
-
-  void tangleChute(Actor paramActor)
-  {
-    TangleChute(paramActor, false);
-  }
-
-  public void landing()
-  {
-    if ((this.st == 1) || (this.st == 3)) {
-      return;
-    }
-
-    this.pos.getAbs(p);
-    Engine.land(); float f = Landscape.HQ((float)p.x, (float)p.y);
-
-    p.z = f;
-    this.st = (this.st == 2 ? 3 : 1);
-    this.animStartTime = Time.current();
-
-    this.pos.getAbs(o);
-
-    Vector3f localVector3f = new Vector3f();
-    Engine.land().N((float)p.x, (float)p.y, localVector3f);
-    o.orient(localVector3f);
-
-    this.pos.setAbs(p, o);
-
-    setOwner(null);
-    this.pos.setBase(null, null, true);
-
-    this.disappearTime = (Time.tickNext() + World.Rnd().nextInt(25000, 35000));
-  }
-
-  private void tangling()
-  {
-    if (this.st != 0) {
-      return;
-    }
-
-    this.st = 2;
-    this.animStartTime = (Time.current() - World.Rnd().nextInt(0, 5000));
-  }
-
-  public Object getSwitchListener(Message paramMessage)
-  {
-    return this;
-  }
-
-  void setAnimFrame(double paramDouble)
-  {
-    int i;
-    int j;
-    int k;
-    double d;
-    float f;
-    switch (this.st) {
-    case 0:
-      i = 0;
-      j = 35;
-      k = 1166;
-      d = paramDouble - this.animStartTime;
-      if (d <= 0.0D)
-        f = 0.0F;
-      else if (d >= k)
-        f = 1.0F;
-      else {
-        f = (float)(d / k);
-      }
-      break;
-    case 1:
-      i = 35;
-      j = 76;
-      k = 1366;
-      d = paramDouble - this.animStartTime;
-      if (d <= 0.0D)
-        f = 0.0F;
-      else if (d >= k)
-        f = 1.0F;
-      else {
-        f = (float)(d / k);
-      }
-      break;
-    case 2:
-      i = 77;
-      j = 122;
-      k = 1500;
-      d = paramDouble - this.animStartTime;
-      d %= k;
-      if (d < 0.0D) {
-        d += k;
-      }
-      f = (float)(d / k);
-      break;
-    default:
-      i = 45;
-      j = 76;
-      k = 1033;
-      d = paramDouble - this.animStartTime;
-      if (d <= 0.0D)
-        f = 0.0F;
-      else if (d >= k)
-        f = 1.0F;
-      else {
-        f = (float)(d / k);
-      }
-
-    }
-
-    mesh().setFrameFromRange(i, j, f);
-  }
-
-  static String GetMeshName()
-  {
-    return "3do/humans/Paratroopers/Chute/mono.sim";
-  }
-
-  public Chute(Actor paramActor) {
-    super(GetMeshName());
-
-    setOwner(paramActor);
-
-    this.pos.setBase(paramActor, null, false);
-    this.pos.resetAsBase();
-    setArmy(0);
-
-    this.st = 0;
-    this.animStartTime = Time.tick();
-
-    collide(true);
-    this.draw = new ChuteDraw(null);
-    drawing(true);
-
-    if (!interpEnd("move"))
-      interpPut(new Move(), "move", Time.current(), null);
-  }
-
-  class Move extends Interpolate
-  {
-    Move()
-    {
-    }
-
-    public boolean tick()
-    {
-      if ((Chute.this.st == 1) || (Chute.this.st == 3)) {
-        long l = Time.tickNext() - Chute.this.animStartTime;
-        if (Time.current() >= Chute.this.disappearTime) {
-          Chute.this.postDestroy();
-          return false;
+        public boolean tick()
+        {
+            if(st == 1 || st == 3)
+            {
+                long l = com.maddox.rts.Time.tickNext() - animStartTime;
+                if(com.maddox.rts.Time.current() >= disappearTime)
+                {
+                    postDestroy();
+                    return false;
+                }
+            }
+            setAnimFrame(com.maddox.rts.Time.tickNext());
+            return true;
         }
-      }
-      Chute.this.setAnimFrame(Time.tickNext());
 
-      return true;
+        Move()
+        {
+        }
     }
-  }
 
-  private class ChuteDraw extends ActorMeshDraw
-  {
-    private final Chute this$0;
-
-    private ChuteDraw()
+    private class ChuteDraw extends com.maddox.il2.engine.ActorMeshDraw
     {
-      this.this$0 = this$1;
-    }
-    public int preRender(Actor paramActor) { this.this$0.setAnimFrame(Time.current());
-      return super.preRender(paramActor);
+
+        public int preRender(com.maddox.il2.engine.Actor actor)
+        {
+            setAnimFrame(com.maddox.rts.Time.current());
+            return super.preRender(actor);
+        }
+
+        private ChuteDraw()
+        {
+        }
+
     }
 
-    ChuteDraw(Chute.1 arg2)
+
+    public void msgCollisionRequest(com.maddox.il2.engine.Actor actor, boolean aflag[])
     {
-      this();
+        if((actor instanceof com.maddox.il2.objects.air.Aircraft) && actor.isNet() && actor.isNetMirror())
+            aflag[0] = false;
+        if(actor == getOwner())
+            aflag[0] = false;
+        if(actor != null && (actor instanceof com.maddox.il2.objects.air.Paratrooper) && (st == 1 || st == 3))
+            aflag[0] = false;
     }
-  }
+
+    public void msgCollision(com.maddox.il2.engine.Actor actor, java.lang.String s, java.lang.String s1)
+    {
+        if(st != 0)
+        {
+            return;
+        } else
+        {
+            TangleChute(actor);
+            return;
+        }
+    }
+
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        shot.bodyMaterial = 3;
+        if(st != 0)
+            return;
+        if(shot.power <= 0.0F)
+            return;
+        if(shot.powerType == 1)
+        {
+            DieChute(shot.initiator);
+            return;
+        }
+        if(shot.v.length() < 40D)
+        {
+            return;
+        } else
+        {
+            DieChute(shot.initiator);
+            return;
+        }
+    }
+
+    public void msgExplosion(com.maddox.il2.ai.Explosion explosion)
+    {
+        if(st != 0)
+            return;
+        float f = 0.01F;
+        float f1 = 0.09F;
+        com.maddox.il2.ai.Explosion _tmp = explosion;
+        if(com.maddox.il2.ai.Explosion.killable(this, explosion.receivedTNT_1meter(this), f, f1, 0.0F))
+            DieChute(explosion.initiator);
+    }
+
+    private void DieChute(com.maddox.il2.engine.Actor actor)
+    {
+        TangleChute(actor);
+    }
+
+    private void TangleChute(com.maddox.il2.engine.Actor actor)
+    {
+        TangleChute(actor, true);
+    }
+
+    private void TangleChute(com.maddox.il2.engine.Actor actor, boolean flag)
+    {
+        tangling();
+        if(getOwner() instanceof com.maddox.il2.objects.air.Paratrooper)
+        {
+            com.maddox.il2.objects.air.Paratrooper paratrooper = (com.maddox.il2.objects.air.Paratrooper)getOwner();
+            if(com.maddox.il2.engine.Actor.isValid(paratrooper))
+                paratrooper.chuteTangled(actor, flag);
+        }
+    }
+
+    void tangleChute(com.maddox.il2.engine.Actor actor)
+    {
+        TangleChute(actor, false);
+    }
+
+    public void landing()
+    {
+        if(st == 1 || st == 3)
+        {
+            return;
+        } else
+        {
+            pos.getAbs(p);
+            com.maddox.il2.engine.Engine.land();
+            float f = com.maddox.il2.engine.Landscape.HQ((float)p.x, (float)p.y);
+            p.z = f;
+            st = st != 2 ? 1 : 3;
+            animStartTime = com.maddox.rts.Time.current();
+            pos.getAbs(o);
+            com.maddox.JGP.Vector3f vector3f = new Vector3f();
+            com.maddox.il2.engine.Engine.land().N((float)p.x, (float)p.y, vector3f);
+            o.orient(vector3f);
+            pos.setAbs(p, o);
+            setOwner(null);
+            pos.setBase(null, null, true);
+            disappearTime = com.maddox.rts.Time.tickNext() + (long)com.maddox.il2.ai.World.Rnd().nextInt(25000, 35000);
+            return;
+        }
+    }
+
+    private void tangling()
+    {
+        if(st != 0)
+        {
+            return;
+        } else
+        {
+            st = 2;
+            animStartTime = com.maddox.rts.Time.current() - (long)com.maddox.il2.ai.World.Rnd().nextInt(0, 5000);
+            return;
+        }
+    }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    void setAnimFrame(double d)
+    {
+        byte byte0;
+        byte byte1;
+        float f;
+        switch(st)
+        {
+        case 0: // '\0'
+            byte0 = 0;
+            byte1 = 35;
+            int i = 1166;
+            double d1 = d - (double)animStartTime;
+            if(d1 <= 0.0D)
+                f = 0.0F;
+            else
+            if(d1 >= (double)i)
+                f = 1.0F;
+            else
+                f = (float)(d1 / (double)i);
+            break;
+
+        case 1: // '\001'
+            byte0 = 35;
+            byte1 = 76;
+            int j = 1366;
+            double d2 = d - (double)animStartTime;
+            if(d2 <= 0.0D)
+            {
+                f = 0.0F;
+                break;
+            }
+            if(d2 >= (double)j)
+                f = 1.0F;
+            else
+                f = (float)(d2 / (double)j);
+            break;
+
+        case 2: // '\002'
+            byte0 = 77;
+            byte1 = 122;
+            int k = 1500;
+            double d3 = d - (double)animStartTime;
+            d3 %= k;
+            if(d3 < 0.0D)
+                d3 += k;
+            f = (float)(d3 / (double)k);
+            break;
+
+        default:
+            byte0 = 45;
+            byte1 = 76;
+            int l = 1033;
+            double d4 = d - (double)animStartTime;
+            if(d4 <= 0.0D)
+            {
+                f = 0.0F;
+                break;
+            }
+            if(d4 >= (double)l)
+                f = 1.0F;
+            else
+                f = (float)(d4 / (double)l);
+            break;
+        }
+        mesh().setFrameFromRange(byte0, byte1, f);
+    }
+
+    static java.lang.String GetMeshName()
+    {
+        return "3do/humans/Paratroopers/Chute/mono.sim";
+    }
+
+    public Chute(com.maddox.il2.engine.Actor actor)
+    {
+        super(com.maddox.il2.objects.air.Chute.GetMeshName());
+        st = 0;
+        setOwner(actor);
+        pos.setBase(actor, null, false);
+        pos.resetAsBase();
+        setArmy(0);
+        st = 0;
+        animStartTime = com.maddox.rts.Time.tick();
+        collide(true);
+        draw = new ChuteDraw();
+        drawing(true);
+        if(!interpEnd("move"))
+            interpPut(new Move(), "move", com.maddox.rts.Time.current(), null);
+    }
+
+    private static final int FPS = 30;
+    private static final int PARAUP_START_FRAME = 0;
+    private static final int PARAUP_LAST_FRAME = 35;
+    private static final int PARAUP_N_FRAMES = 36;
+    private static final int PARAUP_CYCLE_TIME = 1166;
+    private static final int FALL_START_FRAME = 35;
+    private static final int FALL_LAST_FRAME = 76;
+    private static final int FALL_N_FRAMES = 42;
+    private static final int FALL_CYCLE_TIME = 1366;
+    private static final int TANGLE_START_FRAME = 77;
+    private static final int TANGLE_LAST_FRAME = 122;
+    private static final int TANGLE_N_FRAMES = 46;
+    private static final int TANGLE_CYCLE_TIME = 1500;
+    private static final int FALLTANGLE_START_FRAME = 45;
+    private static final int FALLTANGLE_LAST_FRAME = 76;
+    private static final int FALLTANGLE_N_FRAMES = 32;
+    private static final int FALLTANGLE_CYCLE_TIME = 1033;
+    private static final int ST_PARAUP = 0;
+    private static final int ST_FALL = 1;
+    private static final int ST_TANGLE = 2;
+    private static final int ST_FALLTANGLE = 3;
+    private int st;
+    private long animStartTime;
+    private long disappearTime;
+    private static com.maddox.JGP.Point3d p = new Point3d();
+    private static com.maddox.il2.engine.Orient o = new Orient();
+    private static com.maddox.JGP.Vector3f n = new Vector3f();
+
+
+
+
 }

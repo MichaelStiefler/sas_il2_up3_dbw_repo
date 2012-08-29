@@ -1,49 +1,51 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MachineGunUS_28_75Mk1.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.il2.engine.BulletProperties;
 import com.maddox.il2.engine.GunProperties;
 
-public class MachineGunUS_28_75Mk1 extends MGunAntiAirGeneric
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            MGunAntiAirGeneric
+
+public class MachineGunUS_28_75Mk1 extends com.maddox.il2.objects.weapons.MGunAntiAirGeneric
 {
-  protected float Specify(GunProperties paramGunProperties)
-  {
-    paramGunProperties.aimMaxDist = 6767.0F;
-    paramGunProperties.shotFreq = 10.0F;
-    paramGunProperties.bulletsCluster = 3;
 
-    paramGunProperties.sound = "weapon.zenitka_20";
+    public MachineGunUS_28_75Mk1()
+    {
+    }
 
-    BulletProperties localBulletProperties = paramGunProperties.bullet[0];
-
-    localBulletProperties.timeLife = 7.0F;
-    localBulletProperties.addExplTime = 1.5F;
-
-    localBulletProperties.power = 0.017F;
-    localBulletProperties.powerType = 1;
-    localBulletProperties.powerRadius = 32.0F;
-
-    localBulletProperties.kalibr = 0.028F;
-    localBulletProperties.massa = 0.416F;
-    localBulletProperties.speed = 823.0F;
-
-    localBulletProperties.traceMesh = "3do/effects/tracers/20mmMagenta/mono.sim";
-    localBulletProperties.traceTrail = null;
-    localBulletProperties.traceColor = -1275133697;
-
-    localBulletProperties = paramGunProperties.bullet[1];
-
-    localBulletProperties.power = 0.015F;
-    localBulletProperties.powerType = 0;
-    localBulletProperties.powerRadius = 30.0F;
-
-    localBulletProperties.kalibr = 0.028F;
-    localBulletProperties.massa = 0.416F;
-    localBulletProperties.speed = 823.0F;
-
-    localBulletProperties.traceMesh = "3do/effects/tracers/20mmMagenta/mono.sim";
-    localBulletProperties.traceTrail = null;
-    localBulletProperties.traceColor = -1275133697;
-
-    return 75.0F;
-  }
+    protected float Specify(com.maddox.il2.engine.GunProperties gunproperties)
+    {
+        gunproperties.aimMaxDist = 6767F;
+        gunproperties.shotFreq = 10F;
+        gunproperties.bulletsCluster = 3;
+        gunproperties.sound = "weapon.zenitka_20";
+        com.maddox.il2.engine.BulletProperties bulletproperties = gunproperties.bullet[0];
+        bulletproperties.timeLife = 7F;
+        bulletproperties.addExplTime = 1.5F;
+        bulletproperties.power = 0.017F;
+        bulletproperties.powerType = 1;
+        bulletproperties.powerRadius = 32F;
+        bulletproperties.kalibr = 0.028F;
+        bulletproperties.massa = 0.416F;
+        bulletproperties.speed = 823F;
+        bulletproperties.traceMesh = "3do/effects/tracers/20mmMagenta/mono.sim";
+        bulletproperties.traceTrail = null;
+        bulletproperties.traceColor = 0xb3ff00ff;
+        bulletproperties = gunproperties.bullet[1];
+        bulletproperties.power = 0.015F;
+        bulletproperties.powerType = 0;
+        bulletproperties.powerRadius = 30F;
+        bulletproperties.kalibr = 0.028F;
+        bulletproperties.massa = 0.416F;
+        bulletproperties.speed = 823F;
+        bulletproperties.traceMesh = "3do/effects/tracers/20mmMagenta/mono.sim";
+        bulletproperties.traceTrail = null;
+        bulletproperties.traceColor = 0xb3ff00ff;
+        return 75F;
+    }
 }

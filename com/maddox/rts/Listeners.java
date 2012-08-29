@@ -1,56 +1,65 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Listeners.java
+
 package com.maddox.rts;
 
 import java.util.Vector;
 
 public class Listeners
 {
-  private Vector vlisteners;
-  private Object[] listeners;
 
-  public Object[] get()
-  {
-    return this.listeners;
-  }
-
-  public void insListener(Object paramObject)
-  {
-    if ((paramObject != null) && 
-      (-1 == this.vlisteners.indexOf(paramObject))) {
-      this.vlisteners.insertElementAt(paramObject, 0);
-      Object[] arrayOfObject = new Object[this.vlisteners.size()];
-      this.vlisteners.copyInto(arrayOfObject);
-      this.listeners = arrayOfObject;
+    public java.lang.Object[] get()
+    {
+        return listeners;
     }
-  }
 
-  public void addListener(Object paramObject)
-  {
-    if ((paramObject != null) && 
-      (-1 == this.vlisteners.indexOf(paramObject))) {
-      this.vlisteners.addElement(paramObject);
-      Object[] arrayOfObject = new Object[this.vlisteners.size()];
-      this.vlisteners.copyInto(arrayOfObject);
-      this.listeners = arrayOfObject;
+    public void insListener(java.lang.Object obj)
+    {
+        if(obj != null && -1 == vlisteners.indexOf(obj))
+        {
+            vlisteners.insertElementAt(obj, 0);
+            java.lang.Object aobj[] = new java.lang.Object[vlisteners.size()];
+            vlisteners.copyInto(aobj);
+            listeners = aobj;
+        }
     }
-  }
 
-  public void removeListener(Object paramObject)
-  {
-    if (paramObject != null) {
-      this.vlisteners.removeElement(paramObject);
-      if (this.vlisteners.size() > 0) {
-        Object[] arrayOfObject = new Object[this.vlisteners.size()];
-        this.vlisteners.copyInto(arrayOfObject);
-        this.listeners = arrayOfObject;
-      } else {
-        this.listeners = null;
-      }
+    public void addListener(java.lang.Object obj)
+    {
+        if(obj != null && -1 == vlisteners.indexOf(obj))
+        {
+            vlisteners.addElement(obj);
+            java.lang.Object aobj[] = new java.lang.Object[vlisteners.size()];
+            vlisteners.copyInto(aobj);
+            listeners = aobj;
+        }
     }
-  }
 
-  public Listeners()
-  {
-    this.vlisteners = new Vector();
-    this.listeners = null;
-  }
+    public void removeListener(java.lang.Object obj)
+    {
+        if(obj != null)
+        {
+            vlisteners.removeElement(obj);
+            if(vlisteners.size() > 0)
+            {
+                java.lang.Object aobj[] = new java.lang.Object[vlisteners.size()];
+                vlisteners.copyInto(aobj);
+                listeners = aobj;
+            } else
+            {
+                listeners = null;
+            }
+        }
+    }
+
+    public Listeners()
+    {
+        vlisteners = new Vector();
+        listeners = null;
+    }
+
+    private java.util.Vector vlisteners;
+    private java.lang.Object listeners[];
 }

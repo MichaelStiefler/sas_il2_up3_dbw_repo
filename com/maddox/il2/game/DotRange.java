@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   DotRange.java
+
 package com.maddox.il2.game;
 
 import com.maddox.il2.ai.Army;
@@ -7,112 +12,201 @@ import java.io.IOException;
 
 public class DotRange
 {
-  public static final double MAX_DOT = 25000.0D;
-  public static final double MIN_DOT = 5.0D;
-  protected double dot = 10000.0D;
-  protected double icon = 3000.0D;
-  protected double color = 3000.0D;
-  protected double type = 3000.0D;
-  protected double name = 3000.0D;
-  protected double id = 3000.0D;
-  protected double range = 3000.0D;
 
-  public void setDefault() {
-    set(14000.0D, 6000.0D, 6000.0D, 6000.0D, 6000.0D, 6000.0D);
-  }
-  public double dot() {
-    return this.dot; } 
-  public double dot(double paramDouble) { return this.dot * paramDouble; } 
-  public double icon() { return this.icon; } 
-  public double color() { return this.color; } 
-  public double type() { return this.type; } 
-  public double name() { return this.name; } 
-  public double id() { return this.id; } 
-  public double range() { return this.range; } 
-  public int colorDot(double paramDouble, int paramInt1, int paramInt2) {
-    int i = 0;
-    if (paramDouble < this.color)
-      i = Army.color(paramInt1) & 0xFFFFFF;
-    int j = ((int)(alphaDot(paramDouble) * paramInt2) & 0xFF) << 24;
-    return i | j;
-  }
-  public int colorIcon(double paramDouble, int paramInt1, int paramInt2) {
-    int i = 0;
-    if (paramDouble < this.color)
-      i = Army.color(paramInt1) & 0xFFFFFF;
-    int j = ((int)(alphaIcon(paramDouble) * paramInt2) & 0xFF) << 24;
-    return i | j;
-  }
-  public int alphaColorDot(double paramDouble) {
-    return (int)(alphaDot(paramDouble) * 255.0D) << 24;
-  }
-  public int alphaColorIcon(double paramDouble) {
-    return (int)(alphaIcon(paramDouble) * 255.0D) << 24;
-  }
-  public double alphaDot(double paramDouble) {
-    double d = this.dot / 2.0D;
-    if (paramDouble <= d) return 1.0D;
-    if (paramDouble >= this.dot) return 0.0D;
-    return 1.0D - (paramDouble - d) / d;
-  }
-  public double alphaDot(double paramDouble1, double paramDouble2) {
-    double d = this.dot * paramDouble2;
-    if (paramDouble1 >= d) return 0.0D;
-    return 1.0D - paramDouble1 / d;
-  }
-  public double alphaIcon(double paramDouble) {
-    double d = this.icon / 2.0D;
-    if (paramDouble <= d) return 1.0D;
-    if (paramDouble >= this.icon) return 0.0D;
-    return 1.0D - (paramDouble - d) / d;
-  }
+    public void setDefault()
+    {
+        set(14000D, 6000D, 6000D, 6000D, 6000D, 6000D);
+    }
 
-  private void validate() {
-    if (this.dot < 5.0D) this.dot = 5.0D;
-    if (this.dot > 25000.0D) this.dot = 25000.0D;
-    if (this.color < 5.0D) this.color = 5.0D;
-    if (this.color > this.dot) this.color = this.dot;
-    if (this.type < 5.0D) this.type = 5.0D;
-    if (this.type > this.dot) this.type = this.dot;
-    if (this.name < 5.0D) this.name = 5.0D;
-    if (this.name > this.dot) this.name = this.dot;
-    if (this.id < 5.0D) this.id = 5.0D;
-    if (this.id > this.dot) this.id = this.dot;
-    if (this.range < 5.0D) this.range = 5.0D;
-    if (this.range > this.dot) this.range = this.dot;
-    this.icon = this.color;
-    if (this.icon < this.type) this.icon = this.type;
-    if (this.icon < this.name) this.icon = this.name;
-    if (this.icon < this.id) this.icon = this.id;
-    if (this.icon < this.range) this.icon = this.range;
-  }
+    public double dot()
+    {
+        return dot;
+    }
 
-  public void set(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, double paramDouble6)
-  {
-    if (paramDouble1 > 0.0D) this.dot = paramDouble1;
-    if (paramDouble2 > 0.0D) this.color = paramDouble2;
-    if (paramDouble3 > 0.0D) this.type = paramDouble3;
-    if (paramDouble4 > 0.0D) this.name = paramDouble4;
-    if (paramDouble5 > 0.0D) this.id = paramDouble5;
-    if (paramDouble6 > 0.0D) this.range = paramDouble6;
-    validate();
-  }
+    public double dot(double d)
+    {
+        return dot * d;
+    }
 
-  public void netInput(NetMsgInput paramNetMsgInput) throws IOException {
-    set(paramNetMsgInput.readFloat(), paramNetMsgInput.readFloat(), paramNetMsgInput.readFloat(), paramNetMsgInput.readFloat(), paramNetMsgInput.readFloat(), paramNetMsgInput.readFloat());
-  }
+    public double icon()
+    {
+        return icon;
+    }
 
-  public void netOutput(NetMsgOutput paramNetMsgOutput)
-    throws IOException
-  {
-    paramNetMsgOutput.writeFloat((float)this.dot);
-    paramNetMsgOutput.writeFloat((float)this.color);
-    paramNetMsgOutput.writeFloat((float)this.type);
-    paramNetMsgOutput.writeFloat((float)this.name);
-    paramNetMsgOutput.writeFloat((float)this.id);
-    paramNetMsgOutput.writeFloat((float)this.range);
-  }
-  public DotRange() {
-    setDefault();
-  }
+    public double color()
+    {
+        return color;
+    }
+
+    public double type()
+    {
+        return type;
+    }
+
+    public double name()
+    {
+        return name;
+    }
+
+    public double id()
+    {
+        return id;
+    }
+
+    public double range()
+    {
+        return range;
+    }
+
+    public int colorDot(double d, int i, int j)
+    {
+        int k = 0;
+        if(d < color)
+            k = com.maddox.il2.ai.Army.color(i) & 0xffffff;
+        int l = ((int)(alphaDot(d) * (double)j) & 0xff) << 24;
+        return k | l;
+    }
+
+    public int colorIcon(double d, int i, int j)
+    {
+        int k = 0;
+        if(d < color)
+            k = com.maddox.il2.ai.Army.color(i) & 0xffffff;
+        int l = ((int)(alphaIcon(d) * (double)j) & 0xff) << 24;
+        return k | l;
+    }
+
+    public int alphaColorDot(double d)
+    {
+        return (int)(alphaDot(d) * 255D) << 24;
+    }
+
+    public int alphaColorIcon(double d)
+    {
+        return (int)(alphaIcon(d) * 255D) << 24;
+    }
+
+    public double alphaDot(double d)
+    {
+        double d1 = dot / 2D;
+        if(d <= d1)
+            return 1.0D;
+        if(d >= dot)
+            return 0.0D;
+        else
+            return 1.0D - (d - d1) / d1;
+    }
+
+    public double alphaDot(double d, double d1)
+    {
+        double d2 = dot * d1;
+        if(d >= d2)
+            return 0.0D;
+        else
+            return 1.0D - d / d2;
+    }
+
+    public double alphaIcon(double d)
+    {
+        double d1 = icon / 2D;
+        if(d <= d1)
+            return 1.0D;
+        if(d >= icon)
+            return 0.0D;
+        else
+            return 1.0D - (d - d1) / d1;
+    }
+
+    private void validate()
+    {
+        if(dot < 5D)
+            dot = 5D;
+        if(dot > 25000D)
+            dot = 25000D;
+        if(color < 5D)
+            color = 5D;
+        if(color > dot)
+            color = dot;
+        if(type < 5D)
+            type = 5D;
+        if(type > dot)
+            type = dot;
+        if(name < 5D)
+            name = 5D;
+        if(name > dot)
+            name = dot;
+        if(id < 5D)
+            id = 5D;
+        if(id > dot)
+            id = dot;
+        if(range < 5D)
+            range = 5D;
+        if(range > dot)
+            range = dot;
+        icon = color;
+        if(icon < type)
+            icon = type;
+        if(icon < name)
+            icon = name;
+        if(icon < id)
+            icon = id;
+        if(icon < range)
+            icon = range;
+    }
+
+    public void set(double d, double d1, double d2, double d3, double d4, double d5)
+    {
+        if(d > 0.0D)
+            dot = d;
+        if(d1 > 0.0D)
+            color = d1;
+        if(d2 > 0.0D)
+            type = d2;
+        if(d3 > 0.0D)
+            name = d3;
+        if(d4 > 0.0D)
+            id = d4;
+        if(d5 > 0.0D)
+            range = d5;
+        validate();
+    }
+
+    public void netInput(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        set(netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat());
+    }
+
+    public void netOutput(com.maddox.rts.NetMsgOutput netmsgoutput)
+        throws java.io.IOException
+    {
+        netmsgoutput.writeFloat((float)dot);
+        netmsgoutput.writeFloat((float)color);
+        netmsgoutput.writeFloat((float)type);
+        netmsgoutput.writeFloat((float)name);
+        netmsgoutput.writeFloat((float)id);
+        netmsgoutput.writeFloat((float)range);
+    }
+
+    public DotRange()
+    {
+        dot = 10000D;
+        icon = 3000D;
+        color = 3000D;
+        type = 3000D;
+        name = 3000D;
+        id = 3000D;
+        range = 3000D;
+        setDefault();
+    }
+
+    public static final double MAX_DOT = 25000D;
+    public static final double MIN_DOT = 5D;
+    protected double dot;
+    protected double icon;
+    protected double color;
+    protected double type;
+    protected double name;
+    protected double id;
+    protected double range;
 }

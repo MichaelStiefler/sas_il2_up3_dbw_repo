@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MixChannel.java
+
 package com.maddox.netphone;
 
 import java.io.PrintStream;
@@ -5,165 +10,190 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
-public class MixChannel extends MixBase
+// Referenced classes of package com.maddox.netphone:
+//            MixBase, BitStream, GsmIO, LpcmIO, 
+//            HBitStr, CodecIO, NetMixer
+
+public class MixChannel extends com.maddox.netphone.MixBase
 {
-  protected BitStream out;
-  protected BitStream bitBuf;
-  protected NetMixer owner;
-  protected CodecIO rd;
-  protected ArrayList outCache = new ArrayList();
-  protected Vector inList = new Vector();
-  protected Vector outList = new Vector();
-  protected boolean act = false;
-  protected int iid;
-  protected int priority = 4;
-  protected int slCnt;
-  protected boolean isVirtual = false;
-  private boolean wasReset = false;
 
-  protected MixChannel(NetMixer paramNetMixer, int paramInt1, int paramInt2)
-  {
-    this.bitBuf = new BitStream(128);
-    this.owner = paramNetMixer;
-    this.iid = paramInt1;
-    this.slCnt = 0;
-
-    if (paramInt2 == 2) this.rd = new GsmIO(); else {
-      this.rd = new LpcmIO();
-    }
-    this.out = new BitStream(this.rd.getMaxStreamSize());
-
-    Iterator localIterator = paramNetMixer.channels.iterator();
-    while (localIterator.hasNext()) {
-      MixChannel localMixChannel = (MixChannel)localIterator.next();
-      new HBitStr(this, localMixChannel);
-      new HBitStr(localMixChannel, this);
-    }
-
-    paramNetMixer.channels.add(this);
-  }
-
-  public void destroy()
-  {
-    this.owner.channels.remove(this);
-    HBitStr localHBitStr;
-    while (!this.inList.isEmpty()) {
-      localHBitStr = (HBitStr)this.inList.firstElement();
-      localHBitStr.destroy();
-    }
-
-    while (!this.outList.isEmpty()) {
-      localHBitStr = (HBitStr)this.outList.firstElement();
-      localHBitStr.destroy();
-    }
-
-    this.out.destroy();
-    this.bitBuf.destroy();
-
-    print("NETMIXER::DELCH");
-  }
-
-  public int getPriority()
-  {
-    return this.priority;
-  }
-
-  public void setPriority(int paramInt)
-  {
-    this.priority = paramInt;
-  }
-
-  public boolean isActive()
-  {
-    return this.act;
-  }
-
-  public boolean wasReset()
-  {
-    boolean bool = this.wasReset;
-    this.wasReset = false;
-    return bool;
-  }
-
-  public void setActive(boolean paramBoolean)
-  {
-    if ((paramBoolean) && 
-      (!this.act))
+    protected MixChannel(com.maddox.netphone.NetMixer netmixer, int i, int j)
     {
-      Iterator localIterator = this.inList.iterator();
-      while (localIterator.hasNext()) {
-        HBitStr localHBitStr = (HBitStr)localIterator.next();
-        localHBitStr.bs.clear();
-      }
-      this.out.clear();
-      this.wasReset = true;
+        outCache = new ArrayList();
+        inList = new Vector();
+        outList = new Vector();
+        act = false;
+        priority = 4;
+        isVirtual = false;
+        wasReset = false;
+        bitBuf = new BitStream(128);
+        owner = netmixer;
+        iid = i;
+        slCnt = 0;
+        if(j == 2)
+            rd = new GsmIO();
+        else
+            rd = new LpcmIO();
+        out = new BitStream(rd.getMaxStreamSize());
+        com.maddox.netphone.MixChannel mixchannel;
+        for(java.util.Iterator iterator = netmixer.channels.iterator(); iterator.hasNext(); new HBitStr(mixchannel, this))
+        {
+            mixchannel = (com.maddox.netphone.MixChannel)iterator.next();
+            new HBitStr(this, mixchannel);
+        }
+
+        netmixer.channels.add(this);
     }
 
-    this.act = paramBoolean;
-  }
+    public void destroy()
+    {
+        owner.channels.remove(this);
+        com.maddox.netphone.HBitStr hbitstr;
+        for(; !inList.isEmpty(); hbitstr.destroy())
+            hbitstr = (com.maddox.netphone.HBitStr)inList.firstElement();
 
-  public int getFreeSpace()
-  {
-    if ((!this.act) || (this.inList.isEmpty())) return 0;
-    HBitStr localHBitStr = (HBitStr)this.inList.firstElement();
-    return localHBitStr.bs.space(8);
-  }
+        com.maddox.netphone.HBitStr hbitstr1;
+        for(; !outList.isEmpty(); hbitstr1.destroy())
+            hbitstr1 = (com.maddox.netphone.HBitStr)outList.firstElement();
 
-  public int put(byte[] paramArrayOfByte, int paramInt)
-  {
-    if ((!this.act) || (this.inList.isEmpty())) return 0;
-    HBitStr localHBitStr = (HBitStr)this.inList.firstElement();
-    return localHBitStr.bs.putAligned(paramArrayOfByte, paramInt);
-  }
-
-  public int putNA(byte[] paramArrayOfByte, int paramInt)
-  {
-    if ((!this.act) || (this.inList.isEmpty())) return 0;
-    HBitStr localHBitStr = (HBitStr)this.inList.firstElement();
-    return localHBitStr.bs.putBytes(paramArrayOfByte, paramInt);
-  }
-
-  public int getDataLength()
-  {
-    int i = this.out.bitlen();
-    return i > 0 ? (i + 3 + 8) / 8 : 0;
-  }
-
-  public int getNALength()
-  {
-    return this.out.len(8);
-  }
-
-  public int get(byte[] paramArrayOfByte, int paramInt)
-  {
-    int i = (paramInt - 8) * 8;
-    if (this.out.bitlen() == 0) return 0;
-    if (this.out.bitlen() <= i) return this.out.getAligned(paramArrayOfByte, paramInt);
-    while ((this.out.bitlen() > 0) && (this.bitBuf.bitlen() < this.rd.getMinOutSpace())) {
-      int k = this.out.get(1);
-      if (k == 0) {
-        this.bitBuf.put(0, 1);
-      } else {
-        this.bitBuf.put(1, 1);
-        this.rd.read(this.out);
-        this.rd.write(this.bitBuf);
-      }
+        out.destroy();
+        bitBuf.destroy();
+        print("NETMIXER::DELCH");
     }
-    int j = this.bitBuf.getAligned(paramArrayOfByte, paramInt);
-    if (this.bitBuf.bitlen() > 0) {
-      System.out.println("Netmixer internal error at output, len = " + this.bitBuf.bitlen());
-      this.bitBuf.clear();
+
+    public int getPriority()
+    {
+        return priority;
     }
-    return j;
-  }
 
-  public int getNA(byte[] paramArrayOfByte, int paramInt)
-  {
-    return this.out.getBytes(paramArrayOfByte, paramInt);
-  }
+    public void setPriority(int i)
+    {
+        priority = i;
+    }
 
-  public boolean isWait()
-  {
-    return this.slCnt > 0;
-  }
+    public boolean isActive()
+    {
+        return act;
+    }
+
+    public boolean wasReset()
+    {
+        boolean flag = wasReset;
+        wasReset = false;
+        return flag;
+    }
+
+    public void setActive(boolean flag)
+    {
+        if(flag && !act)
+        {
+            com.maddox.netphone.HBitStr hbitstr;
+            for(java.util.Iterator iterator = inList.iterator(); iterator.hasNext(); hbitstr.bs.clear())
+                hbitstr = (com.maddox.netphone.HBitStr)iterator.next();
+
+            out.clear();
+            wasReset = true;
+        }
+        act = flag;
+    }
+
+    public int getFreeSpace()
+    {
+        if(!act || inList.isEmpty())
+        {
+            return 0;
+        } else
+        {
+            com.maddox.netphone.HBitStr hbitstr = (com.maddox.netphone.HBitStr)inList.firstElement();
+            return hbitstr.bs.space(8);
+        }
+    }
+
+    public int put(byte abyte0[], int i)
+    {
+        if(!act || inList.isEmpty())
+        {
+            return 0;
+        } else
+        {
+            com.maddox.netphone.HBitStr hbitstr = (com.maddox.netphone.HBitStr)inList.firstElement();
+            return hbitstr.bs.putAligned(abyte0, i);
+        }
+    }
+
+    public int putNA(byte abyte0[], int i)
+    {
+        if(!act || inList.isEmpty())
+        {
+            return 0;
+        } else
+        {
+            com.maddox.netphone.HBitStr hbitstr = (com.maddox.netphone.HBitStr)inList.firstElement();
+            return hbitstr.bs.putBytes(abyte0, i);
+        }
+    }
+
+    public int getDataLength()
+    {
+        int i = out.bitlen();
+        return i <= 0 ? 0 : (i + 3 + 8) / 8;
+    }
+
+    public int getNALength()
+    {
+        return out.len(8);
+    }
+
+    public int get(byte abyte0[], int i)
+    {
+        int j = (i - 8) * 8;
+        if(out.bitlen() == 0)
+            return 0;
+        if(out.bitlen() <= j)
+            return out.getAligned(abyte0, i);
+        while(out.bitlen() > 0 && bitBuf.bitlen() < rd.getMinOutSpace()) 
+        {
+            int l = out.get(1);
+            if(l == 0)
+            {
+                bitBuf.put(0, 1);
+            } else
+            {
+                bitBuf.put(1, 1);
+                rd.read(out);
+                rd.write(bitBuf);
+            }
+        }
+        int k = bitBuf.getAligned(abyte0, i);
+        if(bitBuf.bitlen() > 0)
+        {
+            java.lang.System.out.println("Netmixer internal error at output, len = " + bitBuf.bitlen());
+            bitBuf.clear();
+        }
+        return k;
+    }
+
+    public int getNA(byte abyte0[], int i)
+    {
+        return out.getBytes(abyte0, i);
+    }
+
+    public boolean isWait()
+    {
+        return slCnt > 0;
+    }
+
+    protected com.maddox.netphone.BitStream out;
+    protected com.maddox.netphone.BitStream bitBuf;
+    protected com.maddox.netphone.NetMixer owner;
+    protected com.maddox.netphone.CodecIO rd;
+    protected java.util.ArrayList outCache;
+    protected java.util.Vector inList;
+    protected java.util.Vector outList;
+    protected boolean act;
+    protected int iid;
+    protected int priority;
+    protected int slCnt;
+    protected boolean isVirtual;
+    private boolean wasReset;
 }

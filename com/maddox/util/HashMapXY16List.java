@@ -1,161 +1,189 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HashMapXY16List.java
+
 package com.maddox.util;
 
 import java.util.ArrayList;
 import java.util.List;
 
+// Referenced classes of package com.maddox.util:
+//            HashMapInt, HashMapIntEntry
+
 public class HashMapXY16List
 {
-  private transient HashMapInt mapXY;
-  private int initialCapacity = 101;
-  private float loadFactor = 0.75F;
 
-  public HashMapXY16List() {
-    this.mapXY = new HashMapInt(this.initialCapacity, this.loadFactor);
-  }
-
-  public HashMapXY16List(int paramInt) {
-    this.initialCapacity = paramInt;
-    this.mapXY = new HashMapInt(paramInt, this.loadFactor);
-  }
-
-  public HashMapXY16List(int paramInt, float paramFloat) {
-    this.initialCapacity = paramInt;
-    this.loadFactor = paramFloat;
-    this.mapXY = new HashMapInt(paramInt, paramFloat);
-  }
-
-  public int size() {
-    int i = 0;
-    HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      ArrayList localArrayList = (ArrayList)(ArrayList)localHashMapIntEntry.getValue();
-      i += localArrayList.size();
-      localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
-    }
-    return i;
-  }
-
-  public int[] allKeys() {
-    if (this.mapXY.size() == 0) return null;
-    int[] arrayOfInt = new int[this.mapXY.size()];
-    HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
-    int i = 0;
-    while (localHashMapIntEntry != null) {
-      arrayOfInt[(i++)] = localHashMapIntEntry.getKey();
-      localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
-    }
-    return arrayOfInt;
-  }
-
-  public int key2x(int paramInt) {
-    return paramInt & 0xFFFF;
-  }
-  public int key2y(int paramInt) {
-    return paramInt >> 16 & 0xFFFF;
-  }
-
-  public void allValues(List paramList)
-  {
-    HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      ArrayList localArrayList = (ArrayList)(ArrayList)localHashMapIntEntry.getValue();
-      paramList.add(localArrayList);
-      localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
-    }
-  }
-
-  public boolean isEmpty() {
-    return size() == 0;
-  }
-
-  public boolean containsKey(int paramInt1, int paramInt2, Object paramObject) {
-    int i = paramInt2 & 0xFFFF | paramInt1 << 16;
-
-    ArrayList localArrayList = (ArrayList)this.mapXY.get(i);
-    if (localArrayList == null)
-      return false;
-    return localArrayList.contains(paramObject);
-  }
-
-  public List get(int paramInt1, int paramInt2) {
-    return (List)this.mapXY.get(paramInt2 & 0xFFFF | paramInt1 << 16);
-  }
-
-  public void put(int paramInt1, int paramInt2, Object paramObject)
-  {
-    int i = paramInt2 & 0xFFFF | paramInt1 << 16;
-
-    ArrayList localArrayList = (ArrayList)this.mapXY.get(i);
-    if (localArrayList == null) {
-      localArrayList = new ArrayList(this.initialCapacity);
-      this.mapXY.put(i, localArrayList);
-    }
-    localArrayList.add(paramObject);
-  }
-
-  public void put(int paramInt1, int paramInt2, Object paramObject, int paramInt3) {
-    int i = paramInt2 & 0xFFFF | paramInt1 << 16;
-
-    ArrayList localArrayList = (ArrayList)this.mapXY.get(i);
-    if (localArrayList == null) {
-      localArrayList = new ArrayList(paramInt3);
-      this.mapXY.put(i, localArrayList);
-    }
-    localArrayList.add(paramObject);
-  }
-
-  public void allValuesTrimToSize() {
-    HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      ArrayList localArrayList = (ArrayList)(ArrayList)localHashMapIntEntry.getValue();
-      localArrayList.trimToSize();
-      localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
-    }
-  }
-
-  public void valueTrimToSize(int paramInt1, int paramInt2) {
-    int i = paramInt2 & 0xFFFF | paramInt1 << 16;
-
-    ArrayList localArrayList = (ArrayList)this.mapXY.get(i);
-    if (localArrayList != null)
-      localArrayList.trimToSize();
-  }
-
-  public void clear() {
-    HashMapIntEntry localHashMapIntEntry = this.mapXY.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      ArrayList localArrayList = (ArrayList)(ArrayList)localHashMapIntEntry.getValue();
-      localArrayList.clear();
-      localHashMapIntEntry = this.mapXY.nextEntry(localHashMapIntEntry);
-    }
-    this.mapXY.clear();
-  }
-
-  public void remove(int paramInt1, int paramInt2, Object paramObject) {
-    int i = paramInt2 & 0xFFFF | paramInt1 << 16;
-
-    ArrayList localArrayList = (ArrayList)this.mapXY.get(i);
-    if (localArrayList != null)
+    public HashMapXY16List()
     {
-      int j = localArrayList.indexOf(paramObject);
-      if (j >= 0) {
-        localArrayList.remove(j);
-      }
-      if ((i != 0) && (localArrayList.isEmpty()))
-        this.mapXY.remove(i);
+        initialCapacity = 101;
+        loadFactor = 0.75F;
+        mapXY = new HashMapInt(initialCapacity, loadFactor);
     }
-  }
 
-  public void remove(int paramInt1, int paramInt2) {
-    int i = paramInt2 & 0xFFFF | paramInt1 << 16;
+    public HashMapXY16List(int i)
+    {
+        initialCapacity = 101;
+        loadFactor = 0.75F;
+        initialCapacity = i;
+        mapXY = new HashMapInt(i, loadFactor);
+    }
 
-    ArrayList localArrayList = (ArrayList)this.mapXY.get(i);
-    if ((localArrayList != null) && (i != 0) && (localArrayList.isEmpty()))
-      this.mapXY.remove(i);
-  }
+    public HashMapXY16List(int i, float f)
+    {
+        initialCapacity = 101;
+        loadFactor = 0.75F;
+        initialCapacity = i;
+        loadFactor = f;
+        mapXY = new HashMapInt(i, f);
+    }
 
-  public boolean equals(Object paramObject)
-  {
-    return this == paramObject;
-  }
+    public int size()
+    {
+        int i = 0;
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = mapXY.nextEntry(null); hashmapintentry != null; hashmapintentry = mapXY.nextEntry(hashmapintentry))
+        {
+            java.util.ArrayList arraylist = (java.util.ArrayList)(java.util.ArrayList)hashmapintentry.getValue();
+            i += arraylist.size();
+        }
+
+        return i;
+    }
+
+    public int[] allKeys()
+    {
+        if(mapXY.size() == 0)
+            return null;
+        int ai[] = new int[mapXY.size()];
+        com.maddox.util.HashMapIntEntry hashmapintentry = mapXY.nextEntry(null);
+        int i = 0;
+        for(; hashmapintentry != null; hashmapintentry = mapXY.nextEntry(hashmapintentry))
+            ai[i++] = hashmapintentry.getKey();
+
+        return ai;
+    }
+
+    public int key2x(int i)
+    {
+        return i & 0xffff;
+    }
+
+    public int key2y(int i)
+    {
+        return i >> 16 & 0xffff;
+    }
+
+    public void allValues(java.util.List list)
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = mapXY.nextEntry(null); hashmapintentry != null; hashmapintentry = mapXY.nextEntry(hashmapintentry))
+        {
+            java.util.ArrayList arraylist = (java.util.ArrayList)(java.util.ArrayList)hashmapintentry.getValue();
+            list.add(arraylist);
+        }
+
+    }
+
+    public boolean isEmpty()
+    {
+        return size() == 0;
+    }
+
+    public boolean containsKey(int i, int j, java.lang.Object obj)
+    {
+        int k = j & 0xffff | i << 16;
+        java.util.ArrayList arraylist = (java.util.ArrayList)mapXY.get(k);
+        if(arraylist == null)
+            return false;
+        else
+            return arraylist.contains(obj);
+    }
+
+    public java.util.List get(int i, int j)
+    {
+        return (java.util.List)mapXY.get(j & 0xffff | i << 16);
+    }
+
+    public void put(int i, int j, java.lang.Object obj)
+    {
+        int k = j & 0xffff | i << 16;
+        java.util.ArrayList arraylist = (java.util.ArrayList)mapXY.get(k);
+        if(arraylist == null)
+        {
+            arraylist = new ArrayList(initialCapacity);
+            mapXY.put(k, arraylist);
+        }
+        arraylist.add(obj);
+    }
+
+    public void put(int i, int j, java.lang.Object obj, int k)
+    {
+        int l = j & 0xffff | i << 16;
+        java.util.ArrayList arraylist = (java.util.ArrayList)mapXY.get(l);
+        if(arraylist == null)
+        {
+            arraylist = new ArrayList(k);
+            mapXY.put(l, arraylist);
+        }
+        arraylist.add(obj);
+    }
+
+    public void allValuesTrimToSize()
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = mapXY.nextEntry(null); hashmapintentry != null; hashmapintentry = mapXY.nextEntry(hashmapintentry))
+        {
+            java.util.ArrayList arraylist = (java.util.ArrayList)(java.util.ArrayList)hashmapintentry.getValue();
+            arraylist.trimToSize();
+        }
+
+    }
+
+    public void valueTrimToSize(int i, int j)
+    {
+        int k = j & 0xffff | i << 16;
+        java.util.ArrayList arraylist = (java.util.ArrayList)mapXY.get(k);
+        if(arraylist != null)
+            arraylist.trimToSize();
+    }
+
+    public void clear()
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = mapXY.nextEntry(null); hashmapintentry != null; hashmapintentry = mapXY.nextEntry(hashmapintentry))
+        {
+            java.util.ArrayList arraylist = (java.util.ArrayList)(java.util.ArrayList)hashmapintentry.getValue();
+            arraylist.clear();
+        }
+
+        mapXY.clear();
+    }
+
+    public void remove(int i, int j, java.lang.Object obj)
+    {
+        int k = j & 0xffff | i << 16;
+        java.util.ArrayList arraylist = (java.util.ArrayList)mapXY.get(k);
+        if(arraylist != null)
+        {
+            int l = arraylist.indexOf(obj);
+            if(l >= 0)
+                arraylist.remove(l);
+            if(k != 0 && arraylist.isEmpty())
+                mapXY.remove(k);
+        }
+    }
+
+    public void remove(int i, int j)
+    {
+        int k = j & 0xffff | i << 16;
+        java.util.ArrayList arraylist = (java.util.ArrayList)mapXY.get(k);
+        if(arraylist != null && k != 0 && arraylist.isEmpty())
+            mapXY.remove(k);
+    }
+
+    public boolean equals(java.lang.Object obj)
+    {
+        return this == obj;
+    }
+
+    private transient com.maddox.util.HashMapInt mapXY;
+    private int initialCapacity;
+    private float loadFactor;
 }

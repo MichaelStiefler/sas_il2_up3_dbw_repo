@@ -1,18 +1,34 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Pitot.java
+
 package com.maddox.il2.fm;
+
+
+// Referenced classes of package com.maddox.il2.fm:
+//            Atmosphere
 
 public class Pitot
 {
-  private static final float[] pitot = { 0.0F, 0.630378F, 0.00632175F, -3.07351E-005F, 4.47977E-008F };
 
-  private static final float poly(float[] paramArrayOfFloat, float paramFloat)
-  {
-    return (((paramArrayOfFloat[4] * paramFloat + paramArrayOfFloat[3]) * paramFloat + paramArrayOfFloat[2]) * paramFloat + paramArrayOfFloat[1]) * paramFloat + paramArrayOfFloat[0];
-  }
+    public Pitot()
+    {
+    }
 
-  public static final float Indicator(float paramFloat1, float paramFloat2)
-  {
-    paramFloat2 *= (float)Math.sqrt(Atmosphere.density(paramFloat1) / 1.225F);
+    private static final float poly(float af[], float f)
+    {
+        return (((af[4] * f + af[3]) * f + af[2]) * f + af[1]) * f + af[0];
+    }
 
-    return paramFloat2;
-  }
+    public static final float Indicator(float f, float f1)
+    {
+        f1 *= (float)java.lang.Math.sqrt(com.maddox.il2.fm.Atmosphere.density(f) / 1.225F);
+        return f1;
+    }
+
+    private static final float pitot[] = {
+        0.0F, 0.630378F, 0.00632175F, -3.07351E-005F, 4.47977E-008F
+    };
+
 }

@@ -1,6 +1,13 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MsgEndActionListener.java
+
 package com.maddox.rts;
 
-public abstract interface MsgEndActionListener
+
+public interface MsgEndActionListener
 {
-  public abstract void msgEndAction(Object paramObject, int paramInt);
+
+    public abstract void msgEndAction(java.lang.Object obj, int i);
 }

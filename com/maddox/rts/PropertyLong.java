@@ -1,32 +1,111 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Property.java
+
 package com.maddox.rts;
 
-class PropertyLong extends Property
+
+// Referenced classes of package com.maddox.rts:
+//            Property, Finger
+
+class PropertyLong extends com.maddox.rts.Property
 {
-  private long value = 0L;
 
-  public PropertyLong(Object paramObject, String paramString) { super(paramObject, paramString);
-    invokeObserver(lastMapInt, lastAction); }
-
-  public PropertyLong(Object paramObject, String paramString, long paramLong) {
-    super(paramObject, paramString);
-    this.value = paramLong;
-    invokeObserver(lastMapInt, lastAction);
-  }
-  public Class classValue() { return Long.class; } 
-  public int intValue() { return (int)this.value; } 
-  public float floatValue() { return (float)this.value; } 
-  public long longValue() { return this.value; } 
-  public double doubleValue() { return this.value; } 
-  public Object value() { return new Long(this.value); } 
-  public String stringValue() { return Long.toString(this.value); } 
-  public long fingerValue(long paramLong) { return Finger.incLong(paramLong, this.value); } 
-  public void set(int paramInt) { this.value = paramInt; } 
-  public void set(float paramFloat) { this.value = ()paramFloat; } 
-  public void set(long paramLong) { this.value = paramLong; } 
-  public void set(double paramDouble) { this.value = ()paramDouble; } 
-  public void set(Object paramObject) { if ((paramObject instanceof Number)) this.value = ((Number)paramObject).longValue(); else super.set(paramObject);  } 
-  public void set(String paramString) {
-    try { this.value = Long.parseLong(paramString); } catch (Exception localException) { super.set(paramString);
+    public PropertyLong(java.lang.Object obj, java.lang.String s)
+    {
+        super(obj, s);
+        value = 0L;
+        invokeObserver(lastMapInt, lastAction);
     }
-  }
+
+    public PropertyLong(java.lang.Object obj, java.lang.String s, long l)
+    {
+        super(obj, s);
+        value = 0L;
+        value = l;
+        invokeObserver(lastMapInt, lastAction);
+    }
+
+    public java.lang.Class classValue()
+    {
+        return java.lang.Long.class;
+    }
+
+    public int intValue()
+    {
+        return (int)value;
+    }
+
+    public float floatValue()
+    {
+        return (float)value;
+    }
+
+    public long longValue()
+    {
+        return value;
+    }
+
+    public double doubleValue()
+    {
+        return (double)value;
+    }
+
+    public java.lang.Object value()
+    {
+        return new Long(value);
+    }
+
+    public java.lang.String stringValue()
+    {
+        return java.lang.Long.toString(value);
+    }
+
+    public long fingerValue(long l)
+    {
+        return com.maddox.rts.Finger.incLong(l, value);
+    }
+
+    public void set(int i)
+    {
+        value = i;
+    }
+
+    public void set(float f)
+    {
+        value = (long)f;
+    }
+
+    public void set(long l)
+    {
+        value = l;
+    }
+
+    public void set(double d)
+    {
+        value = (long)d;
+    }
+
+    public void set(java.lang.Object obj)
+    {
+        if(obj instanceof java.lang.Number)
+            value = ((java.lang.Number)obj).longValue();
+        else
+            super.set(obj);
+    }
+
+    public void set(java.lang.String s)
+    {
+        try
+        {
+            value = java.lang.Long.parseLong(s);
+        }
+        catch(java.lang.Exception exception)
+        {
+            super.set(s);
+        }
+    }
+
+    private long value;
 }

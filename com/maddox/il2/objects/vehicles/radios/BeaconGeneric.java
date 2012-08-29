@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BeaconGeneric.java
+
 package com.maddox.il2.objects.vehicles.radios;
 
 import com.maddox.JGP.Matrix4d;
@@ -12,14 +17,12 @@ import com.maddox.il2.ai.Shot;
 import com.maddox.il2.ai.TableFunctions;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.ground.Obstacle;
-import com.maddox.il2.ai.ground.Prey;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorHMesh;
 import com.maddox.il2.engine.ActorNet;
 import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.ActorSpawn;
 import com.maddox.il2.engine.ActorSpawnArg;
-import com.maddox.il2.engine.BulletProperties;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.engine.Mesh;
@@ -38,7 +41,6 @@ import com.maddox.rts.NetChannelInStream;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.NetObj;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Spawn;
@@ -47,870 +49,844 @@ import com.maddox.util.TableFunction2;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public abstract class BeaconGeneric extends ActorHMesh
-  implements MsgExplosionListener, MsgShotListener, Obstacle, Prey, ActorAlign
+public abstract class BeaconGeneric extends com.maddox.il2.engine.ActorHMesh
+    implements com.maddox.il2.ai.MsgExplosionListener, com.maddox.il2.ai.MsgShotListener, com.maddox.il2.ai.ground.Obstacle, com.maddox.il2.objects.ActorAlign
 {
-  private BeaconProperties prop = null;
-  private float heightAboveLandSurface;
-  private int dying = 0;
-  static final int DYING_NONE = 0;
-  static final int DYING_DEAD = 1;
-  public static BeaconProperties constr_arg1 = null;
-  private static ActorSpawnArg constr_arg2 = null;
-  private static Point3d p = new Point3d();
-  private static Orient o = new Orient();
-  protected static Vector3d V = new Vector3d();
-  private static final int numberOfSamplePoints = 500;
-  private static final int attSamplesPerCycle = 20;
-  private static float[] attenuationSamples = new float[500];
-  private static int currentAttSampleSlot = 1;
-  private static final int mountainSamplesPerRow = 50;
-  private static final int mountainSamplesPerCycle = 10;
-  private static int currentMntSampleCol = 0;
-  private static int currentMntSampleRow = 0;
-  private static float[][] mountainErrorSamples = new float[50][50];
-  private static final float mntSampleRadius = 20000.0F;
-  private static final float mntSingleSampleLen = 800.0F;
-  private static final int EARTH_RADIUS = 6371000;
-  private static float nightError = 0.0F;
-  private static int terErrDirection = 1;
-  private static int ngtErrDirection = -1;
-  private static float mntNE = 0.0F;
-  private static float mntSE = 0.0F;
-  private static float mntSW = 0.0F;
-  private static float mntNW = 0.0F;
-
-  private static final float[] signalPropagationScale = { 0.0F, 0.4F, 0.6F, 0.77F, 0.89F, 0.97F, 1.0F };
-
-  public static float getConeOfSilenceMultiplier(double paramDouble1, double paramDouble2)
-  {
-    float f = 57.324841F * (float)Math.atan2(paramDouble1 - paramDouble2, paramDouble2);
-    return cvt(f, 20.0F, 40.0F, 0.0F, 1.0F);
-  }
-
-  public static float getTerrainAndNightError(Aircraft paramAircraft)
-  {
-    float f1 = paramAircraft.FM.Or.getYaw();
-    float f2 = -45.0F;
-    float f3 = mntNE;
-    if (mntSE > f3)
+    public static class BeaconProperties
     {
-      f3 = mntSE;
-      f2 = 45.0F;
-    }
-    if (mntSW > f3)
-    {
-      f3 = mntSW;
-      f2 = 135.0F;
-    }
-    if (mntNW > f3)
-    {
-      f3 = mntNW;
-      f2 = -135.0F;
-    }
-    float f4 = f1 - f2;
-    f3 = cvt(f3, 15.0F, 1400.0F, 0.0F, 1.0F);
-    float f5 = cvt((float)paramAircraft.FM.Loc.z, 3000.0F, 15000.0F, 1.0F, 0.0F);
-    f3 *= f5;
-    float f6 = (float)Math.random();
-    if (f4 > 0.0F)
-      terErrDirection = -1;
-    else
-      terErrDirection = 1;
-    if (f6 < 0.01D) {
-      terErrDirection = 0;
-    }
-    if (f6 < 0.007D)
-      ngtErrDirection *= -1;
-    else if (f6 < 0.13D)
-      ngtErrDirection = 1;
-    else if (f6 > 0.97D) {
-      ngtErrDirection = 0;
-    }
-    float f7 = terErrDirection * (f3 * 30.0F + World.Rnd().nextFloat(-f3 * 8.0F, f3 * 8.0F));
-    float f8 = ngtErrDirection * (nightError * 30.0F + World.Rnd().nextFloat(-nightError * 5.0F, nightError * 5.0F));
 
-    return f7 + f8;
-  }
+        public java.lang.String meshName;
+        public java.lang.String meshName1;
+        public java.lang.String meshSummer;
+        public java.lang.String meshDesert;
+        public java.lang.String meshWinter;
+        public java.lang.String meshSummer1;
+        public java.lang.String meshDesert1;
+        public java.lang.String meshWinter1;
+        public com.maddox.util.TableFunction2 fnShotPanzer;
+        public com.maddox.util.TableFunction2 fnExplodePanzer;
+        public float PANZER_BODY_FRONT;
+        public float PANZER_BODY_BACK;
+        public float PANZER_BODY_SIDE;
+        public float PANZER_BODY_TOP;
+        public float PANZER_HEAD;
+        public float PANZER_HEAD_TOP;
+        public float PANZER_TNT_TYPE;
+        public int HITBY_MASK;
+        public java.lang.String explodeName;
+        public float innerMarkerDist;
+        public float outerMarkerDist;
 
-  private static void sampleMountains(Aircraft paramAircraft)
-  {
-    float f1 = Math.abs(currentMntSampleCol - 25);
-    for (int i = 0; i < 10; i++)
-    {
-      float f2 = -20000.0F + currentMntSampleRow * 800.0F;
-      float f3 = -20000.0F + currentMntSampleCol * 800.0F;
-
-      float f4 = Landscape.HQ_Air((float)paramAircraft.FM.Loc.x + f2, (float)paramAircraft.FM.Loc.y + f3);
-      float f5 = Math.abs(currentMntSampleRow - 25);
-      float f6 = Math.max(f5, f1);
-      f4 *= cvt(f6, 0.0F, 25.0F, 1.0F, 0.5F);
-      mountainErrorSamples[currentMntSampleRow][currentMntSampleCol] = f4;
-      currentMntSampleRow += 1;
-      if (currentMntSampleRow != 50)
-        continue;
-      currentMntSampleRow = 0;
-      currentMntSampleCol += 1;
-      f1 = Math.abs(currentMntSampleCol - 25);
-      if (currentMntSampleCol == 50) {
-        currentMntSampleCol = 0;
-      }
-    }
-
-    i = 625;
-    int k;
-    for (int j = 0; j < 25; j++)
-    {
-      for (k = 0; k < 25; k++)
-      {
-        mntSW += mountainErrorSamples[j][k];
-      }
-    }
-    mntSW /= i;
-
-    for (j = 0; j < 25; j++)
-    {
-      for (k = 25; k < 50; k++)
-      {
-        mntNW += mountainErrorSamples[j][k];
-      }
-    }
-    mntNW /= i;
-
-    for (j = 25; j < 50; j++)
-    {
-      for (k = 25; k < 50; k++)
-      {
-        mntNE += mountainErrorSamples[j][k];
-      }
-    }
-    mntNE /= i;
-
-    for (j = 25; j < 50; j++)
-    {
-      for (k = 0; k < 25; k++)
-      {
-        mntSE += mountainErrorSamples[j][k];
-      }
-    }
-    mntSE /= i;
-  }
-
-  public static float getSignalAttenuation(Point3d paramPoint3d, Aircraft paramAircraft, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3, boolean paramBoolean4)
-  {
-    V.sub(paramAircraft.FM.Loc, paramPoint3d);
-    double d1 = V.length();
-
-    double d2 = 0.0D;
-
-    double d3 = d1 / 500.0D;
-    for (int i = 0; i < 20; i++)
-    {
-      double d4 = d3 * currentAttSampleSlot;
-      V.normalize();
-      V.scale(d4);
-      float f4 = Landscape.HQ_Air((float)(paramPoint3d.x + V.x), (float)(paramPoint3d.y + V.y));
-      double d6 = getCurvatureCorrectedHeight((float)(d4 / d1), d1, paramPoint3d.z, paramAircraft.FM.getAltitude());
-      float f6 = (float)(d6 - f4);
-      if (f6 < 0.0F)
-        attenuationSamples[(currentAttSampleSlot - 1)] = (-f6);
-      else {
-        attenuationSamples[(currentAttSampleSlot - 1)] = 0.0F;
-      }
-      currentAttSampleSlot += 1;
-      if (currentAttSampleSlot <= 500)
-        continue;
-      currentAttSampleSlot = 1;
-    }
-
-    float f1 = 0.0F;
-
-    for (int j = 0; j < 500; j++)
-    {
-      if ((attenuationSamples[j] > f1) && (f1 > 0.0F))
-      {
-        f3 = attenuationSamples[j] - f1;
-        d2 += attenuationSamples[j] * d3 + d3 * f3;
-      }
-      f1 = attenuationSamples[j];
-    }
-
-    d2 *= 0.166666D;
-
-    if (paramBoolean4) {
-      return 0.0F;
-    }
-    if (!paramBoolean3) {
-      sampleMountains(paramAircraft);
-    }
-    float f2 = 0.0F;
-    float f3 = 0.0F;
-    double d5 = lineOfSightDelta(paramPoint3d.z, paramAircraft.FM.getAltitude(), d1);
-    float f5;
-    double d7;
-    float f7;
-    if (paramBoolean1)
-    {
-      f5 = 0.0F;
-      if (d5 < 0.0D)
-        f5 = (float)(-2.0D * d5);
-      d7 = paramAircraft.FM.getAltitude() - paramPoint3d.z;
-      f3 = cvt(World.Sun().ToSun.z, -0.2F, 0.1F, 0.75F, 1.0F);
-      if ((World.Sun().ToSun.z > -0.1F) && (World.Sun().ToSun.z < 0.1F) && (Math.random() < 0.1D))
-        f3 += (float)Math.random() * 0.2F;
-      f7 = 1.0F - getConeOfSilenceMultiplier(d1, d7);
-      f2 = cvt((float)(d2 + f5) * f3, 0.0F, 7000000.0F, 0.0F, 1.0F);
-      f2 = f2 + f7 + floatindex(cvt((float)d1 * f3, 0.0F, 270000.0F, 0.0F, 6.0F), signalPropagationScale);
-      if (f3 < 1.0F)
-        nightError = cvt(f2, 0.65F, 1.0F, 0.0F, 1.0F);
-      else {
-        nightError = 0.0F;
-      }
-    }
-    else if (paramBoolean3)
-    {
-      f2 = cvt((float)d2, 0.0F, 500000.0F, 0.0F, 1.0F);
-      f5 = cvt((float)d5, -10000.0F, 0.0F, 1.0F, 0.0F);
-      f2 = f2 + f5 + floatindex(cvt((float)d1, 0.0F, 190000.0F, 0.0F, 6.0F), signalPropagationScale);
-    }
-    else if (paramBoolean2)
-    {
-      f5 = 0.0F;
-      if (d5 < 0.0D)
-        f5 = (float)(-3.0D * d5);
-      d7 = paramAircraft.FM.getAltitude() - paramPoint3d.z;
-      f3 = cvt(World.Sun().ToSun.z, -0.2F, 0.2F, 0.4F, 1.0F);
-      if ((World.Sun().ToSun.z > -0.1F) && (World.Sun().ToSun.z < 0.1F) && (Math.random() < 0.2D))
-        f3 += (float)Math.random() * 0.3F;
-      f7 = 1.0F - getConeOfSilenceMultiplier(d1, d7);
-      f2 = cvt((float)(d2 + f5) * f3, 0.0F, 6000000.0F, 0.0F, 1.0F);
-      f2 = f2 + f7 + floatindex(cvt((float)d1 * f3, 0.0F, 300000.0F, 0.0F, 6.0F), signalPropagationScale);
-      if (f3 < 1.0F)
-        nightError = cvt(f2, 0.65F, 1.0F, 0.0F, 1.0F);
-      else {
-        nightError = 0.0F;
-      }
-    }
-
-    if (f2 > 1.0F)
-      f2 = 1.0F;
-    return f2;
-  }
-
-  private static double getCurvatureCorrectedHeight(float paramFloat1, double paramDouble1, double paramDouble2, float paramFloat2)
-  {
-    double d1 = paramFloat1 * Math.sin(paramDouble1 / 6371000.0D) * (6371000.0F + paramFloat2);
-    double d2 = paramDouble2 + 6371000.0D + paramFloat1 * (Math.cos(paramDouble1 / 6371000.0D) * (6371000.0F + paramFloat2) - paramDouble2 - 6371000.0D);
-    double d3 = Math.sqrt(d1 * d1 + d2 * d2) - 6371000.0D;
-    if (d3 > 0.0D)
-      return d3;
-    return 0.0D;
-  }
-
-  public static double lineOfSightDelta(double paramDouble1, double paramDouble2, double paramDouble3)
-  {
-    return (Math.sqrt(12.47599983215332D * paramDouble1) + Math.sqrt(12.47599983215332D * paramDouble2)) * 1000.0D - paramDouble3;
-  }
-
-  protected static float floatindex(float paramFloat, float[] paramArrayOfFloat)
-  {
-    int i = (int)paramFloat;
-    if (i >= paramArrayOfFloat.length - 1) {
-      return paramArrayOfFloat[(paramArrayOfFloat.length - 1)];
-    }
-    if (i < 0) {
-      return paramArrayOfFloat[0];
-    }
-    if (i == 0)
-    {
-      if (paramFloat > 0.0F) {
-        return paramArrayOfFloat[0] + paramFloat * (paramArrayOfFloat[1] - paramArrayOfFloat[0]);
-      }
-      return paramArrayOfFloat[0];
-    }
-
-    return paramArrayOfFloat[i] + paramFloat % i * (paramArrayOfFloat[(i + 1)] - paramArrayOfFloat[i]);
-  }
-
-  public static final double Rnd(double paramDouble1, double paramDouble2)
-  {
-    return World.Rnd().nextDouble(paramDouble1, paramDouble2);
-  }
-
-  public static final float Rnd(float paramFloat1, float paramFloat2) {
-    return World.Rnd().nextFloat(paramFloat1, paramFloat2);
-  }
-
-  private boolean RndB(float paramFloat) {
-    return World.Rnd().nextFloat(0.0F, 1.0F) < paramFloat;
-  }
-
-  private static final long SecsToTicks(float paramFloat) {
-    long l = ()(0.5D + paramFloat / Time.tickLenFs());
-    return l < 1L ? 1L : l;
-  }
-
-  public boolean isStaticPos() {
-    return true;
-  }
-
-  public void msgShot(Shot paramShot) {
-    paramShot.bodyMaterial = 2;
-    if ((this.dying == 0) && (paramShot.power > 0.0F) && ((!isNetMirror()) || (!paramShot.isMirage())))
-    {
-      if (paramShot.powerType == 1) {
-        if (!RndB(0.15F))
-          Die(paramShot.initiator, 0, true);
-      } else {
-        float f1 = Shot.panzerThickness(this.pos.getAbsOrient(), paramShot.v, paramShot.chunkName.equalsIgnoreCase("Head"), this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP);
-
-        f1 *= Rnd(0.93F, 1.07F);
-        float f2 = this.prop.fnShotPanzer.Value(paramShot.power, f1);
-        if ((f2 < 1000.0F) && ((f2 <= 1.0F) || (RndB(1.0F / f2))))
-          Die(paramShot.initiator, 0, true);
-      }
-    }
-  }
-
-  public void msgExplosion(Explosion paramExplosion) {
-    if ((this.dying == 0) && ((!isNetMirror()) || (!paramExplosion.isMirage())) && (paramExplosion.power > 0.0F))
-    {
-      int i = paramExplosion.powerType;
-      if ((paramExplosion == null) || 
-        (i == 1)) {
-        if (TankGeneric.splintersKill(paramExplosion, this.prop.fnShotPanzer, Rnd(0.0F, 1.0F), Rnd(0.0F, 1.0F), this, 0.7F, 0.25F, this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP))
+        public BeaconProperties()
         {
-          Die(paramExplosion.initiator, 0, true);
+            meshName = null;
+            meshName1 = null;
+            meshSummer = null;
+            meshDesert = null;
+            meshWinter = null;
+            meshSummer1 = null;
+            meshDesert1 = null;
+            meshWinter1 = null;
+            fnShotPanzer = null;
+            fnExplodePanzer = null;
+            PANZER_BODY_FRONT = 0.001F;
+            PANZER_BODY_BACK = 0.001F;
+            PANZER_BODY_SIDE = 0.001F;
+            PANZER_BODY_TOP = 0.001F;
+            PANZER_HEAD = 0.001F;
+            PANZER_HEAD_TOP = 0.001F;
+            PANZER_TNT_TYPE = 1.0F;
+            HITBY_MASK = -2;
+            explodeName = null;
+            innerMarkerDist = 0.0F;
+            outerMarkerDist = 0.0F;
         }
-      } else {
-        int j = paramExplosion.powerType;
-        if ((paramExplosion == null) || (
-          (j == 2) && (paramExplosion.chunkName != null))) {
-          Die(paramExplosion.initiator, 0, true);
+    }
+
+    class Master extends com.maddox.il2.engine.ActorNet
+    {
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+            {
+                if(netmsginput.readByte() != 100)
+                    return false;
+            } else
+            {
+                return false;
+            }
+            if(dying == 1)
+            {
+                return true;
+            } else
+            {
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                Die(actor, (short)0, true);
+                return true;
+            }
         }
+
+        public Master(com.maddox.il2.engine.Actor actor)
+        {
+            super(actor);
+        }
+    }
+
+    class Mirror extends com.maddox.il2.engine.ActorNet
+    {
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+            {
+                switch(netmsginput.readByte())
+                {
+                case 73: // 'I'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted);
+                    }
+                    short word0 = netmsginput.readShort();
+                    if(word0 > 0 && dying != 1)
+                        Die(null, (short)1, false);
+                    return true;
+
+                case 68: // 'D'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted1 = new NetMsgGuaranted(netmsginput, 1);
+                        post(netmsgguaranted1);
+                    }
+                    if(dying != 1)
+                    {
+                        com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                        com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                        Die(actor, (short)1, true);
+                    }
+                    return true;
+
+                case 100: // 'd'
+                    com.maddox.rts.NetMsgGuaranted netmsgguaranted2 = new NetMsgGuaranted(netmsginput, 1);
+                    postTo(masterChannel(), netmsgguaranted2);
+                    return true;
+                }
+                return false;
+            } else
+            {
+                return true;
+            }
+        }
+
+        com.maddox.rts.NetMsgFiltered out;
+
+        public Mirror(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(actor, netchannel, i);
+            out = new NetMsgFiltered();
+        }
+    }
+
+    public static class SPAWN
+        implements com.maddox.il2.engine.ActorSpawn
+    {
+
+        private static float getF(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, float f, float f1)
+        {
+            float f2 = sectfile.get(s, s1, -9865.345F);
+            if(f2 == -9865.345F || f2 < f || f2 > f1)
+            {
+                if(f2 == -9865.345F)
+                    java.lang.System.out.println("Stationary: Parameter [" + s + "]:<" + s1 + "> " + "not found");
+                else
+                    java.lang.System.out.println("Stationary: Value of [" + s + "]:<" + s1 + "> (" + f2 + ")" + " is out of range (" + f + ";" + f1 + ")");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return f2;
+            }
+        }
+
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1)
+        {
+            java.lang.String s2 = sectfile.get(s, s1);
+            if(s2 == null || s2.length() <= 0)
+            {
+                java.lang.System.out.print("Stationary: Parameter [" + s + "]:<" + s1 + "> ");
+                java.lang.System.out.println(s2 != null ? "is empty" : "not found");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return s2;
+            }
+        }
+
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, java.lang.String s2)
+        {
+            java.lang.String s3 = sectfile.get(s, s1);
+            if(s3 == null || s3.length() <= 0)
+                return s2;
+            else
+                return s3;
+        }
+
+        public static com.maddox.il2.objects.vehicles.radios.BeaconProperties LoadStationaryProperties(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.Class class1)
+        {
+            com.maddox.il2.objects.vehicles.radios.BeaconProperties beaconproperties = new BeaconProperties();
+            java.lang.String s1 = com.maddox.il2.objects.vehicles.radios.SPAWN.getS(sectfile, s, "PanzerType", null);
+            if(s1 == null)
+                s1 = "Tank";
+            beaconproperties.fnShotPanzer = com.maddox.il2.ai.TableFunctions.GetFunc2(s1 + "ShotPanzer");
+            beaconproperties.fnExplodePanzer = com.maddox.il2.ai.TableFunctions.GetFunc2(s1 + "ExplodePanzer");
+            beaconproperties.PANZER_TNT_TYPE = com.maddox.il2.objects.vehicles.radios.SPAWN.getF(sectfile, s, "PanzerSubtype", 0.0F, 100F);
+            beaconproperties.meshSummer = com.maddox.il2.objects.vehicles.radios.SPAWN.getS(sectfile, s, "MeshSummer");
+            beaconproperties.meshDesert = com.maddox.il2.objects.vehicles.radios.SPAWN.getS(sectfile, s, "MeshDesert", beaconproperties.meshSummer);
+            beaconproperties.meshWinter = com.maddox.il2.objects.vehicles.radios.SPAWN.getS(sectfile, s, "MeshWinter", beaconproperties.meshSummer);
+            beaconproperties.meshSummer1 = com.maddox.il2.objects.vehicles.radios.SPAWN.getS(sectfile, s, "MeshSummerDamage", null);
+            beaconproperties.meshDesert1 = com.maddox.il2.objects.vehicles.radios.SPAWN.getS(sectfile, s, "MeshDesertDamage", beaconproperties.meshSummer1);
+            beaconproperties.meshWinter1 = com.maddox.il2.objects.vehicles.radios.SPAWN.getS(sectfile, s, "MeshWinterDamage", beaconproperties.meshSummer1);
+            int i = (beaconproperties.meshSummer1 != null ? 0 : 1) + (beaconproperties.meshDesert1 != null ? 0 : 1) + (beaconproperties.meshWinter1 != null ? 0 : 1);
+            if(i != 0 && i != 3)
+            {
+                java.lang.System.out.println("Stationary: Uncomplete set of damage meshes for '" + s + "'");
+                throw new RuntimeException("Can't register beacon object");
+            }
+            beaconproperties.explodeName = com.maddox.il2.objects.vehicles.radios.SPAWN.getS(sectfile, s, "Explode", "Stationary");
+            beaconproperties.PANZER_BODY_FRONT = com.maddox.il2.objects.vehicles.radios.SPAWN.getF(sectfile, s, "PanzerBodyFront", 0.001F, 9.999F);
+            if(sectfile.get(s, "PanzerBodyBack", -9865.345F) == -9865.345F)
+            {
+                beaconproperties.PANZER_BODY_BACK = beaconproperties.PANZER_BODY_FRONT;
+                beaconproperties.PANZER_BODY_SIDE = beaconproperties.PANZER_BODY_FRONT;
+                beaconproperties.PANZER_BODY_TOP = beaconproperties.PANZER_BODY_FRONT;
+            } else
+            {
+                beaconproperties.PANZER_BODY_BACK = com.maddox.il2.objects.vehicles.radios.SPAWN.getF(sectfile, s, "PanzerBodyBack", 0.001F, 9.999F);
+                beaconproperties.PANZER_BODY_SIDE = com.maddox.il2.objects.vehicles.radios.SPAWN.getF(sectfile, s, "PanzerBodySide", 0.001F, 9.999F);
+                beaconproperties.PANZER_BODY_TOP = com.maddox.il2.objects.vehicles.radios.SPAWN.getF(sectfile, s, "PanzerBodyTop", 0.001F, 9.999F);
+            }
+            if(sectfile.get(s, "PanzerHead", -9865.345F) == -9865.345F)
+                beaconproperties.PANZER_HEAD = beaconproperties.PANZER_BODY_FRONT;
+            else
+                beaconproperties.PANZER_HEAD = com.maddox.il2.objects.vehicles.radios.SPAWN.getF(sectfile, s, "PanzerHead", 0.001F, 9.999F);
+            if(sectfile.get(s, "PanzerHeadTop", -9865.345F) == -9865.345F)
+                beaconproperties.PANZER_HEAD_TOP = beaconproperties.PANZER_BODY_TOP;
+            else
+                beaconproperties.PANZER_HEAD_TOP = com.maddox.il2.objects.vehicles.radios.SPAWN.getF(sectfile, s, "PanzerHeadTop", 0.001F, 9.999F);
+            float f = java.lang.Math.min(java.lang.Math.min(beaconproperties.PANZER_BODY_BACK, beaconproperties.PANZER_BODY_TOP), java.lang.Math.min(beaconproperties.PANZER_BODY_SIDE, beaconproperties.PANZER_HEAD_TOP));
+            beaconproperties.HITBY_MASK = f <= 0.015F ? -1 : -2;
+            com.maddox.rts.Property.set(class1, "iconName", "icons/" + com.maddox.il2.objects.vehicles.radios.SPAWN.getS(sectfile, s, "Icon") + ".mat");
+            com.maddox.rts.Property.set(class1, "meshName", beaconproperties.meshSummer);
+            try
+            {
+                if(class1 == (com.maddox.il2.objects.vehicles.radios.BeaconGeneric.class$com$maddox$il2$objects$vehicles$radios$Beacon$LorenzBLBeacon != null ? com.maddox.il2.objects.vehicles.radios.BeaconGeneric.class$com$maddox$il2$objects$vehicles$radios$Beacon$LorenzBLBeacon : (com.maddox.il2.objects.vehicles.radios.BeaconGeneric.class$com$maddox$il2$objects$vehicles$radios$Beacon$LorenzBLBeacon = com.maddox.il2.objects.vehicles.radios.BeaconGeneric._mthclass$("com.maddox.il2.objects.vehicles.radios.Beacon$LorenzBLBeacon"))) || class1 == (com.maddox.il2.objects.vehicles.radios.BeaconGeneric.class$com$maddox$il2$objects$vehicles$radios$Beacon$LorenzBLBeacon_LongRunway != null ? com.maddox.il2.objects.vehicles.radios.BeaconGeneric.class$com$maddox$il2$objects$vehicles$radios$Beacon$LorenzBLBeacon_LongRunway : (com.maddox.il2.objects.vehicles.radios.BeaconGeneric.class$com$maddox$il2$objects$vehicles$radios$Beacon$LorenzBLBeacon_LongRunway = com.maddox.il2.objects.vehicles.radios.BeaconGeneric._mthclass$("com.maddox.il2.objects.vehicles.radios.Beacon$LorenzBLBeacon_LongRunway"))) || class1 == (com.maddox.il2.objects.vehicles.radios.BeaconGeneric.class$com$maddox$il2$objects$vehicles$radios$Beacon$LorenzBLBeacon_AAIAS != null ? com.maddox.il2.objects.vehicles.radios.BeaconGeneric.class$com$maddox$il2$objects$vehicles$radios$Beacon$LorenzBLBeacon_AAIAS : (com.maddox.il2.objects.vehicles.radios.BeaconGeneric.class$com$maddox$il2$objects$vehicles$radios$Beacon$LorenzBLBeacon_AAIAS = com.maddox.il2.objects.vehicles.radios.BeaconGeneric._mthclass$("com.maddox.il2.objects.vehicles.radios.Beacon$LorenzBLBeacon_AAIAS"))))
+                {
+                    beaconproperties.innerMarkerDist = com.maddox.il2.objects.vehicles.radios.SPAWN.getF(sectfile, s, "InnerMarkerDist", 1.0F, 3000F);
+                    beaconproperties.outerMarkerDist = com.maddox.il2.objects.vehicles.radios.SPAWN.getF(sectfile, s, "OuterMarkerDist", 3000F, 30000F);
+                }
+            }
+            catch(java.lang.Exception exception) { }
+            return beaconproperties;
+        }
+
+        public com.maddox.il2.engine.Actor actorSpawn(com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+        {
+            switch(com.maddox.il2.ai.World.cur().camouflage)
+            {
+            case 1: // '\001'
+                proper.meshName = proper.meshWinter;
+                proper.meshName1 = proper.meshWinter1;
+                break;
+
+            case 2: // '\002'
+                proper.meshName = proper.meshDesert;
+                proper.meshName1 = proper.meshDesert1;
+                break;
+
+            default:
+                proper.meshName = proper.meshSummer;
+                proper.meshName1 = proper.meshSummer1;
+                break;
+            }
+            Object obj = null;
+            com.maddox.il2.objects.vehicles.radios.BeaconGeneric beacongeneric;
+            try
+            {
+                com.maddox.il2.objects.vehicles.radios.BeaconGeneric.constr_arg1 = proper;
+                com.maddox.il2.objects.vehicles.radios.BeaconGeneric.constr_arg2 = actorspawnarg;
+                beacongeneric = (com.maddox.il2.objects.vehicles.radios.BeaconGeneric)cls.newInstance();
+                com.maddox.il2.objects.vehicles.radios.BeaconGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.vehicles.radios.BeaconGeneric.constr_arg2 = null;
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.objects.vehicles.radios.BeaconGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.vehicles.radios.BeaconGeneric.constr_arg2 = null;
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("SPAWN: Can't create Stationary object [class:" + cls.getName() + "]");
+                return null;
+            }
+            return beacongeneric;
+        }
+
+        public java.lang.Class cls;
+        public com.maddox.il2.objects.vehicles.radios.BeaconProperties proper;
+
+        public SPAWN(java.lang.Class class1)
+        {
+            try
+            {
+                java.lang.String s = class1.getName();
+                int i = s.lastIndexOf('.');
+                int j = s.lastIndexOf('$');
+                if(i < j)
+                    i = j;
+                java.lang.String s1 = s.substring(i + 1);
+                proper = com.maddox.il2.objects.vehicles.radios.SPAWN.LoadStationaryProperties(com.maddox.il2.objects.Statics.getTechnicsFile(), s1, class1);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("Problem in spawn: " + class1.getName());
+            }
+            cls = class1;
+            com.maddox.rts.Spawn.add(cls, this);
+        }
+    }
+
+
+    public static float getConeOfSilenceMultiplier(double d, double d1)
+    {
+        float f = 57.32484F * (float)java.lang.Math.atan2(d - d1, d1);
+        return com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt(f, 20F, 40F, 0.0F, 1.0F);
+    }
+
+    public static float getTerrainAndNightError(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        float f = aircraft.FM.Or.getYaw();
+        float f1 = -45F;
+        float f2 = mntNE;
+        if(mntSE > f2)
+        {
+            f2 = mntSE;
+            f1 = 45F;
+        }
+        if(mntSW > f2)
+        {
+            f2 = mntSW;
+            f1 = 135F;
+        }
+        if(mntNW > f2)
+        {
+            f2 = mntNW;
+            f1 = -135F;
+        }
+        float f3 = f - f1;
+        f2 = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt(f2, 15F, 1400F, 0.0F, 1.0F);
+        float f4 = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt((float)aircraft.FM.Loc.z, 3000F, 15000F, 1.0F, 0.0F);
+        f2 *= f4;
+        float f5 = (float)java.lang.Math.random();
+        if(f3 > 0.0F)
+            terErrDirection = -1;
         else
+            terErrDirection = 1;
+        if((double)f5 < 0.01D)
+            terErrDirection = 0;
+        if((double)f5 < 0.0070000000000000001D)
+            ngtErrDirection *= -1;
+        else
+        if((double)f5 < 0.13D)
+            ngtErrDirection = 1;
+        else
+        if((double)f5 > 0.96999999999999997D)
+            ngtErrDirection = 0;
+        float f6 = (float)terErrDirection * (f2 * 30F + com.maddox.il2.ai.World.Rnd().nextFloat(-f2 * 8F, f2 * 8F));
+        float f7 = (float)ngtErrDirection * (nightError * 30F + com.maddox.il2.ai.World.Rnd().nextFloat(-nightError * 5F, nightError * 5F));
+        return f6 + f7;
+    }
+
+    private static void sampleMountains(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        float f = java.lang.Math.abs(currentMntSampleCol - 25);
+        for(int i = 0; i < 10; i++)
         {
-          float f1;
-          if (paramExplosion.chunkName != null)
-            f1 = 0.5F * paramExplosion.power;
-          else
-            f1 = paramExplosion.receivedTNTpower(this);
-          f1 *= Rnd(0.95F, 1.05F);
-          float f2 = this.prop.fnExplodePanzer.Value(f1, this.prop.PANZER_TNT_TYPE);
-
-          if ((f2 < 1000.0F) && ((f2 <= 1.0F) || (RndB(1.0F / f2))))
-          {
-            Die(paramExplosion.initiator, 0, true);
-          }
+            float f1 = -20000F + (float)currentMntSampleRow * 800F;
+            float f2 = -20000F + (float)currentMntSampleCol * 800F;
+            float f3 = com.maddox.il2.engine.Landscape.HQ_Air((float)aircraft.FM.Loc.x + f1, (float)aircraft.FM.Loc.y + f2);
+            float f4 = java.lang.Math.abs(currentMntSampleRow - 25);
+            float f5 = java.lang.Math.max(f4, f);
+            f3 *= com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt(f5, 0.0F, 25F, 1.0F, 0.5F);
+            mountainErrorSamples[currentMntSampleRow][currentMntSampleCol] = f3;
+            currentMntSampleRow++;
+            if(currentMntSampleRow != 50)
+                continue;
+            currentMntSampleRow = 0;
+            currentMntSampleCol++;
+            f = java.lang.Math.abs(currentMntSampleCol - 25);
+            if(currentMntSampleCol == 50)
+                currentMntSampleCol = 0;
         }
-      }
-    }
-  }
 
-  private void ShowExplode(float paramFloat, Actor paramActor) {
-    if (paramFloat > 0.0F)
-      paramFloat = Rnd(paramFloat, paramFloat * 1.6F);
-    Explosions.runByName(this.prop.explodeName, this, "Smoke", "SmokeHead", paramFloat, paramActor);
-  }
+        int j = 625;
+        for(int k = 0; k < 25; k++)
+        {
+            for(int k1 = 0; k1 < 25; k1++)
+                mntSW += mountainErrorSamples[k][k1];
 
-  private void Die(Actor paramActor, short paramShort, boolean paramBoolean)
-  {
-    if (this.dying == 0) {
-      if (paramShort <= 0) {
-        if (isNetMirror()) {
-          send_DeathRequest(paramActor);
-          return;
         }
-        i = 1;
-      }
-      this.dying = 1;
-      World.onActorDied(this, paramActor);
-      if (this.prop.meshName1 == null)
-        mesh().makeAllMaterialsDarker(0.22F, 0.35F);
-      else
-        setMesh(this.prop.meshName1);
-      int i = mesh().hookFind("Ground_Level");
-      if (i != -1) {
-        Matrix4d localMatrix4d = new Matrix4d();
-        mesh().hookMatrix(i, localMatrix4d);
-        this.heightAboveLandSurface = (float)(-localMatrix4d.m23);
-      }
-      Align();
-      if (paramBoolean)
-        ShowExplode(15.0F, paramActor);
-      if (paramBoolean)
-        send_DeathCommand(paramActor);
-    }
-  }
 
-  public void destroy() {
-    if (!isDestroyed())
-      super.destroy();
-  }
+        mntSW /= j;
+        for(int l = 0; l < 25; l++)
+        {
+            for(int l1 = 25; l1 < 50; l1++)
+                mntNW += mountainErrorSamples[l][l1];
 
-  public Object getSwitchListener(Message paramMessage) {
-    return this;
-  }
+        }
 
-  protected BeaconGeneric() {
-    this(constr_arg1, constr_arg2);
-  }
+        mntNW /= j;
+        for(int i1 = 25; i1 < 50; i1++)
+        {
+            for(int i2 = 25; i2 < 50; i2++)
+                mntNE += mountainErrorSamples[i1][i2];
 
-  private BeaconGeneric(BeaconProperties paramBeaconProperties, ActorSpawnArg paramActorSpawnArg)
-  {
-    super(paramBeaconProperties.meshName);
-    this.prop = paramBeaconProperties;
-    paramActorSpawnArg.setStationary(this);
-    collide(true);
-    drawing(true);
-    createNetObject(paramActorSpawnArg.netChannel, paramActorSpawnArg.netIdRemote);
-    this.heightAboveLandSurface = 0.0F;
-    int i = mesh().hookFind("Ground_Level");
-    if (i != -1) {
-      Matrix4d localMatrix4d = new Matrix4d();
-      mesh().hookMatrix(i, localMatrix4d);
-      this.heightAboveLandSurface = (float)(-localMatrix4d.m23);
-    } else {
-      System.out.println("Stationary " + getClass().getName() + ": hook Ground_Level not found");
-    }
-    Align();
-  }
+        }
 
-  private void Align()
-  {
-    this.pos.getAbs(p);
-    p.z = (Engine.land().HQ(p.x, p.y) + this.heightAboveLandSurface);
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+        mntNE /= j;
+        for(int j1 = 25; j1 < 50; j1++)
+        {
+            for(int j2 = 0; j2 < 25; j2++)
+                mntSE += mountainErrorSamples[j1][j2];
 
-    this.pos.setAbs(p, o);
-  }
+        }
 
-  public void align() {
-    Align();
-  }
-
-  public boolean unmovableInFuture()
-  {
-    return true;
-  }
-
-  public void collisionDeath() {
-    if (!isNet()) {
-      ShowExplode(-1.0F, null);
-      destroy();
-    }
-  }
-
-  public float futurePosition(float paramFloat, Point3d paramPoint3d) {
-    this.pos.getAbs(paramPoint3d);
-    return paramFloat <= 0.0F ? 0.0F : paramFloat;
-  }
-
-  private void send_DeathCommand(Actor paramActor) {
-    if (isNetMaster()) {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      try {
-        localNetMsgGuaranted.writeByte(68);
-        localNetMsgGuaranted.writeNetObj(paramActor == null ? (ActorNet)null : paramActor.net);
-
-        this.net.post(localNetMsgGuaranted);
-      } catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-    }
-  }
-
-  private void send_DeathRequest(Actor paramActor) {
-    if ((isNetMirror()) && (!(this.net.masterChannel() instanceof NetChannelInStream)))
-      try
-      {
-        NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-        localNetMsgGuaranted.writeByte(100);
-        localNetMsgGuaranted.writeNetObj(paramActor == null ? (ActorNet)null : paramActor.net);
-
-        this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted);
-      } catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-  }
-
-  public void createNetObject(NetChannel paramNetChannel, int paramInt)
-  {
-    if (paramNetChannel == null)
-      this.net = new Master(this);
-    else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
-  }
-
-  public void netFirstUpdate(NetChannel paramNetChannel) throws IOException {
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    localNetMsgGuaranted.writeByte(73);
-    if (this.dying == 0)
-      localNetMsgGuaranted.writeShort(0);
-    else
-      localNetMsgGuaranted.writeShort(1);
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-  }
-
-  protected static float cvt(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5)
-  {
-    paramFloat1 = Math.min(Math.max(paramFloat1, paramFloat2), paramFloat3);
-    return paramFloat4 + (paramFloat5 - paramFloat4) * (paramFloat1 - paramFloat2) / (paramFloat3 - paramFloat2);
-  }
-
-  public int HitbyMask() {
-    return this.prop.HITBY_MASK;
-  }
-
-  public int chooseBulletType(BulletProperties[] paramArrayOfBulletProperties) {
-    if (this.dying != 0) {
-      return -1;
+        mntSE /= j;
     }
 
-    if (paramArrayOfBulletProperties.length == 1) {
-      return 0;
-    }
-
-    if (paramArrayOfBulletProperties.length <= 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties[0].power <= 0.0F)
+    public static float getSignalAttenuation(com.maddox.JGP.Point3d point3d, com.maddox.il2.objects.air.Aircraft aircraft, boolean flag, boolean flag1, boolean flag2, boolean flag3)
     {
-      return 0;
+        V.sub(aircraft.FM.Loc, point3d);
+        double d = V.length();
+        double d1 = 0.0D;
+        double d2 = d / 500D;
+        for(int i = 0; i < 20; i++)
+        {
+            double d3 = d2 * (double)currentAttSampleSlot;
+            V.normalize();
+            V.scale(d3);
+            float f6 = com.maddox.il2.engine.Landscape.HQ_Air((float)(point3d.x + V.x), (float)(point3d.y + V.y));
+            double d5 = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.getCurvatureCorrectedHeight((float)(d3 / d), d, point3d.z, aircraft.FM.getAltitude());
+            float f10 = (float)(d5 - (double)f6);
+            if(f10 < 0.0F)
+                attenuationSamples[currentAttSampleSlot - 1] = -f10;
+            else
+                attenuationSamples[currentAttSampleSlot - 1] = 0.0F;
+            currentAttSampleSlot++;
+            if(currentAttSampleSlot > 500)
+                currentAttSampleSlot = 1;
+        }
+
+        float f = 0.0F;
+        for(int j = 0; j < 500; j++)
+        {
+            if(attenuationSamples[j] > f && f > 0.0F)
+            {
+                float f2 = attenuationSamples[j] - f;
+                d1 += (double)attenuationSamples[j] * d2 + d2 * (double)f2;
+            }
+            f = attenuationSamples[j];
+        }
+
+        d1 *= 0.16666600000000001D;
+        if(flag3)
+            return 0.0F;
+        if(!flag2)
+            com.maddox.il2.objects.vehicles.radios.BeaconGeneric.sampleMountains(aircraft);
+        float f1 = 0.0F;
+        float f3 = 0.0F;
+        double d4 = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.lineOfSightDelta(point3d.z, aircraft.FM.getAltitude(), d);
+        if(flag)
+        {
+            float f7 = 0.0F;
+            if(d4 < 0.0D)
+                f7 = (float)(-2D * d4);
+            double d6 = (double)aircraft.FM.getAltitude() - point3d.z;
+            float f4 = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt(com.maddox.il2.ai.World.Sun().ToSun.z, -0.2F, 0.1F, 0.75F, 1.0F);
+            if(com.maddox.il2.ai.World.Sun().ToSun.z > -0.1F && com.maddox.il2.ai.World.Sun().ToSun.z < 0.1F && java.lang.Math.random() < 0.10000000000000001D)
+                f4 += (float)java.lang.Math.random() * 0.2F;
+            float f11 = 1.0F - com.maddox.il2.objects.vehicles.radios.BeaconGeneric.getConeOfSilenceMultiplier(d, d6);
+            f1 = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt((float)(d1 + (double)f7) * f4, 0.0F, 7000000F, 0.0F, 1.0F);
+            f1 = f1 + f11 + com.maddox.il2.objects.vehicles.radios.BeaconGeneric.floatindex(com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt((float)d * f4, 0.0F, 270000F, 0.0F, 6F), signalPropagationScale);
+            if(f4 < 1.0F)
+                nightError = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt(f1, 0.65F, 1.0F, 0.0F, 1.0F);
+            else
+                nightError = 0.0F;
+        } else
+        if(flag2)
+        {
+            f1 = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt((float)d1, 0.0F, 500000F, 0.0F, 1.0F);
+            float f8 = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt((float)d4, -10000F, 0.0F, 1.0F, 0.0F);
+            f1 = f1 + f8 + com.maddox.il2.objects.vehicles.radios.BeaconGeneric.floatindex(com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt((float)d, 0.0F, 190000F, 0.0F, 6F), signalPropagationScale);
+        } else
+        if(flag1)
+        {
+            float f9 = 0.0F;
+            if(d4 < 0.0D)
+                f9 = (float)(-3D * d4);
+            double d7 = (double)aircraft.FM.getAltitude() - point3d.z;
+            float f5 = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt(com.maddox.il2.ai.World.Sun().ToSun.z, -0.2F, 0.2F, 0.4F, 1.0F);
+            if(com.maddox.il2.ai.World.Sun().ToSun.z > -0.1F && com.maddox.il2.ai.World.Sun().ToSun.z < 0.1F && java.lang.Math.random() < 0.20000000000000001D)
+                f5 += (float)java.lang.Math.random() * 0.3F;
+            float f12 = 1.0F - com.maddox.il2.objects.vehicles.radios.BeaconGeneric.getConeOfSilenceMultiplier(d, d7);
+            f1 = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt((float)(d1 + (double)f9) * f5, 0.0F, 6000000F, 0.0F, 1.0F);
+            f1 = f1 + f12 + com.maddox.il2.objects.vehicles.radios.BeaconGeneric.floatindex(com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt((float)d * f5, 0.0F, 300000F, 0.0F, 6F), signalPropagationScale);
+            if(f5 < 1.0F)
+                nightError = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.cvt(f1, 0.65F, 1.0F, 0.0F, 1.0F);
+            else
+                nightError = 0.0F;
+        }
+        if(f1 > 1.0F)
+            f1 = 1.0F;
+        return f1;
     }
-    if (paramArrayOfBulletProperties[1].power <= 0.0F)
+
+    private static double getCurvatureCorrectedHeight(float f, double d, double d1, float f1)
     {
-      return 1;
+        double d2 = (double)f * java.lang.Math.sin(d / 6371000D) * (double)(6371000F + f1);
+        double d3 = d1 + 6371000D + (double)f * (java.lang.Math.cos(d / 6371000D) * (double)(6371000F + f1) - d1 - 6371000D);
+        double d4 = java.lang.Math.sqrt(d2 * d2 + d3 * d3) - 6371000D;
+        if(d4 > 0.0D)
+            return d4;
+        else
+            return 0.0D;
     }
 
-    if (paramArrayOfBulletProperties[0].cumulativePower > 0.0F)
+    public static double lineOfSightDelta(double d, double d1, double d2)
     {
-      return 0;
+        return (java.lang.Math.sqrt(12.47599983215332D * d) + java.lang.Math.sqrt(12.47599983215332D * d1)) * 1000D - d2;
     }
-    if (paramArrayOfBulletProperties[1].cumulativePower > 0.0F)
+
+    protected static float floatindex(float f, float af[])
     {
-      return 1;
+        int i = (int)f;
+        if(i >= af.length - 1)
+            return af[af.length - 1];
+        if(i < 0)
+            return af[0];
+        if(i == 0)
+        {
+            if(f > 0.0F)
+                return af[0] + f * (af[1] - af[0]);
+            else
+                return af[0];
+        } else
+        {
+            return af[i] + (f % (float)i) * (af[i + 1] - af[i]);
+        }
     }
 
-    if (paramArrayOfBulletProperties[0].powerType == 1)
+    public static final double Rnd(double d, double d1)
     {
-      return 0;
+        return com.maddox.il2.ai.World.Rnd().nextDouble(d, d1);
     }
-    if (paramArrayOfBulletProperties[1].powerType == 1)
+
+    public static final float Rnd(float f, float f1)
     {
-      return 1;
+        return com.maddox.il2.ai.World.Rnd().nextFloat(f, f1);
     }
 
-    if (paramArrayOfBulletProperties[0].powerType == 0)
+    private boolean RndB(float f)
     {
-      return 1;
+        return com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < f;
     }
 
-    return 0;
-  }
-
-  public int chooseShotpoint(BulletProperties paramBulletProperties) {
-    if (this.dying != 0) {
-      return -1;
-    }
-    return 0;
-  }
-
-  public boolean getShotpointOffset(int paramInt, Point3d paramPoint3d) {
-    if (this.dying != 0) {
-      return false;
-    }
-
-    if (paramInt != 0) {
-      return false;
-    }
-
-    if (paramPoint3d != null) {
-      paramPoint3d.set(0.0D, 0.0D, 0.0D);
-    }
-    return true;
-  }
-
-  public static class BeaconProperties
-  {
-    public String meshName = null;
-    public String meshName1 = null;
-    public String meshSummer = null;
-    public String meshDesert = null;
-    public String meshWinter = null;
-    public String meshSummer1 = null;
-    public String meshDesert1 = null;
-    public String meshWinter1 = null;
-    public TableFunction2 fnShotPanzer = null;
-    public TableFunction2 fnExplodePanzer = null;
-    public float PANZER_BODY_FRONT = 0.001F;
-    public float PANZER_BODY_BACK = 0.001F;
-    public float PANZER_BODY_SIDE = 0.001F;
-    public float PANZER_BODY_TOP = 0.001F;
-    public float PANZER_HEAD = 0.001F;
-    public float PANZER_HEAD_TOP = 0.001F;
-    public float PANZER_TNT_TYPE = 1.0F;
-    public int HITBY_MASK = -2;
-    public String explodeName = null;
-    public float innerMarkerDist = 0.0F;
-    public float outerMarkerDist = 0.0F;
-  }
-
-  class Master extends ActorNet
-  {
-    public Master(Actor arg2)
+    private static final long SecsToTicks(float f)
     {
-      super();
+        long l = (long)(0.5D + (double)(f / com.maddox.rts.Time.tickLenFs()));
+        return l >= 1L ? l : 1L;
     }
 
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted()) {
-        if (paramNetMsgInput.readByte() != 100)
-          return false;
-      }
-      else return false;
-      if (BeaconGeneric.this.dying == 1)
+    public boolean isStaticPos()
+    {
         return true;
-      NetObj localNetObj = paramNetMsgInput.readNetObj();
-      Actor localActor = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-      BeaconGeneric.this.Die(localActor, 0, true);
-      return true;
-    }
-  }
-
-  class Mirror extends ActorNet
-  {
-    NetMsgFiltered out = new NetMsgFiltered();
-
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted())
-      {
-        Object localObject;
-        switch (paramNetMsgInput.readByte()) {
-        case 73:
-          if (isMirrored()) {
-            NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted(paramNetMsgInput, 0);
-
-            post(localNetMsgGuaranted);
-          }
-          int i = paramNetMsgInput.readShort();
-          if ((i > 0) && (BeaconGeneric.this.dying != 1))
-            BeaconGeneric.this.Die(null, 1, false);
-          return true;
-        case 68:
-          if (isMirrored()) {
-            localObject = new NetMsgGuaranted(paramNetMsgInput, 1);
-
-            post((NetMsgGuaranted)localObject);
-          }
-          if (BeaconGeneric.this.dying != 1) {
-            localObject = paramNetMsgInput.readNetObj();
-
-            Actor localActor = localObject == null ? null : ((ActorNet)localObject).actor();
-
-            BeaconGeneric.this.Die(localActor, 1, true);
-          }
-          return true;
-        case 100:
-          localObject = new NetMsgGuaranted(paramNetMsgInput, 1);
-
-          postTo(masterChannel(), (NetMsgGuaranted)localObject);
-          return true;
-        }
-
-        return false;
-      }
-
-      return true;
     }
 
-    public Mirror(Actor paramNetChannel, NetChannel paramInt, int arg4) {
-      super(paramInt, i);
-    }
-  }
-
-  public static class SPAWN
-    implements ActorSpawn
-  {
-    public Class cls;
-    public BeaconGeneric.BeaconProperties proper;
-
-    private static float getF(SectFile paramSectFile, String paramString1, String paramString2, float paramFloat1, float paramFloat2)
+    public void msgShot(com.maddox.il2.ai.Shot shot)
     {
-      float f = paramSectFile.get(paramString1, paramString2, -9865.3447F);
-      if ((f == -9865.3447F) || (f < paramFloat1) || (f > paramFloat2)) {
-        if (f == -9865.3447F) {
-          System.out.println("Stationary: Parameter [" + paramString1 + "]:<" + paramString2 + "> " + "not found");
+        shot.bodyMaterial = 2;
+        if(dying == 0 && shot.power > 0.0F && (!isNetMirror() || !shot.isMirage()))
+            if(shot.powerType == 1)
+            {
+                if(!RndB(0.15F))
+                    Die(shot.initiator, (short)0, true);
+            } else
+            {
+                float f = com.maddox.il2.ai.Shot.panzerThickness(pos.getAbsOrient(), shot.v, shot.chunkName.equalsIgnoreCase("Head"), prop.PANZER_BODY_FRONT, prop.PANZER_BODY_SIDE, prop.PANZER_BODY_BACK, prop.PANZER_BODY_TOP, prop.PANZER_HEAD, prop.PANZER_HEAD_TOP);
+                f *= com.maddox.il2.objects.vehicles.radios.BeaconGeneric.Rnd(0.93F, 1.07F);
+                float f1 = prop.fnShotPanzer.Value(shot.power, f);
+                if(f1 < 1000F && (f1 <= 1.0F || RndB(1.0F / f1)))
+                    Die(shot.initiator, (short)0, true);
+            }
+    }
+
+    public void msgExplosion(com.maddox.il2.ai.Explosion explosion)
+    {
+        if(dying == 0 && (!isNetMirror() || !explosion.isMirage()) && explosion.power > 0.0F)
+        {
+            int i = explosion.powerType;
+            if(explosion == null);
+            if(i == 1)
+            {
+                if(com.maddox.il2.objects.vehicles.tanks.TankGeneric.splintersKill(explosion, prop.fnShotPanzer, com.maddox.il2.objects.vehicles.radios.BeaconGeneric.Rnd(0.0F, 1.0F), com.maddox.il2.objects.vehicles.radios.BeaconGeneric.Rnd(0.0F, 1.0F), this, 0.7F, 0.25F, prop.PANZER_BODY_FRONT, prop.PANZER_BODY_SIDE, prop.PANZER_BODY_BACK, prop.PANZER_BODY_TOP, prop.PANZER_HEAD, prop.PANZER_HEAD_TOP))
+                    Die(explosion.initiator, (short)0, true);
+            } else
+            {
+                int j = explosion.powerType;
+                if(explosion == null);
+                if(j == 2 && explosion.chunkName != null)
+                {
+                    Die(explosion.initiator, (short)0, true);
+                } else
+                {
+                    float f;
+                    if(explosion.chunkName != null)
+                        f = 0.5F * explosion.power;
+                    else
+                        f = explosion.receivedTNTpower(this);
+                    f *= com.maddox.il2.objects.vehicles.radios.BeaconGeneric.Rnd(0.95F, 1.05F);
+                    float f1 = prop.fnExplodePanzer.Value(f, prop.PANZER_TNT_TYPE);
+                    if(f1 < 1000F && (f1 <= 1.0F || RndB(1.0F / f1)))
+                        Die(explosion.initiator, (short)0, true);
+                }
+            }
         }
+    }
+
+    private void ShowExplode(float f, com.maddox.il2.engine.Actor actor)
+    {
+        if(f > 0.0F)
+            f = com.maddox.il2.objects.vehicles.radios.BeaconGeneric.Rnd(f, f * 1.6F);
+        com.maddox.il2.objects.effects.Explosions.runByName(prop.explodeName, this, "Smoke", "SmokeHead", f, actor);
+    }
+
+    private void Die(com.maddox.il2.engine.Actor actor, short word0, boolean flag)
+    {
+        if(dying == 0)
+        {
+            if(word0 <= 0)
+            {
+                if(isNetMirror())
+                {
+                    send_DeathRequest(actor);
+                    return;
+                }
+                boolean flag1 = true;
+            }
+            dying = 1;
+            com.maddox.il2.ai.World.onActorDied(this, actor);
+            if(prop.meshName1 == null)
+                mesh().makeAllMaterialsDarker(0.22F, 0.35F);
+            else
+                setMesh(prop.meshName1);
+            int i = mesh().hookFind("Ground_Level");
+            if(i != -1)
+            {
+                com.maddox.JGP.Matrix4d matrix4d = new Matrix4d();
+                mesh().hookMatrix(i, matrix4d);
+                heightAboveLandSurface = (float)(-matrix4d.m23);
+            }
+            Align();
+            if(flag)
+                ShowExplode(15F, actor);
+            if(flag)
+                send_DeathCommand(actor);
+        }
+    }
+
+    public void destroy()
+    {
+        if(!isDestroyed())
+            super.destroy();
+    }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    protected BeaconGeneric()
+    {
+        this(constr_arg1, constr_arg2);
+    }
+
+    private BeaconGeneric(com.maddox.il2.objects.vehicles.radios.BeaconProperties beaconproperties, com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+    {
+        super(beaconproperties.meshName);
+        prop = null;
+        dying = 0;
+        prop = beaconproperties;
+        actorspawnarg.setStationary(this);
+        collide(true);
+        drawing(true);
+        createNetObject(actorspawnarg.netChannel, actorspawnarg.netIdRemote);
+        heightAboveLandSurface = 0.0F;
+        int i = mesh().hookFind("Ground_Level");
+        if(i != -1)
+        {
+            com.maddox.JGP.Matrix4d matrix4d = new Matrix4d();
+            mesh().hookMatrix(i, matrix4d);
+            heightAboveLandSurface = (float)(-matrix4d.m23);
+        } else
+        {
+            java.lang.System.out.println("Stationary " + getClass().getName() + ": hook Ground_Level not found");
+        }
+        Align();
+    }
+
+    private void Align()
+    {
+        pos.getAbs(p);
+        p.z = com.maddox.il2.engine.Engine.land().HQ(p.x, p.y) + (double)heightAboveLandSurface;
+        o.setYPR(pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+        pos.setAbs(p, o);
+    }
+
+    public void align()
+    {
+        Align();
+    }
+
+    public boolean unmovableInFuture()
+    {
+        return true;
+    }
+
+    public void collisionDeath()
+    {
+        if(!isNet())
+        {
+            ShowExplode(-1F, null);
+            destroy();
+        }
+    }
+
+    public float futurePosition(float f, com.maddox.JGP.Point3d point3d)
+    {
+        pos.getAbs(point3d);
+        return f > 0.0F ? f : 0.0F;
+    }
+
+    private void send_DeathCommand(com.maddox.il2.engine.Actor actor)
+    {
+        if(isNetMaster())
+        {
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+            try
+            {
+                netmsgguaranted.writeByte(68);
+                netmsgguaranted.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : ((com.maddox.rts.NetObj) ((com.maddox.il2.engine.ActorNet)null)));
+                net.post(netmsgguaranted);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+        }
+    }
+
+    private void send_DeathRequest(com.maddox.il2.engine.Actor actor)
+    {
+        if(isNetMirror() && !(net.masterChannel() instanceof com.maddox.rts.NetChannelInStream))
+            try
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                netmsgguaranted.writeByte(100);
+                netmsgguaranted.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : ((com.maddox.rts.NetObj) ((com.maddox.il2.engine.ActorNet)null)));
+                net.postTo(net.masterChannel(), netmsgguaranted);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+    }
+
+    public void createNetObject(com.maddox.rts.NetChannel netchannel, int i)
+    {
+        if(netchannel == null)
+            net = new Master(this);
         else
-        {
-          System.out.println("Stationary: Value of [" + paramString1 + "]:<" + paramString2 + "> (" + f + ")" + " is out of range (" + paramFloat1 + ";" + paramFloat2 + ")");
-        }
-
-        throw new RuntimeException("Can't set property");
-      }
-      return f;
+            net = new Mirror(this, netchannel, i);
     }
 
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2)
+    public void netFirstUpdate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
     {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        System.out.print("Stationary: Parameter [" + paramString1 + "]:<" + paramString2 + "> ");
-
-        System.out.println(str == null ? "not found" : "is empty");
-
-        throw new RuntimeException("Can't set property");
-      }
-      return str;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        netmsgguaranted.writeByte(73);
+        if(dying == 0)
+            netmsgguaranted.writeShort(0);
+        else
+            netmsgguaranted.writeShort(1);
+        net.postTo(netchannel, netmsgguaranted);
     }
 
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2, String paramString3)
+    protected static float cvt(float f, float f1, float f2, float f3, float f4)
     {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0))
-        return paramString3;
-      return str;
+        f = java.lang.Math.min(java.lang.Math.max(f, f1), f2);
+        return f3 + ((f4 - f3) * (f - f1)) / (f2 - f1);
     }
 
-    public static BeaconGeneric.BeaconProperties LoadStationaryProperties(SectFile paramSectFile, String paramString, Class paramClass)
+    static java.lang.Class _mthclass$(java.lang.String s)
     {
-      BeaconGeneric.BeaconProperties localBeaconProperties = new BeaconGeneric.BeaconProperties();
-
-      String str = getS(paramSectFile, paramString, "PanzerType", null);
-      if (str == null)
-        str = "Tank";
-      localBeaconProperties.fnShotPanzer = TableFunctions.GetFunc2(str + "ShotPanzer");
-
-      localBeaconProperties.fnExplodePanzer = TableFunctions.GetFunc2(str + "ExplodePanzer");
-
-      localBeaconProperties.PANZER_TNT_TYPE = getF(paramSectFile, paramString, "PanzerSubtype", 0.0F, 100.0F);
-
-      localBeaconProperties.meshSummer = getS(paramSectFile, paramString, "MeshSummer");
-
-      localBeaconProperties.meshDesert = getS(paramSectFile, paramString, "MeshDesert", localBeaconProperties.meshSummer);
-
-      localBeaconProperties.meshWinter = getS(paramSectFile, paramString, "MeshWinter", localBeaconProperties.meshSummer);
-
-      localBeaconProperties.meshSummer1 = getS(paramSectFile, paramString, "MeshSummerDamage", null);
-
-      localBeaconProperties.meshDesert1 = getS(paramSectFile, paramString, "MeshDesertDamage", localBeaconProperties.meshSummer1);
-
-      localBeaconProperties.meshWinter1 = getS(paramSectFile, paramString, "MeshWinterDamage", localBeaconProperties.meshSummer1);
-
-      int i = (localBeaconProperties.meshSummer1 == null ? 1 : 0) + (localBeaconProperties.meshDesert1 == null ? 1 : 0) + (localBeaconProperties.meshWinter1 == null ? 1 : 0);
-
-      if ((i != 0) && (i != 3)) {
-        System.out.println("Stationary: Uncomplete set of damage meshes for '" + paramString + "'");
-
-        throw new RuntimeException("Can't register beacon object");
-      }
-      localBeaconProperties.explodeName = getS(paramSectFile, paramString, "Explode", "Stationary");
-
-      localBeaconProperties.PANZER_BODY_FRONT = getF(paramSectFile, paramString, "PanzerBodyFront", 0.001F, 9.999F);
-
-      if (paramSectFile.get(paramString, "PanzerBodyBack", -9865.3447F) == -9865.3447F)
-      {
-        localBeaconProperties.PANZER_BODY_BACK = localBeaconProperties.PANZER_BODY_FRONT;
-
-        localBeaconProperties.PANZER_BODY_SIDE = localBeaconProperties.PANZER_BODY_FRONT;
-
-        localBeaconProperties.PANZER_BODY_TOP = localBeaconProperties.PANZER_BODY_FRONT;
-      }
-      else {
-        localBeaconProperties.PANZER_BODY_BACK = getF(paramSectFile, paramString, "PanzerBodyBack", 0.001F, 9.999F);
-
-        localBeaconProperties.PANZER_BODY_SIDE = getF(paramSectFile, paramString, "PanzerBodySide", 0.001F, 9.999F);
-
-        localBeaconProperties.PANZER_BODY_TOP = getF(paramSectFile, paramString, "PanzerBodyTop", 0.001F, 9.999F);
-      }
-
-      if (paramSectFile.get(paramString, "PanzerHead", -9865.3447F) == -9865.3447F) {
-        localBeaconProperties.PANZER_HEAD = localBeaconProperties.PANZER_BODY_FRONT;
-      }
-      else {
-        localBeaconProperties.PANZER_HEAD = getF(paramSectFile, paramString, "PanzerHead", 0.001F, 9.999F);
-      }
-      if (paramSectFile.get(paramString, "PanzerHeadTop", -9865.3447F) == -9865.3447F)
-      {
-        localBeaconProperties.PANZER_HEAD_TOP = localBeaconProperties.PANZER_BODY_TOP;
-      }
-      else {
-        localBeaconProperties.PANZER_HEAD_TOP = getF(paramSectFile, paramString, "PanzerHeadTop", 0.001F, 9.999F);
-      }
-      float f = Math.min(Math.min(localBeaconProperties.PANZER_BODY_BACK, localBeaconProperties.PANZER_BODY_TOP), Math.min(localBeaconProperties.PANZER_BODY_SIDE, localBeaconProperties.PANZER_HEAD_TOP));
-
-      localBeaconProperties.HITBY_MASK = (f > 0.015F ? -2 : -1);
-      Property.set(paramClass, "iconName", "icons/" + getS(paramSectFile, paramString, "Icon") + ".mat");
-
-      Property.set(paramClass, "meshName", localBeaconProperties.meshSummer);
-      try
-      {
-        if ((paramClass == Beacon.LorenzBLBeacon.class) || (paramClass == Beacon.LorenzBLBeacon_LongRunway.class) || (paramClass == Beacon.LorenzBLBeacon_AAIAS.class))
-        {
-          localBeaconProperties.innerMarkerDist = getF(paramSectFile, paramString, "InnerMarkerDist", 1.0F, 3000.0F);
-          localBeaconProperties.outerMarkerDist = getF(paramSectFile, paramString, "OuterMarkerDist", 3000.0F, 30000.0F);
-        }
-      }
-      catch (Exception localException)
-      {
-      }
-
-      return localBeaconProperties;
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
     }
 
-    public SPAWN(Class paramClass) {
-      try {
-        String str1 = paramClass.getName();
-        int i = str1.lastIndexOf('.');
-        int j = str1.lastIndexOf('$');
-        if (i < j)
-          i = j;
-        String str2 = str1.substring(i + 1);
-        this.proper = LoadStationaryProperties(Statics.getTechnicsFile(), str2, paramClass);
-      }
-      catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("Problem in spawn: " + paramClass.getName());
-      }
-      this.cls = paramClass;
-      Spawn.add(this.cls, this);
-    }
+    private com.maddox.il2.objects.vehicles.radios.BeaconProperties prop;
+    private float heightAboveLandSurface;
+    private int dying;
+    static final int DYING_NONE = 0;
+    static final int DYING_DEAD = 1;
+    public static com.maddox.il2.objects.vehicles.radios.BeaconProperties constr_arg1 = null;
+    private static com.maddox.il2.engine.ActorSpawnArg constr_arg2 = null;
+    private static com.maddox.JGP.Point3d p = new Point3d();
+    private static com.maddox.il2.engine.Orient o = new Orient();
+    protected static com.maddox.JGP.Vector3d V = new Vector3d();
+    private static final int numberOfSamplePoints = 500;
+    private static final int attSamplesPerCycle = 20;
+    private static float attenuationSamples[] = new float[500];
+    private static int currentAttSampleSlot = 1;
+    private static final int mountainSamplesPerRow = 50;
+    private static final int mountainSamplesPerCycle = 10;
+    private static int currentMntSampleCol = 0;
+    private static int currentMntSampleRow = 0;
+    private static float mountainErrorSamples[][] = new float[50][50];
+    private static final float mntSampleRadius = 20000F;
+    private static final float mntSingleSampleLen = 800F;
+    private static final int EARTH_RADIUS = 0x6136b8;
+    private static float nightError = 0.0F;
+    private static int terErrDirection = 1;
+    private static int ngtErrDirection = -1;
+    private static float mntNE = 0.0F;
+    private static float mntSE = 0.0F;
+    private static float mntSW = 0.0F;
+    private static float mntNW = 0.0F;
+    private static final float signalPropagationScale[] = {
+        0.0F, 0.4F, 0.6F, 0.77F, 0.89F, 0.97F, 1.0F
+    };
+    static java.lang.Class class$com$maddox$il2$objects$vehicles$radios$Beacon$LorenzBLBeacon; /* synthetic field */
+    static java.lang.Class class$com$maddox$il2$objects$vehicles$radios$Beacon$LorenzBLBeacon_LongRunway; /* synthetic field */
+    static java.lang.Class class$com$maddox$il2$objects$vehicles$radios$Beacon$LorenzBLBeacon_AAIAS; /* synthetic field */
 
-    public Actor actorSpawn(ActorSpawnArg paramActorSpawnArg) {
-      switch (World.cur().camouflage) {
-      case 1:
-        this.proper.meshName = this.proper.meshWinter;
-        this.proper.meshName1 = this.proper.meshWinter1;
-        break;
-      case 2:
-        this.proper.meshName = this.proper.meshDesert;
-        this.proper.meshName1 = this.proper.meshDesert1;
-        break;
-      default:
-        this.proper.meshName = this.proper.meshSummer;
-        this.proper.meshName1 = this.proper.meshSummer1;
-      }Object localObject = null;
-      BeaconGeneric localBeaconGeneric;
-      try { BeaconGeneric.constr_arg1 = this.proper;
-        BeaconGeneric.access$002(paramActorSpawnArg);
-        localBeaconGeneric = (BeaconGeneric)this.cls.newInstance();
-        BeaconGeneric.constr_arg1 = null;
-        BeaconGeneric.access$002(null);
-      } catch (Exception localException) {
-        BeaconGeneric.constr_arg1 = null;
-        BeaconGeneric.access$002(null);
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("SPAWN: Can't create Stationary object [class:" + this.cls.getName() + "]");
 
-        return null;
-      }
-      return localBeaconGeneric;
-    }
-  }
+
+
 }

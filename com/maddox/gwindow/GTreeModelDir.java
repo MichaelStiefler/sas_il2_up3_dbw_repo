@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GTreeModelDir.java
+
 package com.maddox.gwindow;
 
 import java.io.File;
@@ -5,209 +10,264 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+// Referenced classes of package com.maddox.gwindow:
+//            GTreePath, GTreeModelListener, GTreeModel, GTexRegion, 
+//            GWindowCellEdit
+
 public class GTreeModelDir
-  implements GTreeModel
+    implements com.maddox.gwindow.GTreeModel
 {
-  public GTreePath root;
-  private static Filter filter = new Filter();
-
-  private HashMap fileChild = new HashMap();
-
-  private ArrayList listeners = new ArrayList();
-
-  public GTreePath getRoot()
-  {
-    return this.root;
-  }
-  public String pathToStr(GTreePath paramGTreePath, boolean paramBoolean) {
-    StringBuffer localStringBuffer = new StringBuffer();
-    if (paramBoolean) {
-      File localFile1 = (File)this.root.getLastPathComponent();
-      localStringBuffer.append(localFile1.getAbsolutePath());
-    }
-    int i = paramGTreePath.getPathCount();
-    int j = this.root.getPathCount();
-    for (int k = j; k < i; k++) {
-      if ((paramBoolean) || (k > j))
-        localStringBuffer.append("/");
-      File localFile2 = (File)paramGTreePath.getPathComponent(k);
-      localStringBuffer.append(localFile2.getName());
-    }
-    return localStringBuffer.toString();
-  }
-
-  public GTreePath strToPath(String paramString, boolean paramBoolean) {
-    int i = 0;
-    if (this.root != null) {
-      String str = pathToStr(this.root, true);
-      if (paramBoolean) {
-        if (!paramString.startsWith(str))
-          return null;
-      }
-      else paramString = str + "/" + paramString;
-
-      i = str.length() + 1;
-    }
-    int j = paramString.length();
-    GTreePath localGTreePath = this.root;
-    int k = 0;
-    int m = i;
-    int n = i;
-    for (; n < j; n++) {
-      k = paramString.charAt(n);
-      if (((k != 92) && (k != 47)) || 
-        (n <= m)) continue;
-      localGTreePath = _fromString(localGTreePath, paramString, m, n);
-      if (localGTreePath == null)
-        return null;
-      m = n + 1;
-    }
-
-    if ((k != 92) && (k != 47) && (n > m))
-      localGTreePath = _fromString(localGTreePath, paramString, m, n);
-    return localGTreePath;
-  }
-
-  private GTreePath _fromString(GTreePath paramGTreePath, String paramString, int paramInt1, int paramInt2) {
-    String str = paramString.substring(paramInt1, paramInt2);
-    if (paramGTreePath != null) {
-      File[] arrayOfFile = childs((File)paramGTreePath.getLastPathComponent());
-      if ((arrayOfFile == null) || (arrayOfFile.length == 0))
-        return null;
-      for (int i = 0; i < arrayOfFile.length; i++)
-        if (str.equals(arrayOfFile[i].getName()))
-          return paramGTreePath.pathByAddingChild(arrayOfFile[i]);
-    } else {
-      return new GTreePath(new File(str));
-    }
-    return null;
-  }
-
-  public void addExcludePath(GTreePath paramGTreePath) {
-    GTreePath localGTreePath = paramGTreePath.getParentPath();
-    if (localGTreePath == null)
-      return;
-    File localFile1 = (File)localGTreePath.getLastPathComponent();
-    File[] arrayOfFile1 = childs(localFile1);
-    if ((arrayOfFile1 == null) || (arrayOfFile1.length == 0))
-      return;
-    File localFile2 = (File)paramGTreePath.getLastPathComponent();
-    for (int i = 0; i < arrayOfFile1.length; i++)
-      if (localFile2.equals(arrayOfFile1[i])) {
-        File[] arrayOfFile2 = new File[arrayOfFile1.length - 1];
-        int j = 0;
-        int k = 0;
-        for (; j < arrayOfFile1.length; j++) {
-          if (j != i)
-            arrayOfFile2[(k++)] = arrayOfFile1[j];
-        }
-        this.fileChild.put(localFile1, arrayOfFile2);
-        changed();
-        return;
-      }
-  }
-
-  private File[] childs(File paramFile) {
-    File[] arrayOfFile = (File[])(File[])this.fileChild.get(paramFile);
-    if (arrayOfFile == null) {
-      arrayOfFile = paramFile.listFiles(filter);
-      if (arrayOfFile == null) arrayOfFile = new File[0];
-      this.fileChild.put(paramFile, arrayOfFile);
-    }
-    return arrayOfFile;
-  }
-
-  public Object getChild(GTreePath paramGTreePath, int paramInt)
-  {
-    File localFile = (File)paramGTreePath.getLastPathComponent();
-    File[] arrayOfFile = childs(localFile);
-    if ((arrayOfFile != null) && (paramInt >= 0) && (paramInt < arrayOfFile.length))
-      return arrayOfFile[paramInt];
-    return null;
-  }
-
-  public int getChildCount(GTreePath paramGTreePath) {
-    File localFile = (File)paramGTreePath.getLastPathComponent();
-    File[] arrayOfFile = childs(localFile);
-    if (arrayOfFile != null)
-      return arrayOfFile.length;
-    return 0;
-  }
-
-  public boolean isLeaf(GTreePath paramGTreePath) {
-    File localFile = (File)paramGTreePath.getLastPathComponent();
-    File[] arrayOfFile = childs(localFile);
-    return (arrayOfFile == null) || (arrayOfFile.length <= 0);
-  }
-
-  public void addListener(GTreeModelListener paramGTreeModelListener) {
-    if (this.listeners.contains(paramGTreeModelListener)) return;
-    this.listeners.add(paramGTreeModelListener);
-  }
-  public void removeListener(GTreeModelListener paramGTreeModelListener) {
-    this.listeners.remove(paramGTreeModelListener);
-  }
-
-  private void changed()
-  {
-    int i = this.listeners.size();
-    if (i == 0) return;
-    ArrayList localArrayList = new ArrayList(this.listeners);
-    for (int j = 0; j < i; j++)
-      ((GTreeModelListener)localArrayList.get(j)).treeModelChanged(this);
-  }
-
-  public GTexRegion getIcon(GTreePath paramGTreePath, boolean paramBoolean1, boolean paramBoolean2) {
-    return null;
-  }
-
-  public String getString(GTreePath paramGTreePath, boolean paramBoolean1, boolean paramBoolean2) {
-    File localFile = (File)paramGTreePath.getLastPathComponent();
-    if (this.root.equals(paramGTreePath)) {
-      return localFile.getAbsolutePath();
-    }
-    return localFile.getName();
-  }
-
-  public float getRenderWidth(GTreePath paramGTreePath, boolean paramBoolean1, boolean paramBoolean2)
-  {
-    return -1.0F;
-  }
-
-  public float getRenderHeight(GTreePath paramGTreePath, boolean paramBoolean1, boolean paramBoolean2) {
-    return -1.0F;
-  }
-
-  public boolean render(GTreePath paramGTreePath, boolean paramBoolean1, boolean paramBoolean2, float paramFloat1, float paramFloat2)
-  {
-    return false;
-  }
-
-  public boolean isEditable(GTreePath paramGTreePath)
-  {
-    return false;
-  }
-  public GWindowCellEdit getEdit(GTreePath paramGTreePath, boolean paramBoolean) {
-    return null;
-  }
-
-  public Object getValueAt(GTreePath paramGTreePath)
-  {
-    return null;
-  }
-  public void setValueAt(Object paramObject, GTreePath paramGTreePath) {
-  }
-  public GTreeModelDir(String paramString) {
-    File localFile = new File(paramString);
-    this.root = new GTreePath(localFile);
-  }
-
-  static class Filter
-    implements FileFilter
-  {
-    public boolean accept(File paramFile)
+    static class Filter
+        implements java.io.FileFilter
     {
-      return paramFile.isDirectory();
+
+        public boolean accept(java.io.File file)
+        {
+            return file.isDirectory();
+        }
+
+        Filter()
+        {
+        }
     }
-  }
+
+
+    public com.maddox.gwindow.GTreePath getRoot()
+    {
+        return root;
+    }
+
+    public java.lang.String pathToStr(com.maddox.gwindow.GTreePath gtreepath, boolean flag)
+    {
+        java.lang.StringBuffer stringbuffer = new StringBuffer();
+        if(flag)
+        {
+            java.io.File file = (java.io.File)root.getLastPathComponent();
+            stringbuffer.append(file.getAbsolutePath());
+        }
+        int i = gtreepath.getPathCount();
+        int j = root.getPathCount();
+        for(int k = j; k < i; k++)
+        {
+            if(flag || k > j)
+                stringbuffer.append("/");
+            java.io.File file1 = (java.io.File)gtreepath.getPathComponent(k);
+            stringbuffer.append(file1.getName());
+        }
+
+        return stringbuffer.toString();
+    }
+
+    public com.maddox.gwindow.GTreePath strToPath(java.lang.String s, boolean flag)
+    {
+        int i = 0;
+        if(root != null)
+        {
+            java.lang.String s1 = pathToStr(root, true);
+            if(flag)
+            {
+                if(!s.startsWith(s1))
+                    return null;
+            } else
+            {
+                s = s1 + "/" + s;
+            }
+            i = s1.length() + 1;
+        }
+        int j = s.length();
+        com.maddox.gwindow.GTreePath gtreepath = root;
+        char c = '\0';
+        int k = i;
+        int l;
+        for(l = i; l < j; l++)
+        {
+            c = s.charAt(l);
+            if(c != '\\' && c != '/' || l <= k)
+                continue;
+            gtreepath = _fromString(gtreepath, s, k, l);
+            if(gtreepath == null)
+                return null;
+            k = l + 1;
+        }
+
+        if(c != '\\' && c != '/' && l > k)
+            gtreepath = _fromString(gtreepath, s, k, l);
+        return gtreepath;
+    }
+
+    private com.maddox.gwindow.GTreePath _fromString(com.maddox.gwindow.GTreePath gtreepath, java.lang.String s, int i, int j)
+    {
+        java.lang.String s1 = s.substring(i, j);
+        if(gtreepath != null)
+        {
+            java.io.File afile[] = childs((java.io.File)gtreepath.getLastPathComponent());
+            if(afile == null || afile.length == 0)
+                return null;
+            for(int k = 0; k < afile.length; k++)
+                if(s1.equals(afile[k].getName()))
+                    return gtreepath.pathByAddingChild(afile[k]);
+
+        } else
+        {
+            return new GTreePath(new File(s1));
+        }
+        return null;
+    }
+
+    public void addExcludePath(com.maddox.gwindow.GTreePath gtreepath)
+    {
+        com.maddox.gwindow.GTreePath gtreepath1 = gtreepath.getParentPath();
+        if(gtreepath1 == null)
+            return;
+        java.io.File file = (java.io.File)gtreepath1.getLastPathComponent();
+        java.io.File afile[] = childs(file);
+        if(afile == null || afile.length == 0)
+            return;
+        java.io.File file1 = (java.io.File)gtreepath.getLastPathComponent();
+        for(int i = 0; i < afile.length; i++)
+            if(file1.equals(afile[i]))
+            {
+                java.io.File afile1[] = new java.io.File[afile.length - 1];
+                int j = 0;
+                int k = 0;
+                for(; j < afile.length; j++)
+                    if(j != i)
+                        afile1[k++] = afile[j];
+
+                fileChild.put(file, afile1);
+                changed();
+                return;
+            }
+
+    }
+
+    private java.io.File[] childs(java.io.File file)
+    {
+        java.io.File afile[] = (java.io.File[])(java.io.File[])fileChild.get(file);
+        if(afile == null)
+        {
+            afile = file.listFiles(filter);
+            if(afile == null)
+                afile = new java.io.File[0];
+            fileChild.put(file, afile);
+        }
+        return afile;
+    }
+
+    public java.lang.Object getChild(com.maddox.gwindow.GTreePath gtreepath, int i)
+    {
+        java.io.File file = (java.io.File)gtreepath.getLastPathComponent();
+        java.io.File afile[] = childs(file);
+        if(afile != null && i >= 0 && i < afile.length)
+            return afile[i];
+        else
+            return null;
+    }
+
+    public int getChildCount(com.maddox.gwindow.GTreePath gtreepath)
+    {
+        java.io.File file = (java.io.File)gtreepath.getLastPathComponent();
+        java.io.File afile[] = childs(file);
+        if(afile != null)
+            return afile.length;
+        else
+            return 0;
+    }
+
+    public boolean isLeaf(com.maddox.gwindow.GTreePath gtreepath)
+    {
+        java.io.File file = (java.io.File)gtreepath.getLastPathComponent();
+        java.io.File afile[] = childs(file);
+        return afile == null || afile.length <= 0;
+    }
+
+    public void addListener(com.maddox.gwindow.GTreeModelListener gtreemodellistener)
+    {
+        if(listeners.contains(gtreemodellistener))
+        {
+            return;
+        } else
+        {
+            listeners.add(gtreemodellistener);
+            return;
+        }
+    }
+
+    public void removeListener(com.maddox.gwindow.GTreeModelListener gtreemodellistener)
+    {
+        listeners.remove(gtreemodellistener);
+    }
+
+    private void changed()
+    {
+        int i = listeners.size();
+        if(i == 0)
+            return;
+        java.util.ArrayList arraylist = new ArrayList(listeners);
+        for(int j = 0; j < i; j++)
+            ((com.maddox.gwindow.GTreeModelListener)arraylist.get(j)).treeModelChanged(this);
+
+    }
+
+    public com.maddox.gwindow.GTexRegion getIcon(com.maddox.gwindow.GTreePath gtreepath, boolean flag, boolean flag1)
+    {
+        return null;
+    }
+
+    public java.lang.String getString(com.maddox.gwindow.GTreePath gtreepath, boolean flag, boolean flag1)
+    {
+        java.io.File file = (java.io.File)gtreepath.getLastPathComponent();
+        if(root.equals(gtreepath))
+            return file.getAbsolutePath();
+        else
+            return file.getName();
+    }
+
+    public float getRenderWidth(com.maddox.gwindow.GTreePath gtreepath, boolean flag, boolean flag1)
+    {
+        return -1F;
+    }
+
+    public float getRenderHeight(com.maddox.gwindow.GTreePath gtreepath, boolean flag, boolean flag1)
+    {
+        return -1F;
+    }
+
+    public boolean render(com.maddox.gwindow.GTreePath gtreepath, boolean flag, boolean flag1, float f, float f1)
+    {
+        return false;
+    }
+
+    public boolean isEditable(com.maddox.gwindow.GTreePath gtreepath)
+    {
+        return false;
+    }
+
+    public com.maddox.gwindow.GWindowCellEdit getEdit(com.maddox.gwindow.GTreePath gtreepath, boolean flag)
+    {
+        return null;
+    }
+
+    public java.lang.Object getValueAt(com.maddox.gwindow.GTreePath gtreepath)
+    {
+        return null;
+    }
+
+    public void setValueAt(java.lang.Object obj, com.maddox.gwindow.GTreePath gtreepath)
+    {
+    }
+
+    public GTreeModelDir(java.lang.String s)
+    {
+        fileChild = new HashMap();
+        listeners = new ArrayList();
+        java.io.File file = new File(s);
+        root = new GTreePath(file);
+    }
+
+    public com.maddox.gwindow.GTreePath root;
+    private static com.maddox.gwindow.Filter filter = new Filter();
+    private java.util.HashMap fileChild;
+    private java.util.ArrayList listeners;
+
 }

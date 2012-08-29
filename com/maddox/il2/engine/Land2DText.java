@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Land2DText.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.rts.Destroy;
@@ -12,221 +17,328 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+// Referenced classes of package com.maddox.il2.engine:
+//            CameraOrtho2D, Render, TTFont
+
 public class Land2DText
-  implements Destroy
+    implements com.maddox.rts.Destroy
 {
-  public static final int STEP = 10000;
-  public static final double LEVEL0_SCALE = 0.01D;
-  public static final double LEVEL1_SCALE = 0.05D;
-  public static int[] color = new int[20];
-
-  private boolean bShow = true;
-  private HashMapXY16List lstXY;
-
-  public static int color(int paramInt1, int paramInt2, int paramInt3)
-  {
-    return paramInt1 & 0xFF | (paramInt2 & 0xFF) << 8 | (paramInt3 & 0xFF) << 16 | 0xFF000000;
-  }
-
-  public boolean isShow()
-  {
-    return this.bShow; } 
-  public void show(boolean paramBoolean) { this.bShow = paramBoolean; }
-
-  public void render() {
-    if ((!this.bShow) || (isDestroyed()) || (!(Render.currentCamera() instanceof CameraOrtho2D)))
-      return;
-    CameraOrtho2D localCameraOrtho2D = (CameraOrtho2D)Render.currentCamera();
-    int i = 1;
-    if (localCameraOrtho2D.worldScale < 0.01D) i = 0;
-    else if (localCameraOrtho2D.worldScale > 0.05D) i = 2;
-    double d1 = localCameraOrtho2D.worldXOffset;
-    double d2 = localCameraOrtho2D.worldYOffset;
-    double d3 = d1 + (localCameraOrtho2D.right - localCameraOrtho2D.left) / localCameraOrtho2D.worldScale;
-    double d4 = d2 + (localCameraOrtho2D.top - localCameraOrtho2D.bottom) / localCameraOrtho2D.worldScale;
-    int j = (int)d1 / 10000;
-    int k = ((int)d3 + 5000) / 10000;
-    int m = (int)d2 / 10000;
-    int n = ((int)d4 + 5000) / 10000;
-    for (int i1 = m; i1 <= n; i1++)
-      for (int i2 = j; i2 <= k; i2++) {
-        List localList = this.lstXY.get(i1, i2);
-        if (localList != null) {
-          int i3 = localList.size();
-          for (int i4 = 0; i4 < i3; i4++) {
-            Item localItem = (Item)localList.get(i4);
-            if (localItem.isShowLevel(i)) {
-              float f1 = (float)((localItem.x - d1) * localCameraOrtho2D.worldScale);
-              float f2 = (float)((localItem.y - d2) * localCameraOrtho2D.worldScale);
-              switch (localItem.align()) { case 1:
-                f1 -= localItem.w() / 2; break;
-              case 2:
-                f1 -= localItem.w();
-              }
-              if ((f1 > localCameraOrtho2D.right) || 
-                (f2 > localCameraOrtho2D.top) || 
-                (f1 + localItem.w() < localCameraOrtho2D.left) || 
-                (f2 + localItem.h() < localCameraOrtho2D.bottom))
-                continue;
-              TTFont.font[localItem.font()].output(color[localItem.color()], f1, f2, 0.0F, localItem.text);
-            }
-          }
-        }
-      }
-  }
-
-  public void load(String paramString) {
-    if (this.lstXY != null)
-      this.lstXY.clear();
-    else {
-      this.lstXY = new HashMapXY16List(7); } ResourceBundle localResourceBundle = null;
-    Object localObject;
-    try { int i = paramString.lastIndexOf("/");
-      if (i > 0) {
-        int j = paramString.lastIndexOf("/", i - 1);
-        if (j > 0) {
-          localObject = paramString.substring(j + 1, i);
-          localResourceBundle = ResourceBundle.getBundle("i18n/" + (String)localObject, RTSConf.cur.locale, LDRres.loader());
-        }
-      }
-    } catch (Exception localException1) {
-    }
-    try {
-      BufferedReader localBufferedReader = new BufferedReader(new SFSReader(paramString));
-      while (true) {
-        String str1 = localBufferedReader.readLine();
-        if (str1 == null)
-          break;
-        localObject = new NumberTokenizer(str1);
-        float f1 = ((NumberTokenizer)localObject).next(0);
-        float f2 = ((NumberTokenizer)localObject).next(0);
-        int k = ((NumberTokenizer)localObject).next(7, 1, 7);
-        int m = ((NumberTokenizer)localObject).next(1, 0, 2);
-        int n = ((NumberTokenizer)localObject).next(1, 0, 2);
-        int i1 = ((NumberTokenizer)localObject).next(0, 0, 19);
-        String str2 = ((NumberTokenizer)localObject).nextToken("");
-        int i2 = 0;
-        int i3 = str2.length() - 1;
-        while ((i2 < i3) && (str2.charAt(i2) <= ' ')) i2++;
-        while ((i2 < i3) && (str2.charAt(i3) <= ' ')) i3--;
-        if (i2 == i3) return;
-        if ((i2 != 0) || (i3 != str2.length() - 1))
-          str2 = str2.substring(i2, i3 + 1);
-        if (localResourceBundle != null)
-          try {
-            str2 = localResourceBundle.getString(str2);
-          } catch (Exception localException3) {
-          }
-        Item localItem = new Item(f1, f2, str2, k, n, m, i1);
-        localItem.computeSizes();
-        int i4 = (int)f1 / 10000;
-        int i5 = (int)f2 / 10000;
-        this.lstXY.put(i5, i4, localItem);
-      }
-      localBufferedReader.close();
-      this.lstXY.allValuesTrimToSize();
-    } catch (Exception localException2) {
-      System.out.println("Land2DText load failed: " + localException2.getMessage());
-      localException2.printStackTrace();
-    }
-  }
-
-  public void contextResized() {
-    if (isDestroyed())
-      return;
-    ArrayList localArrayList1 = new ArrayList();
-    this.lstXY.allValues(localArrayList1);
-    for (int i = 0; i < localArrayList1.size(); i++) {
-      ArrayList localArrayList2 = (ArrayList)localArrayList1.get(i);
-      for (int j = 0; j < localArrayList2.size(); j++) {
-        Item localItem = (Item)localArrayList2.get(j);
-        localItem.computeSizes();
-      }
-    }
-    localArrayList1.clear();
-  }
-
-  public void clear() {
-    if (isDestroyed())
-      return;
-    this.lstXY.clear();
-  }
-
-  public void destroy() {
-    if (isDestroyed())
-      return;
-    this.lstXY.clear();
-    this.lstXY = null;
-  }
-  public boolean isDestroyed() {
-    return this.lstXY == null;
-  }
-
-  static
-  {
-    color[0] = color(0, 0, 0);
-    color[1] = color(128, 0, 0);
-    color[2] = color(0, 128, 0);
-    color[3] = color(128, 128, 0);
-    color[4] = color(0, 0, 128);
-    color[5] = color(128, 0, 128);
-    color[6] = color(0, 128, 128);
-    color[7] = color(192, 192, 192);
-    color[8] = color(192, 220, 192);
-    color[9] = color(166, 202, 240);
-    color[10] = color(255, 251, 240);
-    color[11] = color(160, 160, 164);
-    color[12] = color(128, 128, 128);
-    color[13] = color(255, 0, 0);
-    color[14] = color(0, 255, 0);
-    color[15] = color(255, 255, 0);
-    color[16] = color(0, 0, 255);
-    color[17] = color(255, 0, 255);
-    color[18] = color(0, 255, 255);
-    color[19] = color(255, 255, 255);
-  }
-
-  static class Item
-  {
-    public String text;
-    public int commonFilds;
-    public float x;
-    public float y;
-
-    void setLevels(int paramInt)
+    static class Item
     {
-      this.commonFilds |= paramInt & 0x7; } 
-    boolean isShowLevel(int paramInt) { return (this.commonFilds & 1 << paramInt) != 0; } 
-    void setFont(int paramInt) {
-      this.commonFilds |= (paramInt & 0x3) << 3; } 
-    int font() { return this.commonFilds >> 3 & 0x3; } 
-    void setAlign(int paramInt) {
-      this.commonFilds |= (paramInt & 0x3) << 5; } 
-    int align() { return this.commonFilds >> 5 & 0x3; } 
-    void setColor(int paramInt) {
-      this.commonFilds |= (paramInt & 0x1F) << 7; } 
-    int color() { return this.commonFilds >> 7 & 0x1F; } 
-    void setW(int paramInt) {
-      this.commonFilds |= (paramInt & 0x3FF) << 12; } 
-    int w() { return this.commonFilds >> 12 & 0x3FF; } 
-    void setH(int paramInt) {
-      this.commonFilds |= (paramInt & 0x3FF) << 22; } 
-    int h() { return this.commonFilds >> 22 & 0x3FF; }
 
-    public void computeSizes() {
-      if ((this.text == null) || (this.text.length() == 0)) setW(0); else
-        setW((int)TTFont.font[font()].width(this.text));
-      setH(TTFont.font[font()].height());
+        void setLevels(int i)
+        {
+            commonFilds |= i & 7;
+        }
+
+        boolean isShowLevel(int i)
+        {
+            return (commonFilds & 1 << i) != 0;
+        }
+
+        void setFont(int i)
+        {
+            commonFilds |= (i & 3) << 3;
+        }
+
+        int font()
+        {
+            return commonFilds >> 3 & 3;
+        }
+
+        void setAlign(int i)
+        {
+            commonFilds |= (i & 3) << 5;
+        }
+
+        int align()
+        {
+            return commonFilds >> 5 & 3;
+        }
+
+        void setColor(int i)
+        {
+            commonFilds |= (i & 0x1f) << 7;
+        }
+
+        int color()
+        {
+            return commonFilds >> 7 & 0x1f;
+        }
+
+        void setW(int i)
+        {
+            commonFilds |= (i & 0x3ff) << 12;
+        }
+
+        int w()
+        {
+            return commonFilds >> 12 & 0x3ff;
+        }
+
+        void setH(int i)
+        {
+            commonFilds |= (i & 0x3ff) << 22;
+        }
+
+        int h()
+        {
+            return commonFilds >> 22 & 0x3ff;
+        }
+
+        public void computeSizes()
+        {
+            if(text == null || text.length() == 0)
+                setW(0);
+            else
+                setW((int)com.maddox.il2.engine.TTFont.font[font()].width(text));
+            setH(com.maddox.il2.engine.TTFont.font[font()].height());
+        }
+
+        public java.lang.String text;
+        public int commonFilds;
+        public float x;
+        public float y;
+
+        public Item(float f, float f1, java.lang.String s, int i, int j, int k, int l)
+        {
+            x = f;
+            y = f1;
+            text = s;
+            setLevels(i);
+            setFont(j);
+            setAlign(k);
+            setColor(l);
+        }
     }
 
-    public Item(float paramFloat1, float paramFloat2, String paramString, int paramInt1, int paramInt2, int paramInt3, int paramInt4) {
-      this.x = paramFloat1;
-      this.y = paramFloat2;
-      this.text = paramString;
-      setLevels(paramInt1);
-      setFont(paramInt2);
-      setAlign(paramInt3);
-      setColor(paramInt4);
+
+    public static int color(int i, int j, int k)
+    {
+        return i & 0xff | (j & 0xff) << 8 | (k & 0xff) << 16 | 0xff000000;
     }
-  }
+
+    public boolean isShow()
+    {
+        return bShow;
+    }
+
+    public void show(boolean flag)
+    {
+        bShow = flag;
+    }
+
+    public void render()
+    {
+        if(!bShow || isDestroyed() || !(com.maddox.il2.engine.Render.currentCamera() instanceof com.maddox.il2.engine.CameraOrtho2D))
+            return;
+        com.maddox.il2.engine.CameraOrtho2D cameraortho2d = (com.maddox.il2.engine.CameraOrtho2D)com.maddox.il2.engine.Render.currentCamera();
+        byte byte0 = 1;
+        if(cameraortho2d.worldScale < 0.01D)
+            byte0 = 0;
+        else
+        if(cameraortho2d.worldScale > 0.050000000000000003D)
+            byte0 = 2;
+        double d = cameraortho2d.worldXOffset;
+        double d1 = cameraortho2d.worldYOffset;
+        double d2 = d + (double)(cameraortho2d.right - cameraortho2d.left) / cameraortho2d.worldScale;
+        double d3 = d1 + (double)(cameraortho2d.top - cameraortho2d.bottom) / cameraortho2d.worldScale;
+        int i = (int)d / 10000;
+        int j = ((int)d2 + 5000) / 10000;
+        int k = (int)d1 / 10000;
+        int l = ((int)d3 + 5000) / 10000;
+        for(int i1 = k; i1 <= l; i1++)
+        {
+            for(int j1 = i; j1 <= j; j1++)
+            {
+                java.util.List list = lstXY.get(i1, j1);
+                if(list == null)
+                    continue;
+                int k1 = list.size();
+                for(int l1 = 0; l1 < k1; l1++)
+                {
+                    com.maddox.il2.engine.Item item = (com.maddox.il2.engine.Item)list.get(l1);
+                    if(!item.isShowLevel(byte0))
+                        continue;
+                    float f = (float)(((double)item.x - d) * cameraortho2d.worldScale);
+                    float f1 = (float)(((double)item.y - d1) * cameraortho2d.worldScale);
+                    switch(item.align())
+                    {
+                    case 1: // '\001'
+                        f -= item.w() / 2;
+                        break;
+
+                    case 2: // '\002'
+                        f -= item.w();
+                        break;
+                    }
+                    if(f <= cameraortho2d.right && f1 <= cameraortho2d.top && f + (float)item.w() >= cameraortho2d.left && f1 + (float)item.h() >= cameraortho2d.bottom)
+                        com.maddox.il2.engine.TTFont.font[item.font()].output(color[item.color()], f, f1, 0.0F, item.text);
+                }
+
+            }
+
+        }
+
+    }
+
+    public void load(java.lang.String s)
+    {
+        java.util.ResourceBundle resourcebundle;
+        if(lstXY != null)
+            lstXY.clear();
+        else
+            lstXY = new HashMapXY16List(7);
+        resourcebundle = null;
+        try
+        {
+            int i = s.lastIndexOf("/");
+            if(i > 0)
+            {
+                int j = s.lastIndexOf("/", i - 1);
+                if(j > 0)
+                {
+                    java.lang.String s2 = s.substring(j + 1, i);
+                    resourcebundle = java.util.ResourceBundle.getBundle("i18n/" + s2, com.maddox.rts.RTSConf.cur.locale, com.maddox.rts.LDRres.loader());
+                }
+            }
+        }
+        catch(java.lang.Exception exception) { }
+        java.io.BufferedReader bufferedreader = new BufferedReader(new SFSReader(s));
+_L2:
+        float f;
+        float f1;
+        int k;
+        int l;
+        int i1;
+        int j1;
+        java.lang.String s3;
+        int k1;
+        int l1;
+        java.lang.String s1 = bufferedreader.readLine();
+        if(s1 == null)
+            break MISSING_BLOCK_LABEL_403;
+        com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s1);
+        f = numbertokenizer.next(0);
+        f1 = numbertokenizer.next(0);
+        k = numbertokenizer.next(7, 1, 7);
+        l = numbertokenizer.next(1, 0, 2);
+        i1 = numbertokenizer.next(1, 0, 2);
+        j1 = numbertokenizer.next(0, 0, 19);
+        s3 = numbertokenizer.nextToken("");
+        k1 = 0;
+        for(l1 = s3.length() - 1; k1 < l1 && s3.charAt(k1) <= ' '; k1++);
+        for(; k1 < l1 && s3.charAt(l1) <= ' '; l1--);
+        if(k1 == l1)
+            return;
+        if(k1 != 0 || l1 != s3.length() - 1)
+            s3 = s3.substring(k1, l1 + 1);
+        if(resourcebundle != null)
+            try
+            {
+                s3 = resourcebundle.getString(s3);
+            }
+            catch(java.lang.Exception exception2) { }
+        com.maddox.il2.engine.Item item = new Item(f, f1, s3, k, i1, l, j1);
+        item.computeSizes();
+        int i2 = (int)f / 10000;
+        int j2 = (int)f1 / 10000;
+        lstXY.put(j2, i2, item);
+        if(true) goto _L2; else goto _L1
+_L1:
+        bufferedreader.close();
+        lstXY.allValuesTrimToSize();
+        break MISSING_BLOCK_LABEL_450;
+        java.lang.Exception exception1;
+        exception1;
+        java.lang.System.out.println("Land2DText load failed: " + exception1.getMessage());
+        exception1.printStackTrace();
+    }
+
+    public void contextResized()
+    {
+        if(isDestroyed())
+            return;
+        java.util.ArrayList arraylist = new ArrayList();
+        lstXY.allValues(arraylist);
+        for(int i = 0; i < arraylist.size(); i++)
+        {
+            java.util.ArrayList arraylist1 = (java.util.ArrayList)arraylist.get(i);
+            for(int j = 0; j < arraylist1.size(); j++)
+            {
+                com.maddox.il2.engine.Item item = (com.maddox.il2.engine.Item)arraylist1.get(j);
+                item.computeSizes();
+            }
+
+        }
+
+        arraylist.clear();
+    }
+
+    public void clear()
+    {
+        if(isDestroyed())
+        {
+            return;
+        } else
+        {
+            lstXY.clear();
+            return;
+        }
+    }
+
+    public void destroy()
+    {
+        if(isDestroyed())
+        {
+            return;
+        } else
+        {
+            lstXY.clear();
+            lstXY = null;
+            return;
+        }
+    }
+
+    public boolean isDestroyed()
+    {
+        return lstXY == null;
+    }
+
+    public Land2DText()
+    {
+        bShow = true;
+    }
+
+    public static final int STEP = 10000;
+    public static final double LEVEL0_SCALE = 0.01D;
+    public static final double LEVEL1_SCALE = 0.050000000000000003D;
+    public static int color[];
+    private boolean bShow;
+    private com.maddox.util.HashMapXY16List lstXY;
+
+    static 
+    {
+        color = new int[20];
+        color[0] = com.maddox.il2.engine.Land2DText.color(0, 0, 0);
+        color[1] = com.maddox.il2.engine.Land2DText.color(128, 0, 0);
+        color[2] = com.maddox.il2.engine.Land2DText.color(0, 128, 0);
+        color[3] = com.maddox.il2.engine.Land2DText.color(128, 128, 0);
+        color[4] = com.maddox.il2.engine.Land2DText.color(0, 0, 128);
+        color[5] = com.maddox.il2.engine.Land2DText.color(128, 0, 128);
+        color[6] = com.maddox.il2.engine.Land2DText.color(0, 128, 128);
+        color[7] = com.maddox.il2.engine.Land2DText.color(192, 192, 192);
+        color[8] = com.maddox.il2.engine.Land2DText.color(192, 220, 192);
+        color[9] = com.maddox.il2.engine.Land2DText.color(166, 202, 240);
+        color[10] = com.maddox.il2.engine.Land2DText.color(255, 251, 240);
+        color[11] = com.maddox.il2.engine.Land2DText.color(160, 160, 164);
+        color[12] = com.maddox.il2.engine.Land2DText.color(128, 128, 128);
+        color[13] = com.maddox.il2.engine.Land2DText.color(255, 0, 0);
+        color[14] = com.maddox.il2.engine.Land2DText.color(0, 255, 0);
+        color[15] = com.maddox.il2.engine.Land2DText.color(255, 255, 0);
+        color[16] = com.maddox.il2.engine.Land2DText.color(0, 0, 255);
+        color[17] = com.maddox.il2.engine.Land2DText.color(255, 0, 255);
+        color[18] = com.maddox.il2.engine.Land2DText.color(0, 255, 255);
+        color[19] = com.maddox.il2.engine.Land2DText.color(255, 255, 255);
+    }
 }

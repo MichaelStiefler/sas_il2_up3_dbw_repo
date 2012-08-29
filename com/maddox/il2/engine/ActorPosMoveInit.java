@@ -1,83 +1,107 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ActorPosMoveInit.java
+
 package com.maddox.il2.engine;
 
-public class ActorPosMoveInit extends ActorPosMove
+
+// Referenced classes of package com.maddox.il2.engine:
+//            ActorPosMove, RendersMain, Actor, Loc, 
+//            ActorPos, Hook
+
+public class ActorPosMoveInit extends com.maddox.il2.engine.ActorPosMove
 {
-  public void inValidate(boolean paramBoolean)
-  {
-    if (paramBoolean)
-      this.flg &= -2;
-    this.flg |= 2;
-  }
 
-  protected void validateRender() {
-    this.renderTick = (RendersMain.frame() - 1);
-    super.validateRender();
-  }
-
-  protected void setBase(Actor paramActor, Hook paramHook, boolean paramBoolean1, boolean paramBoolean2)
-  {
-    this.base = paramActor;
-    this.baseHook = paramHook;
-
-    inValidate(true);
-  }
-
-  public void resetAsBase() {
-    if (!Actor.isValid(this.base)) {
-      reset();
-      return;
+    public void inValidate(boolean flag)
+    {
+        if(flag)
+            flg &= -2;
+        flg |= 2;
     }
-    if ((this.flg & 0x1) == 0) validate();
-    if (this.baseHook != null) {
-      this.prevLabs.set(this.L);
-      this.baseHook.computePos(this.base, this.base.pos.getCurrent(), this.prevLabs);
-    } else {
-      this.prevLabs.add(this.L, this.base.pos.getCurrent());
+
+    protected void validateRender()
+    {
+        renderTick = com.maddox.il2.engine.RendersMain.frame() - 1;
+        super.validateRender();
     }
-    this.curLabs.set(this.prevLabs);
-    if (this.baseHook != null) {
-      this.prevLabs.set(this.L);
-      this.baseHook.computePos(this.base, this.base.pos.getPrev(), this.prevLabs);
-    } else {
-      this.prevLabs.add(this.L, this.base.pos.getPrev());
+
+    protected void setBase(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Hook hook, boolean flag, boolean flag1)
+    {
+        base = actor;
+        baseHook = hook;
+        inValidate(true);
     }
-  }
 
-  public void reset() {
-    updateCurrent();
-    this.prevLabs.set(this.curLabs);
-  }
-
-  protected void updateCurrent()
-  {
-    this.prevLabs.set(this.curLabs);
-    if ((this.flg & 0x2) != 0) {
-      getAbs(this.curLabs);
-      this.flg &= -3;
+    public void resetAsBase()
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(base))
+        {
+            reset();
+            return;
+        }
+        if((flg & 1) == 0)
+            validate();
+        if(baseHook != null)
+        {
+            prevLabs.set(L);
+            baseHook.computePos(base, base.pos.getCurrent(), prevLabs);
+        } else
+        {
+            prevLabs.add(L, base.pos.getCurrent());
+        }
+        curLabs.set(prevLabs);
+        if(baseHook != null)
+        {
+            prevLabs.set(L);
+            baseHook.computePos(base, base.pos.getPrev(), prevLabs);
+        } else
+        {
+            prevLabs.add(L, base.pos.getPrev());
+        }
     }
-  }
 
-  protected void drawingChange(boolean paramBoolean)
-  {
-  }
+    public void reset()
+    {
+        updateCurrent();
+        prevLabs.set(curLabs);
+    }
 
-  protected void collideChange(boolean paramBoolean)
-  {
-  }
+    protected void updateCurrent()
+    {
+        prevLabs.set(curLabs);
+        if((flg & 2) != 0)
+        {
+            getAbs(curLabs);
+            flg &= -3;
+        }
+    }
 
-  protected void dreamFireChange(boolean paramBoolean)
-  {
-  }
+    protected void drawingChange(boolean flag)
+    {
+    }
 
-  protected void addChildren(Actor paramActor)
-  {
-  }
+    protected void collideChange(boolean flag)
+    {
+    }
 
-  protected void removeChildren(Actor paramActor)
-  {
-  }
+    protected void dreamFireChange(boolean flag)
+    {
+    }
 
-  public void destroy()
-  {
-  }
+    protected void addChildren(com.maddox.il2.engine.Actor actor)
+    {
+    }
+
+    protected void removeChildren(com.maddox.il2.engine.Actor actor)
+    {
+    }
+
+    public void destroy()
+    {
+    }
+
+    public ActorPosMoveInit()
+    {
+    }
 }

@@ -1,12 +1,19 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   TypeGuidedBombCarrier.java
+
 package com.maddox.il2.objects.air;
 
-public abstract interface TypeGuidedBombCarrier
+
+public interface TypeGuidedBombCarrier
 {
-  public abstract boolean typeGuidedBombCgetIsGuiding();
 
-  public abstract void typeGuidedBombCsetIsGuiding(boolean paramBoolean);
+    public abstract boolean typeGuidedBombCgetIsGuiding();
 
-  public abstract boolean typeGuidedBombCisMasterAlive();
+    public abstract void typeGuidedBombCsetIsGuiding(boolean flag);
 
-  public abstract void typeGuidedBombCsetMasterAlive(boolean paramBoolean);
+    public abstract boolean typeGuidedBombCisMasterAlive();
+
+    public abstract void typeGuidedBombCsetMasterAlive(boolean flag);
 }

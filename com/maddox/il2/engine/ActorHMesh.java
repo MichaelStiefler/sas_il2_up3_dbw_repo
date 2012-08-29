@@ -1,139 +1,194 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ActorHMesh.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.rts.Time;
 
-public abstract class ActorHMesh extends ActorMesh
+// Referenced classes of package com.maddox.il2.engine:
+//            ActorMesh, Actor, HierMesh, Loc, 
+//            Mesh, ActorPos
+
+public abstract class ActorHMesh extends com.maddox.il2.engine.ActorMesh
 {
-  private HierMesh hmesh = null;
 
-  private static Loc _L = new Loc();
-
-  public HierMesh hierMesh()
-  {
-    return this.hmesh; } 
-  public Mesh mesh() { return this.hmesh == null ? super.mesh() : this.hmesh; }
-
-  public float collisionR() {
-    return mesh().collisionR();
-  }
-  public int[] hideSubTrees(String paramString) {
-    return this.hmesh.hideSubTrees(paramString);
-  }
-
-  public void destroyChildFiltered(Class paramClass)
-  {
-    Object[] arrayOfObject = getOwnerAttached();
-    for (int i = 0; i < arrayOfObject.length; i++)
-      if ((arrayOfObject[i] != null) && (paramClass.isInstance(arrayOfObject[i])))
-        ((Actor)arrayOfObject[i]).destroy();
-  }
-
-  public void getChunkLoc(Loc paramLoc)
-  {
-    this.hmesh.getChunkLocObj(paramLoc);
-  }
-
-  public void getChunkLocAbs(Loc paramLoc)
-  {
-    this.hmesh.getChunkLocObj(paramLoc);
-    paramLoc.add(this.pos.getAbs());
-  }
-
-  public void getChunkLocTimeAbs(Loc paramLoc)
-  {
-    this.hmesh.getChunkLocObj(paramLoc);
-    this.pos.getTime(Time.current(), _L);
-    paramLoc.add(_L);
-  }
-
-  public float getChunkMass()
-  {
-    return this.hmesh.getChunkMass();
-  }
-
-  public void destroy() {
-    if (isDestroyed()) return;
-    super.destroy();
-    if (this.hmesh != null) {
-      this.hmesh.destroy();
-      this.hmesh = null;
+    public com.maddox.il2.engine.HierMesh hierMesh()
+    {
+        return hmesh;
     }
-  }
 
-  protected ActorHMesh() {
-  }
-
-  protected ActorHMesh(Loc paramLoc) {
-    super(paramLoc);
-  }
-  protected ActorHMesh(ActorPos paramActorPos) {
-    super(paramActorPos);
-  }
-  public void setMesh(String paramString) {
-    int i = (mesh() != null) && (this.pos != null) ? 1 : 0;
-    if (paramString.endsWith(".sim")) {
-      this.hmesh = null;
-      super.setMesh(paramString);
-    } else {
-      this.mesh = null;
-      this.hmesh = new HierMesh(paramString);
+    public com.maddox.il2.engine.Mesh mesh()
+    {
+        return ((com.maddox.il2.engine.Mesh) (hmesh != null ? hmesh : super.mesh()));
     }
-    if (i != 0)
-      this.pos.actorChanged(); 
-  }
 
-  public void setMesh(Mesh paramMesh) {
-    int i = (mesh() != null) && (this.pos != null) ? 1 : 0;
-    this.mesh = paramMesh;
-    this.hmesh = null;
-    if (i != 0)
-      this.pos.actorChanged(); 
-  }
-
-  protected void setMesh(HierMesh paramHierMesh) {
-    int i = (mesh() != null) && (this.pos != null) ? 1 : 0;
-    this.hmesh = paramHierMesh;
-    this.mesh = null;
-    if (i != 0)
-      this.pos.actorChanged();
-  }
-
-  public ActorHMesh(String paramString) {
-    try {
-      setMesh(paramString);
-    } catch (RuntimeException localRuntimeException) {
-      super.destroy();
-      throw localRuntimeException;
+    public float collisionR()
+    {
+        return mesh().collisionR();
     }
-  }
 
-  public ActorHMesh(String paramString, Loc paramLoc) {
-    super(paramLoc);
-    try {
-      setMesh(paramString);
-    } catch (RuntimeException localRuntimeException) {
-      super.destroy();
-      throw localRuntimeException;
+    public int[] hideSubTrees(java.lang.String s)
+    {
+        return hmesh.hideSubTrees(s);
     }
-  }
 
-  public ActorHMesh(String paramString, ActorPos paramActorPos) {
-    super(paramActorPos);
-    try {
-      setMesh(paramString);
-    } catch (RuntimeException localRuntimeException) {
-      super.destroy();
-      throw localRuntimeException;
-    }
-  }
+    public void destroyChildFiltered(java.lang.Class class1)
+    {
+        java.lang.Object aobj[] = getOwnerAttached();
+        for(int i = 0; i < aobj.length; i++)
+            if(aobj[i] != null && class1.isInstance(aobj[i]))
+                ((com.maddox.il2.engine.Actor)aobj[i]).destroy();
 
-  public ActorHMesh(HierMesh paramHierMesh, Loc paramLoc) {
-    super(paramLoc);
-    try {
-      setMesh(paramHierMesh);
-    } catch (RuntimeException localRuntimeException) {
-      super.destroy();
-      throw localRuntimeException;
     }
-  }
+
+    public void getChunkLoc(com.maddox.il2.engine.Loc loc)
+    {
+        hmesh.getChunkLocObj(loc);
+    }
+
+    public void getChunkLocAbs(com.maddox.il2.engine.Loc loc)
+    {
+        hmesh.getChunkLocObj(loc);
+        loc.add(pos.getAbs());
+    }
+
+    public void getChunkLocTimeAbs(com.maddox.il2.engine.Loc loc)
+    {
+        hmesh.getChunkLocObj(loc);
+        pos.getTime(com.maddox.rts.Time.current(), _L);
+        loc.add(_L);
+    }
+
+    public float getChunkMass()
+    {
+        return hmesh.getChunkMass();
+    }
+
+    public void destroy()
+    {
+        if(isDestroyed())
+            return;
+        super.destroy();
+        if(hmesh != null)
+        {
+            hmesh.destroy();
+            hmesh = null;
+        }
+    }
+
+    protected ActorHMesh()
+    {
+        hmesh = null;
+    }
+
+    protected ActorHMesh(com.maddox.il2.engine.Loc loc)
+    {
+        super(loc);
+        hmesh = null;
+    }
+
+    protected ActorHMesh(com.maddox.il2.engine.ActorPos actorpos)
+    {
+        super(actorpos);
+        hmesh = null;
+    }
+
+    public void setMesh(java.lang.String s)
+    {
+        boolean flag = mesh() != null && pos != null;
+        if(s.endsWith(".sim"))
+        {
+            hmesh = null;
+            super.setMesh(s);
+        } else
+        {
+            mesh = null;
+            hmesh = new HierMesh(s);
+        }
+        if(flag)
+            pos.actorChanged();
+    }
+
+    public void setMesh(com.maddox.il2.engine.Mesh mesh1)
+    {
+        boolean flag = mesh() != null && pos != null;
+        mesh = mesh1;
+        hmesh = null;
+        if(flag)
+            pos.actorChanged();
+    }
+
+    protected void setMesh(com.maddox.il2.engine.HierMesh hiermesh)
+    {
+        boolean flag = mesh() != null && pos != null;
+        hmesh = hiermesh;
+        mesh = null;
+        if(flag)
+            pos.actorChanged();
+    }
+
+    public ActorHMesh(java.lang.String s)
+    {
+        hmesh = null;
+        try
+        {
+            setMesh(s);
+        }
+        catch(java.lang.RuntimeException runtimeexception)
+        {
+            super.destroy();
+            throw runtimeexception;
+        }
+    }
+
+    public ActorHMesh(java.lang.String s, com.maddox.il2.engine.Loc loc)
+    {
+        super(loc);
+        hmesh = null;
+        try
+        {
+            setMesh(s);
+        }
+        catch(java.lang.RuntimeException runtimeexception)
+        {
+            super.destroy();
+            throw runtimeexception;
+        }
+    }
+
+    public ActorHMesh(java.lang.String s, com.maddox.il2.engine.ActorPos actorpos)
+    {
+        super(actorpos);
+        hmesh = null;
+        try
+        {
+            setMesh(s);
+        }
+        catch(java.lang.RuntimeException runtimeexception)
+        {
+            super.destroy();
+            throw runtimeexception;
+        }
+    }
+
+    public ActorHMesh(com.maddox.il2.engine.HierMesh hiermesh, com.maddox.il2.engine.Loc loc)
+    {
+        super(loc);
+        hmesh = null;
+        try
+        {
+            setMesh(hiermesh);
+        }
+        catch(java.lang.RuntimeException runtimeexception)
+        {
+            super.destroy();
+            throw runtimeexception;
+        }
+    }
+
+    private com.maddox.il2.engine.HierMesh hmesh;
+    private static com.maddox.il2.engine.Loc _L = new Loc();
+
 }

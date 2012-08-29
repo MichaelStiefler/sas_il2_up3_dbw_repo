@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   TexImage.java
+
 package com.maddox.TexImage;
 
 import com.maddox.rts.SFSInputStream;
@@ -7,437 +12,585 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+// Referenced classes of package com.maddox.TexImage:
+//            TexImageTGA
+
 public class TexImage
 {
-  public int type;
-  public byte[] Palette;
-  public int BytesPerEntry;
-  public int BPP;
-  public int sx;
-  public int sy;
-  public byte[] image;
-  public static final int ALPHA = 6406;
-  public static final int COLOR_INDEX = 6400;
-  public static final int COLOR_INDEX8_EXT = 32997;
-  public static final int LUMINANCE = 6409;
-  public static final int RGB = 6407;
-  public static final int RGB5 = 32848;
-  public static final int RGB8 = 32849;
-  public static final int RGBA = 6408;
-  public static final int RGBA4 = 32854;
-  public static final int RGB5_A1 = 32855;
-  public static final int RGBA8 = 32856;
-  private static int[] hiMask = { 248, 252, 248 };
-  private static int[] erMask = { 7, 3, 7 };
-  private static int RND;
-  private static int[] error = new int[256];
 
-  public TexImage()
-  {
-    set();
-  }
-  public TexImage(int paramInt1, int paramInt2, int paramInt3) {
-    set(paramInt1, paramInt2, paramInt3);
-  }
-
-  public TexImage(TexImage paramTexImage) {
-    set(paramTexImage);
-  }
-
-  public TexImage(TexImage paramTexImage, int paramInt1, int paramInt2, int paramInt3, int paramInt4) {
-    set(paramTexImage, paramInt1, paramInt2, paramInt3, paramInt4);
-  }
-
-  public void set()
-  {
-    this.type = (this.sx = this.sy = 0); this.image = null;
-  }
-
-  public void set(int paramInt1, int paramInt2, int paramInt3) {
-    set();
-    switch (paramInt3) { default:
-      return;
-    case 1:
-      this.type = 6409;
-    case 6406:
-    case 6409:
-      this.BPP = 1;
-      break;
-    case 2:
-      this.type = 32854;
-    case 32848:
-    case 32854:
-    case 32855:
-      this.BPP = 2;
-      break;
-    case 3:
-      this.type = 6407;
-    case 6407:
-    case 32849:
-      this.BPP = 3;
-      break;
-    case 4:
-      this.type = 6408;
-    case 6408:
-    case 32856:
-      this.BPP = 4;
-    }
-
-    if (this.type == 0) this.type = paramInt3;
-    this.sx = paramInt1; this.sy = paramInt2;
-    this.image = new byte[this.sx * this.sy * this.BPP];
-  }
-
-  public void set(TexImage paramTexImage) {
-    this.type = paramTexImage.type;
-    this.Palette = paramTexImage.Palette;
-    this.BytesPerEntry = paramTexImage.BytesPerEntry;
-    this.BPP = paramTexImage.BPP;
-    this.sx = paramTexImage.sx;
-    this.sy = paramTexImage.sy;
-    if ((this.sx == 0) || (this.sy == 0) || (paramTexImage.image == null)) return;
-    this.image = new byte[this.sx * this.sy * this.BPP];
-
-    for (int i = 0; i < this.sy; i++)
+    public TexImage()
     {
-      System.arraycopy(paramTexImage.image, i * this.sx * this.BPP, this.image, i * this.sx * this.BPP, this.sx * this.BPP);
+        set();
     }
-  }
 
-  public void set(TexImage paramTexImage, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
-  {
-    this.type = paramTexImage.type;
-    this.Palette = paramTexImage.Palette;
-    this.BytesPerEntry = paramTexImage.BytesPerEntry;
-    this.BPP = paramTexImage.BPP;
-    this.sx = paramInt3;
-    this.sy = paramInt4;
-    if ((this.sx == 0) || (this.sy == 0) || (paramTexImage.image == null)) return;
-    this.image = new byte[paramInt3 * paramInt4 * this.BPP];
-
-    for (int i = 0; i < paramInt4; i++)
+    public TexImage(int i, int j, int k)
     {
-      System.arraycopy(paramTexImage.image, ((paramInt2 + i) * paramTexImage.sx + paramInt1) * this.BPP, this.image, i * this.sx * this.BPP, this.sx * this.BPP);
-    }
-  }
-
-  public final byte I(int paramInt1, int paramInt2)
-  {
-    return image(paramInt1, paramInt2);
-  }
-
-  public final byte R(int paramInt1, int paramInt2)
-  {
-    return this.image[((paramInt2 * this.sx + paramInt1) * this.BPP)];
-  }
-
-  public final byte G(int paramInt1, int paramInt2)
-  {
-    return this.image[((paramInt2 * this.sx + paramInt1) * this.BPP + 1)];
-  }
-
-  public final byte B(int paramInt1, int paramInt2)
-  {
-    return this.image[((paramInt2 * this.sx + paramInt1) * this.BPP + 2)];
-  }
-
-  public final byte A(int paramInt1, int paramInt2)
-  {
-    return this.image[((paramInt2 * this.sx + paramInt1) * this.BPP + 3)];
-  }
-
-  public final int intI(int paramInt1, int paramInt2)
-  {
-    return image(paramInt1, paramInt2) & 0xFF;
-  }
-
-  public final int intR(int paramInt1, int paramInt2)
-  {
-    return this.image[((paramInt2 * this.sx + paramInt1) * this.BPP)] & 0xFF;
-  }
-
-  public final int intG(int paramInt1, int paramInt2)
-  {
-    return this.image[((paramInt2 * this.sx + paramInt1) * this.BPP + 1)] & 0xFF;
-  }
-
-  public final int intB(int paramInt1, int paramInt2)
-  {
-    return this.image[((paramInt2 * this.sx + paramInt1) * this.BPP + 2)] & 0xFF;
-  }
-
-  public final int intA(int paramInt1, int paramInt2)
-  {
-    return this.image[((paramInt2 * this.sx + paramInt1) * this.BPP + 3)] & 0xFF;
-  }
-
-  public final void getPixel(int paramInt1, int paramInt2, byte[] paramArrayOfByte)
-  {
-    int i = (paramInt2 * this.sx + paramInt1) * this.BPP;
-    if ((i < 0) || (i + this.BPP >= this.image.length)) {
-      switch (this.BPP) { case 4:
-        paramArrayOfByte[3] = 25;
-      case 3:
-        paramArrayOfByte[2] = 25;
-      case 2:
-        paramArrayOfByte[1] = 25;
-      case 1:
-        paramArrayOfByte[0] = 25;
-      }
-      return;
-    }
-    switch (this.BPP) { case 4:
-      paramArrayOfByte[3] = this.image[(i + 3)];
-    case 3:
-      paramArrayOfByte[2] = this.image[(i + 2)];
-    case 2:
-      paramArrayOfByte[1] = this.image[(i + 1)];
-    case 1:
-      paramArrayOfByte[0] = this.image[i];
-    }
-  }
-
-  public final void I(int paramInt1, int paramInt2, int paramInt3)
-  {
-    image(paramInt1, paramInt2, paramInt3);
-  }
-
-  public final void R(int paramInt1, int paramInt2, int paramInt3)
-  {
-    this.image[((paramInt2 * this.sx + paramInt1) * this.BPP)] = (byte)paramInt3;
-  }
-
-  public final void G(int paramInt1, int paramInt2, int paramInt3)
-  {
-    this.image[((paramInt2 * this.sx + paramInt1) * this.BPP + 1)] = (byte)paramInt3;
-  }
-
-  public final void B(int paramInt1, int paramInt2, int paramInt3)
-  {
-    this.image[((paramInt2 * this.sx + paramInt1) * this.BPP + 2)] = (byte)paramInt3;
-  }
-
-  public final void A(int paramInt1, int paramInt2, int paramInt3)
-  {
-    this.image[((paramInt2 * this.sx + paramInt1) * this.BPP + 3)] = (byte)paramInt3;
-  }
-
-  public final byte image(int paramInt1, int paramInt2)
-  {
-    return this.image[(paramInt2 * this.sx * this.BPP + paramInt1)];
-  }
-
-  public final int intI(float paramFloat1, float paramFloat2)
-  {
-    if (paramFloat1 < 0.0F) paramFloat1 = 0.0F; else if (paramFloat1 > this.sx - 2) paramFloat1 = this.sx - 2;
-    if (paramFloat2 < 0.0F) paramFloat2 = 0.0F; else if (paramFloat2 > this.sy - 2) paramFloat2 = this.sy - 2;
-    if ((paramFloat1 <= -1.0F) && (paramFloat2 <= -1.0F)) {
-      throw new RuntimeException("TexImage.intI(NaN,NaN);");
+        set(i, j, k);
     }
 
-    int i = (int)paramFloat1; int j = (int)paramFloat2 * this.sx * this.BPP;
-    int k = this.image[(j + i)] & 0xFF;
-    int m = this.image[(j + i + 1)] & 0xFF;
-    int n = this.image[(j + this.sx + i)] & 0xFF;
-    int i1 = this.image[(j + this.sx + i + 1)] & 0xFF;
+    public TexImage(com.maddox.TexImage.TexImage teximage)
+    {
+        set(teximage);
+    }
 
-    float f = paramFloat1 % 1.0F;
-    k += (int)((m - k) * f);
-    n += (int)((i1 - n) * f);
+    public TexImage(com.maddox.TexImage.TexImage teximage, int i, int j, int k, int l)
+    {
+        set(teximage, i, j, k, l);
+    }
 
-    f = paramFloat2 % 1.0F;
-    return k + (int)((n - k) * f);
-  }
+    public void set()
+    {
+        type = sx = sy = 0;
+        image = null;
+    }
 
-  public final void image(int paramInt1, int paramInt2, int paramInt3)
-  {
-    this.image[(paramInt2 * this.sx * this.BPP + paramInt1)] = (byte)paramInt3;
-  }
-
-  public final void averageColor(float[] paramArrayOfFloat)
-  {
-    if (this.sx * this.sy <= 0) return;
-
-    float[] arrayOfFloat = paramArrayOfFloat;
-    if (this.BPP > 0) arrayOfFloat[0] = 0.0F;
-    if (this.BPP > 1) arrayOfFloat[1] = 0.0F;
-    if (this.BPP > 2) arrayOfFloat[2] = 0.0F;
-    if (this.BPP > 3) arrayOfFloat[3] = 0.0F;
-    for (int j = 0; j < this.sy; j++) for (int i = 0; i < this.sx; i++)
-        if (this.BPP >= 1)
+    public void set(int i, int j, int k)
+    {
+        set();
+        switch(k)
         {
-          int tmp120_119 = ((j * this.sx + i) * this.BPP); int k = tmp120_119; arrayOfFloat[0] += (this.image[tmp120_119] & 0xFF);
-          if (this.BPP > 1) arrayOfFloat[1] += (this.image[(k + 1)] & 0xFF);
-          if (this.BPP > 2) arrayOfFloat[2] += (this.image[(k + 2)] & 0xFF);
-          if (this.BPP <= 3) continue; arrayOfFloat[3] += (this.image[(k + 3)] & 0xFF);
+        default:
+            return;
+
+        case 1: // '\001'
+            type = 6409;
+            // fall through
+
+        case 6406: 
+        case 6409: 
+            BPP = 1;
+            break;
+
+        case 2: // '\002'
+            type = 32854;
+            // fall through
+
+        case 32848: 
+        case 32854: 
+        case 32855: 
+            BPP = 2;
+            break;
+
+        case 3: // '\003'
+            type = 6407;
+            // fall through
+
+        case 6407: 
+        case 32849: 
+            BPP = 3;
+            break;
+
+        case 4: // '\004'
+            type = 6408;
+            // fall through
+
+        case 6408: 
+        case 32856: 
+            BPP = 4;
+            break;
         }
-    float f = 0.003921569F / (this.sx * this.sy);
-    if (this.BPP > 0) arrayOfFloat[0] *= f;
-    if (this.BPP > 1) arrayOfFloat[1] *= f;
-    if (this.BPP > 2) arrayOfFloat[2] *= f;
-    if (this.BPP > 3) arrayOfFloat[3] *= f;
-  }
+        if(type == 0)
+            type = k;
+        sx = i;
+        sy = j;
+        image = new byte[sx * sy * BPP];
+    }
 
-  public void scaleHalf()
-    throws Exception
-  {
-    int k;
-    int m;
-    TexImage localTexImage;
-    int i1;
-    int j;
-    switch (this.type) { default:
-      throw new Exception("scaleHalf(): type of image not supported");
-    case 6407:
-    case 6408:
-    case 32849:
-    case 32856:
-      k = this.sx / 2; m = this.sy / 2;
-      localTexImage = new TexImage(this, 0, 0, k, m);
-      for (j = i1 = 0; j < m; )
-      {
-        int n;
-        for (int i = n = 0; i < k; n += 2) {
-          localTexImage.R(i, j, intR(n, i1) + intR(n + 1, i1) + intR(n, i1 + 1) + intR(n + 1, i1 + 1) >> 2);
+    public void set(com.maddox.TexImage.TexImage teximage)
+    {
+        type = teximage.type;
+        Palette = teximage.Palette;
+        BytesPerEntry = teximage.BytesPerEntry;
+        BPP = teximage.BPP;
+        sx = teximage.sx;
+        sy = teximage.sy;
+        if(sx == 0 || sy == 0 || teximage.image == null)
+            return;
+        image = new byte[sx * sy * BPP];
+        for(int i = 0; i < sy; i++)
+            java.lang.System.arraycopy(teximage.image, i * sx * BPP, image, i * sx * BPP, sx * BPP);
 
-          localTexImage.G(i, j, intG(n, i1) + intG(n + 1, i1) + intG(n, i1 + 1) + intG(n + 1, i1 + 1) >> 2);
+    }
 
-          localTexImage.B(i, j, intB(n, i1) + intB(n + 1, i1) + intB(n, i1 + 1) + intB(n + 1, i1 + 1) >> 2);
+    public void set(com.maddox.TexImage.TexImage teximage, int i, int j, int k, int l)
+    {
+        type = teximage.type;
+        Palette = teximage.Palette;
+        BytesPerEntry = teximage.BytesPerEntry;
+        BPP = teximage.BPP;
+        sx = k;
+        sy = l;
+        if(sx == 0 || sy == 0 || teximage.image == null)
+            return;
+        image = new byte[k * l * BPP];
+        for(int i1 = 0; i1 < l; i1++)
+            java.lang.System.arraycopy(teximage.image, ((j + i1) * teximage.sx + i) * BPP, image, i1 * sx * BPP, sx * BPP);
 
-          i++;
+    }
+
+    public final byte I(int i, int j)
+    {
+        return image(i, j);
+    }
+
+    public final byte R(int i, int j)
+    {
+        return image[(j * sx + i) * BPP];
+    }
+
+    public final byte G(int i, int j)
+    {
+        return image[(j * sx + i) * BPP + 1];
+    }
+
+    public final byte B(int i, int j)
+    {
+        return image[(j * sx + i) * BPP + 2];
+    }
+
+    public final byte A(int i, int j)
+    {
+        return image[(j * sx + i) * BPP + 3];
+    }
+
+    public final int intI(int i, int j)
+    {
+        return image(i, j) & 0xff;
+    }
+
+    public final int intR(int i, int j)
+    {
+        return image[(j * sx + i) * BPP] & 0xff;
+    }
+
+    public final int intG(int i, int j)
+    {
+        return image[(j * sx + i) * BPP + 1] & 0xff;
+    }
+
+    public final int intB(int i, int j)
+    {
+        return image[(j * sx + i) * BPP + 2] & 0xff;
+    }
+
+    public final int intA(int i, int j)
+    {
+        return image[(j * sx + i) * BPP + 3] & 0xff;
+    }
+
+    public final void getPixel(int i, int j, byte abyte0[])
+    {
+        int k = (j * sx + i) * BPP;
+        if(k < 0 || k + BPP >= image.length)
+            switch(BPP)
+            {
+            case 4: // '\004'
+                abyte0[3] = 25;
+                // fall through
+
+            case 3: // '\003'
+                abyte0[2] = 25;
+                // fall through
+
+            case 2: // '\002'
+                abyte0[1] = 25;
+                // fall through
+
+            case 1: // '\001'
+                abyte0[0] = 25;
+                // fall through
+
+            default:
+                return;
+            }
+        switch(BPP)
+        {
+        case 4: // '\004'
+            abyte0[3] = image[k + 3];
+            // fall through
+
+        case 3: // '\003'
+            abyte0[2] = image[k + 2];
+            // fall through
+
+        case 2: // '\002'
+            abyte0[1] = image[k + 1];
+            // fall through
+
+        case 1: // '\001'
+            abyte0[0] = image[k];
+            // fall through
+
+        default:
+            return;
+        }
+    }
+
+    public final void I(int i, int j, int k)
+    {
+        image(i, j, k);
+    }
+
+    public final void R(int i, int j, int k)
+    {
+        image[(j * sx + i) * BPP] = (byte)k;
+    }
+
+    public final void G(int i, int j, int k)
+    {
+        image[(j * sx + i) * BPP + 1] = (byte)k;
+    }
+
+    public final void B(int i, int j, int k)
+    {
+        image[(j * sx + i) * BPP + 2] = (byte)k;
+    }
+
+    public final void A(int i, int j, int k)
+    {
+        image[(j * sx + i) * BPP + 3] = (byte)k;
+    }
+
+    public final byte image(int i, int j)
+    {
+        return image[j * sx * BPP + i];
+    }
+
+    public final int intI(float f, float f1)
+    {
+        if(f < 0.0F)
+            f = 0.0F;
+        else
+        if(f > (float)(sx - 2))
+            f = sx - 2;
+        if(f1 < 0.0F)
+            f1 = 0.0F;
+        else
+        if(f1 > (float)(sy - 2))
+            f1 = sy - 2;
+        if(f <= -1F && f1 <= -1F)
+        {
+            throw new RuntimeException("TexImage.intI(NaN,NaN);");
+        } else
+        {
+            int i = (int)f;
+            int j = (int)f1 * sx * BPP;
+            int k = image[j + i] & 0xff;
+            int l = image[j + i + 1] & 0xff;
+            int i1 = image[j + sx + i] & 0xff;
+            int j1 = image[j + sx + i + 1] & 0xff;
+            float f2 = f % 1.0F;
+            k += (int)((float)(l - k) * f2);
+            i1 += (int)((float)(j1 - i1) * f2);
+            f2 = f1 % 1.0F;
+            return k + (int)((float)(i1 - k) * f2);
+        }
+    }
+
+    public final void image(int i, int j, int k)
+    {
+        image[j * sx * BPP + i] = (byte)k;
+    }
+
+    public final void averageColor(float af[])
+    {
+        if(sx * sy <= 0)
+            return;
+        float af1[] = af;
+        if(BPP > 0)
+            af1[0] = 0.0F;
+        if(BPP > 1)
+            af1[1] = 0.0F;
+        if(BPP > 2)
+            af1[2] = 0.0F;
+        if(BPP > 3)
+            af1[3] = 0.0F;
+        for(int j = 0; j < sy; j++)
+        {
+            for(int i = 0; i < sx; i++)
+            {
+                if(BPP < 1)
+                    continue;
+                int k;
+                af1[0] += image[k = (j * sx + i) * BPP] & 0xff;
+                if(BPP > 1)
+                    af1[1] += image[k + 1] & 0xff;
+                if(BPP > 2)
+                    af1[2] += image[k + 2] & 0xff;
+                if(BPP > 3)
+                    af1[3] += image[k + 3] & 0xff;
+            }
+
         }
 
-        if (this.BPP > 3) for (i = n = 0; i < k; n += 2) {
-            localTexImage.A(i, j, intA(n, i1) + intA(n + 1, i1) + intA(n, i1 + 1) + intA(n + 1, i1 + 1) >> 2);
+        float f = 0.003921569F / (float)(sx * sy);
+        if(BPP > 0)
+            af1[0] *= f;
+        if(BPP > 1)
+            af1[1] *= f;
+        if(BPP > 2)
+            af1[2] *= f;
+        if(BPP > 3)
+            af1[3] *= f;
+    }
 
-            i++;
-          }
-        j++; i1 += 2; continue;
+    public void scaleHalf()
+        throws java.lang.Exception
+    {
+        com.maddox.TexImage.TexImage teximage;
+        int j1;
+        int k1;
+label0:
+        switch(type)
+        {
+        default:
+            throw new Exception("scaleHalf(): type of image not supported");
 
-        k = this.sx / 2; m = this.sy / 2;
-        localTexImage = new TexImage(this, 0, 0, k, m);
-        for (j = i1 = 0; j < m; i1 += 2) {
-          for (i = n = 0; i < k; n += 2) {
-            localTexImage.I(i, j, intI(n, i1) + intI(n + 1, i1) + intI(n, i1 + 1) + intI(n + 1, i1 + 1) >> 2);
+        case 6407: 
+        case 6408: 
+        case 32849: 
+        case 32856: 
+            j1 = sx / 2;
+            k1 = sy / 2;
+            teximage = new TexImage(this, 0, 0, j1, k1);
+            int k2;
+            for(int l = k2 = 0; l < k1;)
+            {
+                int l1;
+                for(int i = l1 = 0; i < j1;)
+                {
+                    teximage.R(i, l, intR(l1, k2) + intR(l1 + 1, k2) + intR(l1, k2 + 1) + intR(l1 + 1, k2 + 1) >> 2);
+                    teximage.G(i, l, intG(l1, k2) + intG(l1 + 1, k2) + intG(l1, k2 + 1) + intG(l1 + 1, k2 + 1) >> 2);
+                    teximage.B(i, l, intB(l1, k2) + intB(l1 + 1, k2) + intB(l1, k2 + 1) + intB(l1 + 1, k2 + 1) >> 2);
+                    i++;
+                    l1 += 2;
+                }
 
-            i++;
-          }
-          j++;
+                if(BPP > 3)
+                {
+                    int i2;
+                    for(int j = i2 = 0; j < j1;)
+                    {
+                        teximage.A(j, l, intA(i2, k2) + intA(i2 + 1, k2) + intA(i2, k2 + 1) + intA(i2 + 1, k2 + 1) >> 2);
+                        j++;
+                        i2 += 2;
+                    }
+
+                }
+                l++;
+                k2 += 2;
+            }
+
+            break;
+
+        case 6406: 
+        case 6409: 
+            j1 = sx / 2;
+            k1 = sy / 2;
+            teximage = new TexImage(this, 0, 0, j1, k1);
+            int l2;
+            int i1 = l2 = 0;
+            do
+            {
+                if(i1 >= k1)
+                    break label0;
+                int j2;
+                for(int k = j2 = 0; k < j1;)
+                {
+                    teximage.I(k, i1, intI(j2, l2) + intI(j2 + 1, l2) + intI(j2, l2 + 1) + intI(j2 + 1, l2 + 1) >> 2);
+                    k++;
+                    j2 += 2;
+                }
+
+                i1++;
+                l2 += 2;
+            } while(true);
         }
-      }
-
-    case 6406:
-    case 6409:
+        image = teximage.image;
+        teximage.image = null;
+        sx = j1;
+        sy = k1;
     }
 
-    this.image = localTexImage.image; localTexImage.image = null;
-    this.sx = k; this.sy = m;
-  }
-
-  public void LoadTGA(InputStream paramInputStream) throws Exception {
-    TexImageTGA localTexImageTGA = new TexImageTGA();
-    try {
-      localTexImageTGA.Load(paramInputStream, this);
-    } catch (Exception localException) {
-      this.type = (this.sx = this.sy = 0); this.image = null;
-      throw localException;
-    }
-  }
-
-  public void SaveTGA(OutputStream paramOutputStream) throws Exception {
-    TexImageTGA localTexImageTGA = new TexImageTGA();
-
-    localTexImageTGA.Save(paramOutputStream, this);
-  }
-
-  public void LoadTGA(String paramString) throws Exception {
-    this.type = (this.sx = this.sy = 0); this.image = null;
-
-    SFSInputStream localSFSInputStream = new SFSInputStream(paramString);
-    LoadTGA(localSFSInputStream);
-  }
-
-  public void SaveTGA(String paramString)
-    throws Exception
-  {
-    FileOutputStream localFileOutputStream = new FileOutputStream(paramString);
-    try {
-      SaveTGA(localFileOutputStream);
-    } catch (Exception localException) {
-      localFileOutputStream.close();
-      File localFile = new File(paramString);
-      localFile.delete();
-      throw localException;
-    }
-  }
-
-  public String toString()
-  {
-    String str;
-    switch (this.type) { default:
-      str = "Unknown" + this.type; break;
-    case 6406:
-      str = "ALPHA"; break;
-    case 6400:
-      str = "COLOR_INDEX"; break;
-    case 32997:
-      str = "COLOR_INDEX8_EXT"; break;
-    case 6409:
-      str = "LUMINANCE"; break;
-    case 6407:
-      str = "RGB"; break;
-    case 32848:
-      str = "RGB5"; break;
-    case 32849:
-      str = "RGB8"; break;
-    case 6408:
-      str = "RGBA"; break;
-    case 32854:
-      str = "RGBA4"; break;
-    case 32855:
-      str = "RGB5_A1"; break;
-    case 32856:
-      str = "RGBA8";
-    }
-    return new String("TexImage[" + this.sx + "x" + this.sy + "," + str + ",BPP=" + this.BPP + "]");
-  }
-
-  public void hicolorDither()
-  {
-    if (this.BPP != 3) return;
-
-    if (error.length < this.sx) error = new int[this.sx];
-    for (int i = 0; i < this.BPP; i++) {
-      int i4 = hiMask[i];
-      int i5 = erMask[i];
-      for (int j = 0; j < this.sx; j++) error[j] = 0;
-      int m = i;
-      for (int k = 0; k < this.sy; k++) {
-        int n = m;
-        int i3;
-        int i1 = i3 = 0;
-        for (j = 0; j < this.sx; j++) {
-          int i2 = (this.image[n] & 0xFF) + i1 + error[j];
-          if (i2 > 255) i2 = 255;
-          this.image[n] = (byte)(i2 & i4);
-          i1 = i2 &= i5;
-          int tmp176_175 = (i1 * 3 >> 3); i1 = tmp176_175; error[j] = (tmp176_175 + i3);
-          i3 = i2 - i1 - i1 + (1262562454 >> RND & 0x1);
-          if (++RND >= 31) RND = 0;
-          n += this.BPP;
+    public void LoadTGA(java.io.InputStream inputstream)
+        throws java.lang.Exception
+    {
+        com.maddox.TexImage.TexImageTGA teximagetga = new TexImageTGA();
+        try
+        {
+            teximagetga.Load(inputstream, this);
         }
-        m += this.sx * this.BPP;
-      }
+        catch(java.lang.Exception exception)
+        {
+            type = sx = sy = 0;
+            image = null;
+            throw exception;
+        }
     }
-  }
 
-  public static void main(String[] paramArrayOfString)
-    throws Exception
-  {
-    TexImage localTexImage = new TexImage();
-    localTexImage.LoadTGA(paramArrayOfString.length > 0 ? paramArrayOfString[0] : "Test.TGA");
-    System.out.println(localTexImage);
+    public void SaveTGA(java.io.OutputStream outputstream)
+        throws java.lang.Exception
+    {
+        com.maddox.TexImage.TexImageTGA teximagetga = new TexImageTGA();
+        teximagetga.Save(outputstream, this);
+    }
 
-    System.out.println("OK");
-  }
+    public void LoadTGA(java.lang.String s)
+        throws java.lang.Exception
+    {
+        type = sx = sy = 0;
+        image = null;
+        com.maddox.rts.SFSInputStream sfsinputstream = new SFSInputStream(s);
+        LoadTGA(((java.io.InputStream) (sfsinputstream)));
+    }
+
+    public void SaveTGA(java.lang.String s)
+        throws java.lang.Exception
+    {
+        java.io.FileOutputStream fileoutputstream = new FileOutputStream(s);
+        try
+        {
+            SaveTGA(((java.io.OutputStream) (fileoutputstream)));
+        }
+        catch(java.lang.Exception exception)
+        {
+            fileoutputstream.close();
+            java.io.File file = new File(s);
+            file.delete();
+            throw exception;
+        }
+    }
+
+    public java.lang.String toString()
+    {
+        java.lang.String s;
+        switch(type)
+        {
+        default:
+            s = "Unknown" + type;
+            break;
+
+        case 6406: 
+            s = "ALPHA";
+            break;
+
+        case 6400: 
+            s = "COLOR_INDEX";
+            break;
+
+        case 32997: 
+            s = "COLOR_INDEX8_EXT";
+            break;
+
+        case 6409: 
+            s = "LUMINANCE";
+            break;
+
+        case 6407: 
+            s = "RGB";
+            break;
+
+        case 32848: 
+            s = "RGB5";
+            break;
+
+        case 32849: 
+            s = "RGB8";
+            break;
+
+        case 6408: 
+            s = "RGBA";
+            break;
+
+        case 32854: 
+            s = "RGBA4";
+            break;
+
+        case 32855: 
+            s = "RGB5_A1";
+            break;
+
+        case 32856: 
+            s = "RGBA8";
+            break;
+        }
+        return new String("TexImage[" + sx + "x" + sy + "," + s + ",BPP=" + BPP + "]");
+    }
+
+    public void hicolorDither()
+    {
+        if(BPP != 3)
+            return;
+        if(error.length < sx)
+            error = new int[sx];
+        for(int i = 0; i < BPP; i++)
+        {
+            int j2 = hiMask[i];
+            int k2 = erMask[i];
+            for(int j = 0; j < sx; j++)
+                error[j] = 0;
+
+            int i1 = i;
+            for(int l = 0; l < sy; l++)
+            {
+                int j1 = i1;
+                int i2;
+                int k1 = i2 = 0;
+                for(int k = 0; k < sx; k++)
+                {
+                    int l1 = (image[j1] & 0xff) + k1 + error[k];
+                    if(l1 > 255)
+                        l1 = 255;
+                    image[j1] = (byte)(l1 & j2);
+                    k1 = l1 &= k2;
+                    error[k] = (k1 = k1 * 3 >> 3) + i2;
+                    i2 = (l1 - k1 - k1) + (0x4b412c96 >> RND & 1);
+                    if(++RND >= 31)
+                        RND = 0;
+                    j1 += BPP;
+                }
+
+                i1 += sx * BPP;
+            }
+
+        }
+
+    }
+
+    public static void main(java.lang.String args[])
+        throws java.lang.Exception
+    {
+        com.maddox.TexImage.TexImage teximage = new TexImage();
+        teximage.LoadTGA(args.length <= 0 ? "Test.TGA" : args[0]);
+        java.lang.System.out.println(teximage);
+        java.lang.System.out.println("OK");
+    }
+
+    public int type;
+    public byte Palette[];
+    public int BytesPerEntry;
+    public int BPP;
+    public int sx;
+    public int sy;
+    public byte image[];
+    public static final int ALPHA = 6406;
+    public static final int COLOR_INDEX = 6400;
+    public static final int COLOR_INDEX8_EXT = 32997;
+    public static final int LUMINANCE = 6409;
+    public static final int RGB = 6407;
+    public static final int RGB5 = 32848;
+    public static final int RGB8 = 32849;
+    public static final int RGBA = 6408;
+    public static final int RGBA4 = 32854;
+    public static final int RGB5_A1 = 32855;
+    public static final int RGBA8 = 32856;
+    private static int hiMask[] = {
+        248, 252, 248
+    };
+    private static int erMask[] = {
+        7, 3, 7
+    };
+    private static int RND;
+    private static int error[] = new int[256];
+
 }

@@ -1,849 +1,1010 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GMatrix.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
+// Referenced classes of package com.maddox.JGP:
+//            GVector, Matrix3f, Matrix3d, Matrix4f, 
+//            Matrix4d
+
 public class GMatrix
-  implements Serializable, Cloneable
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  private double[] elementData;
-  private int nRow;
-  private int nCol;
 
-  public GMatrix(int paramInt1, int paramInt2)
-  {
-    this.nRow = paramInt1;
-    this.nCol = paramInt2;
-    this.elementData = new double[paramInt1 * paramInt2];
-    setIdentity();
-  }
-
-  public GMatrix(int paramInt1, int paramInt2, double[] paramArrayOfDouble)
-  {
-    this.nRow = paramInt1;
-    this.nCol = paramInt2;
-    this.elementData = new double[paramInt1 * paramInt2];
-    set(paramArrayOfDouble);
-  }
-
-  public GMatrix(GMatrix paramGMatrix)
-  {
-    this.nRow = paramGMatrix.nRow;
-    this.nCol = paramGMatrix.nCol;
-    int i = this.nRow * this.nCol;
-    this.elementData = new double[i];
-    System.arraycopy(paramGMatrix.elementData, 0, this.elementData, 0, i);
-  }
-
-  public final void mul(GMatrix paramGMatrix)
-  {
-    mul(this, paramGMatrix);
-  }
-
-  public final void mul(GMatrix paramGMatrix1, GMatrix paramGMatrix2)
-  {
-    double[] arrayOfDouble = new double[this.nCol * this.nRow];
-    for (int i = 0; i < this.nRow; i++) {
-      for (int j = 0; j < this.nCol; j++) {
-        double d = 0.0D;
-        for (int k = 0; k < paramGMatrix1.nCol; k++)
-          d += paramGMatrix1.elementData[(i * paramGMatrix1.nCol + k)] * paramGMatrix2.elementData[(k * paramGMatrix2.nCol + j)];
-        arrayOfDouble[(i * this.nCol + j)] = d;
-      }
-    }
-    this.elementData = arrayOfDouble;
-  }
-
-  public final void mul(GVector paramGVector1, GVector paramGVector2)
-  {
-    for (int i = 0; i < this.nRow; i++)
-      for (int j = 0; j < this.nCol; j++)
-        this.elementData[(i * this.nCol + j)] = (paramGVector1.getElement(i) * paramGVector2.getElement(j));
-  }
-
-  public final void add(GMatrix paramGMatrix)
-  {
-    for (int i = 0; i < this.nRow * this.nCol; i++)
-      this.elementData[i] += paramGMatrix.elementData[i];
-  }
-
-  public final void add(GMatrix paramGMatrix1, GMatrix paramGMatrix2)
-  {
-    for (int i = 0; i < this.nRow * this.nCol; i++)
-      paramGMatrix1.elementData[i] += paramGMatrix1.elementData[i];
-  }
-
-  public final void sub(GMatrix paramGMatrix)
-  {
-    for (int i = 0; i < this.nRow * this.nCol; i++)
-      this.elementData[i] -= paramGMatrix.elementData[i];
-  }
-
-  public final void sub(GMatrix paramGMatrix1, GMatrix paramGMatrix2)
-  {
-    for (int i = 0; i < this.nRow * this.nCol; i++)
-      paramGMatrix1.elementData[i] -= paramGMatrix2.elementData[i];
-  }
-
-  public final void negate()
-  {
-    for (int i = 0; i < this.nRow * this.nCol; i++)
-      this.elementData[i] = (-this.elementData[i]);
-  }
-
-  public final void negate(GMatrix paramGMatrix)
-  {
-    set(paramGMatrix);
-    negate();
-  }
-
-  public final void setIdentity()
-  {
-    setZero();
-    int i = this.nRow < this.nCol ? this.nRow : this.nCol;
-    for (int j = 0; j < i; j++)
-      this.elementData[(j * this.nCol + j)] = 1.0D;
-  }
-
-  public final void setZero()
-  {
-    for (int i = 0; i < this.nRow * this.nCol; i++)
-      this.elementData[i] = 0.0D;
-  }
-
-  public final void identityMinus()
-  {
-    negate();
-    int i = this.nRow < this.nCol ? this.nRow : this.nCol;
-    for (int j = 0; j < i; j++)
-      this.elementData[(j * this.nCol + j)] += 1.0D;
-  }
-
-  public final void invert()
-  {
-    int i = this.nRow;
-
-    GMatrix localGMatrix = new GMatrix(i, i);
-    GVector localGVector1 = new GVector(i);
-    GVector localGVector2 = new GVector(i);
-    GVector localGVector3 = new GVector(i);
-    LUD(localGMatrix, localGVector1);
-    for (int j = 0; j < i; j++) {
-      localGVector3.zero();
-      localGVector3.setElement(j, 1.0D);
-      localGVector2.LUDBackSolve(localGMatrix, localGVector3, localGVector1);
-      setColumn(j, localGVector2);
-    }
-  }
-
-  public final void invert(GMatrix paramGMatrix)
-  {
-    set(paramGMatrix);
-    invert();
-  }
-
-  public final void copySubMatrix(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, GMatrix paramGMatrix)
-  {
-    for (int i = 0; i < paramInt3; i++)
-      for (int j = 0; j < paramInt4; j++)
-        paramGMatrix.elementData[((i + paramInt5) * this.nCol + (j + paramInt6))] = this.elementData[((i + paramInt1) * this.nCol + (j + paramInt2))];
-  }
-
-  public final void setSize(int paramInt1, int paramInt2)
-  {
-    int i = this.nRow;
-    int j = this.nCol;
-    int k = this.nRow * this.nCol;
-    this.nRow = paramInt1;
-    this.nCol = paramInt2;
-    int m = paramInt1 * paramInt2;
-    double[] arrayOfDouble = this.elementData;
-
-    if (j == paramInt2)
+    public GMatrix(int i, int j)
     {
-      if (paramInt1 <= i) {
-        return;
-      }
-
-      this.elementData = new double[m];
-
-      System.arraycopy(arrayOfDouble, 0, this.elementData, 0, k);
+        nRow = i;
+        nCol = j;
+        elementData = new double[i * j];
+        setIdentity();
     }
-    else
+
+    public GMatrix(int i, int j, double ad[])
     {
-      this.elementData = new double[m];
-      setZero();
-      for (int n = 0; n < i; n++)
-        System.arraycopy(arrayOfDouble, n * j, this.elementData, n * paramInt2, j);
+        nRow = i;
+        nCol = j;
+        elementData = new double[i * j];
+        set(ad);
     }
-  }
 
-  public final void set(double[] paramArrayOfDouble)
-  {
-    int i = this.nRow * this.nCol;
-    System.arraycopy(paramArrayOfDouble, 0, this.elementData, 0, i);
-  }
-
-  public final void set(Matrix3f paramMatrix3f)
-  {
-    this.elementData[0] = paramMatrix3f.m00;
-    this.elementData[1] = paramMatrix3f.m01;
-    this.elementData[2] = paramMatrix3f.m02;
-    this.elementData[this.nCol] = paramMatrix3f.m10;
-    this.elementData[(this.nCol + 1)] = paramMatrix3f.m11;
-    this.elementData[(this.nCol + 2)] = paramMatrix3f.m12;
-    this.elementData[(2 * this.nCol)] = paramMatrix3f.m20;
-    this.elementData[(2 * this.nCol + 1)] = paramMatrix3f.m21;
-    this.elementData[(2 * this.nCol + 2)] = paramMatrix3f.m22;
-  }
-
-  public final void set(Matrix3d paramMatrix3d)
-  {
-    this.elementData[0] = paramMatrix3d.m00;
-    this.elementData[1] = paramMatrix3d.m01;
-    this.elementData[2] = paramMatrix3d.m02;
-    this.elementData[this.nCol] = paramMatrix3d.m10;
-    this.elementData[(this.nCol + 1)] = paramMatrix3d.m11;
-    this.elementData[(this.nCol + 2)] = paramMatrix3d.m12;
-    this.elementData[(2 * this.nCol)] = paramMatrix3d.m20;
-    this.elementData[(2 * this.nCol + 1)] = paramMatrix3d.m21;
-    this.elementData[(2 * this.nCol + 2)] = paramMatrix3d.m22;
-  }
-
-  public final void set(Matrix4f paramMatrix4f)
-  {
-    this.elementData[0] = paramMatrix4f.m00;
-    this.elementData[1] = paramMatrix4f.m01;
-    this.elementData[2] = paramMatrix4f.m02;
-    this.elementData[3] = paramMatrix4f.m03;
-    this.elementData[this.nCol] = paramMatrix4f.m10;
-    this.elementData[(this.nCol + 1)] = paramMatrix4f.m11;
-    this.elementData[(this.nCol + 2)] = paramMatrix4f.m12;
-    this.elementData[(this.nCol + 3)] = paramMatrix4f.m13;
-    this.elementData[(2 * this.nCol)] = paramMatrix4f.m20;
-    this.elementData[(2 * this.nCol + 1)] = paramMatrix4f.m21;
-    this.elementData[(2 * this.nCol + 2)] = paramMatrix4f.m22;
-    this.elementData[(2 * this.nCol + 3)] = paramMatrix4f.m23;
-    this.elementData[(3 * this.nCol)] = paramMatrix4f.m30;
-    this.elementData[(3 * this.nCol + 1)] = paramMatrix4f.m31;
-    this.elementData[(3 * this.nCol + 2)] = paramMatrix4f.m32;
-    this.elementData[(3 * this.nCol + 3)] = paramMatrix4f.m33;
-  }
-
-  public final void set(Matrix4d paramMatrix4d)
-  {
-    this.elementData[0] = paramMatrix4d.m00;
-    this.elementData[1] = paramMatrix4d.m01;
-    this.elementData[2] = paramMatrix4d.m02;
-    this.elementData[3] = paramMatrix4d.m03;
-    this.elementData[this.nCol] = paramMatrix4d.m10;
-    this.elementData[(this.nCol + 1)] = paramMatrix4d.m11;
-    this.elementData[(this.nCol + 2)] = paramMatrix4d.m12;
-    this.elementData[(this.nCol + 3)] = paramMatrix4d.m13;
-    this.elementData[(2 * this.nCol)] = paramMatrix4d.m20;
-    this.elementData[(2 * this.nCol + 1)] = paramMatrix4d.m21;
-    this.elementData[(2 * this.nCol + 2)] = paramMatrix4d.m22;
-    this.elementData[(2 * this.nCol + 3)] = paramMatrix4d.m23;
-    this.elementData[(3 * this.nCol)] = paramMatrix4d.m30;
-    this.elementData[(3 * this.nCol + 1)] = paramMatrix4d.m31;
-    this.elementData[(3 * this.nCol + 2)] = paramMatrix4d.m32;
-    this.elementData[(3 * this.nCol + 3)] = paramMatrix4d.m33;
-  }
-
-  public final void set(GMatrix paramGMatrix)
-  {
-    System.arraycopy(paramGMatrix.elementData, 0, this.elementData, 0, this.nRow * this.nCol);
-  }
-
-  public final int getNumRow()
-  {
-    return this.nRow;
-  }
-
-  public final int getNumCol()
-  {
-    return this.nCol;
-  }
-
-  public final double getElement(int paramInt1, int paramInt2)
-  {
-    return this.elementData[(paramInt1 * this.nCol + paramInt2)];
-  }
-
-  public final void setElement(int paramInt1, int paramInt2, double paramDouble)
-  {
-    this.elementData[(paramInt1 * this.nCol + paramInt2)] = paramDouble;
-  }
-
-  public final void getRow(int paramInt, double[] paramArrayOfDouble)
-  {
-    System.arraycopy(this.elementData, paramInt * this.nCol, paramArrayOfDouble, 0, this.nCol);
-  }
-
-  public final void getRow(int paramInt, GVector paramGVector)
-  {
-    for (int i = 0; i < this.nCol; i++)
-      paramGVector.setElement(i, this.elementData[(paramInt * this.nCol + i)]);
-  }
-
-  public final void getColumn(int paramInt, double[] paramArrayOfDouble)
-  {
-    for (int i = 0; i < this.nRow; i++)
-      paramArrayOfDouble[i] = this.elementData[(i * this.nCol + paramInt)];
-  }
-
-  public final void getColumn(int paramInt, GVector paramGVector)
-  {
-    for (int i = 0; i < this.nRow; i++)
-      paramGVector.setElement(i, this.elementData[(i * this.nCol + paramInt)]);
-  }
-
-  public final void get(Matrix3d paramMatrix3d)
-  {
-    paramMatrix3d.m00 = this.elementData[0];
-    paramMatrix3d.m01 = this.elementData[1];
-    paramMatrix3d.m02 = this.elementData[2];
-    paramMatrix3d.m10 = this.elementData[this.nCol];
-    paramMatrix3d.m11 = this.elementData[(this.nCol + 1)];
-    paramMatrix3d.m12 = this.elementData[(this.nCol + 2)];
-    paramMatrix3d.m20 = this.elementData[(2 * this.nCol)];
-    paramMatrix3d.m21 = this.elementData[(2 * this.nCol + 1)];
-    paramMatrix3d.m22 = this.elementData[(2 * this.nCol + 2)];
-  }
-
-  public final void get(Matrix3f paramMatrix3f)
-  {
-    paramMatrix3f.m00 = (float)this.elementData[0];
-    paramMatrix3f.m01 = (float)this.elementData[1];
-    paramMatrix3f.m02 = (float)this.elementData[2];
-    paramMatrix3f.m10 = (float)this.elementData[this.nCol];
-    paramMatrix3f.m11 = (float)this.elementData[(this.nCol + 1)];
-    paramMatrix3f.m12 = (float)this.elementData[(this.nCol + 2)];
-    paramMatrix3f.m20 = (float)this.elementData[(2 * this.nCol)];
-    paramMatrix3f.m21 = (float)this.elementData[(2 * this.nCol + 1)];
-    paramMatrix3f.m22 = (float)this.elementData[(2 * this.nCol + 2)];
-  }
-
-  public final void get(Matrix4d paramMatrix4d)
-  {
-    paramMatrix4d.m00 = this.elementData[0];
-    paramMatrix4d.m01 = this.elementData[1];
-    paramMatrix4d.m02 = this.elementData[2];
-    paramMatrix4d.m03 = this.elementData[3];
-    paramMatrix4d.m10 = this.elementData[this.nCol];
-    paramMatrix4d.m11 = this.elementData[(this.nCol + 1)];
-    paramMatrix4d.m12 = this.elementData[(this.nCol + 2)];
-    paramMatrix4d.m13 = this.elementData[(this.nCol + 3)];
-    paramMatrix4d.m20 = this.elementData[(2 * this.nCol)];
-    paramMatrix4d.m21 = this.elementData[(2 * this.nCol + 1)];
-    paramMatrix4d.m22 = this.elementData[(2 * this.nCol + 2)];
-    paramMatrix4d.m23 = this.elementData[(2 * this.nCol + 3)];
-    paramMatrix4d.m30 = this.elementData[(3 * this.nCol)];
-    paramMatrix4d.m31 = this.elementData[(3 * this.nCol + 1)];
-    paramMatrix4d.m32 = this.elementData[(3 * this.nCol + 2)];
-    paramMatrix4d.m33 = this.elementData[(3 * this.nCol + 3)];
-  }
-
-  public final void get(Matrix4f paramMatrix4f)
-  {
-    paramMatrix4f.m00 = (float)this.elementData[0];
-    paramMatrix4f.m01 = (float)this.elementData[1];
-    paramMatrix4f.m02 = (float)this.elementData[2];
-    paramMatrix4f.m03 = (float)this.elementData[3];
-    paramMatrix4f.m10 = (float)this.elementData[this.nCol];
-    paramMatrix4f.m11 = (float)this.elementData[(this.nCol + 1)];
-    paramMatrix4f.m12 = (float)this.elementData[(this.nCol + 2)];
-    paramMatrix4f.m13 = (float)this.elementData[(this.nCol + 3)];
-    paramMatrix4f.m20 = (float)this.elementData[(2 * this.nCol)];
-    paramMatrix4f.m21 = (float)this.elementData[(2 * this.nCol + 1)];
-    paramMatrix4f.m22 = (float)this.elementData[(2 * this.nCol + 2)];
-    paramMatrix4f.m23 = (float)this.elementData[(2 * this.nCol + 3)];
-    paramMatrix4f.m30 = (float)this.elementData[(3 * this.nCol)];
-    paramMatrix4f.m31 = (float)this.elementData[(3 * this.nCol + 1)];
-    paramMatrix4f.m32 = (float)this.elementData[(3 * this.nCol + 2)];
-    paramMatrix4f.m33 = (float)this.elementData[(3 * this.nCol + 3)];
-  }
-
-  public final void get(GMatrix paramGMatrix)
-  {
-    System.arraycopy(this.elementData, 0, paramGMatrix.elementData, 0, this.nRow * this.nCol);
-  }
-
-  public final void setRow(int paramInt, double[] paramArrayOfDouble)
-  {
-    System.arraycopy(paramArrayOfDouble, 0, this.elementData, paramInt * this.nCol, this.nCol);
-  }
-
-  public final void setRow(int paramInt, GVector paramGVector)
-  {
-    for (int i = 0; i < this.nCol; i++)
-      this.elementData[(paramInt * this.nCol + i)] = paramGVector.getElement(i);
-  }
-
-  public final void setColumn(int paramInt, double[] paramArrayOfDouble)
-  {
-    for (int i = 0; i < this.nRow; i++)
-      this.elementData[(i * this.nCol + paramInt)] = paramArrayOfDouble[i];
-  }
-
-  public final void setColumn(int paramInt, GVector paramGVector)
-  {
-    int i = paramGVector.getSize();
-    for (int j = 0; j < this.nRow; j++)
-      this.elementData[(j * this.nCol + paramInt)] = paramGVector.getElement(j);
-  }
-
-  public final void mulTransposeBoth(GMatrix paramGMatrix1, GMatrix paramGMatrix2)
-  {
-    mul(paramGMatrix2, paramGMatrix1);
-    transpose();
-  }
-
-  public final void mulTransposeRight(GMatrix paramGMatrix1, GMatrix paramGMatrix2)
-  {
-    for (int i = 0; i < this.nRow; i++)
-      for (int j = 0; j < this.nCol; j++) {
-        double d = 0.0D;
-        for (int k = 0; k < paramGMatrix1.nCol; k++)
-          d += paramGMatrix1.elementData[(i * this.nCol + k)] * paramGMatrix2.elementData[(j * paramGMatrix2.nCol + k)];
-        this.elementData[(i * this.nCol + j)] = d;
-      }
-  }
-
-  public final void mulTransposeLeft(GMatrix paramGMatrix1, GMatrix paramGMatrix2)
-  {
-    transpose(paramGMatrix1);
-    mul(paramGMatrix2);
-  }
-
-  public final void transpose()
-  {
-    for (int i = 0; i < this.nRow; i++)
-      for (int j = i + 1; j < this.nCol; j++) {
-        double d = this.elementData[(i * this.nCol + j)];
-        this.elementData[(i * this.nCol + j)] = this.elementData[(j * this.nCol + i)];
-        this.elementData[(j * this.nCol + i)] = d;
-      }
-  }
-
-  public final void transpose(GMatrix paramGMatrix)
-  {
-    set(paramGMatrix);
-    transpose();
-  }
-
-  public String toString()
-  {
-    String str = System.getProperty("line.separator");
-    StringBuffer localStringBuffer = new StringBuffer("[");
-    localStringBuffer.append(str);
-
-    for (int i = 0; i < this.nRow; i++) {
-      localStringBuffer.append("  [");
-      for (int j = 0; j < this.nCol; j++) {
-        if (0 < j)
-          localStringBuffer.append("\t");
-        localStringBuffer.append(this.elementData[(i * this.nCol + j)]);
-      }
-      if (i + 1 < this.nRow) {
-        localStringBuffer.append("]");
-        localStringBuffer.append(str);
-      } else {
-        localStringBuffer.append("] ]");
-      }
+    public GMatrix(com.maddox.JGP.GMatrix gmatrix)
+    {
+        nRow = gmatrix.nRow;
+        nCol = gmatrix.nCol;
+        int i = nRow * nCol;
+        elementData = new double[i];
+        java.lang.System.arraycopy(gmatrix.elementData, 0, elementData, 0, i);
     }
-    return localStringBuffer.toString();
-  }
 
-  public int hashCode()
-  {
-    int i = 0;
-    for (int j = 0; j < this.nRow * this.nCol; j++) {
-      long l = Double.doubleToLongBits(this.elementData[j]);
-      i ^= (int)(l ^ l >> 32);
+    public final void mul(com.maddox.JGP.GMatrix gmatrix)
+    {
+        mul(this, gmatrix);
     }
-    return i;
-  }
 
-  public boolean equals(GMatrix paramGMatrix)
-  {
-    if (paramGMatrix == null)
-      return false;
-    if (paramGMatrix.nRow != this.nRow)
-      return false;
-    if (paramGMatrix.nCol != this.nCol)
-      return false;
-    for (int i = 0; i < this.nRow; i++)
-      for (int j = 0; j < this.nCol; j++)
-        if (this.elementData[(i * this.nCol + j)] != paramGMatrix.elementData[(i * this.nCol + j)])
-          return false;
-    return true;
-  }
-
-  public boolean equals(Object paramObject)
-  {
-    return (paramObject != null) && ((paramObject instanceof GMatrix)) && (equals((GMatrix)paramObject));
-  }
-
-  /** @deprecated */
-  public boolean epsilonEquals(GMatrix paramGMatrix, float paramFloat)
-  {
-    if (paramGMatrix.nRow != this.nRow)
-      return false;
-    if (paramGMatrix.nCol != this.nCol)
-      return false;
-    for (int i = 0; i < this.nRow; i++)
-      for (int j = 0; j < this.nCol; j++)
-        if (paramFloat < Math.abs(this.elementData[(i * this.nCol + j)] - paramGMatrix.elementData[(i * this.nCol + j)]))
+    public final void mul(com.maddox.JGP.GMatrix gmatrix, com.maddox.JGP.GMatrix gmatrix1)
+    {
+        double ad[] = new double[nCol * nRow];
+        for(int i = 0; i < nRow; i++)
         {
-          return false;
-        }
-    return true;
-  }
+            for(int j = 0; j < nCol; j++)
+            {
+                double d = 0.0D;
+                for(int k = 0; k < gmatrix.nCol; k++)
+                    d += gmatrix.elementData[i * gmatrix.nCol + k] * gmatrix1.elementData[k * gmatrix1.nCol + j];
 
-  public boolean epsilonEquals(GMatrix paramGMatrix, double paramDouble)
-  {
-    if (paramGMatrix.nRow != this.nRow)
-      return false;
-    if (paramGMatrix.nCol != this.nCol)
-      return false;
-    for (int i = 0; i < this.nRow; i++)
-      for (int j = 0; j < this.nCol; j++)
-        if (paramDouble < Math.abs(this.elementData[(i * this.nCol + j)] - paramGMatrix.elementData[(i * this.nCol + j)]))
-        {
-          return false;
-        }
-    return true;
-  }
-
-  public final double trace()
-  {
-    int i = this.nRow < this.nCol ? this.nRow : this.nCol;
-    double d = 0.0D;
-    for (int j = 0; j < i; j++)
-      d += this.elementData[(j * this.nCol + j)];
-    return d;
-  }
-
-  public final void setScale(double paramDouble)
-  {
-    setZero();
-    int i = this.nRow < this.nCol ? this.nRow : this.nCol;
-    for (int j = 0; j < i; j++)
-      this.elementData[(j * this.nCol + j)] = paramDouble;
-  }
-
-  private void setDiag(int paramInt, double paramDouble) {
-    this.elementData[(paramInt * this.nCol + paramInt)] = paramDouble;
-  }
-  private double getDiag(int paramInt) {
-    return this.elementData[(paramInt * this.nCol + paramInt)];
-  }
-
-  private double dpythag(double paramDouble1, double paramDouble2) {
-    double d1 = Math.abs(paramDouble1);
-    double d2 = Math.abs(paramDouble2);
-    if (d1 > d2) {
-      if (d1 == 0.0D)
-        return 0.0D;
-      d3 = d2 / d1;
-      if (Math.abs(d3) <= 4.9E-324D)
-        return d1;
-      return d1 * Math.sqrt(1.0D + d3 * d3);
-    }
-    if (d2 == 0.0D)
-      return 0.0D;
-    double d3 = d1 / d2;
-    if (Math.abs(d3) <= 4.9E-324D)
-      return d2;
-    return d2 * Math.sqrt(1.0D + d3 * d3);
-  }
-
-  public final int SVD(GMatrix paramGMatrix1, GMatrix paramGMatrix2, GMatrix paramGMatrix3)
-  {
-    int i = this.nRow;
-    double d1 = this.nCol;
-    int j = i > d1 ? i : d1;
-    double[] arrayOfDouble1 = paramGMatrix1.elementData;
-    double[] arrayOfDouble2 = paramGMatrix3.elementData;
-    int i3 = 0; int i4 = 0;
-
-    double[] arrayOfDouble3 = new double[d1];
-
-    get(paramGMatrix1);
-    int n;
-    for (int k = i; k < j; k++) {
-      for (n = d1; n < j; k++)
-        arrayOfDouble1[(k * d1 + n)] = 0.0D;
-    }
-    paramGMatrix2.setZero();
-    double d2;
-    double d8;
-    double d5 = d8 = d2 = 0.0D;
-    double d7;
-    double d4;
-    double d6;
-    for (k = 0; k < d1; k++) {
-      i3 = k + 1;
-      arrayOfDouble3[k] = (d8 * d5);
-      d5 = d7 = d8 = 0.0D;
-      if (k < i) {
-        for (i2 = k; i2 < i; i2++) d8 += Math.abs(arrayOfDouble1[(i2 * i + k)]);
-        if (d8 != 0.0D) {
-          for (i2 = k; i2 < i; i2++) {
-            arrayOfDouble1[(i2 * i + k)] /= d8;
-            d7 += arrayOfDouble1[(i2 * i + k)] * arrayOfDouble1[(i2 * i + k)];
-          }
-          d4 = arrayOfDouble1[(k * i + k)];
-
-          d5 = d4 < 0.0D ? Math.sqrt(d7) : -Math.sqrt(d7);
-          d6 = d4 * d5 - d7;
-          arrayOfDouble1[(k * i + k)] = (d4 - d5);
-          for (n = i3; n < d1; n++) {
-            d7 = 0.0D; for (i2 = k; i2 < i; i2++) d7 += arrayOfDouble1[(i2 * i + k)] * arrayOfDouble1[(i2 * i + n)];
-            d4 = d7 / d6;
-            for (i2 = k; i2 < i; i2++) arrayOfDouble1[(i2 * i + n)] += d4 * arrayOfDouble1[(i2 * i + k)];
-          }
-          for (i2 = k; i2 < i; i2++) arrayOfDouble1[(i2 * i + k)] *= d8;
-        }
-      }
-      paramGMatrix2.setDiag(k, d8 * d5);
-      d5 = d7 = d8 = 0.0D;
-      if ((k < i) && (k != d1 - 1)) {
-        for (i2 = i3; i2 < d1; i2++) d8 += Math.abs(arrayOfDouble1[(k * i + i2)]);
-        if (d8 != 0.0D) {
-          for (i2 = i3; i2 < d1; i2++) {
-            arrayOfDouble1[(k * i + i2)] /= d8;
-            d7 += arrayOfDouble1[(k * i + i2)] * arrayOfDouble1[(k * i + i2)];
-          }
-          d4 = arrayOfDouble1[(k * i + i3)];
-
-          d5 = d4 < 0.0D ? Math.sqrt(d7) : -Math.sqrt(d7);
-          d6 = d4 * d5 - d7;
-          arrayOfDouble1[(k * i + i3)] = (d4 - d5);
-          for (i2 = i3; i2 < d1; i2++) arrayOfDouble3[i2] = (arrayOfDouble1[(k * i + i2)] / d6);
-          for (n = i3; n < i; n++) {
-            d7 = 0.0D; for (i2 = i3; i2 < d1; i2++) d7 += arrayOfDouble1[(n * i + i2)] * arrayOfDouble1[(k * i + i2)];
-            for (i2 = i3; i2 < d1; i2++) arrayOfDouble1[(n * i + i2)] += d7 * arrayOfDouble3[i2];
-          }
-          for (i2 = i3; i2 < d1; i2++) arrayOfDouble1[(k * i + i2)] *= d8;
-        }
-      }
-
-      d12 = Math.abs(paramGMatrix2.getDiag(k)) + Math.abs(arrayOfDouble3[k]);
-      if (d12 > d2)
-        d2 = d12;
-    }
-    for (k = d1 - 1; k >= 0; k--) {
-      if (k < d1 - 1) {
-        if (d5 != 0.0D) {
-          for (n = i3; n < d1; n++)
-            arrayOfDouble2[(n * d1 + k)] = (arrayOfDouble1[(k * i + n)] / arrayOfDouble1[(k * i + i3)] / d5);
-          for (n = i3; n < d1; n++) {
-            d7 = 0.0D; for (i2 = i3; i2 < d1; i2++) d7 += arrayOfDouble1[(k * i + i2)] * arrayOfDouble2[(i2 * d1 + n)];
-            for (i2 = i3; i2 < d1; i2++) arrayOfDouble2[(i2 * d1 + n)] += d7 * arrayOfDouble2[(i2 * d1 + k)];
-          }
-        }
-        for (n = i3; n < d1; n++)
-        {
-          double tmp1110_1109 = 0.0D; arrayOfDouble2[(n * d1 + k)] = tmp1110_1109; arrayOfDouble2[(k * d1 + n)] = tmp1110_1109;
-        }
-      }
-      arrayOfDouble2[(k * d1 + k)] = 1.0D;
-      d5 = arrayOfDouble3[k];
-      i3 = k;
-    }
-
-    double d12 = i < d1 ? i : d1;
-    for (k = d12 - 1; k >= 0; k--) {
-      i3 = k + 1;
-      d5 = paramGMatrix2.getDiag(k);
-      for (n = i3; n < d1; n++) arrayOfDouble1[(k * i + n)] = 0.0D;
-      if (d5 != 0.0D) {
-        d5 = 1.0D / d5;
-        for (n = i3; n < d1; n++) {
-          d7 = 0.0D; for (i2 = i3; i2 < i; i2++) d7 += arrayOfDouble1[(i2 * i + k)] * arrayOfDouble1[(i2 * i + n)];
-          d4 = d7 / arrayOfDouble1[(k * i + k)] * d5;
-          for (i2 = k; i2 < i; i2++) arrayOfDouble1[(i2 * i + n)] += d4 * arrayOfDouble1[(i2 * i + k)];
-        }
-        for (n = k; n < i; n++) arrayOfDouble1[(n * i + k)] *= d5; 
-      }
-      for (n = k; n < i; n++) arrayOfDouble1[(n * i + k)] = 0.0D;
-      arrayOfDouble1[(k * i + k)] += 1.0D;
-    }
-    for (int i2 = d1 - 1; i2 >= 0; i2--) {
-      for (int m = 1; m <= 30; m++) {
-        i5 = 1;
-        for (i3 = i2; i3 >= 0; i3--) {
-          i4 = i3 - 1;
-          if (Math.abs(arrayOfDouble3[i3]) + d2 == d2) {
-            i5 = 0;
-            break;
-          }
-          if (Math.abs(paramGMatrix2.getDiag(i4)) + d2 == d2) break;
-        }
-        if (i5 != 0) {
-          d3 = 0.0D;
-          d7 = 1.0D;
-          for (k = i3; k <= i2; k++) {
-            d4 = d7 * arrayOfDouble3[k];
-            arrayOfDouble3[k] = (d3 * arrayOfDouble3[k]);
-            if (Math.abs(d4) + d2 == d2) break;
-            d5 = paramGMatrix2.getDiag(k);
-            d6 = dpythag(d4, d5);
-            paramGMatrix2.setDiag(k, d6);
-            d6 = 1.0D / d6;
-            d3 = d5 * d6;
-            d7 = -d4 * d6;
-            for (n = 0; n < i; n++) {
-              d10 = arrayOfDouble1[(n * i + i4)];
-              d11 = arrayOfDouble1[(n * i + k)];
-              arrayOfDouble1[(n * i + i4)] = (d10 * d3 + d11 * d7);
-              arrayOfDouble1[(n * i + k)] = (d11 * d3 - d10 * d7);
+                ad[i * nCol + j] = d;
             }
-          }
-        }
-        double d11 = paramGMatrix2.getDiag(i2);
-        if (i3 == i2) {
-          if (d11 >= 0.0D) break;
-          paramGMatrix2.setDiag(i2, -d11);
-          for (n = 0; n < d1; n++) arrayOfDouble2[(n * d1 + i2)] = (-arrayOfDouble2[(n * d1 + i2)]);
 
         }
 
-        if (m == 30) {
-          return 0;
-        }
-        double d9 = paramGMatrix2.getDiag(i3);
-        i4 = i2 - 1;
-        double d10 = paramGMatrix2.getDiag(i4);
-        d5 = arrayOfDouble3[i4];
-        d6 = arrayOfDouble3[i2];
-        d4 = ((d10 - d11) * (d10 + d11) + (d5 - d6) * (d5 + d6)) / (2.0D * d6 * d10);
-        d5 = dpythag(d4, 1.0D);
-
-        d4 = ((d9 - d11) * (d9 + d11) + d6 * (d10 / (d4 + (d4 >= 0.0D ? Math.abs(d5) : -Math.abs(d5))) - d6)) / d9;
-
-        double d3 = d7 = 1.0D;
-        for (n = i3; n <= i4; n++) {
-          k = n + 1;
-          d5 = arrayOfDouble3[k];
-          d10 = paramGMatrix2.getDiag(k);
-          d6 = d7 * d5;
-          d5 = d3 * d5;
-          d11 = dpythag(d4, d6);
-          arrayOfDouble3[n] = d11;
-          d3 = d4 / d11;
-          d7 = d6 / d11;
-          d4 = d9 * d3 + d5 * d7;
-          d5 = d5 * d3 - d9 * d7;
-          d6 = d10 * d7;
-          d10 *= d3;
-          for (int i1 = 0; i1 < d1; i1++) {
-            d9 = arrayOfDouble2[(i1 * d1 + n)];
-            d11 = arrayOfDouble2[(i1 * d1 + k)];
-            arrayOfDouble2[(i1 * d1 + n)] = (d9 * d3 + d11 * d7);
-            arrayOfDouble2[(i1 * d1 + k)] = (d11 * d3 - d9 * d7);
-          }
-          d11 = dpythag(d4, d6);
-          paramGMatrix2.setDiag(n, d11);
-          if (d11 != 0.0D) {
-            d11 = 1.0D / d11;
-            d3 = d4 * d11;
-            d7 = d6 * d11;
-          }
-          d4 = d3 * d5 + d7 * d10;
-          d9 = d3 * d10 - d7 * d5;
-          for (i1 = 0; i1 < i; i1++) {
-            d10 = arrayOfDouble1[(i1 * i + n)];
-            d11 = arrayOfDouble1[(i1 * i + k)];
-            arrayOfDouble1[(i1 * i + n)] = (d10 * d3 + d11 * d7);
-            arrayOfDouble1[(i1 * i + k)] = (d11 * d3 - d10 * d7);
-          }
-        }
-        arrayOfDouble3[i3] = 0.0D;
-        arrayOfDouble3[i2] = d4;
-        paramGMatrix2.setDiag(i2, d9);
-      }
-
+        elementData = ad;
     }
 
-    int i5 = 0;
-    for (k = 0; k < d1; k++) {
-      if (paramGMatrix2.getDiag(k) > 0.0D)
-        i5++;
-    }
-    return i5;
-  }
-
-  private void swapRows(int paramInt1, int paramInt2)
-  {
-    for (int i = 0; i < this.nCol; i++) {
-      double d = this.elementData[(paramInt1 * this.nCol + i)];
-      this.elementData[(paramInt1 * this.nCol + i)] = this.elementData[(paramInt2 * this.nCol + i)];
-      this.elementData[(paramInt2 * this.nCol + i)] = d;
-    }
-  }
-
-  public final int LUD(GMatrix paramGMatrix, GVector paramGVector)
-  {
-    int i = this.nRow;
-
-    if (this != paramGMatrix) {
-      paramGMatrix.set(this);
-    }
-    int j = 1;
-    double[] arrayOfDouble = paramGMatrix.elementData;
-
-    for (int k = 0; k < i; k++) {
-      paramGVector.setElement(k, k);
-    }
-
-    for (int m = 0; m < i; m++)
+    public final void mul(com.maddox.JGP.GVector gvector, com.maddox.JGP.GVector gvector1)
     {
-      double d3;
-      int i3;
-      for (int i1 = 0; i1 < m; i1++) {
-        d3 = arrayOfDouble[(i1 * i + m)];
-        for (i3 = 0; i3 < i1; i3++) {
-          if ((arrayOfDouble[(i1 * i + i3)] != 0.0D) && (arrayOfDouble[(i3 * i + m)] != 0.0D))
-            d3 -= arrayOfDouble[(i1 * i + i3)] * arrayOfDouble[(i3 * i + m)];
-        }
-        arrayOfDouble[(i1 * i + m)] = d3;
-      }
-      double d1 = 0.0D;
-      int n = m;
-      double d2;
-      for (i1 = m; i1 < i; i1++) {
-        d3 = arrayOfDouble[(i1 * i + m)];
-        for (i3 = 0; i3 < m; i3++) {
-          if ((arrayOfDouble[(i1 * i + i3)] != 0.0D) && (arrayOfDouble[(i3 * i + m)] != 0.0D))
-            d3 -= arrayOfDouble[(i1 * i + i3)] * arrayOfDouble[(i3 * i + m)];
-        }
-        arrayOfDouble[(i1 * i + m)] = d3;
-        d2 = Math.abs(d3);
-        if (d2 >= d1) {
-          d1 = d2;
-          n = i1;
-        }
-      }
+        for(int i = 0; i < nRow; i++)
+        {
+            for(int j = 0; j < nCol; j++)
+                elementData[i * nCol + j] = gvector.getElement(i) * gvector1.getElement(j);
 
-      if (m != n)
-      {
-        paramGMatrix.swapRows(n, m);
-        double d4 = paramGVector.getElement(n);
-        paramGVector.setElement(n, paramGVector.getElement(m));
-        paramGVector.setElement(m, d4);
-        j = -j;
-      }
-
-      if (m != i - 1) {
-        d2 = 1.0D / arrayOfDouble[(m * i + m)];
-        for (int i2 = m + 1; i2 < i; i2++) {
-          arrayOfDouble[(i2 * i + m)] *= d2;
         }
-      }
+
     }
 
-    return j;
-  }
+    public final void add(com.maddox.JGP.GMatrix gmatrix)
+    {
+        for(int i = 0; i < nRow * nCol; i++)
+            elementData[i] += gmatrix.elementData[i];
+
+    }
+
+    public final void add(com.maddox.JGP.GMatrix gmatrix, com.maddox.JGP.GMatrix gmatrix1)
+    {
+        for(int i = 0; i < nRow * nCol; i++)
+            elementData[i] = gmatrix.elementData[i] + gmatrix.elementData[i];
+
+    }
+
+    public final void sub(com.maddox.JGP.GMatrix gmatrix)
+    {
+        for(int i = 0; i < nRow * nCol; i++)
+            elementData[i] -= gmatrix.elementData[i];
+
+    }
+
+    public final void sub(com.maddox.JGP.GMatrix gmatrix, com.maddox.JGP.GMatrix gmatrix1)
+    {
+        for(int i = 0; i < nRow * nCol; i++)
+            elementData[i] = gmatrix.elementData[i] - gmatrix1.elementData[i];
+
+    }
+
+    public final void negate()
+    {
+        for(int i = 0; i < nRow * nCol; i++)
+            elementData[i] = -elementData[i];
+
+    }
+
+    public final void negate(com.maddox.JGP.GMatrix gmatrix)
+    {
+        set(gmatrix);
+        negate();
+    }
+
+    public final void setIdentity()
+    {
+        setZero();
+        int i = nRow >= nCol ? nCol : nRow;
+        for(int j = 0; j < i; j++)
+            elementData[j * nCol + j] = 1.0D;
+
+    }
+
+    public final void setZero()
+    {
+        for(int i = 0; i < nRow * nCol; i++)
+            elementData[i] = 0.0D;
+
+    }
+
+    public final void identityMinus()
+    {
+        negate();
+        int i = nRow >= nCol ? nCol : nRow;
+        for(int j = 0; j < i; j++)
+            elementData[j * nCol + j]++;
+
+    }
+
+    public final void invert()
+    {
+        int i = nRow;
+        com.maddox.JGP.GMatrix gmatrix = new GMatrix(i, i);
+        com.maddox.JGP.GVector gvector = new GVector(i);
+        com.maddox.JGP.GVector gvector1 = new GVector(i);
+        com.maddox.JGP.GVector gvector2 = new GVector(i);
+        LUD(gmatrix, gvector);
+        for(int j = 0; j < i; j++)
+        {
+            gvector2.zero();
+            gvector2.setElement(j, 1.0D);
+            gvector1.LUDBackSolve(gmatrix, gvector2, gvector);
+            setColumn(j, gvector1);
+        }
+
+    }
+
+    public final void invert(com.maddox.JGP.GMatrix gmatrix)
+    {
+        set(gmatrix);
+        invert();
+    }
+
+    public final void copySubMatrix(int i, int j, int k, int l, int i1, int j1, com.maddox.JGP.GMatrix gmatrix)
+    {
+        for(int k1 = 0; k1 < k; k1++)
+        {
+            for(int l1 = 0; l1 < l; l1++)
+                gmatrix.elementData[(k1 + i1) * nCol + (l1 + j1)] = elementData[(k1 + i) * nCol + (l1 + j)];
+
+        }
+
+    }
+
+    public final void setSize(int i, int j)
+    {
+        int k = nRow;
+        int l = nCol;
+        int i1 = nRow * nCol;
+        nRow = i;
+        nCol = j;
+        int j1 = i * j;
+        double ad[] = elementData;
+        if(l == j)
+        {
+            if(i <= k)
+                return;
+            elementData = new double[j1];
+            java.lang.System.arraycopy(ad, 0, elementData, 0, i1);
+        } else
+        {
+            elementData = new double[j1];
+            setZero();
+            for(int k1 = 0; k1 < k; k1++)
+                java.lang.System.arraycopy(ad, k1 * l, elementData, k1 * j, l);
+
+        }
+    }
+
+    public final void set(double ad[])
+    {
+        int i = nRow * nCol;
+        java.lang.System.arraycopy(ad, 0, elementData, 0, i);
+    }
+
+    public final void set(com.maddox.JGP.Matrix3f matrix3f)
+    {
+        elementData[0] = matrix3f.m00;
+        elementData[1] = matrix3f.m01;
+        elementData[2] = matrix3f.m02;
+        elementData[nCol] = matrix3f.m10;
+        elementData[nCol + 1] = matrix3f.m11;
+        elementData[nCol + 2] = matrix3f.m12;
+        elementData[2 * nCol] = matrix3f.m20;
+        elementData[2 * nCol + 1] = matrix3f.m21;
+        elementData[2 * nCol + 2] = matrix3f.m22;
+    }
+
+    public final void set(com.maddox.JGP.Matrix3d matrix3d)
+    {
+        elementData[0] = matrix3d.m00;
+        elementData[1] = matrix3d.m01;
+        elementData[2] = matrix3d.m02;
+        elementData[nCol] = matrix3d.m10;
+        elementData[nCol + 1] = matrix3d.m11;
+        elementData[nCol + 2] = matrix3d.m12;
+        elementData[2 * nCol] = matrix3d.m20;
+        elementData[2 * nCol + 1] = matrix3d.m21;
+        elementData[2 * nCol + 2] = matrix3d.m22;
+    }
+
+    public final void set(com.maddox.JGP.Matrix4f matrix4f)
+    {
+        elementData[0] = matrix4f.m00;
+        elementData[1] = matrix4f.m01;
+        elementData[2] = matrix4f.m02;
+        elementData[3] = matrix4f.m03;
+        elementData[nCol] = matrix4f.m10;
+        elementData[nCol + 1] = matrix4f.m11;
+        elementData[nCol + 2] = matrix4f.m12;
+        elementData[nCol + 3] = matrix4f.m13;
+        elementData[2 * nCol] = matrix4f.m20;
+        elementData[2 * nCol + 1] = matrix4f.m21;
+        elementData[2 * nCol + 2] = matrix4f.m22;
+        elementData[2 * nCol + 3] = matrix4f.m23;
+        elementData[3 * nCol] = matrix4f.m30;
+        elementData[3 * nCol + 1] = matrix4f.m31;
+        elementData[3 * nCol + 2] = matrix4f.m32;
+        elementData[3 * nCol + 3] = matrix4f.m33;
+    }
+
+    public final void set(com.maddox.JGP.Matrix4d matrix4d)
+    {
+        elementData[0] = matrix4d.m00;
+        elementData[1] = matrix4d.m01;
+        elementData[2] = matrix4d.m02;
+        elementData[3] = matrix4d.m03;
+        elementData[nCol] = matrix4d.m10;
+        elementData[nCol + 1] = matrix4d.m11;
+        elementData[nCol + 2] = matrix4d.m12;
+        elementData[nCol + 3] = matrix4d.m13;
+        elementData[2 * nCol] = matrix4d.m20;
+        elementData[2 * nCol + 1] = matrix4d.m21;
+        elementData[2 * nCol + 2] = matrix4d.m22;
+        elementData[2 * nCol + 3] = matrix4d.m23;
+        elementData[3 * nCol] = matrix4d.m30;
+        elementData[3 * nCol + 1] = matrix4d.m31;
+        elementData[3 * nCol + 2] = matrix4d.m32;
+        elementData[3 * nCol + 3] = matrix4d.m33;
+    }
+
+    public final void set(com.maddox.JGP.GMatrix gmatrix)
+    {
+        java.lang.System.arraycopy(gmatrix.elementData, 0, elementData, 0, nRow * nCol);
+    }
+
+    public final int getNumRow()
+    {
+        return nRow;
+    }
+
+    public final int getNumCol()
+    {
+        return nCol;
+    }
+
+    public final double getElement(int i, int j)
+    {
+        return elementData[i * nCol + j];
+    }
+
+    public final void setElement(int i, int j, double d)
+    {
+        elementData[i * nCol + j] = d;
+    }
+
+    public final void getRow(int i, double ad[])
+    {
+        java.lang.System.arraycopy(elementData, i * nCol, ad, 0, nCol);
+    }
+
+    public final void getRow(int i, com.maddox.JGP.GVector gvector)
+    {
+        for(int j = 0; j < nCol; j++)
+            gvector.setElement(j, elementData[i * nCol + j]);
+
+    }
+
+    public final void getColumn(int i, double ad[])
+    {
+        for(int j = 0; j < nRow; j++)
+            ad[j] = elementData[j * nCol + i];
+
+    }
+
+    public final void getColumn(int i, com.maddox.JGP.GVector gvector)
+    {
+        for(int j = 0; j < nRow; j++)
+            gvector.setElement(j, elementData[j * nCol + i]);
+
+    }
+
+    public final void get(com.maddox.JGP.Matrix3d matrix3d)
+    {
+        matrix3d.m00 = elementData[0];
+        matrix3d.m01 = elementData[1];
+        matrix3d.m02 = elementData[2];
+        matrix3d.m10 = elementData[nCol];
+        matrix3d.m11 = elementData[nCol + 1];
+        matrix3d.m12 = elementData[nCol + 2];
+        matrix3d.m20 = elementData[2 * nCol];
+        matrix3d.m21 = elementData[2 * nCol + 1];
+        matrix3d.m22 = elementData[2 * nCol + 2];
+    }
+
+    public final void get(com.maddox.JGP.Matrix3f matrix3f)
+    {
+        matrix3f.m00 = (float)elementData[0];
+        matrix3f.m01 = (float)elementData[1];
+        matrix3f.m02 = (float)elementData[2];
+        matrix3f.m10 = (float)elementData[nCol];
+        matrix3f.m11 = (float)elementData[nCol + 1];
+        matrix3f.m12 = (float)elementData[nCol + 2];
+        matrix3f.m20 = (float)elementData[2 * nCol];
+        matrix3f.m21 = (float)elementData[2 * nCol + 1];
+        matrix3f.m22 = (float)elementData[2 * nCol + 2];
+    }
+
+    public final void get(com.maddox.JGP.Matrix4d matrix4d)
+    {
+        matrix4d.m00 = elementData[0];
+        matrix4d.m01 = elementData[1];
+        matrix4d.m02 = elementData[2];
+        matrix4d.m03 = elementData[3];
+        matrix4d.m10 = elementData[nCol];
+        matrix4d.m11 = elementData[nCol + 1];
+        matrix4d.m12 = elementData[nCol + 2];
+        matrix4d.m13 = elementData[nCol + 3];
+        matrix4d.m20 = elementData[2 * nCol];
+        matrix4d.m21 = elementData[2 * nCol + 1];
+        matrix4d.m22 = elementData[2 * nCol + 2];
+        matrix4d.m23 = elementData[2 * nCol + 3];
+        matrix4d.m30 = elementData[3 * nCol];
+        matrix4d.m31 = elementData[3 * nCol + 1];
+        matrix4d.m32 = elementData[3 * nCol + 2];
+        matrix4d.m33 = elementData[3 * nCol + 3];
+    }
+
+    public final void get(com.maddox.JGP.Matrix4f matrix4f)
+    {
+        matrix4f.m00 = (float)elementData[0];
+        matrix4f.m01 = (float)elementData[1];
+        matrix4f.m02 = (float)elementData[2];
+        matrix4f.m03 = (float)elementData[3];
+        matrix4f.m10 = (float)elementData[nCol];
+        matrix4f.m11 = (float)elementData[nCol + 1];
+        matrix4f.m12 = (float)elementData[nCol + 2];
+        matrix4f.m13 = (float)elementData[nCol + 3];
+        matrix4f.m20 = (float)elementData[2 * nCol];
+        matrix4f.m21 = (float)elementData[2 * nCol + 1];
+        matrix4f.m22 = (float)elementData[2 * nCol + 2];
+        matrix4f.m23 = (float)elementData[2 * nCol + 3];
+        matrix4f.m30 = (float)elementData[3 * nCol];
+        matrix4f.m31 = (float)elementData[3 * nCol + 1];
+        matrix4f.m32 = (float)elementData[3 * nCol + 2];
+        matrix4f.m33 = (float)elementData[3 * nCol + 3];
+    }
+
+    public final void get(com.maddox.JGP.GMatrix gmatrix)
+    {
+        java.lang.System.arraycopy(elementData, 0, gmatrix.elementData, 0, nRow * nCol);
+    }
+
+    public final void setRow(int i, double ad[])
+    {
+        java.lang.System.arraycopy(ad, 0, elementData, i * nCol, nCol);
+    }
+
+    public final void setRow(int i, com.maddox.JGP.GVector gvector)
+    {
+        for(int j = 0; j < nCol; j++)
+            elementData[i * nCol + j] = gvector.getElement(j);
+
+    }
+
+    public final void setColumn(int i, double ad[])
+    {
+        for(int j = 0; j < nRow; j++)
+            elementData[j * nCol + i] = ad[j];
+
+    }
+
+    public final void setColumn(int i, com.maddox.JGP.GVector gvector)
+    {
+        int j = gvector.getSize();
+        for(int k = 0; k < nRow; k++)
+            elementData[k * nCol + i] = gvector.getElement(k);
+
+    }
+
+    public final void mulTransposeBoth(com.maddox.JGP.GMatrix gmatrix, com.maddox.JGP.GMatrix gmatrix1)
+    {
+        mul(gmatrix1, gmatrix);
+        transpose();
+    }
+
+    public final void mulTransposeRight(com.maddox.JGP.GMatrix gmatrix, com.maddox.JGP.GMatrix gmatrix1)
+    {
+        for(int i = 0; i < nRow; i++)
+        {
+            for(int j = 0; j < nCol; j++)
+            {
+                double d = 0.0D;
+                for(int k = 0; k < gmatrix.nCol; k++)
+                    d += gmatrix.elementData[i * nCol + k] * gmatrix1.elementData[j * gmatrix1.nCol + k];
+
+                elementData[i * nCol + j] = d;
+            }
+
+        }
+
+    }
+
+    public final void mulTransposeLeft(com.maddox.JGP.GMatrix gmatrix, com.maddox.JGP.GMatrix gmatrix1)
+    {
+        transpose(gmatrix);
+        mul(gmatrix1);
+    }
+
+    public final void transpose()
+    {
+        for(int i = 0; i < nRow; i++)
+        {
+            for(int j = i + 1; j < nCol; j++)
+            {
+                double d = elementData[i * nCol + j];
+                elementData[i * nCol + j] = elementData[j * nCol + i];
+                elementData[j * nCol + i] = d;
+            }
+
+        }
+
+    }
+
+    public final void transpose(com.maddox.JGP.GMatrix gmatrix)
+    {
+        set(gmatrix);
+        transpose();
+    }
+
+    public java.lang.String toString()
+    {
+        java.lang.String s = java.lang.System.getProperty("line.separator");
+        java.lang.StringBuffer stringbuffer = new StringBuffer("[");
+        stringbuffer.append(s);
+        for(int i = 0; i < nRow; i++)
+        {
+            stringbuffer.append("  [");
+            for(int j = 0; j < nCol; j++)
+            {
+                if(0 < j)
+                    stringbuffer.append("\t");
+                stringbuffer.append(elementData[i * nCol + j]);
+            }
+
+            if(i + 1 < nRow)
+            {
+                stringbuffer.append("]");
+                stringbuffer.append(s);
+            } else
+            {
+                stringbuffer.append("] ]");
+            }
+        }
+
+        return stringbuffer.toString();
+    }
+
+    public int hashCode()
+    {
+        int i = 0;
+        for(int j = 0; j < nRow * nCol; j++)
+        {
+            long l = java.lang.Double.doubleToLongBits(elementData[j]);
+            i ^= (int)(l ^ l >> 32);
+        }
+
+        return i;
+    }
+
+    public boolean equals(com.maddox.JGP.GMatrix gmatrix)
+    {
+        if(gmatrix == null)
+            return false;
+        if(gmatrix.nRow != nRow)
+            return false;
+        if(gmatrix.nCol != nCol)
+            return false;
+        for(int i = 0; i < nRow; i++)
+        {
+            for(int j = 0; j < nCol; j++)
+                if(elementData[i * nCol + j] != gmatrix.elementData[i * nCol + j])
+                    return false;
+
+        }
+
+        return true;
+    }
+
+    public boolean equals(java.lang.Object obj)
+    {
+        return obj != null && (obj instanceof com.maddox.JGP.GMatrix) && equals((com.maddox.JGP.GMatrix)obj);
+    }
+
+    /**
+     * @deprecated Method epsilonEquals is deprecated
+     */
+
+    public boolean epsilonEquals(com.maddox.JGP.GMatrix gmatrix, float f)
+    {
+        if(gmatrix.nRow != nRow)
+            return false;
+        if(gmatrix.nCol != nCol)
+            return false;
+        for(int i = 0; i < nRow; i++)
+        {
+            for(int j = 0; j < nCol; j++)
+                if((double)f < java.lang.Math.abs(elementData[i * nCol + j] - gmatrix.elementData[i * nCol + j]))
+                    return false;
+
+        }
+
+        return true;
+    }
+
+    public boolean epsilonEquals(com.maddox.JGP.GMatrix gmatrix, double d)
+    {
+        if(gmatrix.nRow != nRow)
+            return false;
+        if(gmatrix.nCol != nCol)
+            return false;
+        for(int i = 0; i < nRow; i++)
+        {
+            for(int j = 0; j < nCol; j++)
+                if(d < java.lang.Math.abs(elementData[i * nCol + j] - gmatrix.elementData[i * nCol + j]))
+                    return false;
+
+        }
+
+        return true;
+    }
+
+    public final double trace()
+    {
+        int i = nRow >= nCol ? nCol : nRow;
+        double d = 0.0D;
+        for(int j = 0; j < i; j++)
+            d += elementData[j * nCol + j];
+
+        return d;
+    }
+
+    public final void setScale(double d)
+    {
+        setZero();
+        int i = nRow >= nCol ? nCol : nRow;
+        for(int j = 0; j < i; j++)
+            elementData[j * nCol + j] = d;
+
+    }
+
+    private void setDiag(int i, double d)
+    {
+        elementData[i * nCol + i] = d;
+    }
+
+    private double getDiag(int i)
+    {
+        return elementData[i * nCol + i];
+    }
+
+    private double dpythag(double d, double d1)
+    {
+        double d2 = java.lang.Math.abs(d);
+        double d3 = java.lang.Math.abs(d1);
+        if(d2 > d3)
+        {
+            if(d2 == 0.0D)
+                return 0.0D;
+            double d4 = d3 / d2;
+            if(java.lang.Math.abs(d4) <= 4.9406564584124654E-324D)
+                return d2;
+            else
+                return d2 * java.lang.Math.sqrt(1.0D + d4 * d4);
+        }
+        if(d3 == 0.0D)
+            return 0.0D;
+        double d5 = d2 / d3;
+        if(java.lang.Math.abs(d5) <= 4.9406564584124654E-324D)
+            return d3;
+        else
+            return d3 * java.lang.Math.sqrt(1.0D + d5 * d5);
+    }
+
+    public final int SVD(com.maddox.JGP.GMatrix gmatrix, com.maddox.JGP.GMatrix gmatrix1, com.maddox.JGP.GMatrix gmatrix2)
+    {
+        int i = nRow;
+        int j = nCol;
+        int k = i <= j ? j : i;
+        double ad[] = gmatrix.elementData;
+        double ad1[] = gmatrix2.elementData;
+        int k10 = 0;
+        int j11 = 0;
+        double ad2[] = new double[j];
+        get(gmatrix);
+        for(int l = i; l < k; l++)
+        {
+            for(int l2 = j; l2 < k;)
+            {
+                ad[l * j + l2] = 0.0D;
+                l++;
+            }
+
+        }
+
+        gmatrix1.setZero();
+        double d;
+        double d25;
+        double d9 = d25 = d = 0.0D;
+        for(int i1 = 0; i1 < j; i1++)
+        {
+            k10 = i1 + 1;
+            ad2[i1] = d25 * d9;
+            double d19;
+            d9 = d19 = d25 = 0.0D;
+            if(i1 < i)
+            {
+                for(int k6 = i1; k6 < i; k6++)
+                    d25 += java.lang.Math.abs(ad[k6 * i + i1]);
+
+                if(d25 != 0.0D)
+                {
+                    for(int l6 = i1; l6 < i; l6++)
+                    {
+                        ad[l6 * i + i1] /= d25;
+                        d19 += ad[l6 * i + i1] * ad[l6 * i + i1];
+                    }
+
+                    double d3 = ad[i1 * i + i1];
+                    d9 = d3 >= 0.0D ? -java.lang.Math.sqrt(d19) : java.lang.Math.sqrt(d19);
+                    double d14 = d3 * d9 - d19;
+                    ad[i1 * i + i1] = d3 - d9;
+                    for(int i3 = k10; i3 < j; i3++)
+                    {
+                        d19 = 0.0D;
+                        for(int i7 = i1; i7 < i; i7++)
+                            d19 += ad[i7 * i + i1] * ad[i7 * i + i3];
+
+                        double d4 = d19 / d14;
+                        for(int j7 = i1; j7 < i; j7++)
+                            ad[j7 * i + i3] += d4 * ad[j7 * i + i1];
+
+                    }
+
+                    for(int k7 = i1; k7 < i; k7++)
+                        ad[k7 * i + i1] *= d25;
+
+                }
+            }
+            gmatrix1.setDiag(i1, d25 * d9);
+            d9 = d19 = d25 = 0.0D;
+            if(i1 < i && i1 != j - 1)
+            {
+                for(int l7 = k10; l7 < j; l7++)
+                    d25 += java.lang.Math.abs(ad[i1 * i + l7]);
+
+                if(d25 != 0.0D)
+                {
+                    for(int i8 = k10; i8 < j; i8++)
+                    {
+                        ad[i1 * i + i8] /= d25;
+                        d19 += ad[i1 * i + i8] * ad[i1 * i + i8];
+                    }
+
+                    double d5 = ad[i1 * i + k10];
+                    d9 = d5 >= 0.0D ? -java.lang.Math.sqrt(d19) : java.lang.Math.sqrt(d19);
+                    double d15 = d5 * d9 - d19;
+                    ad[i1 * i + k10] = d5 - d9;
+                    for(int j8 = k10; j8 < j; j8++)
+                        ad2[j8] = ad[i1 * i + j8] / d15;
+
+                    for(int j3 = k10; j3 < i; j3++)
+                    {
+                        double d20 = 0.0D;
+                        for(int k8 = k10; k8 < j; k8++)
+                            d20 += ad[j3 * i + k8] * ad[i1 * i + k8];
+
+                        for(int l8 = k10; l8 < j; l8++)
+                            ad[j3 * i + l8] += d20 * ad2[l8];
+
+                    }
+
+                    for(int i9 = k10; i9 < j; i9++)
+                        ad[i1 * i + i9] *= d25;
+
+                }
+            }
+            double d35 = java.lang.Math.abs(gmatrix1.getDiag(i1)) + java.lang.Math.abs(ad2[i1]);
+            if(d35 > d)
+                d = d35;
+        }
+
+        for(int j1 = j - 1; j1 >= 0; j1--)
+        {
+            if(j1 < j - 1)
+            {
+                if(d9 != 0.0D)
+                {
+                    for(int k3 = k10; k3 < j; k3++)
+                        ad1[k3 * j + j1] = ad[j1 * i + k3] / ad[j1 * i + k10] / d9;
+
+                    for(int l3 = k10; l3 < j; l3++)
+                    {
+                        double d21 = 0.0D;
+                        for(int j9 = k10; j9 < j; j9++)
+                            d21 += ad[j1 * i + j9] * ad1[j9 * j + l3];
+
+                        for(int k9 = k10; k9 < j; k9++)
+                            ad1[k9 * j + l3] += d21 * ad1[k9 * j + j1];
+
+                    }
+
+                }
+                for(int i4 = k10; i4 < j; i4++)
+                    ad1[j1 * j + i4] = ad1[i4 * j + j1] = 0.0D;
+
+            }
+            ad1[j1 * j + j1] = 1.0D;
+            d9 = ad2[j1];
+            k10 = j1;
+        }
+
+        int k11 = i >= j ? j : i;
+        for(int k1 = k11 - 1; k1 >= 0; k1--)
+        {
+            int l10 = k1 + 1;
+            double d10 = gmatrix1.getDiag(k1);
+            for(int j4 = l10; j4 < j; j4++)
+                ad[k1 * i + j4] = 0.0D;
+
+            if(d10 != 0.0D)
+            {
+                d10 = 1.0D / d10;
+                for(int k4 = l10; k4 < j; k4++)
+                {
+                    double d22 = 0.0D;
+                    for(int l9 = l10; l9 < i; l9++)
+                        d22 += ad[l9 * i + k1] * ad[l9 * i + k4];
+
+                    double d6 = (d22 / ad[k1 * i + k1]) * d10;
+                    for(int i10 = k1; i10 < i; i10++)
+                        ad[i10 * i + k4] += d6 * ad[i10 * i + k1];
+
+                }
+
+                for(int l4 = k1; l4 < i; l4++)
+                    ad[l4 * i + k1] *= d10;
+
+            } else
+            {
+                for(int i5 = k1; i5 < i; i5++)
+                    ad[i5 * i + k1] = 0.0D;
+
+            }
+            ad[k1 * i + k1]++;
+        }
+
+label0:
+        for(int j10 = j - 1; j10 >= 0; j10--)
+        {
+            int k2 = 1;
+            do
+            {
+                if(k2 > 30)
+                    continue label0;
+                boolean flag = true;
+                int i11 = j10;
+                do
+                {
+                    if(i11 < 0)
+                        break;
+                    j11 = i11 - 1;
+                    if(java.lang.Math.abs(ad2[i11]) + d == d)
+                    {
+                        flag = false;
+                        break;
+                    }
+                    if(java.lang.Math.abs(gmatrix1.getDiag(j11)) + d == d)
+                        break;
+                    i11--;
+                } while(true);
+                if(flag)
+                {
+                    double d1 = 0.0D;
+                    double d23 = 1.0D;
+                    int l1 = i11;
+                    do
+                    {
+                        if(l1 > j10)
+                            break;
+                        double d7 = d23 * ad2[l1];
+                        ad2[l1] = d1 * ad2[l1];
+                        if(java.lang.Math.abs(d7) + d == d)
+                            break;
+                        double d11 = gmatrix1.getDiag(l1);
+                        double d16 = dpythag(d7, d11);
+                        gmatrix1.setDiag(l1, d16);
+                        d16 = 1.0D / d16;
+                        d1 = d11 * d16;
+                        d23 = -d7 * d16;
+                        for(int j5 = 0; j5 < i; j5++)
+                        {
+                            double d27 = ad[j5 * i + j11];
+                            double d31 = ad[j5 * i + l1];
+                            ad[j5 * i + j11] = d27 * d1 + d31 * d23;
+                            ad[j5 * i + l1] = d31 * d1 - d27 * d23;
+                        }
+
+                        l1++;
+                    } while(true);
+                }
+                double d32 = gmatrix1.getDiag(j10);
+                if(i11 == j10)
+                {
+                    if(d32 >= 0.0D)
+                        continue label0;
+                    gmatrix1.setDiag(j10, -d32);
+                    for(int k5 = 0; k5 < j; k5++)
+                        ad1[k5 * j + j10] = -ad1[k5 * j + j10];
+
+                    continue label0;
+                }
+                if(k2 == 30)
+                    return 0;
+                double d26 = gmatrix1.getDiag(i11);
+                j11 = j10 - 1;
+                double d28 = gmatrix1.getDiag(j11);
+                double d12 = ad2[j11];
+                double d17 = ad2[j10];
+                double d8 = ((d28 - d32) * (d28 + d32) + (d12 - d17) * (d12 + d17)) / (2D * d17 * d28);
+                d12 = dpythag(d8, 1.0D);
+                d8 = ((d26 - d32) * (d26 + d32) + d17 * (d28 / (d8 + (d8 < 0.0D ? -java.lang.Math.abs(d12) : java.lang.Math.abs(d12))) - d17)) / d26;
+                double d24;
+                double d2 = d24 = 1.0D;
+                for(int l5 = i11; l5 <= j11; l5++)
+                {
+                    int i2 = l5 + 1;
+                    double d13 = ad2[i2];
+                    double d29 = gmatrix1.getDiag(i2);
+                    double d18 = d24 * d13;
+                    d13 = d2 * d13;
+                    double d33 = dpythag(d8, d18);
+                    ad2[l5] = d33;
+                    d2 = d8 / d33;
+                    d24 = d18 / d33;
+                    d8 = d26 * d2 + d13 * d24;
+                    d13 = d13 * d2 - d26 * d24;
+                    d18 = d29 * d24;
+                    d29 *= d2;
+                    for(int i6 = 0; i6 < j; i6++)
+                    {
+                        d26 = ad1[i6 * j + l5];
+                        d33 = ad1[i6 * j + i2];
+                        ad1[i6 * j + l5] = d26 * d2 + d33 * d24;
+                        ad1[i6 * j + i2] = d33 * d2 - d26 * d24;
+                    }
+
+                    d33 = dpythag(d8, d18);
+                    gmatrix1.setDiag(l5, d33);
+                    if(d33 != 0.0D)
+                    {
+                        d33 = 1.0D / d33;
+                        d2 = d8 * d33;
+                        d24 = d18 * d33;
+                    }
+                    d8 = d2 * d13 + d24 * d29;
+                    d26 = d2 * d29 - d24 * d13;
+                    for(int j6 = 0; j6 < i; j6++)
+                    {
+                        double d30 = ad[j6 * i + l5];
+                        double d34 = ad[j6 * i + i2];
+                        ad[j6 * i + l5] = d30 * d2 + d34 * d24;
+                        ad[j6 * i + i2] = d34 * d2 - d30 * d24;
+                    }
+
+                }
+
+                ad2[i11] = 0.0D;
+                ad2[j10] = d8;
+                gmatrix1.setDiag(j10, d26);
+                k2++;
+            } while(true);
+        }
+
+        int l11 = 0;
+        for(int j2 = 0; j2 < j; j2++)
+            if(gmatrix1.getDiag(j2) > 0.0D)
+                l11++;
+
+        return l11;
+    }
+
+    private void swapRows(int i, int j)
+    {
+        for(int k = 0; k < nCol; k++)
+        {
+            double d = elementData[i * nCol + k];
+            elementData[i * nCol + k] = elementData[j * nCol + k];
+            elementData[j * nCol + k] = d;
+        }
+
+    }
+
+    public final int LUD(com.maddox.JGP.GMatrix gmatrix, com.maddox.JGP.GVector gvector)
+    {
+        int i = nRow;
+        if(this != gmatrix)
+            gmatrix.set(this);
+        int j = 1;
+        double ad[] = gmatrix.elementData;
+        for(int k = 0; k < i; k++)
+            gvector.setElement(k, k);
+
+        for(int l = 0; l < i; l++)
+        {
+            for(int j1 = 0; j1 < l; j1++)
+            {
+                double d3 = ad[j1 * i + l];
+                for(int i2 = 0; i2 < j1; i2++)
+                    if(ad[j1 * i + i2] != 0.0D && ad[i2 * i + l] != 0.0D)
+                        d3 -= ad[j1 * i + i2] * ad[i2 * i + l];
+
+                ad[j1 * i + l] = d3;
+            }
+
+            double d = 0.0D;
+            int i1 = l;
+            for(int k1 = l; k1 < i; k1++)
+            {
+                double d4 = ad[k1 * i + l];
+                for(int j2 = 0; j2 < l; j2++)
+                    if(ad[k1 * i + j2] != 0.0D && ad[j2 * i + l] != 0.0D)
+                        d4 -= ad[k1 * i + j2] * ad[j2 * i + l];
+
+                ad[k1 * i + l] = d4;
+                double d1 = java.lang.Math.abs(d4);
+                if(d1 >= d)
+                {
+                    d = d1;
+                    i1 = k1;
+                }
+            }
+
+            if(l != i1)
+            {
+                gmatrix.swapRows(i1, l);
+                double d5 = gvector.getElement(i1);
+                gvector.setElement(i1, gvector.getElement(l));
+                gvector.setElement(l, d5);
+                j = -j;
+            }
+            if(l == i - 1)
+                continue;
+            double d2 = 1.0D / ad[l * i + l];
+            for(int l1 = l + 1; l1 < i; l1++)
+                ad[l1 * i + l] *= d2;
+
+        }
+
+        return j;
+    }
+
+    private double elementData[];
+    private int nRow;
+    private int nCol;
 }

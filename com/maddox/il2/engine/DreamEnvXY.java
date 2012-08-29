@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   DreamEnvXY.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
@@ -7,363 +12,440 @@ import com.maddox.util.HashMapXY16Hash;
 import com.maddox.util.IntHashtable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
-public class DreamEnvXY extends DreamEnv
+// Referenced classes of package com.maddox.il2.engine:
+//            DreamEnv, Actor, MsgDream, DreamEnvXY_IntArray, 
+//            MsgDreamGlobal, ActorPos, Engine
+
+public class DreamEnvXY extends com.maddox.il2.engine.DreamEnv
 {
-  private MsgDream msgDream = new MsgDream();
 
-  private DreamEnvXY_IntArray xIndx = new DreamEnvXY_IntArray(32);
-  private DreamEnvXY_IntArray yIndx = new DreamEnvXY_IntArray(32);
-  private MsgDreamGlobal msgDreamGlobal = new MsgDreamGlobal();
+    public boolean isSleep(double d, double d1)
+    {
+        return isSleep((int)(d / 200D), (int)(d1 / 200D));
+    }
 
-  private Object wakeuped = new Object();
-  private HashMapExt listenerChanges = new HashMapExt();
-  private HashMapXY16Hash listenerXY = new HashMapXY16Hash(7);
-  private HashMapExt fires = new HashMapExt();
-  private IntHashtable fireXY = new IntHashtable(21, 0);
-  private IntHashtable fireCenterXY = new IntHashtable(21, 0);
-  private IntHashtable fireUpdateXY = new IntHashtable(21, 0);
-  private int fireSquares;
-  private int updateTicks;
-  private int updateTickCounter;
-  private List globalListener = new ArrayList();
-  private List resetGlobalListener = new ArrayList();
+    public boolean isSleep(com.maddox.JGP.Point3d point3d)
+    {
+        return isSleep(point3d.x, point3d.y);
+    }
 
-  private DreamEnvXY_IntArray squareSleep = new DreamEnvXY_IntArray(32);
-  private DreamEnvXY_IntArray squareWakeup = new DreamEnvXY_IntArray(32);
+    public boolean isSleep(int i, int j)
+    {
+        return fireXY.get(keyXY(i, j)) <= 0;
+    }
 
-  public boolean isSleep(double paramDouble1, double paramDouble2)
-  {
-    return isSleep((int)(paramDouble1 / 200.0D), (int)(paramDouble2 / 200.0D));
-  }
+    private void doSquareLocalListeners(int i, int ai[], boolean flag)
+    {
+        for(int j = 0; j < i; j++)
+        {
+            int k = ai[j];
+            com.maddox.util.HashMapExt hashmapext = listenerXY.get(k >> 16, (short)(k & 0xffff));
+            if(hashmapext == null)
+                continue;
+            for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+            {
+                com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry.getKey();
+                if(com.maddox.il2.engine.Actor.isValid(actor) && !listenerChanges.containsKey(actor))
+                    msgDream.send(flag, actor);
+            }
 
-  public boolean isSleep(Point3d paramPoint3d) {
-    return isSleep(paramPoint3d.x, paramPoint3d.y);
-  }
-
-  public boolean isSleep(int paramInt1, int paramInt2) {
-    return this.fireXY.get(keyXY(paramInt1, paramInt2)) <= 0;
-  }
-
-  private void doSquareLocalListeners(int paramInt, int[] paramArrayOfInt, boolean paramBoolean) {
-    for (int i = 0; i < paramInt; i++) {
-      int j = paramArrayOfInt[i];
-      HashMapExt localHashMapExt = this.listenerXY.get(j >> 16, (short)(j & 0xFFFF));
-      if (localHashMapExt != null) {
-        Map.Entry localEntry = localHashMapExt.nextEntry(null);
-        while (localEntry != null) {
-          Actor localActor = (Actor)localEntry.getKey();
-          if ((Actor.isValid(localActor)) && (!this.listenerChanges.containsKey(localActor)))
-            this.msgDream.send(paramBoolean, localActor);
-          localEntry = localHashMapExt.nextEntry(localEntry);
         }
-      }
-    }
-  }
 
-  private void makeArrayIndx(DreamEnvXY_IntArray paramDreamEnvXY_IntArray)
-  {
-    int i = paramDreamEnvXY_IntArray.size();
-    int[] arrayOfInt = paramDreamEnvXY_IntArray.array();
-    this.xIndx.clear();
-    this.yIndx.clear();
-    for (int j = 0; j < i; j++) {
-      int k = arrayOfInt[j];
-      this.xIndx.add((short)(k & 0xFFFF));
-      this.yIndx.add(k >> 16);
     }
-  }
 
-  protected void doChanges()
-  {
-    this.updateTickCounter -= 1;
-    if (this.updateTickCounter > 0) {
-      if (this.globalListener.size() > 0) {
-        for (i = 0; i < this.globalListener.size(); i++) {
-          Actor localActor1 = (Actor)this.globalListener.get(i);
-          if (Actor.isValid(localActor1))
-            this.msgDreamGlobal.sendTick(localActor1, this.updateTicks, this.updateTickCounter);
+    private void makeArrayIndx(com.maddox.il2.engine.DreamEnvXY_IntArray dreamenvxy_intarray)
+    {
+        int i = dreamenvxy_intarray.size();
+        int ai[] = dreamenvxy_intarray.array();
+        xIndx.clear();
+        yIndx.clear();
+        for(int j = 0; j < i; j++)
+        {
+            int k = ai[j];
+            xIndx.add((short)(k & 0xffff));
+            yIndx.add(k >> 16);
         }
-      }
-      return;
-    }
-    this.updateTickCounter = this.updateTicks;
 
-    updateFire();
-    int i = this.squareSleep.size() + this.squareWakeup.size();
-
-    if (i > 0) {
-      int j = this.squareSleep.size();
-      if (j > 0)
-        doSquareLocalListeners(j, this.squareSleep.array(), false);
-      j = this.squareWakeup.size();
-      if (j > 0)
-        doSquareLocalListeners(j, this.squareWakeup.array(), true);
-    }
-    Actor localActor2;
-    if (this.listenerChanges.size() > 0) {
-      HashMapExt localHashMapExt = this.listenerChanges;
-      if (localHashMapExt != null) {
-        Map.Entry localEntry = localHashMapExt.nextEntry(null);
-        while (localEntry != null) {
-          localActor2 = (Actor)localEntry.getKey();
-          if (Actor.isValid(localActor2)) {
-            int i1 = localEntry.getValue() == this.wakeuped ? 1 : 0;
-            int i2 = keyXY(localActor2.pos.getCurrentPoint());
-            boolean bool = this.fireXY.get(i2) > 0;
-            if (bool != i1)
-              this.msgDream.send(bool, localActor2);
-          }
-          localEntry = localHashMapExt.nextEntry(localEntry);
-        }
-      }
-      this.listenerChanges.clear();
-    }
-    int m;
-    if (i > 0) {
-      if (this.globalListener.size() > 0) {
-        int k = this.squareSleep.size();
-        if (k > 0) {
-          makeArrayIndx(this.squareSleep);
-          for (m = 0; m < this.globalListener.size(); m++) {
-            localActor2 = (Actor)this.globalListener.get(m);
-            if (Actor.isValid(localActor2))
-              this.msgDreamGlobal.send(localActor2, false, k, this.xIndx.array(), this.yIndx.array());
-          }
-        }
-        k = this.squareWakeup.size();
-        if (k > 0) {
-          makeArrayIndx(this.squareWakeup);
-          for (m = 0; m < this.globalListener.size(); m++) {
-            localActor2 = (Actor)this.globalListener.get(m);
-            if (Actor.isValid(localActor2))
-              this.msgDreamGlobal.send(localActor2, true, k, this.xIndx.array(), this.yIndx.array());
-          }
-        }
-      }
-      this.squareSleep.clear();
-      this.squareWakeup.clear();
     }
 
-    if (this.resetGlobalListener.size() > 0) {
-      int[] arrayOfInt = this.fireXY.keyList();
-      for (m = 0; m < arrayOfInt.length; m++) {
-        int n = arrayOfInt[m];
-        if (n > -2147483647) {
-          this.squareWakeup.add(n);
-        }
-      }
-      makeArrayIndx(this.squareWakeup);
-      this.squareWakeup.clear();
-
-      for (m = 0; m < this.resetGlobalListener.size(); m++) {
-        Actor localActor3 = (Actor)this.resetGlobalListener.get(m);
-        if (Actor.isValid(localActor3)) {
-          this.msgDreamGlobal.send(localActor3, true, this.xIndx.size(), this.xIndx.array(), this.yIndx.array());
-          this.globalListener.add(localActor3);
-        }
-      }
-      this.resetGlobalListener.clear();
-      this.xIndx.clear();
-      this.yIndx.clear();
-    }
-  }
-
-  protected void changedListenerPos(Actor paramActor, Point3d paramPoint3d1, Point3d paramPoint3d2)
-  {
-    int i = (int)(paramPoint3d1.x / 200.0D);
-    int j = (int)(paramPoint3d1.y / 200.0D);
-    int k = (int)(paramPoint3d2.x / 200.0D);
-    int m = (int)(paramPoint3d2.y / 200.0D);
-    if ((i != k) || (j != m)) {
-      this.listenerXY.remove(j, i, paramActor);
-      this.listenerXY.put(m, k, paramActor, null);
-      if (!this.listenerChanges.containsKey(paramActor)) {
-        int n = keyXY(i, j);
-        if (this.fireXY.get(n) > 0)
-          this.listenerChanges.put(paramActor, this.wakeuped);
-        else
-          this.listenerChanges.put(paramActor, null);
-      }
-    }
-  }
-
-  protected void addListener(Actor paramActor) {
-    Point3d localPoint3d = paramActor.pos.getCurrentPoint();
-    int i = (int)(localPoint3d.x / 200.0D);
-    int j = (int)(localPoint3d.y / 200.0D);
-    this.listenerXY.put(j, i, paramActor, null);
-    this.listenerChanges.put(paramActor, null);
-  }
-
-  protected void removeListener(Actor paramActor) {
-    Point3d localPoint3d = paramActor.pos.getCurrentPoint();
-    int i = (int)(localPoint3d.x / 200.0D);
-    int j = (int)(localPoint3d.y / 200.0D);
-    this.listenerXY.remove(j, i, paramActor);
-    this.listenerChanges.remove(paramActor);
-  }
-
-  protected void addGlobalListener(Actor paramActor)
-  {
-    this.resetGlobalListener.add(paramActor);
-  }
-
-  protected void removeGlobalListener(Actor paramActor) {
-    int i = this.globalListener.indexOf(paramActor);
-    if (i >= 0) this.globalListener.remove(i);
-    i = this.resetGlobalListener.indexOf(paramActor);
-    if (i >= 0) this.resetGlobalListener.remove(i); 
-  }
-
-  public void resetGlobalListener(Actor paramActor)
-  {
-    removeGlobalListener(paramActor);
-    addGlobalListener(paramActor);
-  }
-
-  private void updateFire() {
-    if (!this.fireCenterXY.isEmpty()) {
-      int[] arrayOfInt1 = this.fireCenterXY.keyList();
-      int[] arrayOfInt2 = this.fireCenterXY.values();
-      int k;
-      int m;
-      int n;
-      int i1;
-      for (int i = 0; i < arrayOfInt1.length; i++) {
-        int j = arrayOfInt1[i];
-        if (j > -2147483647) {
-          k = arrayOfInt2[i];
-          if (k != 0) {
-            m = (j >> 16) - this.fireSquares / 2;
-            n = (short)(j & 0xFFFF) - this.fireSquares / 2;
-            for (i1 = 0; i1 < this.fireSquares; i1++) {
-              for (int i2 = 0; i2 < this.fireSquares; i2++) {
-                int i3 = keyXY(i2 + n, i1 + m);
-                int i4 = this.fireUpdateXY.getIndex(i3);
-                if (i4 >= 0)
-                  this.fireUpdateXY.setByIndex(i4, this.fireUpdateXY.getByIndex(i4) + k);
-                else {
-                  this.fireUpdateXY.put(i3, this.fireXY.get(i3) + k);
+    protected void doChanges()
+    {
+        updateTickCounter--;
+        if(updateTickCounter > 0)
+        {
+            if(globalListener.size() > 0)
+            {
+                for(int i = 0; i < globalListener.size(); i++)
+                {
+                    com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)globalListener.get(i);
+                    if(com.maddox.il2.engine.Actor.isValid(actor))
+                        msgDreamGlobal.sendTick(actor, updateTicks, updateTickCounter);
                 }
-              }
+
             }
-          }
+            return;
         }
-      }
-      this.fireCenterXY.clear();
+        updateTickCounter = updateTicks;
+        updateFire();
+        int j = squareSleep.size() + squareWakeup.size();
+        if(j > 0)
+        {
+            int k = squareSleep.size();
+            if(k > 0)
+                doSquareLocalListeners(k, squareSleep.array(), false);
+            k = squareWakeup.size();
+            if(k > 0)
+                doSquareLocalListeners(k, squareWakeup.array(), true);
+        }
+        if(listenerChanges.size() > 0)
+        {
+            com.maddox.util.HashMapExt hashmapext = listenerChanges;
+            if(hashmapext != null)
+            {
+                for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+                {
+                    com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)entry.getKey();
+                    if(!com.maddox.il2.engine.Actor.isValid(actor1))
+                        continue;
+                    boolean flag = entry.getValue() == wakeuped;
+                    int j2 = keyXY(actor1.pos.getCurrentPoint());
+                    boolean flag1 = fireXY.get(j2) > 0;
+                    if(flag1 != flag)
+                        msgDream.send(flag1, actor1);
+                }
 
-      if (!this.fireUpdateXY.isEmpty()) {
-        int[] arrayOfInt3 = this.fireUpdateXY.keyList();
-        int[] arrayOfInt4 = this.fireUpdateXY.values();
-        for (k = 0; k < arrayOfInt3.length; k++) {
-          m = arrayOfInt3[k];
-          if (m > -2147483647) {
-            n = arrayOfInt4[k];
-            i1 = this.fireXY.getIndex(m);
-            if (i1 >= 0) {
-              if (n == 0)
-              {
-                this.fireXY.removeByIndex(i1);
-                this.fireXY.validate();
-
-                this.squareSleep.add(m);
-              } else {
-                this.fireXY.setByIndex(i1, n);
-              }
             }
-            else if (n > 0) {
-              this.fireXY.put(m, n);
+            listenerChanges.clear();
+        }
+        if(j > 0)
+        {
+            if(globalListener.size() > 0)
+            {
+                int l = squareSleep.size();
+                if(l > 0)
+                {
+                    makeArrayIndx(squareSleep);
+                    for(int i1 = 0; i1 < globalListener.size(); i1++)
+                    {
+                        com.maddox.il2.engine.Actor actor2 = (com.maddox.il2.engine.Actor)globalListener.get(i1);
+                        if(com.maddox.il2.engine.Actor.isValid(actor2))
+                            msgDreamGlobal.send(actor2, false, l, xIndx.array(), yIndx.array());
+                    }
 
-              this.squareWakeup.add(m);
+                }
+                l = squareWakeup.size();
+                if(l > 0)
+                {
+                    makeArrayIndx(squareWakeup);
+                    for(int j1 = 0; j1 < globalListener.size(); j1++)
+                    {
+                        com.maddox.il2.engine.Actor actor3 = (com.maddox.il2.engine.Actor)globalListener.get(j1);
+                        if(com.maddox.il2.engine.Actor.isValid(actor3))
+                            msgDreamGlobal.send(actor3, true, l, xIndx.array(), yIndx.array());
+                    }
+
+                }
             }
-          }
+            squareSleep.clear();
+            squareWakeup.clear();
+        }
+        if(resetGlobalListener.size() > 0)
+        {
+            int ai[] = fireXY.keyList();
+            for(int k1 = 0; k1 < ai.length; k1++)
+            {
+                int i2 = ai[k1];
+                if(i2 > 0x80000001)
+                    squareWakeup.add(i2);
+            }
+
+            makeArrayIndx(squareWakeup);
+            squareWakeup.clear();
+            for(int l1 = 0; l1 < resetGlobalListener.size(); l1++)
+            {
+                com.maddox.il2.engine.Actor actor4 = (com.maddox.il2.engine.Actor)resetGlobalListener.get(l1);
+                if(com.maddox.il2.engine.Actor.isValid(actor4))
+                {
+                    msgDreamGlobal.send(actor4, true, xIndx.size(), xIndx.array(), yIndx.array());
+                    globalListener.add(actor4);
+                }
+            }
+
+            resetGlobalListener.clear();
+            xIndx.clear();
+            yIndx.clear();
+        }
+    }
+
+    protected void changedListenerPos(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        int i = (int)(point3d.x / 200D);
+        int j = (int)(point3d.y / 200D);
+        int k = (int)(point3d1.x / 200D);
+        int l = (int)(point3d1.y / 200D);
+        if(i != k || j != l)
+        {
+            listenerXY.remove(j, i, actor);
+            listenerXY.put(l, k, actor, null);
+            if(!listenerChanges.containsKey(actor))
+            {
+                int i1 = keyXY(i, j);
+                if(fireXY.get(i1) > 0)
+                    listenerChanges.put(actor, wakeuped);
+                else
+                    listenerChanges.put(actor, null);
+            }
+        }
+    }
+
+    protected void addListener(com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.JGP.Point3d point3d = actor.pos.getCurrentPoint();
+        int i = (int)(point3d.x / 200D);
+        int j = (int)(point3d.y / 200D);
+        listenerXY.put(j, i, actor, null);
+        listenerChanges.put(actor, null);
+    }
+
+    protected void removeListener(com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.JGP.Point3d point3d = actor.pos.getCurrentPoint();
+        int i = (int)(point3d.x / 200D);
+        int j = (int)(point3d.y / 200D);
+        listenerXY.remove(j, i, actor);
+        listenerChanges.remove(actor);
+    }
+
+    protected void addGlobalListener(com.maddox.il2.engine.Actor actor)
+    {
+        resetGlobalListener.add(actor);
+    }
+
+    protected void removeGlobalListener(com.maddox.il2.engine.Actor actor)
+    {
+        int i = globalListener.indexOf(actor);
+        if(i >= 0)
+            globalListener.remove(i);
+        i = resetGlobalListener.indexOf(actor);
+        if(i >= 0)
+            resetGlobalListener.remove(i);
+    }
+
+    public void resetGlobalListener(com.maddox.il2.engine.Actor actor)
+    {
+        removeGlobalListener(actor);
+        addGlobalListener(actor);
+    }
+
+    private void updateFire()
+    {
+        if(!fireCenterXY.isEmpty())
+        {
+            int ai[] = fireCenterXY.keyList();
+            int ai1[] = fireCenterXY.values();
+label0:
+            for(int i = 0; i < ai.length; i++)
+            {
+                int j = ai[i];
+                if(j <= 0x80000001)
+                    continue;
+                int k = ai1[i];
+                if(k == 0)
+                    continue;
+                int i1 = (j >> 16) - fireSquares / 2;
+                int k1 = (short)(j & 0xffff) - fireSquares / 2;
+                int i2 = 0;
+                do
+                {
+                    if(i2 >= fireSquares)
+                        continue label0;
+                    for(int k2 = 0; k2 < fireSquares; k2++)
+                    {
+                        int l2 = keyXY(k2 + k1, i2 + i1);
+                        int i3 = fireUpdateXY.getIndex(l2);
+                        if(i3 >= 0)
+                            fireUpdateXY.setByIndex(i3, fireUpdateXY.getByIndex(i3) + k);
+                        else
+                            fireUpdateXY.put(l2, fireXY.get(l2) + k);
+                    }
+
+                    i2++;
+                } while(true);
+            }
+
+            fireCenterXY.clear();
+            if(!fireUpdateXY.isEmpty())
+            {
+                int ai2[] = fireUpdateXY.keyList();
+                int ai3[] = fireUpdateXY.values();
+                for(int l = 0; l < ai2.length; l++)
+                {
+                    int j1 = ai2[l];
+                    if(j1 <= 0x80000001)
+                        continue;
+                    int l1 = ai3[l];
+                    int j2 = fireXY.getIndex(j1);
+                    if(j2 >= 0)
+                    {
+                        if(l1 == 0)
+                        {
+                            fireXY.removeByIndex(j2);
+                            fireXY.validate();
+                            squareSleep.add(j1);
+                        } else
+                        {
+                            fireXY.setByIndex(j2, l1);
+                        }
+                        continue;
+                    }
+                    if(l1 > 0)
+                    {
+                        fireXY.put(j1, l1);
+                        squareWakeup.add(j1);
+                    }
+                }
+
+                fireUpdateXY.clear();
+            }
+        }
+    }
+
+    protected void changedFirePos(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        int i = keyXY(point3d1);
+        if(!fires.containsKey(actor))
+        {
+            fires.put(actor, null);
+            fireCenterXY.put(i, fireCenterXY.get(i) + 1);
+            return;
+        }
+        int j = keyXY(point3d);
+        if(j == i)
+        {
+            return;
+        } else
+        {
+            fireCenterXY.put(j, fireCenterXY.get(j) - 1);
+            fireCenterXY.put(i, fireCenterXY.get(i) + 1);
+            return;
+        }
+    }
+
+    protected void addFire(com.maddox.il2.engine.Actor actor)
+    {
+        if(fires.containsKey(actor))
+            return;
+        fires.put(actor, null);
+        int i = keyXY(actor.pos.getCurrentPoint());
+        int j = fireCenterXY.get(i) + 1;
+        fireCenterXY.put(i, j);
+        if(j == 1)
+            updateTickCounter = 0;
+    }
+
+    protected void removeFire(com.maddox.il2.engine.Actor actor)
+    {
+        if(!fires.containsKey(actor))
+            return;
+        fires.remove(actor);
+        int i = keyXY(actor.pos.getCurrentPoint());
+        int j = fireCenterXY.get(i) - 1;
+        fireCenterXY.put(i, j);
+        if(j == 0)
+            updateTickCounter = 0;
+    }
+
+    public void resetGameClear()
+    {
+        java.util.ArrayList arraylist = new ArrayList(fires.keySet());
+        com.maddox.il2.engine.Engine.destroyListGameActors(arraylist);
+        arraylist.addAll(globalListener);
+        com.maddox.il2.engine.Engine.destroyListGameActors(arraylist);
+        arraylist.addAll(resetGlobalListener);
+        com.maddox.il2.engine.Engine.destroyListGameActors(arraylist);
+        resetGlobalListener.addAll(globalListener);
+        globalListener.clear();
+        java.util.ArrayList arraylist1 = new ArrayList();
+        listenerXY.allValues(arraylist1);
+        for(int i = 0; i < arraylist1.size(); i++)
+        {
+            com.maddox.util.HashMapExt hashmapext = (com.maddox.util.HashMapExt)arraylist1.get(i);
+            arraylist.addAll(hashmapext.keySet());
+            com.maddox.il2.engine.Engine.destroyListGameActors(arraylist);
         }
 
-        this.fireUpdateXY.clear();
-      }
+        arraylist1.clear();
     }
-  }
 
-  protected void changedFirePos(Actor paramActor, Point3d paramPoint3d1, Point3d paramPoint3d2)
-  {
-    int i = keyXY(paramPoint3d2);
-    if (!this.fires.containsKey(paramActor)) {
-      this.fires.put(paramActor, null);
-      this.fireCenterXY.put(i, this.fireCenterXY.get(i) + 1);
-      return;
+    public void resetGameCreate()
+    {
+        listenerChanges.clear();
+        clearFire();
     }
-    int j = keyXY(paramPoint3d1);
-    if (j == i) return;
-    this.fireCenterXY.put(j, this.fireCenterXY.get(j) - 1);
-    this.fireCenterXY.put(i, this.fireCenterXY.get(i) + 1);
-  }
 
-  protected void addFire(Actor paramActor) {
-    if (this.fires.containsKey(paramActor)) return;
-    this.fires.put(paramActor, null);
-    int i = keyXY(paramActor.pos.getCurrentPoint());
-    int j = this.fireCenterXY.get(i) + 1;
-    this.fireCenterXY.put(i, j);
-    if (j == 1)
-      this.updateTickCounter = 0;
-  }
-
-  protected void removeFire(Actor paramActor) {
-    if (!this.fires.containsKey(paramActor)) return;
-    this.fires.remove(paramActor);
-    int i = keyXY(paramActor.pos.getCurrentPoint());
-    int j = this.fireCenterXY.get(i) - 1;
-    this.fireCenterXY.put(i, j);
-    if (j == 0)
-      this.updateTickCounter = 0;
-  }
-
-  public void resetGameClear() {
-    ArrayList localArrayList1 = new ArrayList(this.fires.keySet());
-    Engine.destroyListGameActors(localArrayList1);
-    localArrayList1.addAll(this.globalListener);
-    Engine.destroyListGameActors(localArrayList1);
-    localArrayList1.addAll(this.resetGlobalListener);
-    Engine.destroyListGameActors(localArrayList1);
-    this.resetGlobalListener.addAll(this.globalListener);
-    this.globalListener.clear();
-
-    ArrayList localArrayList2 = new ArrayList();
-    this.listenerXY.allValues(localArrayList2);
-    for (int i = 0; i < localArrayList2.size(); i++) {
-      HashMapExt localHashMapExt = (HashMapExt)localArrayList2.get(i);
-      localArrayList1.addAll(localHashMapExt.keySet());
-      Engine.destroyListGameActors(localArrayList1);
+    protected void clearFire()
+    {
+        fires.clear();
+        fireXY.clear();
+        fireCenterXY.clear();
+        updateTickCounter = 0;
     }
-    localArrayList2.clear();
-  }
-  public void resetGameCreate() {
-    this.listenerChanges.clear();
-    clearFire();
-  }
 
-  protected void clearFire() {
-    this.fires.clear();
-    this.fireXY.clear();
-    this.fireCenterXY.clear();
-    this.updateTickCounter = 0;
-  }
+    private int keyXY(com.maddox.JGP.Point3d point3d)
+    {
+        return (int)(point3d.x / 200D) & 0xffff | (int)(point3d.y / 200D) << 16;
+    }
 
-  private int keyXY(Point3d paramPoint3d) {
-    return (int)(paramPoint3d.x / 200.0D) & 0xFFFF | (int)(paramPoint3d.y / 200.0D) << 16;
-  }
-  private int keyXY(int paramInt1, int paramInt2) {
-    return paramInt1 & 0xFFFF | paramInt2 << 16;
-  }
+    private int keyXY(int i, int j)
+    {
+        return i & 0xffff | j << 16;
+    }
 
-  public DreamEnvXY() {
-    this.fireSquares = 38;
-    if (this.fireSquares < 3) this.fireSquares = 3;
-    this.fireSquares |= 1;
-    this.updateTicks = (int)(1.0D / Time.tickConstLenFs());
-    if (this.updateTicks < 1) this.updateTicks = 1;
-    this.updateTickCounter = 0;
-  }
+    public DreamEnvXY()
+    {
+        msgDream = new MsgDream();
+        xIndx = new DreamEnvXY_IntArray(32);
+        yIndx = new DreamEnvXY_IntArray(32);
+        msgDreamGlobal = new MsgDreamGlobal();
+        wakeuped = new Object();
+        listenerChanges = new HashMapExt();
+        listenerXY = new HashMapXY16Hash(7);
+        fires = new HashMapExt();
+        fireXY = new IntHashtable(21, 0);
+        fireCenterXY = new IntHashtable(21, 0);
+        fireUpdateXY = new IntHashtable(21, 0);
+        globalListener = new ArrayList();
+        resetGlobalListener = new ArrayList();
+        squareSleep = new DreamEnvXY_IntArray(32);
+        squareWakeup = new DreamEnvXY_IntArray(32);
+        fireSquares = 38;
+        if(fireSquares < 3)
+            fireSquares = 3;
+        fireSquares |= 1;
+        updateTicks = (int)(1.0D / (double)com.maddox.rts.Time.tickConstLenFs());
+        if(updateTicks < 1)
+            updateTicks = 1;
+        updateTickCounter = 0;
+    }
+
+    private com.maddox.il2.engine.MsgDream msgDream;
+    private com.maddox.il2.engine.DreamEnvXY_IntArray xIndx;
+    private com.maddox.il2.engine.DreamEnvXY_IntArray yIndx;
+    private com.maddox.il2.engine.MsgDreamGlobal msgDreamGlobal;
+    private java.lang.Object wakeuped;
+    private com.maddox.util.HashMapExt listenerChanges;
+    private com.maddox.util.HashMapXY16Hash listenerXY;
+    private com.maddox.util.HashMapExt fires;
+    private com.maddox.util.IntHashtable fireXY;
+    private com.maddox.util.IntHashtable fireCenterXY;
+    private com.maddox.util.IntHashtable fireUpdateXY;
+    private int fireSquares;
+    private int updateTicks;
+    private int updateTickCounter;
+    private java.util.List globalListener;
+    private java.util.List resetGlobalListener;
+    private com.maddox.il2.engine.DreamEnvXY_IntArray squareSleep;
+    private com.maddox.il2.engine.DreamEnvXY_IntArray squareWakeup;
 }

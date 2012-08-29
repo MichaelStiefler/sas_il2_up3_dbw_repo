@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetBanned.java
+
 package com.maddox.il2.net;
 
 import com.maddox.rts.HomePath;
@@ -17,171 +22,237 @@ import java.util.ArrayList;
 
 public class NetBanned
 {
-  public static String fileName = "banned.txt";
 
-  public ArrayList name = new ArrayList();
-  public ArrayList patt = new ArrayList();
-  public ArrayList ip = new ArrayList();
+    public NetBanned()
+    {
+        name = new ArrayList();
+        patt = new ArrayList();
+        ip = new ArrayList();
+    }
 
-  private static int[] tmp = new int[4];
+    public boolean isExist(java.lang.String s)
+    {
+        for(int i = 0; i < name.size(); i++)
+            if(s.equals(name.get(i)))
+                return true;
 
-  public boolean isExist(String paramString)
-  {
-    for (int i = 0; i < this.name.size(); i++) {
-      if (paramString.equals(this.name.get(i)))
-        return true;
-    }
-    for (i = 0; i < this.patt.size(); i++) {
-      if (StrMath.simple((String)this.patt.get(i), paramString))
-        return true;
-    }
-    return false;
-  }
-  public boolean isExist(NetAddress paramNetAddress) {
-    int i = this.ip.size();
-    if (i < 0) return false;
-    NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramNetAddress.getHostAddress(), ".");
-    if (localNumberTokenizer.countTokens() != 4)
-      return false;
-    for (int j = 0; j < 4; j++) {
-      tmp[j] = localNumberTokenizer.next(0);
-    }
-    for (j = 0; j < i; j++) {
-      int k = 1;
-      int[][] arrayOfInt = (int[][])(int[][])this.ip.get(j);
-      for (int m = 0; m < 4; m++) {
-        if (arrayOfInt[m][0] == -1)
-          continue;
-        if ((arrayOfInt[m][0] <= tmp[m]) && (tmp[m] <= arrayOfInt[m][1]))
-          continue;
-        k = 0;
-        break;
-      }
-      if (k != 0) {
-        return true;
-      }
-    }
-    return false;
-  }
+        for(int j = 0; j < patt.size(); j++)
+            if(com.maddox.util.StrMath.simple((java.lang.String)patt.get(j), s))
+                return true;
 
-  public void save() {
-    save(fileName);
-  }
-  public void save(String paramString) {
-    try { PrintWriter localPrintWriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(paramString, 0))));
-      String str;
-      for (int i = 0; i < this.name.size(); i++) {
-        str = (String)this.name.get(i);
-        localPrintWriter.println("name " + UnicodeTo8bit.save(str, true));
-      }
-      for (i = 0; i < this.patt.size(); i++) {
-        str = (String)this.patt.get(i);
-        localPrintWriter.println("pattern " + UnicodeTo8bit.save(str, true));
-      }
-      for (i = 0; i < this.ip.size(); i++) {
-        localPrintWriter.println("ip " + ipItem(i));
-      }
-
-      localPrintWriter.close();
-    } catch (IOException localIOException) {
-      System.out.println("Save file " + paramString + " failed: " + localIOException.getMessage());
+        return false;
     }
-  }
 
-  public String ipItem(int paramInt) {
-    int[][] arrayOfInt = (int[][])(int[][])this.ip.get(paramInt);
-    StringBuffer localStringBuffer = new StringBuffer();
-    for (int i = 0; i < 4; i++) {
-      if (i != 0) localStringBuffer.append('.');
-      if (arrayOfInt[i][0] == -1) {
-        localStringBuffer.append('*');
-      } else if (arrayOfInt[i][0] == arrayOfInt[i][1]) {
-        localStringBuffer.append(arrayOfInt[i][0]);
-      } else {
-        localStringBuffer.append(arrayOfInt[i][0]);
-        localStringBuffer.append('-');
-        localStringBuffer.append(arrayOfInt[i][1]);
-      }
-    }
-    return localStringBuffer.toString();
-  }
-  public void load() {
-    load(fileName);
-  }
-  public void load(String paramString) {
-    try { BufferedReader localBufferedReader = new BufferedReader(new SFSReader(paramString));
-      while (true) {
-        String str1 = localBufferedReader.readLine();
-        if (str1 == null)
-          break;
-        int i = str1.length();
-        if (i == 0)
-          continue;
-        SharedTokenizer.set(str1);
-        String str2 = SharedTokenizer.next(null);
-        if (str2 == null)
-          continue;
-        String str3 = SharedTokenizer.next(null);
-        if (str3 == null)
-          continue;
-        if (str2.equals("name")) {
-          if (!this.name.contains(str3))
-            this.name.add(str3);
-        } else if (str2.equals("pattern")) {
-          if (!this.patt.contains(str3))
-            this.patt.add(str3);
-        } else if (str2.equals("ip")) {
-          int[][] arrayOfInt = ipItem(str3);
-          if ((arrayOfInt != null) && 
-            (findIpItem(arrayOfInt) == -1))
-            this.ip.add(arrayOfInt);
-        }
-      }
-      localBufferedReader.close();
-    } catch (IOException localIOException) {
-      System.out.println("File " + paramString + " load failed: " + localIOException.getMessage());
-    }
-  }
+    public boolean isExist(com.maddox.rts.NetAddress netaddress)
+    {
+        int i = ip.size();
+        if(i < 0)
+            return false;
+        com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(netaddress.getHostAddress(), ".");
+        if(numbertokenizer.countTokens() != 4)
+            return false;
+        for(int j = 0; j < 4; j++)
+            tmp[j] = numbertokenizer.next(0);
 
-  public int[][] ipItem(String paramString) {
-    NumberTokenizer localNumberTokenizer1 = new NumberTokenizer(paramString, ".");
-    if (localNumberTokenizer1.countTokens() != 4)
-      return (int[][])null;
-    int[][] arrayOfInt = new int[4][2];
-    try {
-      for (int i = 0; i < 4; i++) {
-        String str = localNumberTokenizer1.next();
-        if ("*".equals(str))
+        for(int k = 0; k < i; k++)
         {
-          byte tmp67_66 = -1; arrayOfInt[i][1] = tmp67_66; arrayOfInt[i][0] = tmp67_66;
-        } else if (str.indexOf("-") >= 0) {
-          NumberTokenizer localNumberTokenizer2 = new NumberTokenizer(str, "-");
-          arrayOfInt[i][0] = localNumberTokenizer2.next(-1);
-          arrayOfInt[i][1] = localNumberTokenizer2.next(-1);
-          if (arrayOfInt[i][0] == -1) return (int[][])null;
-          if (arrayOfInt[i][1] == -1) return (int[][])null; 
+            boolean flag = true;
+            int ai[][] = (int[][])(int[][])ip.get(k);
+            int l = 0;
+            do
+            {
+                if(l >= 4)
+                    break;
+                if(ai[l][0] != -1 && (ai[l][0] > tmp[l] || tmp[l] > ai[l][1]))
+                {
+                    flag = false;
+                    break;
+                }
+                l++;
+            } while(true);
+            if(flag)
+                return true;
         }
-        else {
-          int j = Integer.parseInt(str);
-          int tmp172_170 = j; arrayOfInt[i][1] = tmp172_170; arrayOfInt[i][0] = tmp172_170;
-        }
-      }
-    } catch (Exception localException) {
-      return (int[][])null;
-    }
-    return arrayOfInt;
-  }
 
-  public int findIpItem(int[][] paramArrayOfInt) {
-    for (int i = 0; i < this.ip.size(); i++) {
-      int[][] arrayOfInt = (int[][])(int[][])this.ip.get(i);
-      int j = 1;
-      for (int k = 0; k < 4; k++)
-        for (int m = 0; m < 2; m++)
-          if (arrayOfInt[k][m] != paramArrayOfInt[k][m])
-            j = 0;
-      if (j != 0) return i;
+        return false;
     }
-    return -1;
-  }
+
+    public void save()
+    {
+        save(fileName);
+    }
+
+    public void save(java.lang.String s)
+    {
+        try
+        {
+            java.io.PrintWriter printwriter = new PrintWriter(new BufferedWriter(new FileWriter(com.maddox.rts.HomePath.toFileSystemName(s, 0))));
+            for(int i = 0; i < name.size(); i++)
+            {
+                java.lang.String s1 = (java.lang.String)name.get(i);
+                printwriter.println("name " + com.maddox.util.UnicodeTo8bit.save(s1, true));
+            }
+
+            for(int j = 0; j < patt.size(); j++)
+            {
+                java.lang.String s2 = (java.lang.String)patt.get(j);
+                printwriter.println("pattern " + com.maddox.util.UnicodeTo8bit.save(s2, true));
+            }
+
+            for(int k = 0; k < ip.size(); k++)
+                printwriter.println("ip " + ipItem(k));
+
+            printwriter.close();
+        }
+        catch(java.io.IOException ioexception)
+        {
+            java.lang.System.out.println("Save file " + s + " failed: " + ioexception.getMessage());
+        }
+    }
+
+    public java.lang.String ipItem(int i)
+    {
+        int ai[][] = (int[][])(int[][])ip.get(i);
+        java.lang.StringBuffer stringbuffer = new StringBuffer();
+        for(int j = 0; j < 4; j++)
+        {
+            if(j != 0)
+                stringbuffer.append('.');
+            if(ai[j][0] == -1)
+            {
+                stringbuffer.append('*');
+                continue;
+            }
+            if(ai[j][0] == ai[j][1])
+            {
+                stringbuffer.append(ai[j][0]);
+            } else
+            {
+                stringbuffer.append(ai[j][0]);
+                stringbuffer.append('-');
+                stringbuffer.append(ai[j][1]);
+            }
+        }
+
+        return stringbuffer.toString();
+    }
+
+    public void load()
+    {
+        load(fileName);
+    }
+
+    public void load(java.lang.String s)
+    {
+        try
+        {
+            java.io.BufferedReader bufferedreader = new BufferedReader(new SFSReader(s));
+            do
+            {
+                java.lang.String s1 = bufferedreader.readLine();
+                if(s1 == null)
+                    break;
+                int i = s1.length();
+                if(i != 0)
+                {
+                    com.maddox.util.SharedTokenizer.set(s1);
+                    java.lang.String s2 = com.maddox.util.SharedTokenizer.next(null);
+                    if(s2 != null)
+                    {
+                        java.lang.String s3 = com.maddox.util.SharedTokenizer.next(null);
+                        if(s3 != null)
+                            if(s2.equals("name"))
+                            {
+                                if(!name.contains(s3))
+                                    name.add(s3);
+                            } else
+                            if(s2.equals("pattern"))
+                            {
+                                if(!patt.contains(s3))
+                                    patt.add(s3);
+                            } else
+                            if(s2.equals("ip"))
+                            {
+                                int ai[][] = ipItem(s3);
+                                if(ai != null && findIpItem(ai) == -1)
+                                    ip.add(ai);
+                            }
+                    }
+                }
+            } while(true);
+            bufferedreader.close();
+        }
+        catch(java.io.IOException ioexception)
+        {
+            java.lang.System.out.println("File " + s + " load failed: " + ioexception.getMessage());
+        }
+    }
+
+    public int[][] ipItem(java.lang.String s)
+    {
+        com.maddox.util.NumberTokenizer numbertokenizer;
+        int ai[][];
+        numbertokenizer = new NumberTokenizer(s, ".");
+        if(numbertokenizer.countTokens() != 4)
+            return (int[][])null;
+        ai = new int[4][2];
+        int i = 0;
+_L3:
+        java.lang.String s1;
+        if(i >= 4)
+            break MISSING_BLOCK_LABEL_191;
+        s1 = numbertokenizer.next();
+        if("*".equals(s1))
+        {
+            ai[i][0] = ai[i][1] = -1;
+            break MISSING_BLOCK_LABEL_175;
+        }
+        if(s1.indexOf("-") < 0) goto _L2; else goto _L1
+_L1:
+        com.maddox.util.NumberTokenizer numbertokenizer1 = new NumberTokenizer(s1, "-");
+        ai[i][0] = numbertokenizer1.next(-1);
+        ai[i][1] = numbertokenizer1.next(-1);
+        if(ai[i][0] == -1)
+            return (int[][])null;
+        if(ai[i][1] == -1)
+            return (int[][])null;
+        break MISSING_BLOCK_LABEL_175;
+_L2:
+        int j = java.lang.Integer.parseInt(s1);
+        ai[i][0] = ai[i][1] = j;
+        i++;
+          goto _L3
+        java.lang.Exception exception;
+        exception;
+        return (int[][])null;
+        return ai;
+    }
+
+    public int findIpItem(int ai[][])
+    {
+        for(int i = 0; i < ip.size(); i++)
+        {
+            int ai1[][] = (int[][])(int[][])ip.get(i);
+            boolean flag = true;
+            for(int j = 0; j < 4; j++)
+            {
+                for(int k = 0; k < 2; k++)
+                    if(ai1[j][k] != ai[j][k])
+                        flag = false;
+
+            }
+
+            if(flag)
+                return i;
+        }
+
+        return -1;
+    }
+
+    public static java.lang.String fileName = "banned.txt";
+    public java.util.ArrayList name;
+    public java.util.ArrayList patt;
+    public java.util.ArrayList ip;
+    private static int tmp[] = new int[4];
+
 }

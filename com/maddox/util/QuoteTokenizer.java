@@ -1,101 +1,118 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   QuoteTokenizer.java
+
 package com.maddox.util;
+
 
 public class QuoteTokenizer
 {
-  private StringBuffer buf = null;
 
-  public QuoteTokenizer(String paramString)
-  {
-    this.buf = new StringBuffer(paramString);
-
-    while ((this.buf.length() > 0) && 
-      (this.buf.charAt(0) == ' ')) this.buf.deleteCharAt(0);
-
-    while (this.buf.length() > 0) {
-      int i = this.buf.length() - 1;
-      if (this.buf.charAt(i) != ' ') break; this.buf.deleteCharAt(i);
+    public QuoteTokenizer(java.lang.String s)
+    {
+        buf = null;
+        for(buf = new StringBuffer(s); buf.length() > 0 && buf.charAt(0) == ' '; buf.deleteCharAt(0));
+        do
+        {
+            if(buf.length() <= 0)
+                break;
+            int i = buf.length() - 1;
+            if(buf.charAt(i) != ' ')
+                break;
+            buf.deleteCharAt(i);
+        } while(true);
     }
-  }
 
-  public String getGap()
-  {
-    String str = this.buf.substring(0);
-    this.buf.delete(0, this.buf.length());
-    return str;
-  }
+    public java.lang.String getGap()
+    {
+        java.lang.String s = buf.substring(0);
+        buf.delete(0, buf.length());
+        return s;
+    }
 
-  public boolean hasMoreTokens() {
-    return this.buf.length() > 0;
-  }
+    public boolean hasMoreTokens()
+    {
+        return buf.length() > 0;
+    }
 
-  public String nextToken() {
-    return nextWord();
-  }
+    public java.lang.String nextToken()
+    {
+        return nextWord();
+    }
 
-  public String next() {
-    return nextWord();
-  }
+    public java.lang.String next()
+    {
+        return nextWord();
+    }
 
-  private String nextWord() {
-    while ((this.buf.length() > 0) && 
-      (this.buf.charAt(0) == ' ')) this.buf.deleteCharAt(0);
-
-    if (this.buf.length() == 0)
-      return "";
-    int i = 0;
-    String str = null;
-    if (this.buf.charAt(i) == '"') {
-      this.buf.deleteCharAt(0);
-      while (i < this.buf.length()) {
-        if (this.buf.charAt(i) == '"') {
-          if ((i > 0) && (this.buf.charAt(i - 1) == '\\')) {
-            this.buf.deleteCharAt(i - 1);
-            i--;
-          } else {
-            this.buf.deleteCharAt(i);
-            break;
-          }
+    private java.lang.String nextWord()
+    {
+        for(; buf.length() > 0 && buf.charAt(0) == ' '; buf.deleteCharAt(0));
+        if(buf.length() == 0)
+            return "";
+        int i = 0;
+        java.lang.String s = null;
+        if(buf.charAt(i) == '"')
+        {
+            buf.deleteCharAt(0);
+            do
+            {
+                if(i >= buf.length())
+                    break;
+                if(buf.charAt(i) == '"')
+                    if(i > 0 && buf.charAt(i - 1) == '\\')
+                    {
+                        buf.deleteCharAt(i - 1);
+                        i--;
+                    } else
+                    {
+                        buf.deleteCharAt(i);
+                        break;
+                    }
+                i++;
+            } while(true);
+        } else
+        {
+            for(int j = buf.length(); i < j && buf.charAt(i) != ' '; i++);
         }
-        i++;
-      }
-    }
-    int j = this.buf.length();
-    while ((i < j) && 
-      (this.buf.charAt(i) != ' ')) {
-      i++;
+        s = buf.substring(0, i);
+        buf.delete(0, i);
+        for(; buf.length() > 0 && buf.charAt(0) == ' '; buf.deleteCharAt(0));
+        return s;
     }
 
-    str = this.buf.substring(0, i);
-    this.buf.delete(0, i);
+    public static java.lang.String toToken(java.lang.String s)
+    {
+        int i = s.length();
+        int j = 0;
+        do
+        {
+            if(j >= i)
+                break;
+            char c = s.charAt(j);
+            if(c == ' ' || c == '"')
+                break;
+            j++;
+        } while(true);
+        if(j == i)
+            return s;
+        java.lang.StringBuffer stringbuffer = new StringBuffer(s);
+        for(int k = 0; k < i; k++)
+        {
+            char c1 = stringbuffer.charAt(k);
+            if(c1 == '"')
+            {
+                stringbuffer.insert(k, '\\');
+                k++;
+                i++;
+            }
+        }
 
-    while ((this.buf.length() > 0) && 
-      (this.buf.charAt(0) == ' ')) this.buf.deleteCharAt(0);
+        stringbuffer.insert(0, '"');
+        stringbuffer.append('"');
+        return stringbuffer.toString();
+    }
 
-    return str;
-  }
-
-  public static String toToken(String paramString) {
-    int i = paramString.length();
-    int j = 0;
-    for (; j < i; j++) {
-      int k = paramString.charAt(j);
-      if ((k == 32) || (k == 34))
-        break;
-    }
-    if (j == i) {
-      return paramString;
-    }
-    StringBuffer localStringBuffer = new StringBuffer(paramString);
-    for (j = 0; j < i; j++) {
-      int m = localStringBuffer.charAt(j);
-      if (m == 34) {
-        localStringBuffer.insert(j, '\\');
-        j++;
-        i++;
-      }
-    }
-    localStringBuffer.insert(0, '"');
-    localStringBuffer.append('"');
-    return localStringBuffer.toString();
-  }
+    private java.lang.StringBuffer buf;
 }

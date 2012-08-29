@@ -1,227 +1,252 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SharedTokenizer.java
+
 package com.maddox.util;
+
 
 public class SharedTokenizer
 {
-  private static char[] buf = new char[''];
-  private static int ptr;
-  private static int end;
-  private static int start;
-  private static int stop;
 
-  public static void set(String paramString)
-  {
-    int i = paramString.length();
-    if (i > buf.length)
-      buf = new char[i];
-    paramString.getChars(0, i, buf, 0);
-    ptr = 0; end = i;
-
-    while ((ptr < end) && 
-      (buf[ptr] <= ' ')) ptr += 1;
-
-    while ((end > ptr) && 
-      (buf[(end - 1)] <= ' ')) end -= 1;
-  }
-
-  public static String getGap()
-  {
-    if (ptr >= end) return null;
-    start = ptr;
-    stop = end;
-    ptr = end;
-    while ((stop > start) && 
-      (buf[(stop - 1)] <= ' ')) {
-      stop -= 1;
-    }
-    if (stop <= start)
-      return null;
-    return new String(buf, start, stop - start);
-  }
-
-  public static boolean hasMoreTokens() {
-    return ptr < end;
-  }
-
-  public static int countTokens() {
-    int i = 0;
-    int j = ptr;
-    while (j < end) {
-      i++;
-      while ((j < end) && 
-        (buf[j] > ' ')) j++;
-
-      while ((j < end) && 
-        (buf[j] <= ' ')) j++;
-
-    }
-
-    return i;
-  }
-
-  private static void nextWord() {
-    start = ptr;
-    while ((ptr < end) && 
-      (buf[ptr] > ' ')) ptr += 1;
-
-    stop = ptr;
-    while ((ptr < end) && 
-      (buf[ptr] <= ' ')) ptr += 1;
-  }
-
-  public static void _nextWord()
-  {
-    nextWord();
-  }
-
-  public static String nextToken() {
-    if (ptr >= end) return null;
-    nextWord();
-    return new String(buf, start, stop - start);
-  }
-
-  public static String next() {
-    return nextToken();
-  }
-
-  public static String next(String paramString) {
-    String str = nextToken();
-    if (str != null)
-      return str;
-    return paramString;
-  }
-
-  public static String _getString() {
-    if (start >= end) return null;
-    return new String(buf, start, stop - start);
-  }
-  public static int _getInt() throws NumberFormatException {
-    if (start >= end) {
-      throw new NumberFormatException();
-    }
-    int i = 10;
-    int j = 0;
-    int k = 0;
-    int m = start; int n = stop;
-    int i1;
-    if (buf[m] == '-') {
-      k = 1;
-      i1 = -2147483648;
-      m++;
-    } else {
-      i1 = -2147483647;
-    }
-    int i2 = i1 / i;
-    int i3;
-    if (m < n) {
-      i3 = Character.digit(buf[(m++)], i);
-      if (i3 < 0) {
-        throw new NumberFormatException();
-      }
-      j = -i3;
-    }
-
-    while (m < n)
+    public static void set(java.lang.String s)
     {
-      i3 = Character.digit(buf[(m++)], i);
-      if (i3 < 0) {
-        throw new NumberFormatException();
-      }
-      if (j < i2) {
-        throw new NumberFormatException();
-      }
-      j *= i;
-      if (j < i1 + i3) {
-        throw new NumberFormatException();
-      }
-      j -= i3;
-    }
-    if (k != 0) {
-      if (m > start + 1) {
-        return j;
-      }
-      throw new NumberFormatException();
+        int i = s.length();
+        if(i > buf.length)
+            buf = new char[i];
+        s.getChars(0, i, buf, 0);
+        ptr = 0;
+        for(end = i; ptr < end && buf[ptr] <= ' '; ptr++);
+        for(; end > ptr && buf[end - 1] <= ' '; end--);
     }
 
-    return -j;
-  }
-
-  public static int next(int paramInt)
-  {
-    if (ptr >= end) return paramInt;
-    nextWord();
-
-    int i = 10;
-    int j = 0;
-    int k = 0;
-    int m = start; int n = stop;
-    int i1;
-    if (buf[m] == '-') {
-      k = 1;
-      i1 = -2147483648;
-      m++;
-    } else {
-      i1 = -2147483647;
-    }
-    int i2 = i1 / i;
-    int i3;
-    if (m < n) {
-      i3 = Character.digit(buf[(m++)], i);
-      if (i3 < 0) {
-        return paramInt;
-      }
-      j = -i3;
-    }
-
-    while (m < n)
+    public static java.lang.String getGap()
     {
-      i3 = Character.digit(buf[(m++)], i);
-      if (i3 < 0) {
-        return paramInt;
-      }
-      if (j < i2) {
-        return paramInt;
-      }
-      j *= i;
-      if (j < i1 + i3) {
-        return paramInt;
-      }
-      j -= i3;
-    }
-    if (k != 0) {
-      if (m > start + 1) {
-        return j;
-      }
-      return paramInt;
+        if(ptr >= end)
+            return null;
+        start = ptr;
+        stop = end;
+        ptr = end;
+        for(; stop > start && buf[stop - 1] <= ' '; stop--);
+        if(stop <= start)
+            return null;
+        else
+            return new String(buf, start, stop - start);
     }
 
-    return -j;
-  }
-
-  public static int next(int paramInt1, int paramInt2, int paramInt3)
-  {
-    int i = next(paramInt1);
-    if (i < paramInt2) i = paramInt2;
-    if (i > paramInt3) i = paramInt3;
-    return i;
-  }
-
-  public static double next(double paramDouble) {
-    if (ptr >= end) return paramDouble; try
+    public static boolean hasMoreTokens()
     {
-      return Double.parseDouble(next()); } catch (Exception localException) {
+        return ptr < end;
     }
-    return paramDouble;
-  }
 
-  public static double next(double paramDouble1, double paramDouble2, double paramDouble3)
-  {
-    double d = next(paramDouble1);
-    if (d < paramDouble2) d = paramDouble2;
-    if (d > paramDouble3) d = paramDouble3;
-    return d;
-  }
+    public static int countTokens()
+    {
+        int i = 0;
+        for(int j = ptr; j < end;)
+        {
+            i++;
+            for(; j < end && buf[j] > ' '; j++);
+            while(j < end && buf[j] <= ' ') 
+                j++;
+        }
 
-  public static boolean next(boolean paramBoolean) {
-    return next(paramBoolean ? 1 : 0) != 0;
-  }
+        return i;
+    }
+
+    private static void nextWord()
+    {
+        start = ptr;
+        for(; ptr < end && buf[ptr] > ' '; ptr++);
+        stop = ptr;
+        for(; ptr < end && buf[ptr] <= ' '; ptr++);
+    }
+
+    public static void _nextWord()
+    {
+        com.maddox.util.SharedTokenizer.nextWord();
+    }
+
+    public static java.lang.String nextToken()
+    {
+        if(ptr >= end)
+        {
+            return null;
+        } else
+        {
+            com.maddox.util.SharedTokenizer.nextWord();
+            return new String(buf, start, stop - start);
+        }
+    }
+
+    public static java.lang.String next()
+    {
+        return com.maddox.util.SharedTokenizer.nextToken();
+    }
+
+    public static java.lang.String next(java.lang.String s)
+    {
+        java.lang.String s1 = com.maddox.util.SharedTokenizer.nextToken();
+        if(s1 != null)
+            return s1;
+        else
+            return s;
+    }
+
+    public static java.lang.String _getString()
+    {
+        if(start >= end)
+            return null;
+        else
+            return new String(buf, start, stop - start);
+    }
+
+    public static int _getInt()
+        throws java.lang.NumberFormatException
+    {
+        if(start >= end)
+            throw new NumberFormatException();
+        byte byte0 = 10;
+        int i = 0;
+        boolean flag = false;
+        int j = start;
+        int k = stop;
+        int l;
+        if(buf[j] == '-')
+        {
+            flag = true;
+            l = 0x80000000;
+            j++;
+        } else
+        {
+            l = 0x80000001;
+        }
+        int i1 = l / byte0;
+        if(j < k)
+        {
+            int j1 = java.lang.Character.digit(buf[j++], byte0);
+            if(j1 < 0)
+                throw new NumberFormatException();
+            i = -j1;
+        }
+        while(j < k) 
+        {
+            int k1 = java.lang.Character.digit(buf[j++], byte0);
+            if(k1 < 0)
+                throw new NumberFormatException();
+            if(i < i1)
+                throw new NumberFormatException();
+            i *= byte0;
+            if(i < l + k1)
+                throw new NumberFormatException();
+            i -= k1;
+        }
+        if(flag)
+        {
+            if(j > start + 1)
+                return i;
+            else
+                throw new NumberFormatException();
+        } else
+        {
+            return -i;
+        }
+    }
+
+    public static int next(int i)
+    {
+        if(ptr >= end)
+            return i;
+        com.maddox.util.SharedTokenizer.nextWord();
+        byte byte0 = 10;
+        int j = 0;
+        boolean flag = false;
+        int k = start;
+        int l = stop;
+        int i1;
+        if(buf[k] == '-')
+        {
+            flag = true;
+            i1 = 0x80000000;
+            k++;
+        } else
+        {
+            i1 = 0x80000001;
+        }
+        int j1 = i1 / byte0;
+        if(k < l)
+        {
+            int k1 = java.lang.Character.digit(buf[k++], byte0);
+            if(k1 < 0)
+                return i;
+            j = -k1;
+        }
+        while(k < l) 
+        {
+            int l1 = java.lang.Character.digit(buf[k++], byte0);
+            if(l1 < 0)
+                return i;
+            if(j < j1)
+                return i;
+            j *= byte0;
+            if(j < i1 + l1)
+                return i;
+            j -= l1;
+        }
+        if(flag)
+        {
+            if(k > start + 1)
+                return j;
+            else
+                return i;
+        } else
+        {
+            return -j;
+        }
+    }
+
+    public static int next(int i, int j, int k)
+    {
+        int l = com.maddox.util.SharedTokenizer.next(i);
+        if(l < j)
+            l = j;
+        if(l > k)
+            l = k;
+        return l;
+    }
+
+    public static double next(double d)
+    {
+        if(ptr >= end)
+            return d;
+        return java.lang.Double.parseDouble(com.maddox.util.SharedTokenizer.next());
+        java.lang.Exception exception;
+        exception;
+        return d;
+    }
+
+    public static double next(double d, double d1, double d2)
+    {
+        double d3 = com.maddox.util.SharedTokenizer.next(d);
+        if(d3 < d1)
+            d3 = d1;
+        if(d3 > d2)
+            d3 = d2;
+        return d3;
+    }
+
+    public static boolean next(boolean flag)
+    {
+        return com.maddox.util.SharedTokenizer.next(flag ? 1 : 0) != 0;
+    }
+
+    private SharedTokenizer()
+    {
+    }
+
+    private static char buf[] = new char[128];
+    private static int ptr;
+    private static int end;
+    private static int start;
+    private static int stop;
+
 }

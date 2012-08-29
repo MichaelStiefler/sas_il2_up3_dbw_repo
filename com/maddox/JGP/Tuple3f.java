@@ -1,289 +1,298 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Tuple3f.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
+// Referenced classes of package com.maddox.JGP:
+//            Tuple3d, Tuple2f
+
 public abstract class Tuple3f
-  implements Serializable, Cloneable
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public float x;
-  public float y;
-  public float z;
 
-  public Tuple3f(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    this.x = paramFloat1;
-    this.y = paramFloat2;
-    this.z = paramFloat3;
-  }
+    public Tuple3f(float f, float f1, float f2)
+    {
+        x = f;
+        y = f1;
+        z = f2;
+    }
 
-  public Tuple3f(float[] paramArrayOfFloat)
-  {
-    this.x = paramArrayOfFloat[0];
-    this.y = paramArrayOfFloat[1];
-    this.z = paramArrayOfFloat[2];
-  }
+    public Tuple3f(float af[])
+    {
+        x = af[0];
+        y = af[1];
+        z = af[2];
+    }
 
-  public Tuple3f(Tuple3f paramTuple3f)
-  {
-    this.x = paramTuple3f.x;
-    this.y = paramTuple3f.y;
-    this.z = paramTuple3f.z;
-  }
+    public Tuple3f(com.maddox.JGP.Tuple3f tuple3f)
+    {
+        x = tuple3f.x;
+        y = tuple3f.y;
+        z = tuple3f.z;
+    }
 
-  public Tuple3f(Tuple3d paramTuple3d)
-  {
-    this.x = (float)paramTuple3d.x;
-    this.y = (float)paramTuple3d.y;
-    this.z = (float)paramTuple3d.z;
-  }
+    public Tuple3f(com.maddox.JGP.Tuple3d tuple3d)
+    {
+        x = (float)tuple3d.x;
+        y = (float)tuple3d.y;
+        z = (float)tuple3d.z;
+    }
 
-  public Tuple3f()
-  {
-    this.x = 0.0F;
-    this.y = 0.0F;
-    this.z = 0.0F;
-  }
+    public Tuple3f()
+    {
+        x = 0.0F;
+        y = 0.0F;
+        z = 0.0F;
+    }
 
-  public final void set(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    this.x = paramFloat1;
-    this.y = paramFloat2;
-    this.z = paramFloat3;
-  }
+    public final void set(float f, float f1, float f2)
+    {
+        x = f;
+        y = f1;
+        z = f2;
+    }
 
-  public final void set(float[] paramArrayOfFloat)
-  {
-    this.x = paramArrayOfFloat[0];
-    this.y = paramArrayOfFloat[1];
-    this.z = paramArrayOfFloat[2];
-  }
+    public final void set(float af[])
+    {
+        x = af[0];
+        y = af[1];
+        z = af[2];
+    }
 
-  public final void set(Tuple3f paramTuple3f)
-  {
-    this.x = paramTuple3f.x;
-    this.y = paramTuple3f.y;
-    this.z = paramTuple3f.z;
-  }
+    public final void set(com.maddox.JGP.Tuple3f tuple3f)
+    {
+        x = tuple3f.x;
+        y = tuple3f.y;
+        z = tuple3f.z;
+    }
 
-  public final void set(Tuple3d paramTuple3d)
-  {
-    this.x = (float)paramTuple3d.x;
-    this.y = (float)paramTuple3d.y;
-    this.z = (float)paramTuple3d.z;
-  }
+    public final void set(com.maddox.JGP.Tuple3d tuple3d)
+    {
+        x = (float)tuple3d.x;
+        y = (float)tuple3d.y;
+        z = (float)tuple3d.z;
+    }
 
-  public final void set(Tuple2f paramTuple2f)
-  {
-    this.x = paramTuple2f.x;
-    this.y = paramTuple2f.y;
-    this.z = 0.0F;
-  }
+    public final void set(com.maddox.JGP.Tuple2f tuple2f)
+    {
+        x = tuple2f.x;
+        y = tuple2f.y;
+        z = 0.0F;
+    }
 
-  public final void set2(Tuple2f paramTuple2f)
-  {
-    this.x = paramTuple2f.x;
-    this.y = paramTuple2f.y;
-  }
+    public final void set2(com.maddox.JGP.Tuple2f tuple2f)
+    {
+        x = tuple2f.x;
+        y = tuple2f.y;
+    }
 
-  public final void get(float[] paramArrayOfFloat)
-  {
-    paramArrayOfFloat[0] = this.x;
-    paramArrayOfFloat[1] = this.y;
-    paramArrayOfFloat[2] = this.z;
-  }
+    public final void get(float af[])
+    {
+        af[0] = x;
+        af[1] = y;
+        af[2] = z;
+    }
 
-  public final void get(Tuple3f paramTuple3f)
-  {
-    paramTuple3f.x = this.x;
-    paramTuple3f.y = this.y;
-    paramTuple3f.z = this.z;
-  }
+    public final void get(com.maddox.JGP.Tuple3f tuple3f)
+    {
+        tuple3f.x = x;
+        tuple3f.y = y;
+        tuple3f.z = z;
+    }
 
-  public final void add(Tuple3f paramTuple3f1, Tuple3f paramTuple3f2)
-  {
-    paramTuple3f1.x += paramTuple3f2.x;
-    paramTuple3f1.y += paramTuple3f2.y;
-    paramTuple3f1.z += paramTuple3f2.z;
-  }
+    public final void add(com.maddox.JGP.Tuple3f tuple3f, com.maddox.JGP.Tuple3f tuple3f1)
+    {
+        x = tuple3f.x + tuple3f1.x;
+        y = tuple3f.y + tuple3f1.y;
+        z = tuple3f.z + tuple3f1.z;
+    }
 
-  public final void add(Tuple3f paramTuple3f)
-  {
-    this.x += paramTuple3f.x;
-    this.y += paramTuple3f.y;
-    this.z += paramTuple3f.z;
-  }
+    public final void add(com.maddox.JGP.Tuple3f tuple3f)
+    {
+        x += tuple3f.x;
+        y += tuple3f.y;
+        z += tuple3f.z;
+    }
 
-  public final void add(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    this.x += paramFloat1;
-    this.y += paramFloat2;
-    this.z += paramFloat3;
-  }
+    public final void add(float f, float f1, float f2)
+    {
+        x += f;
+        y += f1;
+        z += f2;
+    }
 
-  public final void sub(Tuple3f paramTuple3f1, Tuple3f paramTuple3f2)
-  {
-    paramTuple3f1.x -= paramTuple3f2.x;
-    paramTuple3f1.y -= paramTuple3f2.y;
-    paramTuple3f1.z -= paramTuple3f2.z;
-  }
+    public final void sub(com.maddox.JGP.Tuple3f tuple3f, com.maddox.JGP.Tuple3f tuple3f1)
+    {
+        x = tuple3f.x - tuple3f1.x;
+        y = tuple3f.y - tuple3f1.y;
+        z = tuple3f.z - tuple3f1.z;
+    }
 
-  public final void sub(Tuple3f paramTuple3f)
-  {
-    this.x -= paramTuple3f.x;
-    this.y -= paramTuple3f.y;
-    this.z -= paramTuple3f.z;
-  }
+    public final void sub(com.maddox.JGP.Tuple3f tuple3f)
+    {
+        x -= tuple3f.x;
+        y -= tuple3f.y;
+        z -= tuple3f.z;
+    }
 
-  public final void sub(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    this.x -= paramFloat1;
-    this.y -= paramFloat2;
-    this.z -= paramFloat3;
-  }
+    public final void sub(float f, float f1, float f2)
+    {
+        x -= f;
+        y -= f1;
+        z -= f2;
+    }
 
-  public final void negate(Tuple3f paramTuple3f)
-  {
-    this.x = (-paramTuple3f.x);
-    this.y = (-paramTuple3f.y);
-    this.z = (-paramTuple3f.z);
-  }
+    public final void negate(com.maddox.JGP.Tuple3f tuple3f)
+    {
+        x = -tuple3f.x;
+        y = -tuple3f.y;
+        z = -tuple3f.z;
+    }
 
-  public final void negate()
-  {
-    this.x = (-this.x);
-    this.y = (-this.y);
-    this.z = (-this.z);
-  }
+    public final void negate()
+    {
+        x = -x;
+        y = -y;
+        z = -z;
+    }
 
-  public final void scale(float paramFloat, Tuple3f paramTuple3f)
-  {
-    this.x = (paramFloat * paramTuple3f.x);
-    this.y = (paramFloat * paramTuple3f.y);
-    this.z = (paramFloat * paramTuple3f.z);
-  }
+    public final void scale(float f, com.maddox.JGP.Tuple3f tuple3f)
+    {
+        x = f * tuple3f.x;
+        y = f * tuple3f.y;
+        z = f * tuple3f.z;
+    }
 
-  public final void scale(Tuple3f paramTuple3f, float paramFloat)
-  {
-    this.x = (paramFloat * paramTuple3f.x);
-    this.y = (paramFloat * paramTuple3f.y);
-    this.z = (paramFloat * paramTuple3f.z);
-  }
+    public final void scale(com.maddox.JGP.Tuple3f tuple3f, float f)
+    {
+        x = f * tuple3f.x;
+        y = f * tuple3f.y;
+        z = f * tuple3f.z;
+    }
 
-  public final void scale(float paramFloat)
-  {
-    this.x *= paramFloat;
-    this.y *= paramFloat;
-    this.z *= paramFloat;
-  }
+    public final void scale(float f)
+    {
+        x *= f;
+        y *= f;
+        z *= f;
+    }
 
-  public final void scaleAdd(float paramFloat, Tuple3f paramTuple3f1, Tuple3f paramTuple3f2)
-  {
-    this.x = (paramFloat * paramTuple3f1.x + paramTuple3f2.x);
-    this.y = (paramFloat * paramTuple3f1.y + paramTuple3f2.y);
-    this.z = (paramFloat * paramTuple3f1.z + paramTuple3f2.z);
-  }
+    public final void scaleAdd(float f, com.maddox.JGP.Tuple3f tuple3f, com.maddox.JGP.Tuple3f tuple3f1)
+    {
+        x = f * tuple3f.x + tuple3f1.x;
+        y = f * tuple3f.y + tuple3f1.y;
+        z = f * tuple3f.z + tuple3f1.z;
+    }
 
-  public final void scaleAdd(float paramFloat, Tuple3f paramTuple3f)
-  {
-    this.x = (paramFloat * this.x + paramTuple3f.x);
-    this.y = (paramFloat * this.y + paramTuple3f.y);
-    this.z = (paramFloat * this.z + paramTuple3f.z);
-  }
+    public final void scaleAdd(float f, com.maddox.JGP.Tuple3f tuple3f)
+    {
+        x = f * x + tuple3f.x;
+        y = f * y + tuple3f.y;
+        z = f * z + tuple3f.z;
+    }
 
-  public int hashCode()
-  {
-    int i = Float.floatToIntBits(this.x);
-    int j = Float.floatToIntBits(this.y);
-    int k = Float.floatToIntBits(this.z);
-    return i ^ j ^ k;
-  }
+    public int hashCode()
+    {
+        int i = java.lang.Float.floatToIntBits(x);
+        int j = java.lang.Float.floatToIntBits(y);
+        int k = java.lang.Float.floatToIntBits(z);
+        return i ^ j ^ k;
+    }
 
-  public boolean equals(Tuple3f paramTuple3f)
-  {
-    return (paramTuple3f != null) && (this.x == paramTuple3f.x) && (this.y == paramTuple3f.y) && (this.z == paramTuple3f.z);
-  }
+    public boolean equals(com.maddox.JGP.Tuple3f tuple3f)
+    {
+        return tuple3f != null && x == tuple3f.x && y == tuple3f.y && z == tuple3f.z;
+    }
 
-  public boolean epsilonEquals(Tuple3f paramTuple3f, float paramFloat)
-  {
-    return (Math.abs(paramTuple3f.x - this.x) <= paramFloat) && (Math.abs(paramTuple3f.y - this.y) <= paramFloat) && (Math.abs(paramTuple3f.z - this.z) <= paramFloat);
-  }
+    public boolean epsilonEquals(com.maddox.JGP.Tuple3f tuple3f, float f)
+    {
+        return java.lang.Math.abs(tuple3f.x - x) <= f && java.lang.Math.abs(tuple3f.y - y) <= f && java.lang.Math.abs(tuple3f.z - z) <= f;
+    }
 
-  public String toString()
-  {
-    return "(" + this.x + ", " + this.y + ", " + this.z + ")";
-  }
+    public java.lang.String toString()
+    {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
 
-  public final void clamp(float paramFloat1, float paramFloat2, Tuple3f paramTuple3f)
-  {
-    set(paramTuple3f);
-    clamp(paramFloat1, paramFloat2);
-  }
+    public final void clamp(float f, float f1, com.maddox.JGP.Tuple3f tuple3f)
+    {
+        set(tuple3f);
+        clamp(f, f1);
+    }
 
-  public final void clampMin(float paramFloat, Tuple3f paramTuple3f)
-  {
-    set(paramTuple3f);
-    clampMin(paramFloat);
-  }
+    public final void clampMin(float f, com.maddox.JGP.Tuple3f tuple3f)
+    {
+        set(tuple3f);
+        clampMin(f);
+    }
 
-  public final void clampMax(float paramFloat, Tuple3f paramTuple3f)
-  {
-    set(paramTuple3f);
-    clampMax(paramFloat);
-  }
+    public final void clampMax(float f, com.maddox.JGP.Tuple3f tuple3f)
+    {
+        set(tuple3f);
+        clampMax(f);
+    }
 
-  public final void absolute(Tuple3f paramTuple3f)
-  {
-    set(paramTuple3f);
-    absolute();
-  }
+    public final void absolute(com.maddox.JGP.Tuple3f tuple3f)
+    {
+        set(tuple3f);
+        absolute();
+    }
 
-  public final void clamp(float paramFloat1, float paramFloat2)
-  {
-    clampMin(paramFloat1);
-    clampMax(paramFloat2);
-  }
+    public final void clamp(float f, float f1)
+    {
+        clampMin(f);
+        clampMax(f1);
+    }
 
-  public final void clampMin(float paramFloat)
-  {
-    if (this.x < paramFloat)
-      this.x = paramFloat;
-    if (this.y < paramFloat)
-      this.y = paramFloat;
-    if (this.z < paramFloat)
-      this.z = paramFloat;
-  }
+    public final void clampMin(float f)
+    {
+        if(x < f)
+            x = f;
+        if(y < f)
+            y = f;
+        if(z < f)
+            z = f;
+    }
 
-  public final void clampMax(float paramFloat)
-  {
-    if (this.x > paramFloat)
-      this.x = paramFloat;
-    if (this.y > paramFloat)
-      this.y = paramFloat;
-    if (this.z > paramFloat)
-      this.z = paramFloat;
-  }
+    public final void clampMax(float f)
+    {
+        if(x > f)
+            x = f;
+        if(y > f)
+            y = f;
+        if(z > f)
+            z = f;
+    }
 
-  public final void absolute()
-  {
-    if (this.x < 0.0D)
-      this.x = (-this.x);
-    if (this.y < 0.0D)
-      this.y = (-this.y);
-    if (this.z < 0.0D)
-      this.z = (-this.z);
-  }
+    public final void absolute()
+    {
+        if((double)x < 0.0D)
+            x = -x;
+        if((double)y < 0.0D)
+            y = -y;
+        if((double)z < 0.0D)
+            z = -z;
+    }
 
-  public final void interpolate(Tuple3f paramTuple3f1, Tuple3f paramTuple3f2, float paramFloat)
-  {
-    paramTuple3f1.x += (paramTuple3f2.x - paramTuple3f1.x) * paramFloat;
-    paramTuple3f1.y += (paramTuple3f2.y - paramTuple3f1.y) * paramFloat;
-    paramTuple3f1.z += (paramTuple3f2.z - paramTuple3f1.z) * paramFloat;
-  }
+    public final void interpolate(com.maddox.JGP.Tuple3f tuple3f, com.maddox.JGP.Tuple3f tuple3f1, float f)
+    {
+        x = tuple3f.x + (tuple3f1.x - tuple3f.x) * f;
+        y = tuple3f.y + (tuple3f1.y - tuple3f.y) * f;
+        z = tuple3f.z + (tuple3f1.z - tuple3f.z) * f;
+    }
 
-  public final void interpolate(Tuple3f paramTuple3f, float paramFloat)
-  {
-    this.x += (paramTuple3f.x - this.x) * paramFloat;
-    this.y += (paramTuple3f.y - this.y) * paramFloat;
-    this.z += (paramTuple3f.z - this.z) * paramFloat;
-  }
+    public final void interpolate(com.maddox.JGP.Tuple3f tuple3f, float f)
+    {
+        x += (tuple3f.x - x) * f;
+        y += (tuple3f.y - y) * f;
+        z += (tuple3f.z - z) * f;
+    }
+
+    public float x;
+    public float y;
+    public float z;
 }

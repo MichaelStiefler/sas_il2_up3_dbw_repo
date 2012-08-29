@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MainWin3D.java
+
 package com.maddox.il2.game;
 
 import com.maddox.il2.ai.EventLog;
@@ -10,7 +15,6 @@ import com.maddox.rts.BackgroundLoop;
 import com.maddox.rts.BackgroundTask;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.Console;
-import com.maddox.rts.Console.Exec;
 import com.maddox.rts.IniFile;
 import com.maddox.rts.MainWin32;
 import com.maddox.rts.MainWindow;
@@ -20,197 +24,219 @@ import com.maddox.rts.ScreenMode;
 import com.maddox.rts.Time;
 import java.io.PrintStream;
 
-public class MainWin3D extends Main3D
+// Referenced classes of package com.maddox.il2.game:
+//            Main3D, Main
+
+public class MainWin3D extends com.maddox.il2.game.Main3D
 {
-  private ScreenMode saveMode;
-  private int saveMouseMode;
-  private boolean bChangedScreenMode;
-  private boolean bTryChangedScreenMode;
-  private boolean bChangeTimerPause;
-
-  public MainWin3D()
-  {
-    this.bChangedScreenMode = false;
-    this.bTryChangedScreenMode = false;
-    this.bChangeTimerPause = false;
-  }
-
-  public static MainWin3D curWin3D()
-  {
-    return (MainWin3D)cur();
-  }
-
-  private void checkFocus()
-  {
-    if ((this.bDrawIfNotFocused) || (((MainWin32)RTSConf.cur.mainWindow).IsFocused())) {
-      if (!RendersMain.isShow()) {
-        if ((Time.isEnableChangePause()) && 
-          (this.bChangeTimerPause)) {
-          Time.setPause(false);
-          this.bChangeTimerPause = false;
-        }
-
-        if (this.bChangedScreenMode) {
-          ((MainWin32)MainWindow.adapter()).loopMsgs();
-          MainWindow.adapter().setMessagesEnable(false);
-
-          ScreenMode.set(this.saveMode);
-          if (MainWindow.adapter().isIconic())
-            MainWindow.adapter().showNormal();
-          ((MainWin32)MainWindow.adapter()).loopMsgs();
-          MainWindow.adapter().setFocus();
-          ((MainWin32)MainWindow.adapter()).loopMsgs();
-          ScreenMode localScreenMode = ScreenMode.readCurrent();
-          int i = (this.saveMode.width() != localScreenMode.width()) || (this.saveMode.height() != localScreenMode.height()) ? 1 : 0;
-          if (i != 0) MainWindow.adapter().setMessagesEnable(true);
-          MainWindow.adapter().setPosSize(0, 0, localScreenMode.width(), localScreenMode.height());
-          ((MainWin32)MainWindow.adapter()).loopMsgs();
-          if (i == 0) MainWindow.adapter().setMessagesEnable(true);
-
-          RTSConf.cur.setUseMouse(this.saveMouseMode);
-          this.bChangedScreenMode = false;
-        }
-        RendersMain.setShow(true);
-        RendersMain.bSwapBuffersResult = true;
-        this.bTryChangedScreenMode = false;
-      } else if ((!RendersMain.bSwapBuffersResult) && (!RTSConf.isRequestExitApp()) && (Config.cur.windowChangeScreenRes) && (Config.cur.windowFullScreen))
-      {
-        if (this.bTryChangedScreenMode) {
-          Main.doGameExit();
-        } else {
-          this.bTryChangedScreenMode = true;
-          CmdEnv.top().exec("window " + Config.cur.windowWidth + " " + Config.cur.windowHeight + " " + Config.cur.windowColourBits + " " + Config.cur.windowDepthBits + " " + Config.cur.windowStencilBits + " PROVIDER " + Config.cur.glLib + " FULL");
-
-          RendersMain.bSwapBuffersResult = true;
-        }
-      }
-
-    }
-    else if (RendersMain.isShow()) {
-      if ((Time.isEnableChangePause()) && 
-        (!Time.isPaused())) {
-        Time.setPause(true);
-        this.bChangeTimerPause = true;
-      }
-      RendersMain.setShow(false);
-      if ((!this.bChangedScreenMode) && (Config.cur.windowChangeScreenRes)) {
-        this.saveMouseMode = RTSConf.cur.getUseMouse();
-        RTSConf.cur.setUseMouse(0);
-        this.saveMode = ScreenMode.readCurrent();
-        if (!MainWindow.adapter().isIconic())
-          MainWindow.adapter().showIconic();
-        ScreenMode.restore();
-        this.bChangedScreenMode = true;
-      }
-      RendersMain.bSwapBuffersResult = true;
-      this.bTryChangedScreenMode = false;
-    }
-  }
-
-  public void loopApp()
-  {
-    if (this.bUseStartLog) {
-      ConsoleGL0.exclusiveDraw(false);
-    }
-    while (!RTSConf.isRequestExitApp())
-      synchronized (RTSConf.lockObject()) {
-        if (BackgroundTask.isExecuted()) {
-          BackgroundTask.doRun();
-        } else {
-          checkFocus();
-          boolean bool;
-          String str;
-          synchronized (this.oCommandSync) {
-            bool = this.bCommand;
-            str = this.sCommand;
-            this.bCommand = false;
-          }
-          if (bool) {
-            if (this.consoleServer != null) this.consoleServer.bEnableType = false;
-            System.out.println(RTSConf.cur.console._getPrompt() + str);
-            if (this.consoleServer != null) this.consoleServer.bEnableType = true;
-
-            RTSConf.cur.console.getEnv().exec(str);
-
-            if (this.consoleServer != null) this.consoleServer.typeNum();
-          }
-
-          RTSConf.cur.loopMsgs();
-        }
-      }
-  }
-
-  public void endApp()
-  {
-    if (Config.cur != null) {
-      viewSet_Save();
-      Config.cur.save();
-    }
-    if (Config.cur != null)
-      Config.cur.endSound();
-    ForceFeedback.stop();
-
-    GLContext localGLContext = RendersMain.glContext();
-    if (GLContext.isValid(localGLContext)) {
-      localGLContext.destroy();
-    }
-    if (ScreenMode.current() != ScreenMode.startup())
-      ScreenMode.restore();
-    if (RTSConf.cur != null) {
-      RTSConf.cur.stop();
-      if ((RTSConf.cur.mainWindow.isCreated()) && ((RTSConf.cur instanceof RTSConfWin))) {
-        ((MainWin32)RTSConf.cur.mainWindow).destroy();
-      }
-    }
-    EventLog.close();
-  }
-
-  public boolean beginApp(String paramString1, String paramString2, int paramInt)
-  {
-    IniFile localIniFile = new IniFile(paramString1);
-    RTSConf.cur = new RTSConfWin(localIniFile, "rts", paramInt);
-    RTSConf.cur.console.exec = new ConsoleExec();
-    Config.cur = new Config(localIniFile, true);
-    new Background();
-
-    if ("RU".equals(Config.LOCALE)) {
-      MainWin32.GetAppPath();
-    }
-
-    if (!super.beginApp(paramString1, paramString2, paramInt))
-      return false;
-    ForceFeedback.start();
-
-    return true;
-  }
-
-  private class Background extends BackgroundLoop
-  {
-    protected void step()
+    private class Background extends com.maddox.rts.BackgroundLoop
     {
-      MainWin3D.this.checkFocus();
-      RTSConf.cur.loopMsgs();
-      try { Thread.sleep(1L); } catch (Exception localException) {
-      }RTSConf.cur.loopMsgs();
-    }
-    public Background() { setThisAsCurrent();
-    }
-  }
 
-  class ConsoleExec extends Console.Exec
-  {
-    ConsoleExec()
+        protected void step()
+        {
+            checkFocus();
+            com.maddox.rts.RTSConf.cur.loopMsgs();
+            try
+            {
+                java.lang.Thread.sleep(1L);
+            }
+            catch(java.lang.Exception exception) { }
+            com.maddox.rts.RTSConf.cur.loopMsgs();
+        }
+
+        public Background()
+        {
+            setThisAsCurrent();
+        }
+    }
+
+    class ConsoleExec extends com.maddox.rts.Console.Exec
     {
+
+        public void doExec(java.lang.String s)
+        {
+            com.maddox.rts.RTSConf.cur.console.getEnv().exec(s);
+            if(consoleServer != null)
+                consoleServer.typeNum();
+        }
+
+        public java.lang.String getPrompt()
+        {
+            return com.maddox.rts.RTSConf.cur.console._getPrompt();
+        }
+
+        ConsoleExec()
+        {
+        }
     }
 
-    public void doExec(String paramString)
+
+    public MainWin3D()
     {
-      RTSConf.cur.console.getEnv().exec(paramString);
-      if (MainWin3D.this.consoleServer != null) MainWin3D.this.consoleServer.typeNum(); 
+        bChangedScreenMode = false;
+        bTryChangedScreenMode = false;
+        bChangeTimerPause = false;
     }
 
-    public String getPrompt() {
-      return RTSConf.cur.console._getPrompt();
+    public static com.maddox.il2.game.MainWin3D curWin3D()
+    {
+        return (com.maddox.il2.game.MainWin3D)com.maddox.il2.game.MainWin3D.cur();
     }
-  }
+
+    private void checkFocus()
+    {
+        if(bDrawIfNotFocused || ((com.maddox.rts.MainWin32)com.maddox.rts.RTSConf.cur.mainWindow).IsFocused())
+        {
+            if(!com.maddox.il2.engine.RendersMain.isShow())
+            {
+                if(com.maddox.rts.Time.isEnableChangePause() && bChangeTimerPause)
+                {
+                    com.maddox.rts.Time.setPause(false);
+                    bChangeTimerPause = false;
+                }
+                if(bChangedScreenMode)
+                {
+                    ((com.maddox.rts.MainWin32)com.maddox.rts.MainWindow.adapter()).loopMsgs();
+                    com.maddox.rts.MainWindow.adapter().setMessagesEnable(false);
+                    com.maddox.rts.ScreenMode.set(saveMode);
+                    if(com.maddox.rts.MainWindow.adapter().isIconic())
+                        com.maddox.rts.MainWindow.adapter().showNormal();
+                    ((com.maddox.rts.MainWin32)com.maddox.rts.MainWindow.adapter()).loopMsgs();
+                    com.maddox.rts.MainWindow.adapter().setFocus();
+                    ((com.maddox.rts.MainWin32)com.maddox.rts.MainWindow.adapter()).loopMsgs();
+                    com.maddox.rts.ScreenMode screenmode = com.maddox.rts.ScreenMode.readCurrent();
+                    boolean flag = saveMode.width() != screenmode.width() || saveMode.height() != screenmode.height();
+                    if(flag)
+                        com.maddox.rts.MainWindow.adapter().setMessagesEnable(true);
+                    com.maddox.rts.MainWindow.adapter().setPosSize(0, 0, screenmode.width(), screenmode.height());
+                    ((com.maddox.rts.MainWin32)com.maddox.rts.MainWindow.adapter()).loopMsgs();
+                    if(!flag)
+                        com.maddox.rts.MainWindow.adapter().setMessagesEnable(true);
+                    com.maddox.rts.RTSConf.cur.setUseMouse(saveMouseMode);
+                    bChangedScreenMode = false;
+                }
+                com.maddox.il2.engine.RendersMain.setShow(true);
+                com.maddox.il2.engine.RendersMain.bSwapBuffersResult = true;
+                bTryChangedScreenMode = false;
+            } else
+            if(!com.maddox.il2.engine.RendersMain.bSwapBuffersResult && !com.maddox.rts.RTSConf.isRequestExitApp() && com.maddox.il2.engine.Config.cur.windowChangeScreenRes && com.maddox.il2.engine.Config.cur.windowFullScreen)
+                if(bTryChangedScreenMode)
+                {
+                    com.maddox.il2.game.Main.doGameExit();
+                } else
+                {
+                    bTryChangedScreenMode = true;
+                    com.maddox.rts.CmdEnv.top().exec("window " + com.maddox.il2.engine.Config.cur.windowWidth + " " + com.maddox.il2.engine.Config.cur.windowHeight + " " + com.maddox.il2.engine.Config.cur.windowColourBits + " " + com.maddox.il2.engine.Config.cur.windowDepthBits + " " + com.maddox.il2.engine.Config.cur.windowStencilBits + " PROVIDER " + com.maddox.il2.engine.Config.cur.glLib + " FULL");
+                    com.maddox.il2.engine.RendersMain.bSwapBuffersResult = true;
+                }
+        } else
+        if(com.maddox.il2.engine.RendersMain.isShow())
+        {
+            if(com.maddox.rts.Time.isEnableChangePause() && !com.maddox.rts.Time.isPaused())
+            {
+                com.maddox.rts.Time.setPause(true);
+                bChangeTimerPause = true;
+            }
+            com.maddox.il2.engine.RendersMain.setShow(false);
+            if(!bChangedScreenMode && com.maddox.il2.engine.Config.cur.windowChangeScreenRes)
+            {
+                saveMouseMode = com.maddox.rts.RTSConf.cur.getUseMouse();
+                com.maddox.rts.RTSConf.cur.setUseMouse(0);
+                saveMode = com.maddox.rts.ScreenMode.readCurrent();
+                if(!com.maddox.rts.MainWindow.adapter().isIconic())
+                    com.maddox.rts.MainWindow.adapter().showIconic();
+                com.maddox.rts.ScreenMode.restore();
+                bChangedScreenMode = true;
+            }
+            com.maddox.il2.engine.RendersMain.bSwapBuffersResult = true;
+            bTryChangedScreenMode = false;
+        }
+    }
+
+    public void loopApp()
+    {
+        if(bUseStartLog)
+            com.maddox.il2.engine.ConsoleGL0.exclusiveDraw(false);
+        while(!com.maddox.rts.RTSConf.isRequestExitApp()) 
+            synchronized(com.maddox.rts.RTSConf.lockObject())
+            {
+                if(com.maddox.rts.BackgroundTask.isExecuted())
+                {
+                    com.maddox.rts.BackgroundTask.doRun();
+                } else
+                {
+                    checkFocus();
+                    boolean flag;
+                    java.lang.String s;
+                    synchronized(oCommandSync)
+                    {
+                        flag = bCommand;
+                        s = sCommand;
+                        bCommand = false;
+                    }
+                    if(flag)
+                    {
+                        if(consoleServer != null)
+                            consoleServer.bEnableType = false;
+                        java.lang.System.out.println(com.maddox.rts.RTSConf.cur.console._getPrompt() + s);
+                        if(consoleServer != null)
+                            consoleServer.bEnableType = true;
+                        com.maddox.rts.RTSConf.cur.console.getEnv().exec(s);
+                        if(consoleServer != null)
+                            consoleServer.typeNum();
+                    }
+                    com.maddox.rts.RTSConf.cur.loopMsgs();
+                }
+            }
+    }
+
+    public void endApp()
+    {
+        if(com.maddox.il2.engine.Config.cur != null)
+        {
+            viewSet_Save();
+            com.maddox.il2.engine.Config.cur.save();
+        }
+        if(com.maddox.il2.engine.Config.cur != null)
+            com.maddox.il2.engine.Config.cur.endSound();
+        com.maddox.il2.objects.effects.ForceFeedback.stop();
+        com.maddox.opengl.GLContext glcontext = com.maddox.il2.engine.RendersMain.glContext();
+        if(com.maddox.opengl.GLContext.isValid(glcontext))
+            glcontext.destroy();
+        if(com.maddox.rts.ScreenMode.current() != com.maddox.rts.ScreenMode.startup())
+            com.maddox.rts.ScreenMode.restore();
+        if(com.maddox.rts.RTSConf.cur != null)
+        {
+            com.maddox.rts.RTSConf.cur.stop();
+            if(com.maddox.rts.RTSConf.cur.mainWindow.isCreated() && (com.maddox.rts.RTSConf.cur instanceof com.maddox.rts.RTSConfWin))
+                ((com.maddox.rts.MainWin32)com.maddox.rts.RTSConf.cur.mainWindow).destroy();
+        }
+        com.maddox.il2.ai.EventLog.close();
+    }
+
+    public boolean beginApp(java.lang.String s, java.lang.String s1, int i)
+    {
+        com.maddox.rts.IniFile inifile = new IniFile(s);
+        com.maddox.rts.RTSConf.cur = new RTSConfWin(inifile, "rts", i);
+        com.maddox.rts.RTSConf.cur.console.exec = new ConsoleExec();
+        com.maddox.il2.engine.Config.cur = new Config(inifile, true);
+        new Background();
+        if("RU".equals(com.maddox.il2.engine.Config.LOCALE))
+            com.maddox.rts.MainWin32.GetAppPath();
+        if(!super.beginApp(s, s1, i))
+        {
+            return false;
+        } else
+        {
+            com.maddox.il2.objects.effects.ForceFeedback.start();
+            return true;
+        }
+    }
+
+    private com.maddox.rts.ScreenMode saveMode;
+    private int saveMouseMode;
+    private boolean bChangedScreenMode;
+    private boolean bTryChangedScreenMode;
+    private boolean bChangeTimerPause;
+
 }

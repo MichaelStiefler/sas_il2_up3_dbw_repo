@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   IniFile.java
+
 package com.maddox.rts;
 
 import java.io.BufferedReader;
@@ -9,591 +14,666 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Set;
+
+// Referenced classes of package com.maddox.rts:
+//            SFSReader, Finger, HomePath, ObjIO
 
 public class IniFile
 {
-  public static final int NOT_SAVE = 0;
-  public static final int SAVE = 1;
-  public static final int SAVE_ON_CHANGE = 2;
-  protected ArrayList lines;
-  protected ArrayList subjects;
-  protected ArrayList variables;
-  protected ArrayList values;
-  protected String fileName;
-  protected boolean saveOnChange = false;
 
-  protected boolean bChanged = false;
-
-  protected boolean bNotSave = false;
-
-  private static HashMap _getsetMap = new HashMap();
-
-  public IniFile(String paramString)
-  {
-    this(paramString, 1);
-  }
-
-  public IniFile(String paramString, int paramInt)
-  {
-    switch (paramInt) { case 0:
-      this.bNotSave = true; break;
-    case 2:
-      this.saveOnChange = true; break;
-    case 1:
-    }
-
-    this.fileName = paramString;
-    if (!loadFile()) {
-      if (!createFile())
-        return;
-      loadFile();
-    }
-    parseLines();
-  }
-
-  private long _finger(long paramLong, ArrayList paramArrayList) {
-    int i = paramArrayList.size();
-    for (int j = 0; j < i; j++) {
-      String str = (String)paramArrayList.get(j);
-      if ((str != null) && (str.length() > 0))
-        paramLong = Finger.incLong(paramLong, str);
-    }
-    return paramLong;
-  }
-
-  public long finger() {
-    long l = _finger(0L, this.subjects);
-    int i = this.variables.size();
-    ArrayList localArrayList;
-    for (int j = 0; j < i; j++) {
-      localArrayList = (ArrayList)this.variables.get(j);
-      if (localArrayList != null)
-        l = _finger(l, localArrayList);
-    }
-    i = this.values.size();
-    for (j = 0; j < i; j++) {
-      localArrayList = (ArrayList)this.values.get(j);
-      if (localArrayList != null)
-        l = _finger(l, localArrayList);
-    }
-    return l;
-  }
-
-  public boolean loadFile()
-  {
-    this.lines = new ArrayList();
-    this.subjects = new ArrayList();
-    this.variables = new ArrayList();
-    this.values = new ArrayList();
-    this.bChanged = false;
-    try
+    public IniFile(java.lang.String s)
     {
-      BufferedReader localBufferedReader = new BufferedReader(new SFSReader(this.fileName));
-      String str = "";
-      while (true)
-      {
-        str = localBufferedReader.readLine();
-        if (str == null) {
-          break;
-        }
-        this.lines.add(clampEnd(str));
-      }
-      localBufferedReader.close();
-      return true;
+        this(s, 1);
     }
-    catch (IOException localIOException) {
-      System.out.println("IniFile load failed: " + localIOException.getMessage());
-      localIOException.printStackTrace();
-    }
-    return false;
-  }
 
-  protected boolean createFile()
-  {
-    if (this.bNotSave) return true; try
+    public IniFile(java.lang.String s, int i)
     {
-      PrintWriter localPrintWriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(this.fileName, 0))));
-
-      localPrintWriter.println(";INI File: " + this.fileName);
-      localPrintWriter.close();
-      return true;
-    } catch (IOException localIOException) {
-      System.out.println("IniFile create failed: " + localIOException.getMessage());
-      localIOException.printStackTrace();
-    }return false;
-  }
-
-  protected String clamp(String paramString)
-  {
-    if (paramString == null) return null;
-    int i = paramString.length() - 1;
-    int j = 0;
-    while ((j < i) && (paramString.charAt(j) <= ' ')) j++;
-    while ((j < i) && (paramString.charAt(i) <= ' ')) i--;
-    if ((j == 0) && (i == paramString.length() - 1))
-      return paramString;
-    if ((j == i) && (paramString.charAt(j) <= ' '))
-      return null;
-    return paramString.substring(j, i + 1);
-  }
-
-  protected String clampEnd(String paramString) {
-    if (paramString == null) return null;
-    int i = paramString.length() - 1;
-    while ((0 < i) && (paramString.charAt(i) <= ' ')) i--;
-    if (i == paramString.length() - 1)
-      return paramString;
-    if ((0 == i) && (paramString.charAt(0) <= ' '))
-      return "";
-    return paramString.substring(0, i + 1);
-  }
-
-  protected void parseLines()
-  {
-    String str1 = null;
-    Object localObject = null;
-    for (int i = 0; i < this.lines.size(); i++) {
-      str1 = (String)this.lines.get(i);
-      String str2 = clamp(str1);
-      if (str2 != null)
-        if (isaSubject(str2)) {
-          str2 = clamp(str2.substring(1, str2.length() - 1));
-          if (str2 != null)
-            localObject = str2;
-          else
-            localObject = null;
-        }
-        else if ((localObject != null) && (isanAssignment(str1))) {
-          addAssignment(localObject, str1);
-        }
-    }
-  }
-
-  protected boolean addAssignment(String paramString1, String paramString2)
-  {
-    int i = paramString2.indexOf("=");
-    String str2 = paramString2.substring(0, i);
-    String str1 = paramString2.substring(i + 1, paramString2.length());
-    if ((str1.length() == 0) || (str2.length() == 0)) return false;
-    return addValue(paramString1, str2, str1, false);
-  }
-
-  public boolean setValue(String paramString1, String paramString2, String paramString3)
-  {
-    boolean bool = addValue(paramString1, paramString2, paramString3, true);
-    if (this.saveOnChange) saveFile(); else
-      this.bChanged = true;
-    return bool;
-  }
-
-  public void set(String paramString1, String paramString2, String paramString3) {
-    setValue(paramString1, paramString2, paramString3);
-  }
-  public void set(String paramString1, String paramString2, int paramInt) {
-    setValue(paramString1, paramString2, Integer.toString(paramInt));
-  }
-  public void set(String paramString1, String paramString2, float paramFloat) {
-    setValue(paramString1, paramString2, Float.toString(paramFloat));
-  }
-  public void set(String paramString1, String paramString2, boolean paramBoolean) {
-    setValue(paramString1, paramString2, paramBoolean ? "1" : "0");
-  }
-
-  public void set(String paramString1, String paramString2, Object paramObject, boolean paramBoolean) {
-    setValue(paramString1, paramString2, ObjIO.toString(paramObject, paramBoolean));
-  }
-
-  public void set(String paramString, Object paramObject) {
-    if ((ObjIO.toStrings(_getsetMap, paramObject)) && (_getsetMap.size() > 0)) {
-      Iterator localIterator = _getsetMap.entrySet().iterator();
-      while (localIterator.hasNext()) {
-        Map.Entry localEntry = (Map.Entry)localIterator.next();
-        setValue(paramString, (String)localEntry.getKey(), (String)localEntry.getValue());
-      }
-      _getsetMap.clear();
-    }
-  }
-
-  protected boolean addValue(String paramString1, String paramString2, String paramString3, boolean paramBoolean)
-  {
-    if ((paramString1 == null) || (paramString1.length() == 0)) return false;
-
-    if ((paramString2 == null) || (paramString2.length() == 0)) return false;
-    String str1 = clamp(paramString2);
-    if (str1 == null) return false;
-
-    if (!this.subjects.contains(paramString1)) {
-      this.subjects.add(paramString1);
-      this.variables.add(new ArrayList());
-      this.values.add(new ArrayList());
-    }
-
-    int i = this.subjects.indexOf(paramString1);
-    ArrayList localArrayList1 = (ArrayList)(ArrayList)this.variables.get(i);
-    ArrayList localArrayList2 = (ArrayList)(ArrayList)this.values.get(i);
-    int j = 1;
-    String str2 = null;
-    for (int k = 0; k < localArrayList1.size(); k++) {
-      str2 = (String)localArrayList1.get(k);
-      if (strEquals(str2, str1)) {
-        j = 0;
-        break;
-      }
-    }
-
-    if (j != 0) {
-      localArrayList1.add(paramString2);
-      localArrayList2.add(paramString3);
-      k = localArrayList1.indexOf(paramString2);
-      localArrayList2.set(k, paramString3);
-
-      if (paramBoolean)
-        setLine(paramString1, paramString2, paramString3);
-    } else {
-      k = localArrayList1.indexOf(str2);
-      localArrayList2.set(k, paramString3);
-
-      if (paramBoolean) {
-        setLine(paramString1, str2, paramString3);
-      }
-    }
-    return true;
-  }
-
-  protected boolean isaSubject(String paramString)
-  {
-    return (paramString.startsWith("[")) && (paramString.endsWith("]"));
-  }
-
-  protected void setLine(String paramString1, String paramString2, String paramString3)
-  {
-    int i = findSubjectLine(paramString1);
-    if (i == -1) {
-      addSubjectLine(paramString1);
-      i = this.lines.size() - 1;
-    }
-
-    int j = endOfSubject(i);
-
-    int k = findAssignmentBetween(paramString2, i, j);
-
-    if (k == -1)
-      this.lines.add(j, paramString2 + "=" + paramString3);
-    else
-      this.lines.set(k, paramString2 + "=" + paramString3);
-  }
-
-  protected int findAssignmentLine(String paramString1, String paramString2)
-  {
-    int i = findSubjectLine(paramString1);
-    int j = endOfSubject(i);
-    return findAssignmentBetween(paramString2, i, j);
-  }
-
-  protected int findAssignmentBetween(String paramString, int paramInt1, int paramInt2)
-  {
-    for (int i = paramInt1; i < paramInt2; i++) {
-      String str = (String)this.lines.get(i);
-      int j = str.indexOf('=');
-      if (j != -1) {
-        int k = str.indexOf(paramString);
-        if ((k != -1) && (k < j)) {
-          int m = 0;
-          while ((m < k) && 
-            (str.charAt(m) <= ' '))
-          {
-            m++;
-          }
-          if (m == k) {
-            k += paramString.length();
-            while ((k < j) && 
-              (str.charAt(k) <= ' '))
-            {
-              k++;
-            }
-            if (k == j)
-              return i;
-          }
-        }
-      }
-    }
-    return -1;
-  }
-
-  protected void addSubjectLine(String paramString)
-  {
-    this.lines.add("[" + paramString + "]");
-  }
-
-  protected int findSubjectLine(String paramString)
-  {
-    String str2 = "[" + paramString + "]";
-    for (int i = 0; i < this.lines.size(); i++) {
-      String str1 = (String)this.lines.get(i);
-      if (str2.equals(str1)) return i;
-    }
-    return -1;
-  }
-
-  protected int endOfSubject(int paramInt)
-  {
-    int i = paramInt + 1;
-    if (paramInt >= this.lines.size()) return this.lines.size();
-    for (int j = paramInt + 1; j < this.lines.size(); j++) {
-      if (isanAssignment((String)this.lines.get(j)))
-        i = j + 1;
-      if (isaSubject((String)this.lines.get(j)))
-        return i;
-    }
-    return i;
-  }
-
-  protected boolean isanAssignment(String paramString)
-  {
-    return (paramString.indexOf("=") != -1) && (!paramString.startsWith(";"));
-  }
-
-  public ArrayList getLines()
-  {
-    return (ArrayList)this.lines.clone();
-  }
-
-  public String[] getVariables(String paramString)
-  {
-    int i = this.subjects.indexOf(paramString);
-    if (i != -1) {
-      ArrayList localArrayList = (ArrayList)(ArrayList)this.variables.get(i);
-      arrayOfString = new String[localArrayList.size()];
-      for (int j = 0; j < localArrayList.size(); j++)
-        arrayOfString[j] = ((String)localArrayList.get(j));
-      return arrayOfString;
-    }
-    String[] arrayOfString = new String[0];
-    return arrayOfString;
-  }
-
-  public String[] getSubjects()
-  {
-    String[] arrayOfString = new String[this.subjects.size()];
-    for (int i = 0; i < this.subjects.size(); i++)
-      arrayOfString[i] = ((String)this.subjects.get(i));
-    return arrayOfString;
-  }
-
-  protected boolean strEquals(String paramString1, String paramString2) {
-    int i = paramString1.indexOf(paramString2);
-    if (i != -1) {
-      int j = 0;
-      while ((j < i) && 
-        (paramString1.charAt(j) <= ' '))
-      {
-        j++;
-      }
-      if (j == i) {
-        i += paramString2.length();
-        while ((i < paramString1.length()) && 
-          (paramString1.charAt(i) <= ' '))
+        saveOnChange = false;
+        bChanged = false;
+        bNotSave = false;
+        switch(i)
         {
-          i++;
-        }
-        if (i == paramString1.length())
-          return true;
-      }
-    }
-    return false;
-  }
+        case 0: // '\0'
+            bNotSave = true;
+            break;
 
-  protected int vectorIndexOf(ArrayList paramArrayList, String paramString) {
-    int i = paramArrayList.size();
-    for (int j = 0; j < i; j++) {
-      String str = (String)paramArrayList.get(j);
-      if (strEquals(str, paramString))
+        case 2: // '\002'
+            saveOnChange = true;
+            break;
+        }
+        fileName = s;
+        if(!loadFile())
+        {
+            if(!createFile())
+                return;
+            loadFile();
+        }
+        parseLines();
+    }
+
+    private long _finger(long l, java.util.ArrayList arraylist)
+    {
+        int i = arraylist.size();
+        for(int j = 0; j < i; j++)
+        {
+            java.lang.String s = (java.lang.String)arraylist.get(j);
+            if(s != null && s.length() > 0)
+                l = com.maddox.rts.Finger.incLong(l, s);
+        }
+
+        return l;
+    }
+
+    public long finger()
+    {
+        long l = _finger(0L, subjects);
+        int i = variables.size();
+        for(int j = 0; j < i; j++)
+        {
+            java.util.ArrayList arraylist = (java.util.ArrayList)variables.get(j);
+            if(arraylist != null)
+                l = _finger(l, arraylist);
+        }
+
+        i = values.size();
+        for(int k = 0; k < i; k++)
+        {
+            java.util.ArrayList arraylist1 = (java.util.ArrayList)values.get(k);
+            if(arraylist1 != null)
+                l = _finger(l, arraylist1);
+        }
+
+        return l;
+    }
+
+    public boolean loadFile()
+    {
+        lines = new ArrayList();
+        subjects = new ArrayList();
+        variables = new ArrayList();
+        values = new ArrayList();
+        bChanged = false;
+        java.io.BufferedReader bufferedreader = new BufferedReader(new SFSReader(fileName));
+        java.lang.String s = "";
+        do
+        {
+            java.lang.String s1 = bufferedreader.readLine();
+            if(s1 == null)
+                break;
+            lines.add(clampEnd(s1));
+        } while(true);
+        bufferedreader.close();
+        return true;
+        java.io.IOException ioexception;
+        ioexception;
+        java.lang.System.out.println("IniFile load failed: " + ioexception.getMessage());
+        ioexception.printStackTrace();
+        return false;
+    }
+
+    protected boolean createFile()
+    {
+        if(bNotSave)
+            return true;
+        java.io.PrintWriter printwriter = new PrintWriter(new BufferedWriter(new FileWriter(com.maddox.rts.HomePath.toFileSystemName(fileName, 0))));
+        printwriter.println(";INI File: " + fileName);
+        printwriter.close();
+        return true;
+        java.io.IOException ioexception;
+        ioexception;
+        java.lang.System.out.println("IniFile create failed: " + ioexception.getMessage());
+        ioexception.printStackTrace();
+        return false;
+    }
+
+    protected java.lang.String clamp(java.lang.String s)
+    {
+        if(s == null)
+            return null;
+        int i = s.length() - 1;
+        int j;
+        for(j = 0; j < i && s.charAt(j) <= ' '; j++);
+        for(; j < i && s.charAt(i) <= ' '; i--);
+        if(j == 0 && i == s.length() - 1)
+            return s;
+        if(j == i && s.charAt(j) <= ' ')
+            return null;
+        else
+            return s.substring(j, i + 1);
+    }
+
+    protected java.lang.String clampEnd(java.lang.String s)
+    {
+        if(s == null)
+            return null;
+        int i;
+        for(i = s.length() - 1; 0 < i && s.charAt(i) <= ' '; i--);
+        if(i == s.length() - 1)
+            return s;
+        if(0 == i && s.charAt(0) <= ' ')
+            return "";
+        else
+            return s.substring(0, i + 1);
+    }
+
+    protected void parseLines()
+    {
+        Object obj = null;
+        java.lang.String s1 = null;
+        for(int i = 0; i < lines.size(); i++)
+        {
+            java.lang.String s = (java.lang.String)lines.get(i);
+            java.lang.String s2 = clamp(s);
+            if(s2 == null)
+                continue;
+            if(isaSubject(s2))
+            {
+                s2 = clamp(s2.substring(1, s2.length() - 1));
+                if(s2 != null)
+                    s1 = s2;
+                else
+                    s1 = null;
+                continue;
+            }
+            if(s1 != null && isanAssignment(s))
+                addAssignment(s1, s);
+        }
+
+    }
+
+    protected boolean addAssignment(java.lang.String s, java.lang.String s1)
+    {
+        int i = s1.indexOf("=");
+        java.lang.String s3 = s1.substring(0, i);
+        java.lang.String s2 = s1.substring(i + 1, s1.length());
+        if(s2.length() == 0 || s3.length() == 0)
+            return false;
+        else
+            return addValue(s, s3, s2, false);
+    }
+
+    public boolean setValue(java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        boolean flag = addValue(s, s1, s2, true);
+        if(saveOnChange)
+            saveFile();
+        else
+            bChanged = true;
+        return flag;
+    }
+
+    public void set(java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        setValue(s, s1, s2);
+    }
+
+    public void set(java.lang.String s, java.lang.String s1, int i)
+    {
+        setValue(s, s1, java.lang.Integer.toString(i));
+    }
+
+    public void set(java.lang.String s, java.lang.String s1, float f)
+    {
+        setValue(s, s1, java.lang.Float.toString(f));
+    }
+
+    public void set(java.lang.String s, java.lang.String s1, boolean flag)
+    {
+        setValue(s, s1, flag ? "1" : "0");
+    }
+
+    public void set(java.lang.String s, java.lang.String s1, java.lang.Object obj, boolean flag)
+    {
+        setValue(s, s1, com.maddox.rts.ObjIO.toString(obj, flag));
+    }
+
+    public void set(java.lang.String s, java.lang.Object obj)
+    {
+        if(com.maddox.rts.ObjIO.toStrings(_getsetMap, obj) && _getsetMap.size() > 0)
+        {
+            java.util.Map.Entry entry;
+            for(java.util.Iterator iterator = _getsetMap.entrySet().iterator(); iterator.hasNext(); setValue(s, (java.lang.String)entry.getKey(), (java.lang.String)entry.getValue()))
+                entry = (java.util.Map.Entry)iterator.next();
+
+            _getsetMap.clear();
+        }
+    }
+
+    protected boolean addValue(java.lang.String s, java.lang.String s1, java.lang.String s2, boolean flag)
+    {
+        if(s == null || s.length() == 0)
+            return false;
+        if(s1 == null || s1.length() == 0)
+            return false;
+        java.lang.String s3 = clamp(s1);
+        if(s3 == null)
+            return false;
+        if(!subjects.contains(s))
+        {
+            subjects.add(s);
+            variables.add(new ArrayList());
+            values.add(new ArrayList());
+        }
+        int i = subjects.indexOf(s);
+        java.util.ArrayList arraylist = (java.util.ArrayList)(java.util.ArrayList)variables.get(i);
+        java.util.ArrayList arraylist1 = (java.util.ArrayList)(java.util.ArrayList)values.get(i);
+        boolean flag1 = true;
+        java.lang.String s4 = null;
+        int j = 0;
+        do
+        {
+            if(j >= arraylist.size())
+                break;
+            s4 = (java.lang.String)arraylist.get(j);
+            if(strEquals(s4, s3))
+            {
+                flag1 = false;
+                break;
+            }
+            j++;
+        } while(true);
+        if(flag1)
+        {
+            arraylist.add(s1);
+            arraylist1.add(s2);
+            int k = arraylist.indexOf(s1);
+            arraylist1.set(k, s2);
+            if(flag)
+                setLine(s, s1, s2);
+        } else
+        {
+            int l = arraylist.indexOf(s4);
+            arraylist1.set(l, s2);
+            if(flag)
+                setLine(s, s4, s2);
+        }
+        return true;
+    }
+
+    protected boolean isaSubject(java.lang.String s)
+    {
+        return s.startsWith("[") && s.endsWith("]");
+    }
+
+    protected void setLine(java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        int i = findSubjectLine(s);
+        if(i == -1)
+        {
+            addSubjectLine(s);
+            i = lines.size() - 1;
+        }
+        int j = endOfSubject(i);
+        int k = findAssignmentBetween(s1, i, j);
+        if(k == -1)
+            lines.add(j, s1 + "=" + s2);
+        else
+            lines.set(k, s1 + "=" + s2);
+    }
+
+    protected int findAssignmentLine(java.lang.String s, java.lang.String s1)
+    {
+        int i = findSubjectLine(s);
+        int j = endOfSubject(i);
+        return findAssignmentBetween(s1, i, j);
+    }
+
+    protected int findAssignmentBetween(java.lang.String s, int i, int j)
+    {
+        for(int k = i; k < j; k++)
+        {
+            java.lang.String s1 = (java.lang.String)lines.get(k);
+            int l = s1.indexOf('=');
+            if(l == -1)
+                continue;
+            int i1 = s1.indexOf(s);
+            if(i1 == -1 || i1 >= l)
+                continue;
+            int j1;
+            for(j1 = 0; j1 < i1 && s1.charAt(j1) <= ' '; j1++);
+            if(j1 != i1)
+                continue;
+            for(i1 += s.length(); i1 < l && s1.charAt(i1) <= ' '; i1++);
+            if(i1 == l)
+                return k;
+        }
+
+        return -1;
+    }
+
+    protected void addSubjectLine(java.lang.String s)
+    {
+        lines.add("[" + s + "]");
+    }
+
+    protected int findSubjectLine(java.lang.String s)
+    {
+        java.lang.String s2 = "[" + s + "]";
+        for(int i = 0; i < lines.size(); i++)
+        {
+            java.lang.String s1 = (java.lang.String)lines.get(i);
+            if(s2.equals(s1))
+                return i;
+        }
+
+        return -1;
+    }
+
+    protected int endOfSubject(int i)
+    {
+        int j = i + 1;
+        if(i >= lines.size())
+            return lines.size();
+        for(int k = i + 1; k < lines.size(); k++)
+        {
+            if(isanAssignment((java.lang.String)lines.get(k)))
+                j = k + 1;
+            if(isaSubject((java.lang.String)lines.get(k)))
+                return j;
+        }
+
         return j;
     }
-    return -1;
-  }
 
-  public String getValue(String paramString1, String paramString2)
-  {
-    int i = this.subjects.indexOf(paramString1);
-    if (i == -1)
-      return "";
-    paramString2 = clamp(paramString2);
-    if (paramString2 == null)
-      return "";
-    ArrayList localArrayList1 = (ArrayList)(ArrayList)this.values.get(i);
-    ArrayList localArrayList2 = (ArrayList)(ArrayList)this.variables.get(i);
-    int j = vectorIndexOf(localArrayList2, paramString2);
-    if (j != -1) {
-      String str = (String)(String)localArrayList1.get(j);
-      int k = 0;
-      while ((k < str.length()) && (str.charAt(k) <= ' ')) k++;
-      if (k > 0) {
-        if (k == str.length()) return "";
-        return str.substring(k);
-      }
-      return str;
-    }
-
-    return "";
-  }
-
-  public Object get(String paramString1, String paramString2, Object paramObject)
-  {
-    String str = getValue(paramString1, paramString2);
-    if (str == "")
-      return null;
-    return ObjIO.fromString(paramObject, str);
-  }
-
-  public Object get(String paramString1, String paramString2, Object paramObject, Class paramClass) {
-    String str = getValue(paramString1, paramString2);
-    if (str == "")
-      return null;
-    return ObjIO.fromString(paramObject, paramClass, str);
-  }
-
-  public Object get(String paramString, Object paramObject, Class paramClass) {
-    int i = this.subjects.indexOf(paramString);
-    if (i == -1)
-      return null;
-    ArrayList localArrayList1 = (ArrayList)(ArrayList)this.variables.get(i);
-    ArrayList localArrayList2 = (ArrayList)(ArrayList)this.values.get(i);
-    int j = localArrayList1.size();
-    for (int k = 0; k < j; k++)
-      _getsetMap.put((String)localArrayList1.get(k), (String)localArrayList2.get(k));
-    Object localObject = ObjIO.fromStrings(paramObject, paramClass, _getsetMap);
-    _getsetMap.clear();
-    return localObject;
-  }
-
-  public String get(String paramString1, String paramString2, String paramString3) {
-    String str = getValue(paramString1, paramString2);
-    if ("".equals(str)) return paramString3;
-    return str;
-  }
-  public float get(String paramString1, String paramString2, float paramFloat) {
-    String str = get(paramString1, paramString2, Float.toString(paramFloat));
-    float f = paramFloat;
-    try { f = Float.parseFloat(str); } catch (Exception localException) {
-    }return f;
-  }
-  public float get(String paramString1, String paramString2, float paramFloat1, float paramFloat2, float paramFloat3) {
-    float f = get(paramString1, paramString2, paramFloat1);
-    if (f < paramFloat2) f = paramFloat2;
-    if (f > paramFloat3) f = paramFloat3;
-    return f;
-  }
-  public int get(String paramString1, String paramString2, int paramInt) {
-    String str = get(paramString1, paramString2, Integer.toString(paramInt));
-    int i = paramInt;
-    try { i = Integer.parseInt(str); } catch (Exception localException) {
-    }return i;
-  }
-  public int get(String paramString1, String paramString2, int paramInt1, int paramInt2, int paramInt3) {
-    int i = get(paramString1, paramString2, paramInt1);
-    if (i < paramInt2) i = paramInt2;
-    if (i > paramInt3) i = paramInt3;
-    return i;
-  }
-  public boolean get(String paramString1, String paramString2, boolean paramBoolean) {
-    int i = get(paramString1, paramString2, paramBoolean ? 1 : 0);
-    return i != 0;
-  }
-
-  public void deleteValue(String paramString1, String paramString2)
-  {
-    int i = this.subjects.indexOf(paramString1);
-    if (i == -1) {
-      return;
-    }
-    paramString2 = clamp(paramString2);
-    if (paramString2 == null)
-      return;
-    ArrayList localArrayList1 = (ArrayList)(ArrayList)this.values.get(i);
-    ArrayList localArrayList2 = (ArrayList)(ArrayList)this.variables.get(i);
-
-    int j = vectorIndexOf(localArrayList2, paramString2);
-    if (j != -1)
+    protected boolean isanAssignment(java.lang.String s)
     {
-      localArrayList1.remove(j);
-      localArrayList2.remove(j);
-
-      int k = findAssignmentLine(paramString1, paramString2);
-      if (k != -1) {
-        this.lines.remove(k);
-      }
-
-      if (localArrayList2.size() == 0) {
-        deleteSubject(paramString1);
-      }
-      if (this.saveOnChange) saveFile(); else
-        this.bChanged = true;
+        return s.indexOf("=") != -1 && !s.startsWith(";");
     }
-  }
 
-  public void deleteSubject(String paramString)
-  {
-    int i = this.subjects.indexOf(paramString);
-    if (i == -1) {
-      return;
-    }
-    this.values.remove(i);
-    this.variables.remove(i);
-    this.subjects.remove(i);
-
-    int j = findSubjectLine(paramString);
-    int k = endOfSubject(j);
-    for (int m = j; m < k; m++) {
-      this.lines.remove(j);
-    }
-    if (this.saveOnChange) saveFile(); else
-      this.bChanged = true;
-  }
-
-  public void saveFile()
-  {
-    if (this.bNotSave) return; try
+    public java.util.ArrayList getLines()
     {
-      PrintWriter localPrintWriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(this.fileName, 0))));
-
-      for (int i = 0; i < this.lines.size(); i++) {
-        localPrintWriter.println((String)(String)this.lines.get(i));
-      }
-      localPrintWriter.close();
-      this.bChanged = false;
-    } catch (IOException localIOException) {
-      System.out.println("IniFile save failed: " + localIOException.getMessage());
-      localIOException.printStackTrace();
+        return (java.util.ArrayList)lines.clone();
     }
-  }
 
-  public void saveFile(String paramString)
-  {
-    try
+    public java.lang.String[] getVariables(java.lang.String s)
     {
-      PrintWriter localPrintWriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(paramString, 0))));
+        int i = subjects.indexOf(s);
+        if(i != -1)
+        {
+            java.util.ArrayList arraylist = (java.util.ArrayList)(java.util.ArrayList)variables.get(i);
+            java.lang.String as[] = new java.lang.String[arraylist.size()];
+            for(int j = 0; j < arraylist.size(); j++)
+                as[j] = (java.lang.String)arraylist.get(j);
 
-      for (int i = 0; i < this.lines.size(); i++) {
-        localPrintWriter.println((String)(String)this.lines.get(i));
-      }
-      localPrintWriter.close();
-    } catch (IOException localIOException) {
-      System.out.println("IniFile save failed: " + localIOException.getMessage());
-      localIOException.printStackTrace();
+            return as;
+        } else
+        {
+            java.lang.String as1[] = new java.lang.String[0];
+            return as1;
+        }
     }
-  }
 
-  public boolean isChanged()
-  {
-    return this.bChanged;
-  }
+    public java.lang.String[] getSubjects()
+    {
+        java.lang.String as[] = new java.lang.String[subjects.size()];
+        for(int i = 0; i < subjects.size(); i++)
+            as[i] = (java.lang.String)subjects.get(i);
 
-  protected void finalize()
-  {
-    if (this.bChanged)
-      saveFile();
-  }
+        return as;
+    }
+
+    protected boolean strEquals(java.lang.String s, java.lang.String s1)
+    {
+        int i = s.indexOf(s1);
+        if(i != -1)
+        {
+            int j;
+            for(j = 0; j < i && s.charAt(j) <= ' '; j++);
+            if(j == i)
+            {
+                for(i += s1.length(); i < s.length() && s.charAt(i) <= ' '; i++);
+                if(i == s.length())
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    protected int vectorIndexOf(java.util.ArrayList arraylist, java.lang.String s)
+    {
+        int i = arraylist.size();
+        for(int j = 0; j < i; j++)
+        {
+            java.lang.String s1 = (java.lang.String)arraylist.get(j);
+            if(strEquals(s1, s))
+                return j;
+        }
+
+        return -1;
+    }
+
+    public java.lang.String getValue(java.lang.String s, java.lang.String s1)
+    {
+        int i = subjects.indexOf(s);
+        if(i == -1)
+            return "";
+        s1 = clamp(s1);
+        if(s1 == null)
+            return "";
+        java.util.ArrayList arraylist = (java.util.ArrayList)(java.util.ArrayList)values.get(i);
+        java.util.ArrayList arraylist1 = (java.util.ArrayList)(java.util.ArrayList)variables.get(i);
+        int j = vectorIndexOf(arraylist1, s1);
+        if(j != -1)
+        {
+            java.lang.String s2 = (java.lang.String)(java.lang.String)arraylist.get(j);
+            int k;
+            for(k = 0; k < s2.length() && s2.charAt(k) <= ' '; k++);
+            if(k > 0)
+            {
+                if(k == s2.length())
+                    return "";
+                else
+                    return s2.substring(k);
+            } else
+            {
+                return s2;
+            }
+        } else
+        {
+            return "";
+        }
+    }
+
+    public java.lang.Object get(java.lang.String s, java.lang.String s1, java.lang.Object obj)
+    {
+        java.lang.String s2 = getValue(s, s1);
+        if(s2 == "")
+            return null;
+        else
+            return com.maddox.rts.ObjIO.fromString(obj, s2);
+    }
+
+    public java.lang.Object get(java.lang.String s, java.lang.String s1, java.lang.Object obj, java.lang.Class class1)
+    {
+        java.lang.String s2 = getValue(s, s1);
+        if(s2 == "")
+            return null;
+        else
+            return com.maddox.rts.ObjIO.fromString(obj, class1, s2);
+    }
+
+    public java.lang.Object get(java.lang.String s, java.lang.Object obj, java.lang.Class class1)
+    {
+        int i = subjects.indexOf(s);
+        if(i == -1)
+            return null;
+        java.util.ArrayList arraylist = (java.util.ArrayList)(java.util.ArrayList)variables.get(i);
+        java.util.ArrayList arraylist1 = (java.util.ArrayList)(java.util.ArrayList)values.get(i);
+        int j = arraylist.size();
+        for(int k = 0; k < j; k++)
+            _getsetMap.put((java.lang.String)arraylist.get(k), (java.lang.String)arraylist1.get(k));
+
+        java.lang.Object obj1 = com.maddox.rts.ObjIO.fromStrings(obj, class1, _getsetMap);
+        _getsetMap.clear();
+        return obj1;
+    }
+
+    public java.lang.String get(java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        java.lang.String s3 = getValue(s, s1);
+        if("".equals(s3))
+            return s2;
+        else
+            return s3;
+    }
+
+    public float get(java.lang.String s, java.lang.String s1, float f)
+    {
+        java.lang.String s2 = get(s, s1, java.lang.Float.toString(f));
+        float f1 = f;
+        try
+        {
+            f1 = java.lang.Float.parseFloat(s2);
+        }
+        catch(java.lang.Exception exception) { }
+        return f1;
+    }
+
+    public float get(java.lang.String s, java.lang.String s1, float f, float f1, float f2)
+    {
+        float f3 = get(s, s1, f);
+        if(f3 < f1)
+            f3 = f1;
+        if(f3 > f2)
+            f3 = f2;
+        return f3;
+    }
+
+    public int get(java.lang.String s, java.lang.String s1, int i)
+    {
+        java.lang.String s2 = get(s, s1, java.lang.Integer.toString(i));
+        int j = i;
+        try
+        {
+            j = java.lang.Integer.parseInt(s2);
+        }
+        catch(java.lang.Exception exception) { }
+        return j;
+    }
+
+    public int get(java.lang.String s, java.lang.String s1, int i, int j, int k)
+    {
+        int l = get(s, s1, i);
+        if(l < j)
+            l = j;
+        if(l > k)
+            l = k;
+        return l;
+    }
+
+    public boolean get(java.lang.String s, java.lang.String s1, boolean flag)
+    {
+        int i = get(s, s1, flag ? 1 : 0);
+        return i != 0;
+    }
+
+    public void deleteValue(java.lang.String s, java.lang.String s1)
+    {
+        int i = subjects.indexOf(s);
+        if(i == -1)
+            return;
+        s1 = clamp(s1);
+        if(s1 == null)
+            return;
+        java.util.ArrayList arraylist = (java.util.ArrayList)(java.util.ArrayList)values.get(i);
+        java.util.ArrayList arraylist1 = (java.util.ArrayList)(java.util.ArrayList)variables.get(i);
+        int j = vectorIndexOf(arraylist1, s1);
+        if(j != -1)
+        {
+            arraylist.remove(j);
+            arraylist1.remove(j);
+            int k = findAssignmentLine(s, s1);
+            if(k != -1)
+                lines.remove(k);
+            if(arraylist1.size() == 0)
+                deleteSubject(s);
+            if(saveOnChange)
+                saveFile();
+            else
+                bChanged = true;
+        }
+    }
+
+    public void deleteSubject(java.lang.String s)
+    {
+        int i = subjects.indexOf(s);
+        if(i == -1)
+            return;
+        values.remove(i);
+        variables.remove(i);
+        subjects.remove(i);
+        int j = findSubjectLine(s);
+        int k = endOfSubject(j);
+        for(int l = j; l < k; l++)
+            lines.remove(j);
+
+        if(saveOnChange)
+            saveFile();
+        else
+            bChanged = true;
+    }
+
+    public void saveFile()
+    {
+        if(bNotSave)
+            return;
+        try
+        {
+            java.io.PrintWriter printwriter = new PrintWriter(new BufferedWriter(new FileWriter(com.maddox.rts.HomePath.toFileSystemName(fileName, 0))));
+            for(int i = 0; i < lines.size(); i++)
+                printwriter.println((java.lang.String)(java.lang.String)lines.get(i));
+
+            printwriter.close();
+            bChanged = false;
+        }
+        catch(java.io.IOException ioexception)
+        {
+            java.lang.System.out.println("IniFile save failed: " + ioexception.getMessage());
+            ioexception.printStackTrace();
+        }
+    }
+
+    public void saveFile(java.lang.String s)
+    {
+        try
+        {
+            java.io.PrintWriter printwriter = new PrintWriter(new BufferedWriter(new FileWriter(com.maddox.rts.HomePath.toFileSystemName(s, 0))));
+            for(int i = 0; i < lines.size(); i++)
+                printwriter.println((java.lang.String)(java.lang.String)lines.get(i));
+
+            printwriter.close();
+        }
+        catch(java.io.IOException ioexception)
+        {
+            java.lang.System.out.println("IniFile save failed: " + ioexception.getMessage());
+            ioexception.printStackTrace();
+        }
+    }
+
+    public boolean isChanged()
+    {
+        return bChanged;
+    }
+
+    protected void finalize()
+    {
+        if(bChanged)
+            saveFile();
+    }
+
+    public static final int NOT_SAVE = 0;
+    public static final int SAVE = 1;
+    public static final int SAVE_ON_CHANGE = 2;
+    protected java.util.ArrayList lines;
+    protected java.util.ArrayList subjects;
+    protected java.util.ArrayList variables;
+    protected java.util.ArrayList values;
+    protected java.lang.String fileName;
+    protected boolean saveOnChange;
+    protected boolean bChanged;
+    protected boolean bNotSave;
+    private static java.util.HashMap _getsetMap = new HashMap();
+
 }

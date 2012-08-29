@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Way.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.JGP.Point3d;
@@ -7,218 +12,283 @@ import com.maddox.rts.SectFile;
 import com.maddox.util.NumberTokenizer;
 import java.util.ArrayList;
 
+// Referenced classes of package com.maddox.il2.ai:
+//            WayPoint, World, Airport
+
 public class Way
 {
-  private ArrayList WList = new ArrayList();
-  private int Cur;
-  private boolean landing;
-  private boolean landingOnShip;
-  public Airport landingAirport;
-  public Airport takeoffAirport;
-  private double prevdist2 = 100000000.0D;
-  private double prevdistToNextWP2 = 3.402823466385289E+038D;
-  private double curDist;
-  private static Vector3d V = new Vector3d();
-  private static Point3d P = new Point3d();
-  private static Point3d tmpP = new Point3d();
-  private static WayPoint defaultWP = new WayPoint();
 
-  public int Cur()
-  {
-    return this.Cur;
-  }
-  public Way() {
-    this.WList.clear();
-    this.Cur = 0;
-    this.landing = false;
-    this.landingOnShip = false;
-    this.landingAirport = null;
-    this.takeoffAirport = null;
-  }
-
-  public Way(Way paramWay) {
-    set(paramWay);
-  }
-
-  public void set(Way paramWay) {
-    this.WList.clear();
-    this.Cur = 0;
-
-    for (int i = 0; i < paramWay.WList.size(); i++) {
-      WayPoint localWayPoint = new WayPoint();
-      localWayPoint.set(paramWay.get(i));
-      this.WList.add(localWayPoint);
-      if ((localWayPoint.Action == 2) && (localWayPoint.sTarget != null)) {
-        this.landingOnShip = true;
-      }
-    }
-    this.landing = paramWay.landing;
-    this.landingAirport = paramWay.landingAirport;
-    if (this.takeoffAirport == null) this.takeoffAirport = paramWay.takeoffAirport;
-  }
-
-  public WayPoint first()
-  {
-    this.Cur = 0;
-    return curr();
-  }
-
-  public WayPoint last()
-  {
-    this.Cur = Math.max(0, this.WList.size() - 1);
-    return curr();
-  }
-
-  public WayPoint next()
-  {
-    int i = this.WList.size();
-    this.Cur += 1;
-    if (this.Cur >= i)
+    public int Cur()
     {
-      this.Cur = Math.max(0, i - 1);
-      WayPoint localWayPoint = curr();
-
-      return localWayPoint;
+        return Cur;
     }
-    return curr();
-  }
 
-  public WayPoint look_at_point(int paramInt)
-  {
-    int i = this.WList.size();
-    if (i == 0) return defaultWP;
-    if (paramInt < 0) paramInt = 0;
-    if (paramInt > i - 1) paramInt = i - 1;
-    return (WayPoint)this.WList.get(paramInt);
-  }
-
-  public void setCur(int paramInt)
-  {
-    if ((paramInt >= this.WList.size()) || (paramInt < 0)) return;
-    this.Cur = paramInt;
-  }
-
-  public WayPoint prev() {
-    this.Cur -= 1;
-    if (this.Cur < 0) this.Cur = 0;
-    return curr();
-  }
-
-  public WayPoint curr() {
-    if (this.WList.size() == 0) return defaultWP;
-    return (WayPoint)this.WList.get(this.Cur);
-  }
-
-  public WayPoint auto(Point3d paramPoint3d)
-  {
-    if ((this.Cur == 0) || (isReached(paramPoint3d))) return next();
-    return curr();
-  }
-
-  public double getCurDist()
-  {
-    return Math.sqrt(this.curDist);
-  }
-  public boolean isReached(Point3d paramPoint3d) {
-    curr().getP(P);
-    V.sub(paramPoint3d, P);
-    if ((curr().timeout == -1) && (!isLast())) {
-      ((WayPoint)this.WList.get(this.Cur + 1)).getP(tmpP);
-      V.sub(paramPoint3d, tmpP);
-      this.curDist = (V.x * V.x + V.y * V.y);
-      if ((this.curDist < 100000000.0D) && (this.curDist > this.prevdistToNextWP2)) {
-        curr().setTimeout(0);
-        this.prevdistToNextWP2 = 3.402823466385289E+038D;
-        return true;
-      }
-      this.prevdistToNextWP2 = this.curDist;
-    } else {
-      this.curDist = (V.x * V.x + V.y * V.y);
-      if ((this.curDist < 1000000.0D) && (this.curDist > this.prevdist2)) { this.prevdist2 = 100000000.0D; return true; }
-      this.prevdist2 = this.curDist;
+    public Way()
+    {
+        WList = new ArrayList();
+        prevdist2 = 100000000D;
+        prevdistToNextWP2 = 3.4028234663852886E+038D;
+        WList.clear();
+        Cur = 0;
+        landing = false;
+        landingOnShip = false;
+        landingAirport = null;
+        takeoffAirport = null;
     }
-    return false;
-  }
 
-  public boolean isLanding() {
-    return this.landing;
-  }
+    public Way(com.maddox.il2.ai.Way way)
+    {
+        WList = new ArrayList();
+        prevdist2 = 100000000D;
+        prevdistToNextWP2 = 3.4028234663852886E+038D;
+        set(way);
+    }
 
-  public boolean isLandingOnShip() {
-    return this.landingOnShip;
-  }
-
-  public boolean isLast() {
-    return this.Cur == this.WList.size() - 1;
-  }
-
-  public void setLanding(boolean paramBoolean) {
-    this.landing = paramBoolean;
-  }
-
-  public void add(WayPoint paramWayPoint)
-  {
-    this.WList.add(paramWayPoint);
-    if ((paramWayPoint.Action == 2) && (paramWayPoint.sTarget != null))
-      this.landingOnShip = true;
-  }
-
-  public WayPoint get(int paramInt)
-  {
-    if ((paramInt < 0) || (paramInt >= this.WList.size())) return null;
-    return (WayPoint)this.WList.get(paramInt);
-  }
-
-  public void insert(int paramInt, WayPoint paramWayPoint)
-  {
-    if (paramInt < 0) { paramInt = 0;
-    } else if (paramInt > this.WList.size()) { add(paramWayPoint); return; }
-    this.WList.add(paramInt, paramWayPoint);
-  }
-
-  public int size()
-  {
-    return this.WList.size();
-  }
-
-  public void load(SectFile paramSectFile, String paramString) throws Exception
-  {
-    int i = paramSectFile.sectionIndex(paramString);
-    int j = paramSectFile.vars(i);
-
-    for (int k = 0; k < j; k++) {
-      String str1 = paramSectFile.var(i, k);
-      WayPoint localWayPoint = new WayPoint();
-      if (str1.equalsIgnoreCase("TAKEOFF")) localWayPoint.Action = 1;
-      else if (str1.equalsIgnoreCase("LANDING")) localWayPoint.Action = 2;
-      else if (str1.equalsIgnoreCase("GATTACK")) localWayPoint.Action = 3; else
-        localWayPoint.Action = 0;
-      NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.value(i, k));
-      P.x = localNumberTokenizer.next(0.0F, -1000000.0F, 1000000.0F);
-      P.y = localNumberTokenizer.next(0.0F, -1000000.0F, 1000000.0F);
-      P.z = (localNumberTokenizer.next(0.0F, -1000000.0F, 1000000.0F) + World.land().HQ(P.x, P.y));
-      float f = localNumberTokenizer.next(0.0F, 0.0F, 2800.0F);
-      localWayPoint.set(P);
-      localWayPoint.set(f / 3.6F);
-      String str2 = localNumberTokenizer.next(null);
-      if (str2 != null) {
-        if (str2.equals("&0")) {
-          localWayPoint.bRadioSilence = false;
-          str2 = null;
-        } else if (str2.equals("&1")) {
-          localWayPoint.bRadioSilence = true;
-          str2 = null;
-        } else {
-          localNumberTokenizer.next(0);
-          String str3 = localNumberTokenizer.next(null);
-          if ((str3 != null) && (str3.equals("&1")))
-            localWayPoint.bRadioSilence = true;
+    public void set(com.maddox.il2.ai.Way way)
+    {
+        WList.clear();
+        Cur = 0;
+        for(int i = 0; i < way.WList.size(); i++)
+        {
+            com.maddox.il2.ai.WayPoint waypoint = new WayPoint();
+            waypoint.set(way.get(i));
+            WList.add(waypoint);
+            if(waypoint.Action == 2 && waypoint.sTarget != null)
+                landingOnShip = true;
         }
-      }
-      if ((str2 != null) && (str2.startsWith("Bridge")))
-        str2 = " " + str2;
-      localWayPoint.setTarget(str2);
-      add(localWayPoint);
+
+        landing = way.landing;
+        landingAirport = way.landingAirport;
+        if(takeoffAirport == null)
+            takeoffAirport = way.takeoffAirport;
     }
-  }
+
+    public com.maddox.il2.ai.WayPoint first()
+    {
+        Cur = 0;
+        return curr();
+    }
+
+    public com.maddox.il2.ai.WayPoint last()
+    {
+        Cur = java.lang.Math.max(0, WList.size() - 1);
+        return curr();
+    }
+
+    public com.maddox.il2.ai.WayPoint next()
+    {
+        int i = WList.size();
+        Cur++;
+        if(Cur >= i)
+        {
+            Cur = java.lang.Math.max(0, i - 1);
+            com.maddox.il2.ai.WayPoint waypoint = curr();
+            return waypoint;
+        } else
+        {
+            return curr();
+        }
+    }
+
+    public com.maddox.il2.ai.WayPoint look_at_point(int i)
+    {
+        int j = WList.size();
+        if(j == 0)
+            return defaultWP;
+        if(i < 0)
+            i = 0;
+        if(i > j - 1)
+            i = j - 1;
+        return (com.maddox.il2.ai.WayPoint)WList.get(i);
+    }
+
+    public void setCur(int i)
+    {
+        if(i >= WList.size() || i < 0)
+        {
+            return;
+        } else
+        {
+            Cur = i;
+            return;
+        }
+    }
+
+    public com.maddox.il2.ai.WayPoint prev()
+    {
+        Cur--;
+        if(Cur < 0)
+            Cur = 0;
+        return curr();
+    }
+
+    public com.maddox.il2.ai.WayPoint curr()
+    {
+        if(WList.size() == 0)
+            return defaultWP;
+        else
+            return (com.maddox.il2.ai.WayPoint)WList.get(Cur);
+    }
+
+    public com.maddox.il2.ai.WayPoint auto(com.maddox.JGP.Point3d point3d)
+    {
+        if(Cur == 0 || isReached(point3d))
+            return next();
+        else
+            return curr();
+    }
+
+    public double getCurDist()
+    {
+        return java.lang.Math.sqrt(curDist);
+    }
+
+    public boolean isReached(com.maddox.JGP.Point3d point3d)
+    {
+        curr().getP(P);
+        V.sub(point3d, P);
+        if(curr().timeout == -1 && !isLast())
+        {
+            ((com.maddox.il2.ai.WayPoint)WList.get(Cur + 1)).getP(tmpP);
+            V.sub(point3d, tmpP);
+            curDist = V.x * V.x + V.y * V.y;
+            if(curDist < 100000000D && curDist > prevdistToNextWP2)
+            {
+                curr().setTimeout(0);
+                prevdistToNextWP2 = 3.4028234663852886E+038D;
+                return true;
+            }
+            prevdistToNextWP2 = curDist;
+        } else
+        {
+            curDist = V.x * V.x + V.y * V.y;
+            if(curDist < 1000000D && curDist > prevdist2)
+            {
+                prevdist2 = 100000000D;
+                return true;
+            }
+            prevdist2 = curDist;
+        }
+        return false;
+    }
+
+    public boolean isLanding()
+    {
+        return landing;
+    }
+
+    public boolean isLandingOnShip()
+    {
+        return landingOnShip;
+    }
+
+    public boolean isLast()
+    {
+        return Cur == WList.size() - 1;
+    }
+
+    public void setLanding(boolean flag)
+    {
+        landing = flag;
+    }
+
+    public void add(com.maddox.il2.ai.WayPoint waypoint)
+    {
+        WList.add(waypoint);
+        if(waypoint.Action == 2 && waypoint.sTarget != null)
+            landingOnShip = true;
+    }
+
+    public com.maddox.il2.ai.WayPoint get(int i)
+    {
+        if(i < 0 || i >= WList.size())
+            return null;
+        else
+            return (com.maddox.il2.ai.WayPoint)WList.get(i);
+    }
+
+    public void insert(int i, com.maddox.il2.ai.WayPoint waypoint)
+    {
+        if(i < 0)
+            i = 0;
+        else
+        if(i > WList.size())
+        {
+            add(waypoint);
+            return;
+        }
+        WList.add(i, waypoint);
+    }
+
+    public int size()
+    {
+        return WList.size();
+    }
+
+    public void load(com.maddox.rts.SectFile sectfile, java.lang.String s)
+        throws java.lang.Exception
+    {
+        int i = sectfile.sectionIndex(s);
+        int j = sectfile.vars(i);
+        for(int k = 0; k < j; k++)
+        {
+            java.lang.String s1 = sectfile.var(i, k);
+            com.maddox.il2.ai.WayPoint waypoint = new WayPoint();
+            if(s1.equalsIgnoreCase("TAKEOFF"))
+                waypoint.Action = 1;
+            else
+            if(s1.equalsIgnoreCase("LANDING"))
+                waypoint.Action = 2;
+            else
+            if(s1.equalsIgnoreCase("GATTACK"))
+                waypoint.Action = 3;
+            else
+                waypoint.Action = 0;
+            com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.value(i, k));
+            P.x = numbertokenizer.next(0.0F, -1000000F, 1000000F);
+            P.y = numbertokenizer.next(0.0F, -1000000F, 1000000F);
+            P.z = (double)numbertokenizer.next(0.0F, -1000000F, 1000000F) + com.maddox.il2.ai.World.land().HQ(P.x, P.y);
+            float f = numbertokenizer.next(0.0F, 0.0F, 2800F);
+            waypoint.set(P);
+            waypoint.set(f / 3.6F);
+            java.lang.String s2 = numbertokenizer.next(null);
+            if(s2 != null)
+                if(s2.equals("&0"))
+                {
+                    waypoint.bRadioSilence = false;
+                    s2 = null;
+                } else
+                if(s2.equals("&1"))
+                {
+                    waypoint.bRadioSilence = true;
+                    s2 = null;
+                } else
+                {
+                    numbertokenizer.next(0);
+                    java.lang.String s3 = numbertokenizer.next(null);
+                    if(s3 != null && s3.equals("&1"))
+                        waypoint.bRadioSilence = true;
+                }
+            if(s2 != null && s2.startsWith("Bridge"))
+                s2 = " " + s2;
+            waypoint.setTarget(s2);
+            add(waypoint);
+        }
+
+    }
+
+    private java.util.ArrayList WList;
+    private int Cur;
+    private boolean landing;
+    private boolean landingOnShip;
+    public com.maddox.il2.ai.Airport landingAirport;
+    public com.maddox.il2.ai.Airport takeoffAirport;
+    private double prevdist2;
+    private double prevdistToNextWP2;
+    private double curDist;
+    private static com.maddox.JGP.Vector3d V = new Vector3d();
+    private static com.maddox.JGP.Point3d P = new Point3d();
+    private static com.maddox.JGP.Point3d tmpP = new Point3d();
+    private static com.maddox.il2.ai.WayPoint defaultWP = new WayPoint();
+
 }

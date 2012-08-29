@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ZutiRadarObject.java
+
 package com.maddox.il2.game;
 
 import com.maddox.JGP.Point3d;
@@ -8,154 +13,126 @@ import com.maddox.il2.objects.sounds.SndAircraft;
 import com.maddox.rts.Property;
 import java.util.ArrayList;
 
+// Referenced classes of package com.maddox.il2.game:
+//            Main, Mission
+
 public class ZutiRadarObject
 {
-  public static final String ZUTI_RADAR_OBJECT_NAME = "Radar";
-  private int type;
-  private double range;
-  private int minHeight;
-  private int maxHeight;
-  private Point3d position;
-  private Actor owner;
 
-  public ZutiRadarObject(Actor paramActor, int paramInt)
-  {
-    this.owner = paramActor;
-    this.type = paramInt;
-    this.position = paramActor.pos.getAbsPoint();
-  }
-
-  public int getType()
-  {
-    return this.type;
-  }
-
-  public double getRange()
-  {
-    if (this.type == 3)
+    public ZutiRadarObject(com.maddox.il2.engine.Actor actor, int i)
     {
-      return Math.pow(this.position.z * this.range / 1000.0D, 2.0D);
+        owner = actor;
+        type = i;
+        position = actor.pos.getAbsPoint();
     }
 
-    return this.range;
-  }
-
-  public void setRange(double paramDouble)
-  {
-    if (this.type == 3)
+    public int getType()
     {
-      this.range = paramDouble;
+        return type;
     }
-    else
-      this.range = Math.pow(paramDouble, 2.0D);
-  }
 
-  public int getMinHeight()
-  {
-    if (this.type == 3)
+    public double getRange()
     {
-      return (int)(this.position.z - this.minHeight);
+        if(type == 3)
+            return java.lang.Math.pow((position.z * range) / 1000D, 2D);
+        else
+            return range;
     }
 
-    return this.minHeight;
-  }
-
-  public void setMinHeight(int paramInt)
-  {
-    this.minHeight = paramInt;
-  }
-
-  public int getMaxHeight()
-  {
-    if (this.type == 3)
+    public void setRange(double d)
     {
-      return (int)(this.position.z - this.maxHeight);
+        if(type == 3)
+            range = d;
+        else
+            range = java.lang.Math.pow(d, 2D);
     }
 
-    return this.maxHeight;
-  }
-
-  public void setMaxHeight(int paramInt)
-  {
-    this.maxHeight = paramInt;
-  }
-
-  public Point3d getPosition()
-  {
-    return this.position;
-  }
-
-  public boolean isAlive()
-  {
-    if (this.owner == null) {
-      return false;
-    }
-    return !this.owner.getDiedFlag();
-  }
-
-  private Actor getOwner() {
-    return this.owner;
-  }
-
-  public boolean equals(Object paramObject)
-  {
-    if (!(paramObject instanceof ZutiRadarObject)) {
-      return false;
-    }
-    ZutiRadarObject localZutiRadarObject = (ZutiRadarObject)paramObject;
-
-    return this.owner.equals(localZutiRadarObject.getOwner());
-  }
-
-  public int hashCode()
-  {
-    return this.owner.hashCode();
-  }
-
-  public boolean isCoordinateCovered(Point3d paramPoint3d)
-  {
-    double d1 = getRange();
-    double d2 = (Math.pow(this.position.x - paramPoint3d.x, 2.0D) + Math.pow(this.position.y - paramPoint3d.y, 2.0D)) / 1000000.0D;
-
-    return (d2 <= d1) && (paramPoint3d.z >= getMinHeight()) && (paramPoint3d.z <= getMaxHeight());
-  }
-
-  public static boolean isPlayerArmyScout(Actor paramActor, int paramInt)
-  {
-    if ((paramActor == null) || (!(paramActor instanceof SndAircraft)) || (paramActor.getArmy() != paramInt))
-      return false;
-    ArrayList localArrayList;
-    String str1;
-    int i;
-    int j;
-    String str2;
-    if (paramInt == 1)
+    public int getMinHeight()
     {
-      localArrayList = Main.cur().mission.ScoutsRed;
-      str1 = Property.stringValue(((Aircraft)paramActor).getClass(), "keyName");
-      i = localArrayList.size();
-      for (j = 0; j < i; j++)
-      {
-        str2 = (String)localArrayList.get(j);
-        if (str1.indexOf(str2) != -1)
-          return true;
-      }
+        if(type == 3)
+            return (int)(position.z - (double)minHeight);
+        else
+            return minHeight;
     }
-    else
+
+    public void setMinHeight(int i)
     {
-      localArrayList = Main.cur().mission.ScoutsBlue;
-      str1 = Property.stringValue(((Aircraft)paramActor).getClass(), "keyName");
-      i = localArrayList.size();
-      for (j = 0; j < i; j++)
-      {
-        str2 = (String)localArrayList.get(j);
-        if (str1.indexOf(str2) != -1)
+        minHeight = i;
+    }
+
+    public int getMaxHeight()
+    {
+        if(type == 3)
+            return (int)(position.z - (double)maxHeight);
+        else
+            return maxHeight;
+    }
+
+    public void setMaxHeight(int i)
+    {
+        maxHeight = i;
+    }
+
+    public com.maddox.JGP.Point3d getPosition()
+    {
+        return position;
+    }
+
+    public boolean isAlive()
+    {
+        if(owner == null)
+            return false;
+        else
+            return !owner.getDiedFlag();
+    }
+
+    private com.maddox.il2.engine.Actor getOwner()
+    {
+        return owner;
+    }
+
+    public boolean equals(java.lang.Object obj)
+    {
+        if(!(obj instanceof com.maddox.il2.game.ZutiRadarObject))
+            return false;
+        com.maddox.il2.game.ZutiRadarObject zutiradarobject = (com.maddox.il2.game.ZutiRadarObject)obj;
+        return owner.equals(zutiradarobject.getOwner());
+    }
+
+    public int hashCode()
+    {
+        return owner.hashCode();
+    }
+
+    public boolean isCoordinateCovered(com.maddox.JGP.Point3d point3d)
+    {
+        double d = getRange();
+        double d1 = (java.lang.Math.pow(position.x - point3d.x, 2D) + java.lang.Math.pow(position.y - point3d.y, 2D)) / 1000000D;
+        return d1 <= d && point3d.z >= (double)getMinHeight() && point3d.z <= (double)getMaxHeight();
+    }
+
+    public static boolean isPlayerArmyScout(com.maddox.il2.engine.Actor actor, int i)
+    {
+        if(actor == null || !(actor instanceof com.maddox.il2.objects.sounds.SndAircraft) || actor.getArmy() != i)
+            return false;
+        java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().mission.ScoutsRed;
+        java.lang.String s = com.maddox.rts.Property.stringValue(((com.maddox.il2.objects.air.Aircraft)actor).getClass(), "keyName");
+        int j = arraylist.size();
+        for(int k = 0; k < j; k++)
         {
-          return true;
+            java.lang.String s1 = (java.lang.String)arraylist.get(k);
+            if(s.indexOf(s1) != -1)
+                return true;
         }
-      }
+
+        return false;
     }
 
-    return false;
-  }
+    public static final java.lang.String ZUTI_RADAR_OBJECT_NAME = "Radar";
+    private int type;
+    private double range;
+    private int minHeight;
+    private int maxHeight;
+    private com.maddox.JGP.Point3d position;
+    private com.maddox.il2.engine.Actor owner;
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PlMisStatic.java
+
 package com.maddox.il2.builder;
 
 import com.maddox.JGP.Point2d;
@@ -14,7 +19,6 @@ import com.maddox.gwindow.GWindowLookAndFeel;
 import com.maddox.gwindow.GWindowMenu;
 import com.maddox.gwindow.GWindowMenuItem;
 import com.maddox.gwindow.GWindowTabDialogClient;
-import com.maddox.gwindow.GWindowTabDialogClient.Tab;
 import com.maddox.il2.ai.Army;
 import com.maddox.il2.ai.Chief;
 import com.maddox.il2.ai.Regiment;
@@ -35,13 +39,9 @@ import com.maddox.il2.game.I18N;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.PaintScheme;
 import com.maddox.il2.objects.ships.BigshipGeneric;
-import com.maddox.il2.objects.ships.Ship.RwyTransp;
-import com.maddox.il2.objects.ships.Ship.RwyTranspSqr;
-import com.maddox.il2.objects.ships.Ship.RwyTranspWide;
 import com.maddox.il2.objects.ships.ShipGeneric;
 import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
 import com.maddox.il2.objects.vehicles.planes.PlaneGeneric;
-import com.maddox.il2.objects.vehicles.radios.LorenzBlindLandingBeacon;
 import com.maddox.il2.objects.vehicles.stationary.SirenGeneric;
 import com.maddox.il2.objects.vehicles.stationary.SmokeGeneric;
 import com.maddox.rts.LDRres;
@@ -59,1103 +59,1382 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class PlMisStatic extends Plugin
+// Referenced classes of package com.maddox.il2.builder:
+//            Plugin, PlMission, Builder, BldConfig, 
+//            WSelect
+
+public class PlMisStatic extends com.maddox.il2.builder.Plugin
 {
-  private ArrayList[] listCountry;
-  private HashMap[] mapCountry;
-  protected ArrayList allActors = new ArrayList();
-  Type[] type;
-  private Point3d p3d = new Point3d();
-  private Point2d p2d = new Point2d();
+    class ViewItem extends com.maddox.gwindow.GWindowMenuItem
+    {
 
-  private Point3d p = new Point3d();
-  private Orient o = new Orient();
-
-  private ActorSpawnArg spawnArg = new ActorSpawnArg();
-  private PlMission pluginMission;
-  private int startComboBox1;
-  ViewItem[] viewType;
-  HashMap viewClasses = new HashMap();
-
-  private String[] _actorInfo = new String[2];
-  GWindowTabDialogClient.Tab tabActor;
-  GWindowLabel wName;
-  GWindowComboControl wArmy;
-  GWindowLabel wLTimeOutH;
-  GWindowEditControl wTimeOutH;
-  GWindowLabel wLTimeOutM;
-  GWindowEditControl wTimeOutM;
-  GWindowLabel wLCountry;
-  GWindowComboControl wCountry;
-  GWindowLabel wLSleepM;
-  GWindowLabel wLSleepS;
-  GWindowEditControl wSleepM;
-  GWindowEditControl wRHide;
-  GWindowLabel wL1RHide;
-  GWindowLabel wL2RHide;
-  GWindowEditControl wSleepS;
-  GWindowLabel wLSkill;
-  GWindowComboControl wSkill;
-  GWindowLabel wLSlowfire;
-  GWindowEditControl wSlowfire;
-  private Object[] pathes = new Object[1];
-  private Object[] points = new Object[1];
-
-  private void initCountry()
-  {
-    if (this.listCountry != null) return;
-    this.listCountry = new ArrayList[3];
-    this.mapCountry = new HashMap[3];
-    for (int i = 0; i < 3; i++) {
-      this.listCountry[i] = new ArrayList();
-      this.mapCountry[i] = new HashMap();
-    }ResourceBundle localResourceBundle;
-    try {
-      localResourceBundle = ResourceBundle.getBundle("i18n/country", RTSConf.cur.locale, LDRres.loader());
-    } catch (Exception localException) {
-      localResourceBundle = null;
-    }
-    HashMap localHashMap = new HashMap();
-    List localList = Regiment.getAll();
-    for (int j = 0; j < localList.size(); j++) {
-      Regiment localRegiment = (Regiment)localList.get(j);
-      if (localHashMap.containsKey(localRegiment.country()))
-        continue;
-      int k = localRegiment.getArmy();
-      if ((k < 0) || (k > 2))
-        continue;
-      localHashMap.put(localRegiment.country(), null);
-      Country localCountry = new Country();
-      localCountry.name = localRegiment.country();
-      if (localResourceBundle != null)
-        localCountry.i18nName = localResourceBundle.getString(localCountry.name);
-      else
-        localCountry.i18nName = localCountry.name;
-      this.listCountry[k].add(localCountry);
-      this.mapCountry[k].put(localCountry.name, new Integer(this.listCountry[k].size() - 1));
-    }
-  }
-
-  public void mapLoaded()
-  {
-    deleteAll();
-  }
-
-  public void deleteAll() {
-    for (int i = 0; i < this.allActors.size(); i++) {
-      Actor localActor = (Actor)this.allActors.get(i);
-      if (Actor.isValid(localActor))
-        localActor.destroy();
-    }
-    this.allActors.clear();
-  }
-
-  public void delete(Actor paramActor) {
-    this.allActors.remove(paramActor);
-    paramActor.destroy();
-  }
-
-  public void renderMap2D() {
-    if (builder.isFreeView()) return;
-    Actor localActor1 = builder.selectedActor();
-
-    Render.prepareStates();
-
-    for (int j = 0; j < this.allActors.size(); j++) {
-      Actor localActor2 = (Actor)this.allActors.get(j);
-      if ((!Actor.isValid(localActor2)) || (localActor2.icon == null) || (!this.viewClasses.containsKey(localActor2.getClass())))
-        continue;
-      this.p3d.set(localActor2.pos.getAbsPoint());
-      if ((localActor2 instanceof SmokeGeneric))
-        this.p3d.z = Engine.land().HQ(this.p3d.x, this.p3d.y);
-      if (builder.project2d(this.p3d, this.p2d)) {
-        int k = localActor2.getArmy();
-        int m = builder.conf.bShowArmy[k];
-        if (m != 0)
+        public void execute()
         {
-          int i;
-          if (builder.isMiltiSelected(localActor2)) i = Builder.colorMultiSelected(Army.color(localActor2.getArmy()));
-          else if (localActor2 == localActor1) i = Builder.colorSelected(); else {
-            i = Army.color(localActor2.getArmy());
-          }
-          IconDraw.setColor(i);
-          IconDraw.render(localActor2, this.p2d.x, this.p2d.y);
-          if (Plugin.builder.conf.bShowName) {
-            String str = Property.stringValue(localActor2.getClass(), "i18nName", "");
-            Plugin.builder.smallFont.output(i, (int)this.p2d.x + IconDraw.scrSizeX() / 2 + 2, (int)this.p2d.y + Plugin.builder.smallFont.height() - Plugin.builder.smallFont.descender() - IconDraw.scrSizeY() / 2 - 2, 0.0F, str);
-          }
+            bChecked = !bChecked;
+            viewType(indx);
         }
-      }
-    }
-  }
 
-  public void load(SectFile paramSectFile)
-  {
-    initCountry();
-    int i = paramSectFile.sectionIndex("Stationary");
-    int j;
-    int k;
-    NumberTokenizer localNumberTokenizer;
-    if (i >= 0) {
-      j = paramSectFile.vars(i);
-      for (k = 0; k < j; k++) {
-        localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, k));
-        insert(null, localNumberTokenizer.next(""), localNumberTokenizer.next(0), localNumberTokenizer.next(0.0D), localNumberTokenizer.next(0.0D), localNumberTokenizer.next(0.0F), localNumberTokenizer.next(0.0F), localNumberTokenizer.next((String)null), localNumberTokenizer.next((String)null), localNumberTokenizer.next((String)null));
-      }
-    }
-    i = paramSectFile.sectionIndex("NStationary");
-    if (i >= 0) {
-      j = paramSectFile.vars(i);
-      for (k = 0; k < j; k++) {
-        localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, k));
-        insert(localNumberTokenizer.next(""), localNumberTokenizer.next(""), localNumberTokenizer.next(0), localNumberTokenizer.next(0.0D), localNumberTokenizer.next(0.0D), localNumberTokenizer.next(0.0F), localNumberTokenizer.next(0.0F), localNumberTokenizer.next((String)null), localNumberTokenizer.next((String)null), localNumberTokenizer.next((String)null));
-      }
-    }
-    Engine.drawEnv().staticTrimToSize();
-  }
+        int indx;
 
-  public boolean save(SectFile paramSectFile) {
-    Orient localOrient1 = new Orient();
-    int i = paramSectFile.sectionAdd("NStationary");
-    for (int j = 0; j < this.allActors.size(); j++) {
-      Actor localActor = (Actor)this.allActors.get(j);
-      if ((Actor.isValid(localActor)) && (Property.containsValue(localActor, "builderSpawn"))) {
-        Point3d localPoint3d = localActor.pos.getAbsPoint();
-        Orient localOrient2 = localActor.pos.getAbsOrient();
-        localOrient1.set(localOrient2);
-        localOrient1.wrap360();
-        float f1 = Property.floatValue(localActor, "timeout", 0.0F);
-        if ((localActor instanceof PlaneGeneric)) {
-          String str = ((PlaneGeneric)localActor).country;
-          paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1 + " " + str);
+        public ViewItem(int i, com.maddox.gwindow.GWindowMenu gwindowmenu, java.lang.String s, java.lang.String s1)
+        {
+            super(gwindowmenu, s, s1);
+            indx = i;
         }
+    }
+
+    static class Type
+    {
+
+        public java.lang.String name;
+        public com.maddox.il2.builder.Item item[];
+
+        public Type(java.lang.String s, com.maddox.il2.builder.Item aitem[])
+        {
+            name = s;
+            item = aitem;
+        }
+    }
+
+    static class Item
+    {
+
+        public java.lang.String name;
+        public java.lang.Class clazz;
+        public int army;
+        public com.maddox.il2.engine.ActorSpawn spawn;
+        public java.lang.String country;
+
+        public Item(java.lang.String s, java.lang.Class class1, int i)
+        {
+            name = s;
+            clazz = class1;
+            army = i;
+            if(class1 != null)
+            {
+                spawn = (com.maddox.il2.engine.ActorSpawn)com.maddox.rts.Spawn.get(class1.getName());
+                java.lang.String s1 = com.maddox.il2.game.I18N.technic(s);
+                if(s1.equals(s))
+                {
+                    s1 = com.maddox.rts.Property.stringValue(class1, "i18nName", s1);
+                    if("Plane".equals(s1))
+                    {
+                        java.lang.Class class2 = (java.lang.Class)com.maddox.rts.Property.value(class1, "airClass", null);
+                        if(class2 != null)
+                        {
+                            java.lang.String s2 = com.maddox.rts.Property.stringValue(class2, "keyName", null);
+                            if(s2 != null)
+                                s1 = com.maddox.il2.game.I18N.plane(s2);
+                        }
+                    }
+                }
+                com.maddox.rts.Property.set(class1, "i18nName", s1);
+            }
+        }
+    }
+
+    static class Country
+    {
+
+        public java.lang.String name;
+        public java.lang.String i18nName;
+
+        Country()
+        {
+        }
+    }
+
+
+    public PlMisStatic()
+    {
+        allActors = new ArrayList();
+        p3d = new Point3d();
+        p2d = new Point2d();
+        p = new Point3d();
+        o = new Orient();
+        spawnArg = new ActorSpawnArg();
+        viewClasses = new HashMap();
+        _actorInfo = new java.lang.String[2];
+        pathes = new java.lang.Object[1];
+        points = new java.lang.Object[1];
+    }
+
+    private void initCountry()
+    {
+        if(listCountry != null)
+            return;
+        listCountry = new java.util.ArrayList[3];
+        mapCountry = new java.util.HashMap[3];
+        for(int i = 0; i < 3; i++)
+        {
+            listCountry[i] = new ArrayList();
+            mapCountry[i] = new HashMap();
+        }
+
+        java.util.ResourceBundle resourcebundle;
+        try
+        {
+            resourcebundle = java.util.ResourceBundle.getBundle("i18n/country", com.maddox.rts.RTSConf.cur.locale, com.maddox.rts.LDRres.loader());
+        }
+        catch(java.lang.Exception exception)
+        {
+            resourcebundle = null;
+        }
+        java.util.HashMap hashmap = new HashMap();
+        java.util.List list = com.maddox.il2.ai.Regiment.getAll();
+        for(int j = 0; j < list.size(); j++)
+        {
+            com.maddox.il2.ai.Regiment regiment = (com.maddox.il2.ai.Regiment)list.get(j);
+            if(hashmap.containsKey(regiment.country()))
+                continue;
+            int k = regiment.getArmy();
+            if(k < 0 || k > 2)
+                continue;
+            hashmap.put(regiment.country(), null);
+            com.maddox.il2.builder.Country country = new Country();
+            country.name = regiment.country();
+            if(resourcebundle != null)
+                country.i18nName = resourcebundle.getString(country.name);
+            else
+                country.i18nName = country.name;
+            listCountry[k].add(country);
+            mapCountry[k].put(country.name, new Integer(listCountry[k].size() - 1));
+        }
+
+    }
+
+    public void mapLoaded()
+    {
+        deleteAll();
+    }
+
+    public void deleteAll()
+    {
+        for(int i = 0; i < allActors.size(); i++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)allActors.get(i);
+            if(com.maddox.il2.engine.Actor.isValid(actor))
+                actor.destroy();
+        }
+
+        allActors.clear();
+    }
+
+    public void delete(com.maddox.il2.engine.Actor actor)
+    {
+        allActors.remove(actor);
+        actor.destroy();
+    }
+
+    public void renderMap2D()
+    {
+        if(builder.isFreeView())
+            return;
+        com.maddox.il2.engine.Actor actor = builder.selectedActor();
+        com.maddox.il2.engine.Render.prepareStates();
+        for(int j = 0; j < allActors.size(); j++)
+        {
+            com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)allActors.get(j);
+            if(!com.maddox.il2.engine.Actor.isValid(actor1) || actor1.icon == null || !viewClasses.containsKey(actor1.getClass()))
+                continue;
+            p3d.set(actor1.pos.getAbsPoint());
+            if(actor1 instanceof com.maddox.il2.objects.vehicles.stationary.SmokeGeneric)
+                p3d.z = com.maddox.il2.engine.Engine.land().HQ(p3d.x, p3d.y);
+            if(!builder.project2d(p3d, p2d))
+                continue;
+            int k = actor1.getArmy();
+            boolean flag = builder.conf.bShowArmy[k];
+            if(!flag)
+                continue;
+            int i;
+            if(builder.isMiltiSelected(actor1))
+                i = com.maddox.il2.builder.Builder.colorMultiSelected(com.maddox.il2.ai.Army.color(actor1.getArmy()));
+            else
+            if(actor1 == actor)
+                i = com.maddox.il2.builder.Builder.colorSelected();
+            else
+                i = com.maddox.il2.ai.Army.color(actor1.getArmy());
+            com.maddox.il2.engine.IconDraw.setColor(i);
+            com.maddox.il2.engine.IconDraw.render(actor1, p2d.x, p2d.y);
+            if(com.maddox.il2.builder.Plugin.builder.conf.bShowName)
+            {
+                java.lang.String s = com.maddox.rts.Property.stringValue(actor1.getClass(), "i18nName", "");
+                com.maddox.il2.builder.Plugin.builder.smallFont.output(i, (int)p2d.x + com.maddox.il2.engine.IconDraw.scrSizeX() / 2 + 2, ((int)p2d.y + com.maddox.il2.builder.Plugin.builder.smallFont.height()) - com.maddox.il2.builder.Plugin.builder.smallFont.descender() - com.maddox.il2.engine.IconDraw.scrSizeY() / 2 - 2, 0.0F, s);
+            }
+        }
+
+    }
+
+    public void load(com.maddox.rts.SectFile sectfile)
+    {
+        initCountry();
+        int i = sectfile.sectionIndex("Stationary");
+        if(i >= 0)
+        {
+            int j = sectfile.vars(i);
+            for(int l = 0; l < j; l++)
+            {
+                com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, l));
+                insert(null, numbertokenizer.next(""), numbertokenizer.next(0), numbertokenizer.next(0.0D), numbertokenizer.next(0.0D), numbertokenizer.next(0.0F), numbertokenizer.next(0.0F), numbertokenizer.next((java.lang.String)null), numbertokenizer.next((java.lang.String)null), numbertokenizer.next((java.lang.String)null));
+            }
+
+        }
+        i = sectfile.sectionIndex("NStationary");
+        if(i >= 0)
+        {
+            int k = sectfile.vars(i);
+            for(int i1 = 0; i1 < k; i1++)
+            {
+                com.maddox.util.NumberTokenizer numbertokenizer1 = new NumberTokenizer(sectfile.line(i, i1));
+                insert(numbertokenizer1.next(""), numbertokenizer1.next(""), numbertokenizer1.next(0), numbertokenizer1.next(0.0D), numbertokenizer1.next(0.0D), numbertokenizer1.next(0.0F), numbertokenizer1.next(0.0F), numbertokenizer1.next((java.lang.String)null), numbertokenizer1.next((java.lang.String)null), numbertokenizer1.next((java.lang.String)null));
+            }
+
+        }
+        com.maddox.il2.engine.Engine.drawEnv().staticTrimToSize();
+    }
+
+    public boolean save(com.maddox.rts.SectFile sectfile)
+    {
+        com.maddox.il2.engine.Orient orient = new Orient();
+        int i = sectfile.sectionAdd("NStationary");
+        for(int j = 0; j < allActors.size(); j++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)allActors.get(j);
+            if(!com.maddox.il2.engine.Actor.isValid(actor) || !com.maddox.rts.Property.containsValue(actor, "builderSpawn"))
+                continue;
+            com.maddox.JGP.Point3d point3d = actor.pos.getAbsPoint();
+            com.maddox.il2.engine.Orient orient1 = actor.pos.getAbsOrient();
+            orient.set(orient1);
+            orient.wrap360();
+            float f = com.maddox.rts.Property.floatValue(actor, "timeout", 0.0F);
+            if(actor instanceof com.maddox.il2.objects.vehicles.planes.PlaneGeneric)
+            {
+                java.lang.String s = ((com.maddox.il2.objects.vehicles.planes.PlaneGeneric)actor).country;
+                sectfile.lineAdd(i, actor.name(), com.maddox.rts.ObjIO.classGetName(actor.getClass()) + " " + actor.getArmy() + " " + formatPos(point3d.x, point3d.y, orient.azimut()) + " " + f + " " + s);
+                continue;
+            }
+            if((actor instanceof com.maddox.il2.objects.ships.ShipGeneric) || (actor instanceof com.maddox.il2.objects.ships.BigshipGeneric))
+            {
+                int k = com.maddox.rts.Property.intValue(actor, "sleep", 0);
+                int i1 = com.maddox.rts.Property.intValue(actor, "skill", 2);
+                float f1 = com.maddox.rts.Property.floatValue(actor, "slowfire", 1.0F);
+                sectfile.lineAdd(i, actor.name(), com.maddox.rts.ObjIO.classGetName(actor.getClass()) + " " + actor.getArmy() + " " + formatPos(point3d.x, point3d.y, orient.azimut()) + " " + f + " " + k + " " + i1 + " " + f1);
+                continue;
+            }
+            if(actor instanceof com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric)
+            {
+                int l = com.maddox.rts.Property.intValue(actor, "radius_hide", 0);
+                sectfile.lineAdd(i, actor.name(), com.maddox.rts.ObjIO.classGetName(actor.getClass()) + " " + actor.getArmy() + " " + formatPos(point3d.x, point3d.y, orient.azimut()) + " " + f + " " + l);
+                continue;
+            }
+            if(actor instanceof com.maddox.il2.objects.vehicles.stationary.SmokeGeneric)
+                sectfile.lineAdd(i, actor.name(), com.maddox.rts.ObjIO.classGetName(actor.getClass()) + " " + actor.getArmy() + " " + formatPos(point3d.x, point3d.y, orient.azimut()) + " " + formatValue(point3d.z));
+            else
+                sectfile.lineAdd(i, actor.name(), com.maddox.rts.ObjIO.classGetName(actor.getClass()) + " " + actor.getArmy() + " " + formatPos(point3d.x, point3d.y, orient.azimut()) + " " + f);
+        }
+
+        return true;
+    }
+
+    private java.lang.String formatPos(double d, double d1, float f)
+    {
+        return formatValue(d) + " " + formatValue(d1) + " " + formatValue(f);
+    }
+
+    private java.lang.String formatValue(double d)
+    {
+        boolean flag = d < 0.0D;
+        if(flag)
+            d = -d;
+        double d1 = (d + 0.0050000000000000001D) - (double)(int)d;
+        if(d1 >= 0.10000000000000001D)
+            return (flag ? "-" : "") + (int)d + "." + (int)(d1 * 100D);
         else
+            return (flag ? "-" : "") + (int)d + ".0" + (int)(d1 * 100D);
+    }
+
+    private void makeName(com.maddox.il2.engine.Actor actor, java.lang.String s)
+    {
+        if(s != null && com.maddox.il2.engine.Actor.getByName(s) == null)
         {
-          int k;
-          if (((localActor instanceof ShipGeneric)) || ((localActor instanceof BigshipGeneric))) {
-            k = Property.intValue(localActor, "sleep", 0);
-            int m = Property.intValue(localActor, "skill", 2);
-            float f2 = Property.floatValue(localActor, "slowfire", 1.0F);
-            paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1 + " " + k + " " + m + " " + f2);
-          }
-          else if ((localActor instanceof ArtilleryGeneric)) {
-            k = Property.intValue(localActor, "radius_hide", 0);
-            paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1 + " " + k);
-          }
-          else if ((localActor instanceof SmokeGeneric)) {
-            paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + formatValue(localPoint3d.z));
-          }
-          else
-          {
-            paramSectFile.lineAdd(i, localActor.name(), ObjIO.classGetName(localActor.getClass()) + " " + localActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1);
-          }
+            actor.setName(s);
+            return;
         }
-
-      }
-
+        int i = 0;
+        do
+        {
+            s = i + "_Static";
+            if(com.maddox.il2.engine.Actor.getByName(s) != null)
+            {
+                i++;
+            } else
+            {
+                actor.setName(s);
+                return;
+            }
+        } while(true);
     }
 
-    return true;
-  }
-
-  private String formatPos(double paramDouble1, double paramDouble2, float paramFloat) {
-    return formatValue(paramDouble1) + " " + formatValue(paramDouble2) + " " + formatValue(paramFloat);
-  }
-
-  private String formatValue(double paramDouble)
-  {
-    int i = paramDouble < 0.0D ? 1 : 0;
-    if (i != 0) paramDouble = -paramDouble;
-    double d = paramDouble + 0.005D - (int)paramDouble;
-    if (d >= 0.1D) return (i != 0 ? "-" : "") + (int)paramDouble + "." + (int)(d * 100.0D);
-    return (i != 0 ? "-" : "") + (int)paramDouble + ".0" + (int)(d * 100.0D);
-  }
-
-  private void makeName(Actor paramActor, String paramString) {
-    if ((paramString != null) && (Actor.getByName(paramString) == null)) {
-      paramActor.setName(paramString);
-      return;
-    }
-    int i = 0;
-    while (true) {
-      paramString = i + "_Static";
-      if (Actor.getByName(paramString) == null)
-        break;
-      i++;
-    }
-    paramActor.setName(paramString);
-  }
-
-  private Actor insert(String paramString1, String paramString2, int paramInt, double paramDouble1, double paramDouble2, float paramFloat1, float paramFloat2, String paramString3, String paramString4, String paramString5)
-  {
-    Class localClass = null;
-    try { localClass = ObjIO.classForName(paramString2);
-    } catch (Exception localException1) {
-      builder.tipErr("MissionLoad: class '" + paramString2 + "' not found");
-      return null;
-    }
-    ActorSpawn localActorSpawn = (ActorSpawn)Spawn.get(localClass.getName(), false);
-    if (localActorSpawn == null) {
-      builder.tipErr("MissionLoad: ActorSpawn for '" + paramString2 + "' not found");
-      return null;
-    }
-    this.spawnArg.clear();
-    if (paramString1 != null) {
-      if ("NONAME".equals(paramString1))
-        paramString1 = null;
-      if (Actor.getByName(paramString1) != null)
-        paramString1 = null;
-    }
-    if ((paramInt < 0) && (paramInt >= Builder.armyAmount())) {
-      builder.tipErr("MissionLoad: Wrong actor army '" + paramInt + "'");
-      return null;
-    }
-    this.spawnArg.army = paramInt;
-    this.spawnArg.armyExist = true;
-    this.spawnArg.country = paramString3;
-
-    Chief.new_DELAY_WAKEUP = 0.0F;
-    ArtilleryGeneric.new_RADIUS_HIDE = 0.0F;
-    if (paramString3 != null)
-      try {
-        Chief.new_DELAY_WAKEUP = Integer.parseInt(paramString3);
-        ArtilleryGeneric.new_RADIUS_HIDE = Chief.new_DELAY_WAKEUP;
-      }
-      catch (Exception localException2) {
-      }
-    Chief.new_SKILL_IDX = 2;
-    if (paramString4 != null) {
-      try {
-        Chief.new_SKILL_IDX = Integer.parseInt(paramString4); } catch (Exception localException3) {
-      }
-      if ((Chief.new_SKILL_IDX < 0) || (Chief.new_SKILL_IDX > 3)) {
-        builder.tipErr("MissionLoad: Wrong actor skill '" + Chief.new_SKILL_IDX + "'");
-        return null;
-      }
-    }
-
-    Chief.new_SLOWFIRE_K = 1.0F;
-    if (paramString5 != null) {
-      try {
-        Chief.new_SLOWFIRE_K = Float.parseFloat(paramString5); } catch (Exception localException4) {
-      }
-      if ((Chief.new_SLOWFIRE_K < 0.5F) || (Chief.new_SLOWFIRE_K > 100.0F)) {
-        builder.tipErr("MissionLoad: Wrong actor slowfire '" + Chief.new_SLOWFIRE_K + "'");
-        return null;
-      }
-    }
-
-    this.p.set(paramDouble1, paramDouble2, 0.0D);
-    this.spawnArg.point = this.p;
-    this.o.set(paramFloat1, 0.0F, 0.0F);
-    this.spawnArg.orient = this.o;
-    try {
-      Actor localActor = localActorSpawn.actorSpawn(this.spawnArg);
-      if ((localActor instanceof SirenGeneric))
-        localActor.setArmy(paramInt);
-      if ((localActor instanceof SmokeGeneric)) {
-        this.p.z = paramFloat2;
-        localActor.pos.setAbs(this.p);
-        localActor.pos.reset();
-      }
-      builder.align(localActor);
-      Property.set(localActor, "builderSpawn", "");
-      Property.set(localActor, "builderPlugin", this);
-      if (!localActor.isRealTimeFlag())
-        localActor.interpCancelAll();
-      makeName(localActor, paramString1);
-      this.allActors.add(localActor);
-
-      if (((localActor instanceof Ship.RwyTransp)) || ((localActor instanceof Ship.RwyTranspWide)) || ((localActor instanceof Ship.RwyTranspSqr)))
-      {
-        ((BigshipGeneric)localActor).showTransparentRunwayRed();
-      }
-      if ((localActor instanceof LorenzBlindLandingBeacon))
-      {
-        ((LorenzBlindLandingBeacon)localActor).showGuideArrows();
-      }
-
-      if ((localActor instanceof ArtilleryGeneric)) {
-        Property.set(localActor, "timeout", paramFloat2);
-        Property.set(localActor, "radius_hide", (int)ArtilleryGeneric.new_RADIUS_HIDE);
-      }
-      if (((localActor instanceof ShipGeneric)) || ((localActor instanceof BigshipGeneric))) {
-        Property.set(localActor, "sleep", (int)Chief.new_DELAY_WAKEUP);
-        Property.set(localActor, "skill", Chief.new_SKILL_IDX);
-        Property.set(localActor, "slowfire", Chief.new_SLOWFIRE_K);
-      }
-      return localActor;
-    } catch (Exception localException5) {
-      System.out.println(localException5.getMessage());
-      localException5.printStackTrace();
-    }
-    return null;
-  }
-
-  private Actor insert(ActorSpawn paramActorSpawn, Loc paramLoc, int paramInt, boolean paramBoolean, String paramString)
-  {
-    this.spawnArg.clear();
-    this.spawnArg.point = paramLoc.getPoint();
-    this.spawnArg.orient = paramLoc.getOrient();
-    this.spawnArg.army = paramInt; this.spawnArg.armyExist = true;
-    this.spawnArg.country = paramString;
-    try {
-      Actor localActor = paramActorSpawn.actorSpawn(this.spawnArg);
-
-      if (((localActor instanceof Ship.RwyTransp)) || ((localActor instanceof Ship.RwyTranspWide)) || ((localActor instanceof Ship.RwyTranspSqr)))
-      {
-        ((BigshipGeneric)localActor).showTransparentRunwayRed();
-      }
-      if ((localActor instanceof LorenzBlindLandingBeacon))
-      {
-        ((LorenzBlindLandingBeacon)localActor).showGuideArrows();
-      }
-
-      if ((localActor instanceof SirenGeneric))
-        localActor.setArmy(paramInt);
-      builder.align(localActor);
-      Property.set(localActor, "builderSpawn", "");
-      Property.set(localActor, "builderPlugin", this);
-      if (!localActor.isRealTimeFlag())
-        localActor.interpCancelAll();
-      if ((localActor instanceof ArtilleryGeneric)) {
-        Property.set(localActor, "timeout", 0.0F);
-        Property.set(localActor, "radius_hide", 0);
-      }
-      if (((localActor instanceof ShipGeneric)) || ((localActor instanceof BigshipGeneric))) {
-        Property.set(localActor, "sleep", 0);
-        Property.set(localActor, "skill", 2);
-        Property.set(localActor, "slowfire", 1.0F);
-      }
-      makeName(localActor, null);
-      this.allActors.add(localActor);
-      if (paramBoolean)
-        builder.setSelected(localActor);
-      PlMission.setChanged();
-      return localActor;
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-    return null;
-  }
-
-  public void insert(Loc paramLoc, boolean paramBoolean)
-  {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
-    if ((i < this.startComboBox1) || (i >= this.startComboBox1 + this.type.length))
+    private com.maddox.il2.engine.Actor insert(java.lang.String s, java.lang.String s1, int i, double d, double d1, 
+            float f, float f1, java.lang.String s2, java.lang.String s3, java.lang.String s4)
     {
-      return;
-    }
-    i -= this.startComboBox1;
-    if ((j < 0) || (j >= this.type[i].item.length))
-      return;
-    ActorSpawn localActorSpawn = this.type[i].item[j].spawn;
-    insert(localActorSpawn, paramLoc, this.type[i].item[j].army, paramBoolean, this.type[i].item[j].country);
-  }
-
-  public void changeType() {
-    int i = builder.wSelect.comboBox1.getSelected() - this.startComboBox1;
-    int j = builder.wSelect.comboBox2.getSelected();
-    Actor localActor1 = builder.selectedActor();
-    Loc localLoc = localActor1.pos.getAbs();
-    Actor localActor2 = insert(this.type[i].item[j].spawn, localLoc, this.type[i].item[j].army, true, this.type[i].item[j].country);
-    if (builder.selectedActor() != localActor1) {
-      this.allActors.remove(localActor1);
-      String str = localActor1.name();
-      localActor1.destroy();
-      localActor2.setName(str);
-    }
-  }
-
-  public void configure() {
-    if (getPlugin("Mission") == null)
-      throw new RuntimeException("PlMisStatic: plugin 'Mission' not found");
-    this.pluginMission = ((PlMission)getPlugin("Mission"));
-    if (this.sectFile == null)
-      throw new RuntimeException("PlMisStatic: field 'sectFile' not defined");
-    SectFile localSectFile = new SectFile(this.sectFile, 0);
-    int i = localSectFile.sections();
-    if (i <= 0)
-      throw new RuntimeException("PlMisStatic: file '" + this.sectFile + "' is empty");
-    this.type = new Type[i];
-    for (int j = 0; j < i; j++) {
-      String str1 = localSectFile.sectionName(j);
-      int k = localSectFile.vars(j);
-      Item[] arrayOfItem = new Item[k];
-      for (int m = 0; m < k; m++) {
-        String str2 = localSectFile.var(j, m);
-        NumberTokenizer localNumberTokenizer = new NumberTokenizer(localSectFile.value(j, m));
-        String str3 = localNumberTokenizer.next((String)null);
-        int n = localNumberTokenizer.next(0, 0, Builder.armyAmount() - 1);
-
-        Class localClass = null;
-        int i1 = str3.indexOf(' ');
-        if (i1 > 0)
-          str3 = str3.substring(0, i1);
-        try {
-          localClass = ObjIO.classForName(str3);
-        } catch (Exception localException1) {
-          throw new RuntimeException("PlMisStatic: class '" + str3 + "' not found");
+        com.maddox.il2.engine.ActorSpawn actorspawn;
+        java.lang.Class class1 = null;
+        try
+        {
+            class1 = com.maddox.rts.ObjIO.classForName(s1);
         }
-
-        int i2 = str3.lastIndexOf('$');
-        if (i2 >= 0) {
-          String str4 = str3.substring(0, i2);
-          try {
-            ObjIO.classForName(str4);
-          } catch (Exception localException2) {
-            throw new RuntimeException("PlMisStatic: Outer class '" + str4 + "' not found");
-          }
-
+        catch(java.lang.Exception exception)
+        {
+            builder.tipErr("MissionLoad: class '" + s1 + "' not found");
+            return null;
         }
-
-        arrayOfItem[m] = new Item(str2, localClass, n);
-      }
-      this.type[j] = new Type(str1, arrayOfItem);
-    }
-  }
-
-  void viewUpdate()
-  {
-    for (int i = 0; i < this.allActors.size(); i++) {
-      Actor localActor = (Actor)this.allActors.get(i);
-      if ((Actor.isValid(localActor)) && (Property.containsValue(localActor, "builderSpawn")))
-        localActor.drawing(this.viewClasses.containsKey(localActor.getClass()));
-    }
-    if ((Actor.isValid(builder.selectedActor())) && (!builder.selectedActor().isDrawing()))
-      builder.setSelected(null);
-    if (!builder.isFreeView())
-      builder.repaint(); 
-  }
-
-  void viewType(int paramInt, boolean paramBoolean) {
-    int i = this.type[paramInt].item.length;
-    for (int j = 0; j < i; j++) {
-      if (paramBoolean) this.viewClasses.put(this.type[paramInt].item[j].clazz, this.type[paramInt].item[j]); else
-        this.viewClasses.remove(this.type[paramInt].item[j].clazz);
-    }
-    viewUpdate();
-  }
-  void viewType(int paramInt) {
-    viewType(paramInt, this.viewType[paramInt].bChecked);
-  }
-  public void viewTypeAll(boolean paramBoolean) {
-    for (int i = 0; i < this.type.length; i++)
-      if (this.viewType[i].bChecked != paramBoolean) {
-        this.viewType[i].bChecked = paramBoolean;
-        viewType(i, paramBoolean);
-      }
-  }
-
-  private void fillComboBox1()
-  {
-    this.startComboBox1 = builder.wSelect.comboBox1.size();
-    for (int i = 0; i < this.type.length; i++) {
-      builder.wSelect.comboBox1.add(I18N.technic(this.type[i].name));
-    }
-    if (this.startComboBox1 == 0)
-      builder.wSelect.comboBox1.setSelected(0, true, false); 
-  }
-
-  private void fillComboBox2(int paramInt1, int paramInt2) {
-    if ((paramInt1 < this.startComboBox1) || (paramInt1 >= this.startComboBox1 + this.type.length)) {
-      return;
-    }
-    if (builder.wSelect.curFilledType != paramInt1) {
-      builder.wSelect.curFilledType = paramInt1;
-      builder.wSelect.comboBox2.clear(false);
-      for (int i = 0; i < this.type[(paramInt1 - this.startComboBox1)].item.length; i++) {
-        builder.wSelect.comboBox2.add(Property.stringValue(this.type[(paramInt1 - this.startComboBox1)].item[i].clazz, "i18nName", ""));
-      }
-      builder.wSelect.comboBox1.setSelected(paramInt1, true, false);
-    }
-    builder.wSelect.comboBox2.setSelected(paramInt2, true, false);
-
-    fillComboBox2Render(paramInt1, paramInt2);
-  }
-
-  private void fillComboBox2Render(int paramInt1, int paramInt2) {
-    try {
-      Class localClass = this.type[(paramInt1 - this.startComboBox1)].item[paramInt2].clazz;
-      Object localObject;
-      if (PlaneGeneric.class.isAssignableFrom(localClass)) {
-        localObject = (Class)Property.value(localClass, "airClass", null);
-        int i = this.type[(paramInt1 - this.startComboBox1)].item[paramInt2].army;
-        String str1 = null;
-        if (Actor.isValid(builder.selectedActor())) {
-          i = builder.selectedActor().getArmy();
-          str1 = ((PlaneGeneric)builder.selectedActor()).country;
-          this.type[(paramInt1 - this.startComboBox1)].item[paramInt2].country = str1;
-          this.type[(paramInt1 - this.startComboBox1)].item[paramInt2].army = i;
+        actorspawn = (com.maddox.il2.engine.ActorSpawn)com.maddox.rts.Spawn.get(class1.getName(), false);
+        if(actorspawn == null)
+        {
+            builder.tipErr("MissionLoad: ActorSpawn for '" + s1 + "' not found");
+            return null;
         }
-        Regiment localRegiment = Regiment.findFirst(str1, i);
-        String str2 = Aircraft.getPropertyMesh((Class)localObject, localRegiment.country());
-
-        builder.wSelect.setMesh(str2, false);
-
-        if (builder.wSelect.getHierMesh() != null) {
-          PaintScheme localPaintScheme = Aircraft.getPropertyPaintScheme((Class)localObject, localRegiment.country());
-          localPaintScheme.prepareNum((Class)localObject, builder.wSelect.getHierMesh(), localRegiment, (int)(Math.random() * 3.0D), (int)(Math.random() * 3.0D), (int)(Math.random() * 98.0D + 1.0D));
+        spawnArg.clear();
+        if(s != null)
+        {
+            if("NONAME".equals(s))
+                s = null;
+            if(com.maddox.il2.engine.Actor.getByName(s) != null)
+                s = null;
         }
-
-      }
-      else
-      {
-        localObject = Property.stringValue(localClass, "meshName", null);
-        if (localObject == null) {
-          Method localMethod = localClass.getMethod("getMeshNameForEditor", null);
-          localObject = (String)localMethod.invoke(localClass, null);
+        if(i < 0 && i >= com.maddox.il2.builder.Builder.armyAmount())
+        {
+            builder.tipErr("MissionLoad: Wrong actor army '" + i + "'");
+            return null;
         }
-        builder.wSelect.setMesh((String)localObject, true);
-      }
-    } catch (Exception localException) {
-      builder.wSelect.setMesh(null, true);
-    }
-  }
-
-  public String[] actorInfo(Actor paramActor) {
-    Class localClass = paramActor.getClass();
-    for (int i = 0; i < this.type.length; i++) {
-      for (int j = 0; j < this.type[i].item.length; j++) {
-        if (localClass == this.type[i].item[j].clazz) {
-          this._actorInfo[0] = (I18N.technic(this.type[i].name) + "." + Property.stringValue(this.type[i].item[j].clazz, "i18nName", ""));
-
-          float f = Property.floatValue(paramActor, "timeout", 0.0F);
-          if (f > 0.0F)
-            this._actorInfo[1] = timeSecToString(f * 60.0F + (int)(World.getTimeofDay() * 60.0F * 60.0F));
-          else {
-            this._actorInfo[1] = null;
-          }
-          return this._actorInfo;
+        spawnArg.army = i;
+        spawnArg.armyExist = true;
+        spawnArg.country = s2;
+        com.maddox.il2.ai.Chief.new_DELAY_WAKEUP = 0.0F;
+        com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.new_RADIUS_HIDE = 0.0F;
+        if(s2 != null)
+            try
+            {
+                com.maddox.il2.ai.Chief.new_DELAY_WAKEUP = java.lang.Integer.parseInt(s2);
+                com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.new_RADIUS_HIDE = com.maddox.il2.ai.Chief.new_DELAY_WAKEUP;
+            }
+            catch(java.lang.Exception exception1) { }
+        com.maddox.il2.ai.Chief.new_SKILL_IDX = 2;
+        if(s3 != null)
+        {
+            try
+            {
+                com.maddox.il2.ai.Chief.new_SKILL_IDX = java.lang.Integer.parseInt(s3);
+            }
+            catch(java.lang.Exception exception2) { }
+            if(com.maddox.il2.ai.Chief.new_SKILL_IDX < 0 || com.maddox.il2.ai.Chief.new_SKILL_IDX > 3)
+            {
+                builder.tipErr("MissionLoad: Wrong actor skill '" + com.maddox.il2.ai.Chief.new_SKILL_IDX + "'");
+                return null;
+            }
         }
-      }
-    }
-    return null;
-  }
-
-  public void syncSelector()
-  {
-    Actor localActor = builder.selectedActor();
-    Class localClass = localActor.getClass();
-    for (int i = 0; i < this.type.length; i++)
-      for (int j = 0; j < this.type[i].item.length; j++)
-        if (localClass == this.type[i].item[j].clazz) {
-          fillComboBox2(i + this.startComboBox1, j);
-          builder.wSelect.tabsClient.addTab(1, this.tabActor);
-          this.wName.cap.set(Property.stringValue(this.type[i].item[j].clazz, "i18nName", ""));
-          this.wArmy.setSelected(localActor.getArmy(), true, false);
-          int m;
-          if ((localActor instanceof ArtilleryGeneric)) {
-            float f1 = Property.floatValue(localActor, "timeout", 0.0F);
-            this.wTimeOutH.setValue("" + (int)(f1 / 60.0F % 24.0F), false);
-            this.wTimeOutM.setValue("" + (int)(f1 % 60.0F), false);
-            this.wLTimeOutH.showWindow();
-            this.wTimeOutH.showWindow();
-            this.wLTimeOutM.showWindow();
-            this.wTimeOutM.showWindow();
-            m = Property.intValue(localActor, "radius_hide", 0);
-            this.wL1RHide.showWindow();
-            this.wL2RHide.showWindow();
-            this.wRHide.showWindow();
-            this.wRHide.setValue("" + m, false);
-          } else {
-            this.wLTimeOutH.hideWindow();
-            this.wTimeOutH.hideWindow();
-            this.wLTimeOutM.hideWindow();
-            this.wTimeOutM.hideWindow();
-            this.wL1RHide.hideWindow();
-            this.wL2RHide.hideWindow();
-            this.wRHide.hideWindow();
-          }
-          if (PlaneGeneric.class.isAssignableFrom(localClass)) {
-            PlaneGeneric localPlaneGeneric = (PlaneGeneric)localActor;
-            fillCountry(localActor.getArmy(), localPlaneGeneric.country);
-            this.wLCountry.showWindow();
-            this.wCountry.showWindow();
-          } else {
-            this.wLCountry.hideWindow();
-            this.wCountry.hideWindow();
-          }
-          if (((localActor instanceof ShipGeneric)) || ((localActor instanceof BigshipGeneric))) {
-            this.wLSleepM.showWindow();
-            this.wSleepM.showWindow();
-            this.wLSleepS.showWindow();
-            this.wSleepS.showWindow();
-            int k = Property.intValue(localActor, "sleep", 0);
-            this.wSleepM.setValue("" + k / 60 % 99, false);
-            this.wSleepS.setValue("" + k % 60, false);
-            this.wLSkill.showWindow();
-            this.wSkill.showWindow();
-            m = Property.intValue(localActor, "skill", 2);
-            this.wSkill.setSelected(m, true, false);
-            this.wLSlowfire.showWindow();
-            this.wSlowfire.showWindow();
-            float f2 = Property.floatValue(localActor, "slowfire", 1.0F);
-            this.wSlowfire.setValue("" + f2);
-          } else {
-            this.wLSleepM.hideWindow();
-            this.wSleepM.hideWindow();
-            this.wLSleepS.hideWindow();
-            this.wSleepS.hideWindow();
-            this.wLSkill.hideWindow();
-            this.wSkill.hideWindow();
-            this.wLSlowfire.hideWindow();
-            this.wSlowfire.hideWindow();
-          }
-          return;
+        com.maddox.il2.ai.Chief.new_SLOWFIRE_K = 1.0F;
+        if(s4 != null)
+        {
+            try
+            {
+                com.maddox.il2.ai.Chief.new_SLOWFIRE_K = java.lang.Float.parseFloat(s4);
+            }
+            catch(java.lang.Exception exception3) { }
+            if(com.maddox.il2.ai.Chief.new_SLOWFIRE_K < 0.5F || com.maddox.il2.ai.Chief.new_SLOWFIRE_K > 100F)
+            {
+                builder.tipErr("MissionLoad: Wrong actor slowfire '" + com.maddox.il2.ai.Chief.new_SLOWFIRE_K + "'");
+                return null;
+            }
         }
-  }
-
-  private String fillCountry(int paramInt, String paramString)
-  {
-    initCountry();
-    this.wCountry.clear(false);
-    ArrayList localArrayList = this.listCountry[paramInt];
-    for (int i = 0; i < localArrayList.size(); i++) {
-      Country localCountry = (Country)localArrayList.get(i);
-      this.wCountry.add(localCountry.i18nName);
+        p.set(d, d1, 0.0D);
+        spawnArg.point = p;
+        o.set(f, 0.0F, 0.0F);
+        spawnArg.orient = o;
+        com.maddox.il2.engine.Actor actor;
+        actor = actorspawn.actorSpawn(spawnArg);
+        if(actor instanceof com.maddox.il2.objects.vehicles.stationary.SirenGeneric)
+            actor.setArmy(i);
+        if(actor instanceof com.maddox.il2.objects.vehicles.stationary.SmokeGeneric)
+        {
+            p.z = f1;
+            actor.pos.setAbs(p);
+            actor.pos.reset();
+        }
+        builder.align(actor);
+        com.maddox.rts.Property.set(actor, "builderSpawn", "");
+        com.maddox.rts.Property.set(actor, "builderPlugin", this);
+        if(!actor.isRealTimeFlag())
+            actor.interpCancelAll();
+        makeName(actor, s);
+        allActors.add(actor);
+        if(actor instanceof com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric)
+        {
+            com.maddox.rts.Property.set(actor, "timeout", f1);
+            com.maddox.rts.Property.set(actor, "radius_hide", (int)com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.new_RADIUS_HIDE);
+        }
+        if((actor instanceof com.maddox.il2.objects.ships.ShipGeneric) || (actor instanceof com.maddox.il2.objects.ships.BigshipGeneric))
+        {
+            com.maddox.rts.Property.set(actor, "sleep", (int)com.maddox.il2.ai.Chief.new_DELAY_WAKEUP);
+            com.maddox.rts.Property.set(actor, "skill", com.maddox.il2.ai.Chief.new_SKILL_IDX);
+            com.maddox.rts.Property.set(actor, "slowfire", com.maddox.il2.ai.Chief.new_SLOWFIRE_K);
+        }
+        return actor;
+        java.lang.Exception exception4;
+        exception4;
+        java.lang.System.out.println(exception4.getMessage());
+        exception4.printStackTrace();
+        return null;
     }
-    if ((paramString != null) && 
-      (!this.mapCountry[paramInt].containsKey(paramString)))
-      paramString = null;
-    if (paramString == null) {
-      switch (paramInt) { case 0:
-        paramString = "nn"; break;
-      case 1:
-        paramString = "ru"; break;
-      case 2:
-        paramString = "de";
-      }
-    }
-    Integer localInteger = (Integer)this.mapCountry[paramInt].get(paramString);
-    this.wCountry.setSelected(localInteger.intValue(), true, false);
-    return paramString;
-  }
 
-  private void controlResized(GWindowDialogClient paramGWindowDialogClient, GWindow paramGWindow) {
-    if (paramGWindow == null) return;
-    paramGWindow.setSize(paramGWindowDialogClient.win.dx - paramGWindow.win.x - paramGWindowDialogClient.lAF().metric(1.0F), paramGWindow.win.dy);
-  }
-  private void editResized(GWindowDialogClient paramGWindowDialogClient) {
-    controlResized(paramGWindowDialogClient, this.wName);
-    controlResized(paramGWindowDialogClient, this.wArmy);
-    controlResized(paramGWindowDialogClient, this.wCountry);
-  }
-
-  public void createGUI() {
-    fillComboBox1();
-    fillComboBox2(0, 0);
-    builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
-      public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-        int i = Plugin.builder.wSelect.comboBox1.getSelected();
-        if ((i >= 0) && (paramInt1 == 2))
-          PlMisStatic.this.fillComboBox2(i, 0);
-        return false;
-      }
-    });
-    builder.wSelect.comboBox2.addNotifyListener(new GNotifyListener() {
-      public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-        if (paramInt1 != 2)
-          return false;
-        int i = Plugin.builder.wSelect.comboBox1.getSelected();
-        if ((i < PlMisStatic.this.startComboBox1) || (i >= PlMisStatic.this.startComboBox1 + PlMisStatic.this.type.length))
-          return false;
-        int j = Plugin.builder.wSelect.comboBox2.getSelected();
-        PlMisStatic.this.fillComboBox2Render(i, j);
-
-        return false;
-      }
-    });
-    int i = builder.mDisplayFilter.subMenu.size() - 1;
-    while ((i >= 0) && 
-      (this.pluginMission.viewBridge != builder.mDisplayFilter.subMenu.getItem(i)))
+    private com.maddox.il2.engine.Actor insert(com.maddox.il2.engine.ActorSpawn actorspawn, com.maddox.il2.engine.Loc loc, int i, boolean flag, java.lang.String s)
     {
-      i--;
-    }
-    i--;
-    if (i >= 0) {
-      int j = i;
-      i = this.type.length - 1;
-      this.viewType = new ViewItem[this.type.length];
-      while (i >= 0) {
-        localObject = null;
-        if ("de".equals(RTSConf.cur.locale.getLanguage())) {
-          localObject = (ViewItem)builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, builder.mDisplayFilter.subMenu, I18N.technic(this.type[i].name) + " " + i18n("show"), null));
+        spawnArg.clear();
+        spawnArg.point = loc.getPoint();
+        spawnArg.orient = loc.getOrient();
+        spawnArg.army = i;
+        spawnArg.armyExist = true;
+        spawnArg.country = s;
+        com.maddox.il2.engine.Actor actor;
+        actor = actorspawn.actorSpawn(spawnArg);
+        if(actor instanceof com.maddox.il2.objects.vehicles.stationary.SirenGeneric)
+            actor.setArmy(i);
+        builder.align(actor);
+        com.maddox.rts.Property.set(actor, "builderSpawn", "");
+        com.maddox.rts.Property.set(actor, "builderPlugin", this);
+        if(!actor.isRealTimeFlag())
+            actor.interpCancelAll();
+        if(actor instanceof com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric)
+        {
+            com.maddox.rts.Property.set(actor, "timeout", 0.0F);
+            com.maddox.rts.Property.set(actor, "radius_hide", 0);
         }
-        else {
-          localObject = (ViewItem)builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, builder.mDisplayFilter.subMenu, i18n("show") + " " + I18N.technic(this.type[i].name), null));
+        if((actor instanceof com.maddox.il2.objects.ships.ShipGeneric) || (actor instanceof com.maddox.il2.objects.ships.BigshipGeneric))
+        {
+            com.maddox.rts.Property.set(actor, "sleep", 0);
+            com.maddox.rts.Property.set(actor, "skill", 2);
+            com.maddox.rts.Property.set(actor, "slowfire", 1.0F);
         }
-        ((ViewItem)localObject).bChecked = true;
-        this.viewType[i] = localObject;
-        viewType(i, true);
-        i--;
-      }
+        makeName(actor, null);
+        allActors.add(actor);
+        if(flag)
+            builder.setSelected(actor);
+        com.maddox.il2.builder.PlMission.setChanged();
+        return actor;
+        java.lang.Exception exception;
+        exception;
+        java.lang.System.out.println(exception.getMessage());
+        exception.printStackTrace();
+        return null;
     }
 
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)builder.wSelect.tabsClient.create(new GWindowDialogClient() {
-      public void resized() { super.resized(); PlMisStatic.this.editResized(this);
-      }
-    });
-    this.tabActor = builder.wSelect.tabsClient.createTab(i18n("StaticActor"), localGWindowDialogClient);
+    public void insert(com.maddox.il2.engine.Loc loc, boolean flag)
+    {
+        int i = builder.wSelect.comboBox1.getSelected();
+        int j = builder.wSelect.comboBox2.getSelected();
+        if(i < startComboBox1 || i >= startComboBox1 + type.length)
+            return;
+        i -= startComboBox1;
+        if(j < 0 || j >= type[i].item.length)
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.engine.ActorSpawn actorspawn = type[i].item[j].spawn;
+            insert(actorspawn, loc, type[i].item[j].army, flag, type[i].item[j].country);
+            return;
+        }
+    }
 
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 7.0F, 1.3F, i18n("Name"), null));
-    localGWindowDialogClient.addLabel(this.wName = new GWindowLabel(localGWindowDialogClient, 9.0F, 1.0F, 7.0F, 1.3F, "", null));
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, i18n("Army"), null));
-    localGWindowDialogClient.addControl(this.wArmy = new GWindowComboControl(localGWindowDialogClient, 9.0F, 3.0F, 7.0F) {
-      public void afterCreated() { super.afterCreated();
-        setEditable(false);
-        for (int i = 0; i < Builder.armyAmount(); i++)
-          add(I18N.army(Army.name(i))); }
+    public void changeType()
+    {
+        int i = builder.wSelect.comboBox1.getSelected() - startComboBox1;
+        int j = builder.wSelect.comboBox2.getSelected();
+        com.maddox.il2.engine.Actor actor = builder.selectedActor();
+        com.maddox.il2.engine.Loc loc = actor.pos.getAbs();
+        com.maddox.il2.engine.Actor actor1 = insert(type[i].item[j].spawn, loc, type[i].item[j].army, true, type[i].item[j].country);
+        if(builder.selectedActor() != actor)
+        {
+            allActors.remove(actor);
+            java.lang.String s = actor.name();
+            actor.destroy();
+            actor1.setName(s);
+        }
+    }
 
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        Actor localActor = Plugin.builder.selectedActor();
-        int i = getSelected();
-        localActor.setArmy(i);
-        PlMission.setChanged();
-        PlMission.checkShowCurrentArmy();
+    public void configure()
+    {
+        if(com.maddox.il2.builder.PlMisStatic.getPlugin("Mission") == null)
+            throw new RuntimeException("PlMisStatic: plugin 'Mission' not found");
+        pluginMission = (com.maddox.il2.builder.PlMission)com.maddox.il2.builder.PlMisStatic.getPlugin("Mission");
+        if(sectFile == null)
+            throw new RuntimeException("PlMisStatic: field 'sectFile' not defined");
+        com.maddox.rts.SectFile sectfile = new SectFile(sectFile, 0);
+        int i = sectfile.sections();
+        if(i <= 0)
+            throw new RuntimeException("PlMisStatic: file '" + sectFile + "' is empty");
+        type = new com.maddox.il2.builder.Type[i];
+        for(int j = 0; j < i; j++)
+        {
+            java.lang.String s = sectfile.sectionName(j);
+            int k = sectfile.vars(j);
+            com.maddox.il2.builder.Item aitem[] = new com.maddox.il2.builder.Item[k];
+            for(int l = 0; l < k; l++)
+            {
+                java.lang.String s1 = sectfile.var(j, l);
+                com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.value(j, l));
+                java.lang.String s2 = numbertokenizer.next((java.lang.String)null);
+                int i1 = numbertokenizer.next(0, 0, com.maddox.il2.builder.Builder.armyAmount() - 1);
+                java.lang.Class class1 = null;
+                int j1 = s2.indexOf(' ');
+                if(j1 > 0)
+                    s2 = s2.substring(0, j1);
+                try
+                {
+                    class1 = com.maddox.rts.ObjIO.classForName(s2);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    throw new RuntimeException("PlMisStatic: class '" + s2 + "' not found");
+                }
+                int k1 = s2.lastIndexOf('$');
+                if(k1 >= 0)
+                {
+                    java.lang.String s3 = s2.substring(0, k1);
+                    try
+                    {
+                        com.maddox.rts.ObjIO.classForName(s3);
+                    }
+                    catch(java.lang.Exception exception1)
+                    {
+                        throw new RuntimeException("PlMisStatic: Outer class '" + s3 + "' not found");
+                    }
+                }
+                aitem[l] = new Item(s1, class1, i1);
+            }
 
-        Class localClass = localActor.getClass();
-        if (PlaneGeneric.class.isAssignableFrom(localClass)) {
-          PlaneGeneric localPlaneGeneric = (PlaneGeneric)localActor;
-          String str = PlMisStatic.this.fillCountry(i, localPlaneGeneric.country);
-          localPlaneGeneric.country = str;
-          localPlaneGeneric.activateMesh(true);
-          for (int j = 0; j < PlMisStatic.this.type.length; j++) {
-            for (int k = 0; k < PlMisStatic.this.type[j].item.length; k++) {
-              if (localClass == PlMisStatic.this.type[j].item[k].clazz) {
-                PlMisStatic.this.fillComboBox2Render(j + PlMisStatic.this.startComboBox1, k);
+            type[j] = new Type(s, aitem);
+        }
+
+    }
+
+    void viewUpdate()
+    {
+        for(int i = 0; i < allActors.size(); i++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)allActors.get(i);
+            if(com.maddox.il2.engine.Actor.isValid(actor) && com.maddox.rts.Property.containsValue(actor, "builderSpawn"))
+                actor.drawing(viewClasses.containsKey(actor.getClass()));
+        }
+
+        if(com.maddox.il2.engine.Actor.isValid(builder.selectedActor()) && !builder.selectedActor().isDrawing())
+            builder.setSelected(null);
+        if(!builder.isFreeView())
+            builder.repaint();
+    }
+
+    void viewType(int i, boolean flag)
+    {
+        int j = type[i].item.length;
+        for(int k = 0; k < j; k++)
+            if(flag)
+                viewClasses.put(type[i].item[k].clazz, type[i].item[k]);
+            else
+                viewClasses.remove(type[i].item[k].clazz);
+
+        viewUpdate();
+    }
+
+    void viewType(int i)
+    {
+        viewType(i, viewType[i].bChecked);
+    }
+
+    public void viewTypeAll(boolean flag)
+    {
+        for(int i = 0; i < type.length; i++)
+            if(viewType[i].bChecked != flag)
+            {
+                viewType[i].bChecked = flag;
+                viewType(i, flag);
+            }
+
+    }
+
+    private void fillComboBox1()
+    {
+        startComboBox1 = builder.wSelect.comboBox1.size();
+        for(int i = 0; i < type.length; i++)
+            builder.wSelect.comboBox1.add(com.maddox.il2.game.I18N.technic(type[i].name));
+
+        if(startComboBox1 == 0)
+            builder.wSelect.comboBox1.setSelected(0, true, false);
+    }
+
+    private void fillComboBox2(int i, int j)
+    {
+        if(i < startComboBox1 || i >= startComboBox1 + type.length)
+            return;
+        if(builder.wSelect.curFilledType != i)
+        {
+            builder.wSelect.curFilledType = i;
+            builder.wSelect.comboBox2.clear(false);
+            for(int k = 0; k < type[i - startComboBox1].item.length; k++)
+                builder.wSelect.comboBox2.add(com.maddox.rts.Property.stringValue(type[i - startComboBox1].item[k].clazz, "i18nName", ""));
+
+            builder.wSelect.comboBox1.setSelected(i, true, false);
+        }
+        builder.wSelect.comboBox2.setSelected(j, true, false);
+        fillComboBox2Render(i, j);
+    }
+
+    private void fillComboBox2Render(int i, int j)
+    {
+        try
+        {
+            java.lang.Class class1 = type[i - startComboBox1].item[j].clazz;
+            if((com.maddox.il2.objects.vehicles.planes.PlaneGeneric.class).isAssignableFrom(class1))
+            {
+                java.lang.Class class2 = (java.lang.Class)com.maddox.rts.Property.value(class1, "airClass", null);
+                int k = type[i - startComboBox1].item[j].army;
+                java.lang.String s1 = null;
+                if(com.maddox.il2.engine.Actor.isValid(builder.selectedActor()))
+                {
+                    k = builder.selectedActor().getArmy();
+                    s1 = ((com.maddox.il2.objects.vehicles.planes.PlaneGeneric)builder.selectedActor()).country;
+                    type[i - startComboBox1].item[j].country = s1;
+                    type[i - startComboBox1].item[j].army = k;
+                }
+                com.maddox.il2.ai.Regiment regiment = com.maddox.il2.ai.Regiment.findFirst(s1, k);
+                java.lang.String s2 = com.maddox.il2.objects.air.Aircraft.getPropertyMesh(class2, regiment.country());
+                builder.wSelect.setMesh(s2, false);
+                if(builder.wSelect.getHierMesh() != null)
+                {
+                    com.maddox.il2.objects.air.PaintScheme paintscheme = com.maddox.il2.objects.air.Aircraft.getPropertyPaintScheme(class2, regiment.country());
+                    paintscheme.prepareNum(class2, builder.wSelect.getHierMesh(), regiment, (int)(java.lang.Math.random() * 3D), (int)(java.lang.Math.random() * 3D), (int)(java.lang.Math.random() * 98D + 1.0D));
+                }
+            } else
+            {
+                java.lang.String s = com.maddox.rts.Property.stringValue(class1, "meshName", null);
+                if(s == null)
+                {
+                    java.lang.reflect.Method method = class1.getMethod("getMeshNameForEditor", null);
+                    s = (java.lang.String)method.invoke(class1, null);
+                }
+                builder.wSelect.setMesh(s, true);
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            builder.wSelect.setMesh(null, true);
+        }
+    }
+
+    public java.lang.String[] actorInfo(com.maddox.il2.engine.Actor actor)
+    {
+        java.lang.Class class1 = actor.getClass();
+        for(int i = 0; i < type.length; i++)
+        {
+            for(int j = 0; j < type[i].item.length; j++)
+                if(class1 == type[i].item[j].clazz)
+                {
+                    _actorInfo[0] = com.maddox.il2.game.I18N.technic(type[i].name) + "." + com.maddox.rts.Property.stringValue(type[i].item[j].clazz, "i18nName", "");
+                    float f = com.maddox.rts.Property.floatValue(actor, "timeout", 0.0F);
+                    if(f > 0.0F)
+                        _actorInfo[1] = com.maddox.il2.builder.PlMisStatic.timeSecToString(f * 60F + (float)(int)(com.maddox.il2.ai.World.getTimeofDay() * 60F * 60F));
+                    else
+                        _actorInfo[1] = null;
+                    return _actorInfo;
+                }
+
+        }
+
+        return null;
+    }
+
+    public void syncSelector()
+    {
+        com.maddox.il2.engine.Actor actor = builder.selectedActor();
+        java.lang.Class class1 = actor.getClass();
+        for(int i = 0; i < type.length; i++)
+        {
+            for(int j = 0; j < type[i].item.length; j++)
+                if(class1 == type[i].item[j].clazz)
+                {
+                    fillComboBox2(i + startComboBox1, j);
+                    builder.wSelect.tabsClient.addTab(1, tabActor);
+                    wName.cap.set(com.maddox.rts.Property.stringValue(type[i].item[j].clazz, "i18nName", ""));
+                    wArmy.setSelected(actor.getArmy(), true, false);
+                    if(actor instanceof com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric)
+                    {
+                        float f = com.maddox.rts.Property.floatValue(actor, "timeout", 0.0F);
+                        wTimeOutH.setValue("" + (int)((f / 60F) % 24F), false);
+                        wTimeOutM.setValue("" + (int)(f % 60F), false);
+                        wLTimeOutH.showWindow();
+                        wTimeOutH.showWindow();
+                        wLTimeOutM.showWindow();
+                        wTimeOutM.showWindow();
+                        int l = com.maddox.rts.Property.intValue(actor, "radius_hide", 0);
+                        wL1RHide.showWindow();
+                        wL2RHide.showWindow();
+                        wRHide.showWindow();
+                        wRHide.setValue("" + l, false);
+                    } else
+                    {
+                        wLTimeOutH.hideWindow();
+                        wTimeOutH.hideWindow();
+                        wLTimeOutM.hideWindow();
+                        wTimeOutM.hideWindow();
+                        wL1RHide.hideWindow();
+                        wL2RHide.hideWindow();
+                        wRHide.hideWindow();
+                    }
+                    if((com.maddox.il2.objects.vehicles.planes.PlaneGeneric.class).isAssignableFrom(class1))
+                    {
+                        com.maddox.il2.objects.vehicles.planes.PlaneGeneric planegeneric = (com.maddox.il2.objects.vehicles.planes.PlaneGeneric)actor;
+                        fillCountry(actor.getArmy(), planegeneric.country);
+                        wLCountry.showWindow();
+                        wCountry.showWindow();
+                    } else
+                    {
+                        wLCountry.hideWindow();
+                        wCountry.hideWindow();
+                    }
+                    if((actor instanceof com.maddox.il2.objects.ships.ShipGeneric) || (actor instanceof com.maddox.il2.objects.ships.BigshipGeneric))
+                    {
+                        wLSleepM.showWindow();
+                        wSleepM.showWindow();
+                        wLSleepS.showWindow();
+                        wSleepS.showWindow();
+                        int k = com.maddox.rts.Property.intValue(actor, "sleep", 0);
+                        wSleepM.setValue("" + (k / 60) % 99, false);
+                        wSleepS.setValue("" + k % 60, false);
+                        wLSkill.showWindow();
+                        wSkill.showWindow();
+                        int i1 = com.maddox.rts.Property.intValue(actor, "skill", 2);
+                        wSkill.setSelected(i1, true, false);
+                        wLSlowfire.showWindow();
+                        wSlowfire.showWindow();
+                        float f1 = com.maddox.rts.Property.floatValue(actor, "slowfire", 1.0F);
+                        wSlowfire.setValue("" + f1);
+                    } else
+                    {
+                        wLSleepM.hideWindow();
+                        wSleepM.hideWindow();
+                        wLSleepS.hideWindow();
+                        wSleepS.hideWindow();
+                        wLSkill.hideWindow();
+                        wSkill.hideWindow();
+                        wLSlowfire.hideWindow();
+                        wSlowfire.hideWindow();
+                    }
+                    return;
+                }
+
+        }
+
+    }
+
+    private java.lang.String fillCountry(int i, java.lang.String s)
+    {
+        initCountry();
+        wCountry.clear(false);
+        java.util.ArrayList arraylist = listCountry[i];
+        for(int j = 0; j < arraylist.size(); j++)
+        {
+            com.maddox.il2.builder.Country country = (com.maddox.il2.builder.Country)arraylist.get(j);
+            wCountry.add(country.i18nName);
+        }
+
+        if(s != null && !mapCountry[i].containsKey(s))
+            s = null;
+        if(s == null)
+            switch(i)
+            {
+            case 0: // '\0'
+                s = "nn";
                 break;
-              }
+
+            case 1: // '\001'
+                s = "ru";
+                break;
+
+            case 2: // '\002'
+                s = "de";
+                break;
             }
-          }
-        }
-        return false;
-      }
-    });
-    localGWindowDialogClient.addLabel(this.wLCountry = new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, I18N.gui("neta.Country"), null));
-    localGWindowDialogClient.addControl(this.wCountry = new GWindowComboControl(localGWindowDialogClient, 9.0F, 5.0F, 7.0F) {
-      public void afterCreated() { super.afterCreated();
-        setEditable(false); }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        Actor localActor = Plugin.builder.selectedActor();
-        Class localClass = localActor.getClass();
-        if (!PlaneGeneric.class.isAssignableFrom(localClass))
-          return false;
-        int i = getSelected();
-        PlMisStatic.Country localCountry = (PlMisStatic.Country)PlMisStatic.this.listCountry[localActor.getArmy()].get(i);
-        PlaneGeneric localPlaneGeneric = (PlaneGeneric)localActor;
-        localPlaneGeneric.country = localCountry.name;
-        localPlaneGeneric.activateMesh(true);
-        for (int j = 0; j < PlMisStatic.this.type.length; j++) {
-          for (int k = 0; k < PlMisStatic.this.type[j].item.length; k++) {
-            if (localClass == PlMisStatic.this.type[j].item[k].clazz) {
-              PlMisStatic.this.fillComboBox2Render(j + PlMisStatic.this.startComboBox1, k);
-              break;
-            }
-          }
-        }
-        return false;
-      }
-    });
-    Object localObject = localGWindowDialogClient;
-    ((GWindowDialogClient)localObject).addLabel(this.wLTimeOutH = new GWindowLabel((GWindow)localObject, 1.0F, 5.0F, 7.0F, 1.3F, i18n("TimeOut"), null));
-    ((GWindowDialogClient)localObject).addControl(this.wTimeOutH = new GWindowEditControl((GWindow)localObject, 9.0F, 5.0F, 2.0F, 1.3F, "") {
-      public void afterCreated() { super.afterCreated();
-        this.bNumericOnly = true;
-        this.bDelayedNotify = true; }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        PlMisStatic.this.getTimeOut();
-        return false;
-      }
-    });
-    ((GWindowDialogClient)localObject).addLabel(this.wLTimeOutM = new GWindowLabel((GWindow)localObject, 11.2F, 5.0F, 1.0F, 1.3F, ":", null));
-    ((GWindowDialogClient)localObject).addControl(this.wTimeOutM = new GWindowEditControl((GWindow)localObject, 11.5F, 5.0F, 2.0F, 1.3F, "") {
-      public void afterCreated() { super.afterCreated();
-        this.bNumericOnly = true;
-        this.bDelayedNotify = true; }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        PlMisStatic.this.getTimeOut();
-        return false;
-      }
-    });
-    ((GWindowDialogClient)localObject).addLabel(this.wL1RHide = new GWindowLabel((GWindow)localObject, 1.0F, 7.0F, 7.0F, 1.3F, i18n("RHide"), null));
-    ((GWindowDialogClient)localObject).addLabel(this.wL2RHide = new GWindowLabel((GWindow)localObject, 14.0F, 7.0F, 4.0F, 1.3F, i18n("[M]"), null));
-    ((GWindowDialogClient)localObject).addControl(this.wRHide = new GWindowEditControl((GWindow)localObject, 9.0F, 7.0F, 4.0F, 1.3F, "") {
-      public void afterCreated() { super.afterCreated();
-        this.bNumericOnly = true;
-        this.bDelayedNotify = true; }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        Actor localActor = Plugin.builder.selectedActor();
-        int i = Property.intValue(localActor, "radius_hide", 0);
-        String str = getValue();
-        try {
-          i = (int)Double.parseDouble(str);
-          if (i < 0) {
-            i = 0;
-            setValue("" + i, false);
-          }
-        } catch (Exception localException) {
-          setValue("" + i, false);
-          return false;
-        }
-        Property.set(localActor, "radius_hide", i);
-        PlMission.setChanged();
-        return false;
-      }
-    });
-    localGWindowDialogClient.addLabel(this.wLSleepM = new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 7.0F, 1.3F, i18n("Sleep"), null));
-    localGWindowDialogClient.addControl(this.wSleepM = new GWindowEditControl(localGWindowDialogClient, 9.0F, 5.0F, 2.0F, 1.3F, "") {
-      public void afterCreated() { super.afterCreated();
-        this.bNumericOnly = true;
-        this.bDelayedNotify = true; }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        PlMisStatic.this.getSleep();
-        return false;
-      }
-    });
-    localGWindowDialogClient.addLabel(this.wLSleepS = new GWindowLabel(localGWindowDialogClient, 11.2F, 5.0F, 1.0F, 1.3F, ":", null));
-    localGWindowDialogClient.addControl(this.wSleepS = new GWindowEditControl(localGWindowDialogClient, 11.5F, 5.0F, 2.0F, 1.3F, "") {
-      public void afterCreated() { super.afterCreated();
-        this.bNumericOnly = true;
-        this.bDelayedNotify = true; }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        PlMisStatic.this.getSleep();
-        return false;
-      }
-    });
-    localGWindowDialogClient.addLabel(this.wLSkill = new GWindowLabel(localGWindowDialogClient, 1.0F, 7.0F, 7.0F, 1.3F, i18n("Skill"), null));
-    localGWindowDialogClient.addControl(this.wSkill = new GWindowComboControl(localGWindowDialogClient, 9.0F, 7.0F, 7.0F) {
-      public void afterCreated() { super.afterCreated();
-        setEditable(false);
-        add(Plugin.i18n("Rookie"));
-        add(Plugin.i18n("Average"));
-        add(Plugin.i18n("Veteran"));
-        add(Plugin.i18n("Ace")); }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        Actor localActor = Plugin.builder.selectedActor();
-        Property.set(localActor, "skill", getSelected());
-        PlMission.setChanged();
-        return false;
-      }
-    });
-    localGWindowDialogClient.addLabel(this.wLSlowfire = new GWindowLabel(localGWindowDialogClient, 1.0F, 9.0F, 7.0F, 1.3F, i18n("Slowfire"), null));
-    localGWindowDialogClient.addControl(this.wSlowfire = new GWindowEditControl(localGWindowDialogClient, 9.0F, 9.0F, 3.0F, 1.3F, "") {
-      public void afterCreated() { super.afterCreated();
-        this.bNumericOnly = (this.bNumericFloat = 1);
-        this.bDelayedNotify = true; }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        String str = getValue();
-        float f = 1.0F;
-        try {
-          f = Float.parseFloat(str); } catch (Exception localException) {
-        }
-        if (f < 0.5F) f = 0.5F;
-        if (f > 100.0F) f = 100.0F;
-        setValue("" + f, false);
-        Actor localActor = Plugin.builder.selectedActor();
-        Property.set(localActor, "slowfire", f);
-        PlMission.setChanged();
-        return false;
-      } } );
-  }
-
-  private void getTimeOut() {
-    String str = this.wTimeOutH.getValue();
-    double d1 = 0.0D;
-    try { d1 = Double.parseDouble(str); } catch (Exception localException1) {
+        java.lang.Integer integer = (java.lang.Integer)mapCountry[i].get(s);
+        wCountry.setSelected(integer.intValue(), true, false);
+        return s;
     }
-    if (d1 < 0.0D) d1 = 0.0D;
-    if (d1 > 12.0D) d1 = 12.0D;
-    str = this.wTimeOutM.getValue();
-    double d2 = 0.0D;
-    try { d2 = Double.parseDouble(str); } catch (Exception localException2) {
-    }
-    if (d2 < 0.0D) d2 = 0.0D;
-    if (d2 > 60.0D) d2 = 60.0D;
-    float f = (float)(d1 * 60.0D + d2);
-    Actor localActor = builder.selectedActor();
-    Property.set(localActor, "timeout", f);
-    PlMission.setChanged();
-  }
-  private void getSleep() {
-    String str = this.wSleepM.getValue();
-    double d1 = 0.0D;
-    try { d1 = Double.parseDouble(str); } catch (Exception localException1) {
-    }
-    if (d1 < 0.0D) d1 = 0.0D;
-    if (d1 > 99.0D) d1 = 99.0D;
-    str = this.wSleepS.getValue();
-    double d2 = 0.0D;
-    try { d2 = Double.parseDouble(str); } catch (Exception localException2) {
-    }
-    if (d2 < 0.0D) d2 = 0.0D;
-    if (d2 > 60.0D) d2 = 60.0D;
-    Actor localActor = builder.selectedActor();
-    Property.set(localActor, "sleep", (int)(d1 * 60.0D + d2));
-    PlMission.setChanged();
-  }
 
-  public String mis_getProperties(Actor paramActor) {
-    Orient localOrient1 = new Orient();
-    String str1 = "";
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
-    if ((i < this.startComboBox1) || (i >= this.startComboBox1 + this.type.length)) {
-      return str1;
-    }
-    i -= this.startComboBox1;
-    if ((j < 0) || (j >= this.type[i].item.length)) {
-      return str1;
-    }
-    if ((Actor.isValid(paramActor)) && (Property.containsValue(paramActor, "builderSpawn"))) {
-      Point3d localPoint3d = paramActor.pos.getAbsPoint();
-      Orient localOrient2 = paramActor.pos.getAbsOrient();
-      localOrient1.set(localOrient2);
-      localOrient1.wrap360();
-      float f1 = Property.floatValue(paramActor, "timeout", 0.0F);
-      if ((paramActor instanceof PlaneGeneric)) {
-        String str2 = ((PlaneGeneric)paramActor).country;
-        str1 = " 1_" + paramActor.name() + " " + ObjIO.classGetName(paramActor.getClass()) + " " + paramActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1 + " " + str2;
-      }
-      else
-      {
-        int k;
-        if (((paramActor instanceof ShipGeneric)) || ((paramActor instanceof BigshipGeneric))) {
-          k = Property.intValue(paramActor, "sleep", 0);
-          int m = Property.intValue(paramActor, "skill", 2);
-          float f2 = Property.floatValue(paramActor, "slowfire", 1.0F);
-          str1 = " 1_" + paramActor.name() + " " + ObjIO.classGetName(paramActor.getClass()) + " " + paramActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1 + " " + k + " " + m + " " + f2;
-        }
-        else if ((paramActor instanceof ArtilleryGeneric)) {
-          k = Property.intValue(paramActor, "radius_hide", 0);
-          str1 = " 1_" + paramActor.name() + " " + ObjIO.classGetName(paramActor.getClass()) + " " + paramActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1 + " " + k;
-        }
-        else if ((paramActor instanceof SmokeGeneric)) {
-          str1 = " 1_" + paramActor.name() + " " + ObjIO.classGetName(paramActor.getClass()) + " " + paramActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + formatValue(localPoint3d.z);
-        }
-        else
+    private void controlResized(com.maddox.gwindow.GWindowDialogClient gwindowdialogclient, com.maddox.gwindow.GWindow gwindow)
+    {
+        if(gwindow == null)
         {
-          str1 = " 1_" + paramActor.name() + " " + ObjIO.classGetName(paramActor.getClass()) + " " + paramActor.getArmy() + " " + formatPos(localPoint3d.x, localPoint3d.y, localOrient1.azimut()) + " " + f1;
+            return;
+        } else
+        {
+            gwindow.setSize(gwindowdialogclient.win.dx - gwindow.win.x - gwindowdialogclient.lAF().metric(1.0F), gwindow.win.dy);
+            return;
         }
-      }
     }
-    return str1;
-  }
 
-  public Actor mis_insert(Loc paramLoc, String paramString) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
-    if ((i < this.startComboBox1) || (i >= this.startComboBox1 + this.type.length)) {
-      return null;
-    }
-    i -= this.startComboBox1;
-    if ((j < 0) || (j >= this.type[i].item.length)) {
-      return null;
-    }
-    NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramString);
-    String str1 = localNumberTokenizer.next("");
-    String str2 = localNumberTokenizer.next("");
-    int k = localNumberTokenizer.next(0);
-    double d1 = localNumberTokenizer.next(0.0D);
-    double d2 = localNumberTokenizer.next(0.0D);
-    d1 = paramLoc.getPoint().x;
-    d2 = paramLoc.getPoint().y;
-    Actor localActor = insert(null, str2, k, d1, d2, localNumberTokenizer.next(0.0F), localNumberTokenizer.next(0.0F), localNumberTokenizer.next((String)null), localNumberTokenizer.next((String)null), localNumberTokenizer.next((String)null));
-    return localActor;
-  }
-
-  public boolean mis_validateSelected(int paramInt1, int paramInt2) {
-    if ((paramInt1 < this.startComboBox1) || (paramInt1 >= this.startComboBox1 + this.type.length)) {
-      return false;
-    }
-    paramInt1 -= this.startComboBox1;
-
-    return (paramInt2 >= 0) && (paramInt2 < this.type[paramInt1].item.length);
-  }
-
-  static
-  {
-    Property.set(PlMisStatic.class, "name", "MisStatic");
-  }
-
-  class ViewItem extends GWindowMenuItem
-  {
-    int indx;
-
-    public void execute()
+    private void editResized(com.maddox.gwindow.GWindowDialogClient gwindowdialogclient)
     {
-      this.bChecked = (!this.bChecked);
-      PlMisStatic.this.viewType(this.indx);
+        controlResized(gwindowdialogclient, wName);
+        controlResized(gwindowdialogclient, wArmy);
+        controlResized(gwindowdialogclient, wCountry);
     }
-    public ViewItem(int paramGWindowMenu, GWindowMenu paramString1, String paramString2, String arg5) {
-      super(paramString2, str);
-      this.indx = paramGWindowMenu;
-    }
-  }
 
-  static class Type
-  {
-    public String name;
-    public PlMisStatic.Item[] item;
-
-    public Type(String paramString, PlMisStatic.Item[] paramArrayOfItem)
+    public void createGUI()
     {
-      this.name = paramString; this.item = paramArrayOfItem;
-    }
-  }
+        fillComboBox1();
+        fillComboBox2(0, 0);
+        builder.wSelect.comboBox1.addNotifyListener(new com.maddox.gwindow.GNotifyListener() {
 
-  static class Item
-  {
-    public String name;
-    public Class clazz;
-    public int army;
-    public ActorSpawn spawn;
-    public String country;
-
-    public Item(String paramString, Class paramClass, int paramInt)
-    {
-      this.name = paramString; this.clazz = paramClass; this.army = paramInt;
-      if (paramClass != null) {
-        this.spawn = ((ActorSpawn)Spawn.get(paramClass.getName()));
-        String str1 = I18N.technic(paramString);
-        if (str1.equals(paramString)) {
-          str1 = Property.stringValue(paramClass, "i18nName", str1);
-          if ("Plane".equals(str1)) {
-            Class localClass = (Class)Property.value(paramClass, "airClass", null);
-            if (localClass != null) {
-              String str2 = Property.stringValue(localClass, "keyName", null);
-              if (str2 != null)
-                str1 = I18N.plane(str2);
+            public boolean notify(com.maddox.gwindow.GWindow gwindow, int k, int l)
+            {
+                int i1 = com.maddox.il2.builder.Plugin.builder.wSelect.comboBox1.getSelected();
+                if(i1 >= 0 && k == 2)
+                    fillComboBox2(i1, 0);
+                return false;
             }
-          }
-        }
-        Property.set(paramClass, "i18nName", str1);
-      }
-    }
-  }
 
-  static class Country
-  {
-    public String name;
-    public String i18nName;
-  }
+        }
+);
+        builder.wSelect.comboBox2.addNotifyListener(new com.maddox.gwindow.GNotifyListener() {
+
+            public boolean notify(com.maddox.gwindow.GWindow gwindow, int k, int l)
+            {
+                if(k != 2)
+                    return false;
+                int i1 = com.maddox.il2.builder.Plugin.builder.wSelect.comboBox1.getSelected();
+                if(i1 < startComboBox1 || i1 >= startComboBox1 + type.length)
+                {
+                    return false;
+                } else
+                {
+                    int j1 = com.maddox.il2.builder.Plugin.builder.wSelect.comboBox2.getSelected();
+                    fillComboBox2Render(i1, j1);
+                    return false;
+                }
+            }
+
+        }
+);
+        int i;
+        for(i = builder.mDisplayFilter.subMenu.size() - 1; i >= 0 && pluginMission.viewBridge != builder.mDisplayFilter.subMenu.getItem(i); i--);
+        if(--i >= 0)
+        {
+            int j = i;
+            i = type.length - 1;
+            viewType = new com.maddox.il2.builder.ViewItem[type.length];
+            for(; i >= 0; i--)
+            {
+                com.maddox.il2.builder.ViewItem viewitem = null;
+                if("de".equals(com.maddox.rts.RTSConf.cur.locale.getLanguage()))
+                    viewitem = (com.maddox.il2.builder.ViewItem)builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, builder.mDisplayFilter.subMenu, com.maddox.il2.game.I18N.technic(type[i].name) + " " + com.maddox.il2.builder.PlMisStatic.i18n("show"), null));
+                else
+                    viewitem = (com.maddox.il2.builder.ViewItem)builder.mDisplayFilter.subMenu.addItem(j, new ViewItem(i, builder.mDisplayFilter.subMenu, com.maddox.il2.builder.PlMisStatic.i18n("show") + " " + com.maddox.il2.game.I18N.technic(type[i].name), null));
+                viewitem.bChecked = true;
+                viewType[i] = viewitem;
+                viewType(i, true);
+            }
+
+        }
+        com.maddox.gwindow.GWindowDialogClient gwindowdialogclient = (com.maddox.gwindow.GWindowDialogClient)builder.wSelect.tabsClient.create(new com.maddox.gwindow.GWindowDialogClient() {
+
+            public void resized()
+            {
+                super.resized();
+                editResized(this);
+            }
+
+        }
+);
+        tabActor = builder.wSelect.tabsClient.createTab(com.maddox.il2.builder.PlMisStatic.i18n("StaticActor"), gwindowdialogclient);
+        gwindowdialogclient.addLabel(new GWindowLabel(gwindowdialogclient, 1.0F, 1.0F, 7F, 1.3F, com.maddox.il2.builder.PlMisStatic.i18n("Name"), null));
+        gwindowdialogclient.addLabel(wName = new GWindowLabel(gwindowdialogclient, 9F, 1.0F, 7F, 1.3F, "", null));
+        gwindowdialogclient.addLabel(new GWindowLabel(gwindowdialogclient, 1.0F, 3F, 7F, 1.3F, com.maddox.il2.builder.PlMisStatic.i18n("Army"), null));
+        gwindowdialogclient.addControl(wArmy = new com.maddox.gwindow.GWindowComboControl(gwindowdialogclient, 9F, 3F, 7F) {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                setEditable(false);
+                for(int k = 0; k < com.maddox.il2.builder.Builder.armyAmount(); k++)
+                    add(com.maddox.il2.game.I18N.army(com.maddox.il2.ai.Army.name(k)));
+
+            }
+
+            public boolean notify(int k, int l)
+            {
+                if(k != 2)
+                    return false;
+                com.maddox.il2.engine.Actor actor = com.maddox.il2.builder.Plugin.builder.selectedActor();
+                int i1 = getSelected();
+                actor.setArmy(i1);
+                com.maddox.il2.builder.PlMission.setChanged();
+                com.maddox.il2.builder.PlMission.checkShowCurrentArmy();
+                java.lang.Class class1 = actor.getClass();
+                if((com.maddox.il2.builder.PlMisStatic.class$com$maddox$il2$objects$vehicles$planes$PlaneGeneric != null ? com.maddox.il2.builder.PlMisStatic.class$com$maddox$il2$objects$vehicles$planes$PlaneGeneric : (com.maddox.il2.builder.PlMisStatic.class$com$maddox$il2$objects$vehicles$planes$PlaneGeneric = com.maddox.il2.builder.PlMisStatic._mthclass$("com.maddox.il2.objects.vehicles.planes.PlaneGeneric"))).isAssignableFrom(class1))
+                {
+                    com.maddox.il2.objects.vehicles.planes.PlaneGeneric planegeneric = (com.maddox.il2.objects.vehicles.planes.PlaneGeneric)actor;
+                    java.lang.String s = fillCountry(i1, planegeneric.country);
+                    planegeneric.country = s;
+                    planegeneric.activateMesh(true);
+label0:
+                    for(int j1 = 0; j1 < type.length; j1++)
+                    {
+                        int k1 = 0;
+                        do
+                        {
+                            if(k1 >= type[j1].item.length)
+                                continue label0;
+                            if(class1 == type[j1].item[k1].clazz)
+                            {
+                                fillComboBox2Render(j1 + startComboBox1, k1);
+                                continue label0;
+                            }
+                            k1++;
+                        } while(true);
+                    }
+
+                }
+                return false;
+            }
+
+        }
+);
+        gwindowdialogclient.addLabel(wLCountry = new GWindowLabel(gwindowdialogclient, 1.0F, 5F, 7F, 1.3F, com.maddox.il2.game.I18N.gui("neta.Country"), null));
+        gwindowdialogclient.addControl(wCountry = new com.maddox.gwindow.GWindowComboControl(gwindowdialogclient, 9F, 5F, 7F) {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                setEditable(false);
+            }
+
+            public boolean notify(int k, int l)
+            {
+                if(k != 2)
+                    return false;
+                com.maddox.il2.engine.Actor actor = com.maddox.il2.builder.Plugin.builder.selectedActor();
+                java.lang.Class class1 = actor.getClass();
+                if(!(com.maddox.il2.builder.PlMisStatic.class$com$maddox$il2$objects$vehicles$planes$PlaneGeneric != null ? com.maddox.il2.builder.PlMisStatic.class$com$maddox$il2$objects$vehicles$planes$PlaneGeneric : (com.maddox.il2.builder.PlMisStatic.class$com$maddox$il2$objects$vehicles$planes$PlaneGeneric = com.maddox.il2.builder.PlMisStatic._mthclass$("com.maddox.il2.objects.vehicles.planes.PlaneGeneric"))).isAssignableFrom(class1))
+                    return false;
+                int i1 = getSelected();
+                com.maddox.il2.builder.Country country = (com.maddox.il2.builder.Country)listCountry[actor.getArmy()].get(i1);
+                com.maddox.il2.objects.vehicles.planes.PlaneGeneric planegeneric = (com.maddox.il2.objects.vehicles.planes.PlaneGeneric)actor;
+                planegeneric.country = country.name;
+                planegeneric.activateMesh(true);
+label0:
+                for(int j1 = 0; j1 < type.length; j1++)
+                {
+                    int k1 = 0;
+                    do
+                    {
+                        if(k1 >= type[j1].item.length)
+                            continue label0;
+                        if(class1 == type[j1].item[k1].clazz)
+                        {
+                            fillComboBox2Render(j1 + startComboBox1, k1);
+                            continue label0;
+                        }
+                        k1++;
+                    } while(true);
+                }
+
+                return false;
+            }
+
+        }
+);
+        com.maddox.gwindow.GWindowDialogClient gwindowdialogclient1 = gwindowdialogclient;
+        gwindowdialogclient1.addLabel(wLTimeOutH = new GWindowLabel(gwindowdialogclient1, 1.0F, 5F, 7F, 1.3F, com.maddox.il2.builder.PlMisStatic.i18n("TimeOut"), null));
+        gwindowdialogclient1.addControl(wTimeOutH = new com.maddox.gwindow.GWindowEditControl(gwindowdialogclient1, 9F, 5F, 2.0F, 1.3F, "") {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                bNumericOnly = true;
+                bDelayedNotify = true;
+            }
+
+            public boolean notify(int k, int l)
+            {
+                if(k != 2)
+                {
+                    return false;
+                } else
+                {
+                    getTimeOut();
+                    return false;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient1.addLabel(wLTimeOutM = new GWindowLabel(gwindowdialogclient1, 11.2F, 5F, 1.0F, 1.3F, ":", null));
+        gwindowdialogclient1.addControl(wTimeOutM = new com.maddox.gwindow.GWindowEditControl(gwindowdialogclient1, 11.5F, 5F, 2.0F, 1.3F, "") {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                bNumericOnly = true;
+                bDelayedNotify = true;
+            }
+
+            public boolean notify(int k, int l)
+            {
+                if(k != 2)
+                {
+                    return false;
+                } else
+                {
+                    getTimeOut();
+                    return false;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient1.addLabel(wL1RHide = new GWindowLabel(gwindowdialogclient1, 1.0F, 7F, 7F, 1.3F, com.maddox.il2.builder.PlMisStatic.i18n("RHide"), null));
+        gwindowdialogclient1.addLabel(wL2RHide = new GWindowLabel(gwindowdialogclient1, 14F, 7F, 4F, 1.3F, com.maddox.il2.builder.PlMisStatic.i18n("[M]"), null));
+        gwindowdialogclient1.addControl(wRHide = new com.maddox.gwindow.GWindowEditControl(gwindowdialogclient1, 9F, 7F, 4F, 1.3F, "") {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                bNumericOnly = true;
+                bDelayedNotify = true;
+            }
+
+            public boolean notify(int k, int l)
+            {
+                if(k != 2)
+                    return false;
+                com.maddox.il2.engine.Actor actor = com.maddox.il2.builder.Plugin.builder.selectedActor();
+                int i1 = com.maddox.rts.Property.intValue(actor, "radius_hide", 0);
+                java.lang.String s = getValue();
+                try
+                {
+                    i1 = (int)java.lang.Double.parseDouble(s);
+                    if(i1 < 0)
+                    {
+                        i1 = 0;
+                        setValue("" + i1, false);
+                    }
+                }
+                catch(java.lang.Exception exception)
+                {
+                    setValue("" + i1, false);
+                    return false;
+                }
+                com.maddox.rts.Property.set(actor, "radius_hide", i1);
+                com.maddox.il2.builder.PlMission.setChanged();
+                return false;
+            }
+
+        }
+);
+        gwindowdialogclient.addLabel(wLSleepM = new GWindowLabel(gwindowdialogclient, 1.0F, 5F, 7F, 1.3F, com.maddox.il2.builder.PlMisStatic.i18n("Sleep"), null));
+        gwindowdialogclient.addControl(wSleepM = new com.maddox.gwindow.GWindowEditControl(gwindowdialogclient, 9F, 5F, 2.0F, 1.3F, "") {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                bNumericOnly = true;
+                bDelayedNotify = true;
+            }
+
+            public boolean notify(int k, int l)
+            {
+                if(k != 2)
+                {
+                    return false;
+                } else
+                {
+                    getSleep();
+                    return false;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addLabel(wLSleepS = new GWindowLabel(gwindowdialogclient, 11.2F, 5F, 1.0F, 1.3F, ":", null));
+        gwindowdialogclient.addControl(wSleepS = new com.maddox.gwindow.GWindowEditControl(gwindowdialogclient, 11.5F, 5F, 2.0F, 1.3F, "") {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                bNumericOnly = true;
+                bDelayedNotify = true;
+            }
+
+            public boolean notify(int k, int l)
+            {
+                if(k != 2)
+                {
+                    return false;
+                } else
+                {
+                    getSleep();
+                    return false;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addLabel(wLSkill = new GWindowLabel(gwindowdialogclient, 1.0F, 7F, 7F, 1.3F, com.maddox.il2.builder.PlMisStatic.i18n("Skill"), null));
+        gwindowdialogclient.addControl(wSkill = new com.maddox.gwindow.GWindowComboControl(gwindowdialogclient, 9F, 7F, 7F) {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                setEditable(false);
+                add(com.maddox.il2.builder.Plugin.i18n("Rookie"));
+                add(com.maddox.il2.builder.Plugin.i18n("Average"));
+                add(com.maddox.il2.builder.Plugin.i18n("Veteran"));
+                add(com.maddox.il2.builder.Plugin.i18n("Ace"));
+            }
+
+            public boolean notify(int k, int l)
+            {
+                if(k != 2)
+                {
+                    return false;
+                } else
+                {
+                    com.maddox.il2.engine.Actor actor = com.maddox.il2.builder.Plugin.builder.selectedActor();
+                    com.maddox.rts.Property.set(actor, "skill", getSelected());
+                    com.maddox.il2.builder.PlMission.setChanged();
+                    return false;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addLabel(wLSlowfire = new GWindowLabel(gwindowdialogclient, 1.0F, 9F, 7F, 1.3F, com.maddox.il2.builder.PlMisStatic.i18n("Slowfire"), null));
+        gwindowdialogclient.addControl(wSlowfire = new com.maddox.gwindow.GWindowEditControl(gwindowdialogclient, 9F, 9F, 3F, 1.3F, "") {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                bNumericOnly = bNumericFloat = true;
+                bDelayedNotify = true;
+            }
+
+            public boolean notify(int k, int l)
+            {
+                if(k != 2)
+                    return false;
+                java.lang.String s = getValue();
+                float f = 1.0F;
+                try
+                {
+                    f = java.lang.Float.parseFloat(s);
+                }
+                catch(java.lang.Exception exception) { }
+                if(f < 0.5F)
+                    f = 0.5F;
+                if(f > 100F)
+                    f = 100F;
+                setValue("" + f, false);
+                com.maddox.il2.engine.Actor actor = com.maddox.il2.builder.Plugin.builder.selectedActor();
+                com.maddox.rts.Property.set(actor, "slowfire", f);
+                com.maddox.il2.builder.PlMission.setChanged();
+                return false;
+            }
+
+        }
+);
+    }
+
+    private void getTimeOut()
+    {
+        java.lang.String s = wTimeOutH.getValue();
+        double d = 0.0D;
+        try
+        {
+            d = java.lang.Double.parseDouble(s);
+        }
+        catch(java.lang.Exception exception) { }
+        if(d < 0.0D)
+            d = 0.0D;
+        if(d > 12D)
+            d = 12D;
+        s = wTimeOutM.getValue();
+        double d1 = 0.0D;
+        try
+        {
+            d1 = java.lang.Double.parseDouble(s);
+        }
+        catch(java.lang.Exception exception1) { }
+        if(d1 < 0.0D)
+            d1 = 0.0D;
+        if(d1 > 60D)
+            d1 = 60D;
+        float f = (float)(d * 60D + d1);
+        com.maddox.il2.engine.Actor actor = builder.selectedActor();
+        com.maddox.rts.Property.set(actor, "timeout", f);
+        com.maddox.il2.builder.PlMission.setChanged();
+    }
+
+    private void getSleep()
+    {
+        java.lang.String s = wSleepM.getValue();
+        double d = 0.0D;
+        try
+        {
+            d = java.lang.Double.parseDouble(s);
+        }
+        catch(java.lang.Exception exception) { }
+        if(d < 0.0D)
+            d = 0.0D;
+        if(d > 99D)
+            d = 99D;
+        s = wSleepS.getValue();
+        double d1 = 0.0D;
+        try
+        {
+            d1 = java.lang.Double.parseDouble(s);
+        }
+        catch(java.lang.Exception exception1) { }
+        if(d1 < 0.0D)
+            d1 = 0.0D;
+        if(d1 > 60D)
+            d1 = 60D;
+        com.maddox.il2.engine.Actor actor = builder.selectedActor();
+        com.maddox.rts.Property.set(actor, "sleep", (int)(d * 60D + d1));
+        com.maddox.il2.builder.PlMission.setChanged();
+    }
+
+    public java.lang.String mis_getProperties(com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.il2.engine.Orient orient = new Orient();
+        java.lang.String s = "";
+        int i = builder.wSelect.comboBox1.getSelected();
+        int j = builder.wSelect.comboBox2.getSelected();
+        if(i < startComboBox1 || i >= startComboBox1 + type.length)
+            return s;
+        i -= startComboBox1;
+        if(j < 0 || j >= type[i].item.length)
+            return s;
+        if(com.maddox.il2.engine.Actor.isValid(actor) && com.maddox.rts.Property.containsValue(actor, "builderSpawn"))
+        {
+            com.maddox.JGP.Point3d point3d = actor.pos.getAbsPoint();
+            com.maddox.il2.engine.Orient orient1 = actor.pos.getAbsOrient();
+            orient.set(orient1);
+            orient.wrap360();
+            float f = com.maddox.rts.Property.floatValue(actor, "timeout", 0.0F);
+            if(actor instanceof com.maddox.il2.objects.vehicles.planes.PlaneGeneric)
+            {
+                java.lang.String s1 = ((com.maddox.il2.objects.vehicles.planes.PlaneGeneric)actor).country;
+                s = " 1_" + actor.name() + " " + com.maddox.rts.ObjIO.classGetName(actor.getClass()) + " " + actor.getArmy() + " " + formatPos(point3d.x, point3d.y, orient.azimut()) + " " + f + " " + s1;
+            } else
+            if((actor instanceof com.maddox.il2.objects.ships.ShipGeneric) || (actor instanceof com.maddox.il2.objects.ships.BigshipGeneric))
+            {
+                int k = com.maddox.rts.Property.intValue(actor, "sleep", 0);
+                int i1 = com.maddox.rts.Property.intValue(actor, "skill", 2);
+                float f1 = com.maddox.rts.Property.floatValue(actor, "slowfire", 1.0F);
+                s = " 1_" + actor.name() + " " + com.maddox.rts.ObjIO.classGetName(actor.getClass()) + " " + actor.getArmy() + " " + formatPos(point3d.x, point3d.y, orient.azimut()) + " " + f + " " + k + " " + i1 + " " + f1;
+            } else
+            if(actor instanceof com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric)
+            {
+                int l = com.maddox.rts.Property.intValue(actor, "radius_hide", 0);
+                s = " 1_" + actor.name() + " " + com.maddox.rts.ObjIO.classGetName(actor.getClass()) + " " + actor.getArmy() + " " + formatPos(point3d.x, point3d.y, orient.azimut()) + " " + f + " " + l;
+            } else
+            if(actor instanceof com.maddox.il2.objects.vehicles.stationary.SmokeGeneric)
+                s = " 1_" + actor.name() + " " + com.maddox.rts.ObjIO.classGetName(actor.getClass()) + " " + actor.getArmy() + " " + formatPos(point3d.x, point3d.y, orient.azimut()) + " " + formatValue(point3d.z);
+            else
+                s = " 1_" + actor.name() + " " + com.maddox.rts.ObjIO.classGetName(actor.getClass()) + " " + actor.getArmy() + " " + formatPos(point3d.x, point3d.y, orient.azimut()) + " " + f;
+        }
+        return s;
+    }
+
+    public com.maddox.il2.engine.Actor mis_insert(com.maddox.il2.engine.Loc loc, java.lang.String s)
+    {
+        int i = builder.wSelect.comboBox1.getSelected();
+        int j = builder.wSelect.comboBox2.getSelected();
+        if(i < startComboBox1 || i >= startComboBox1 + type.length)
+            return null;
+        i -= startComboBox1;
+        if(j < 0 || j >= type[i].item.length)
+        {
+            return null;
+        } else
+        {
+            com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s);
+            java.lang.String s1 = numbertokenizer.next("");
+            java.lang.String s2 = numbertokenizer.next("");
+            int k = numbertokenizer.next(0);
+            double d = numbertokenizer.next(0.0D);
+            double d1 = numbertokenizer.next(0.0D);
+            d = loc.getPoint().x;
+            d1 = loc.getPoint().y;
+            com.maddox.il2.engine.Actor actor = insert(null, s2, k, d, d1, numbertokenizer.next(0.0F), numbertokenizer.next(0.0F), numbertokenizer.next((java.lang.String)null), numbertokenizer.next((java.lang.String)null), numbertokenizer.next((java.lang.String)null));
+            return actor;
+        }
+    }
+
+    public boolean mis_validateSelected(int i, int j)
+    {
+        if(i < startComboBox1 || i >= startComboBox1 + type.length)
+            return false;
+        i -= startComboBox1;
+        return j >= 0 && j < type[i].item.length;
+    }
+
+    private java.util.ArrayList listCountry[];
+    private java.util.HashMap mapCountry[];
+    protected java.util.ArrayList allActors;
+    com.maddox.il2.builder.Type type[];
+    private com.maddox.JGP.Point3d p3d;
+    private com.maddox.JGP.Point2d p2d;
+    private com.maddox.JGP.Point3d p;
+    private com.maddox.il2.engine.Orient o;
+    private com.maddox.il2.engine.ActorSpawnArg spawnArg;
+    private com.maddox.il2.builder.PlMission pluginMission;
+    private int startComboBox1;
+    com.maddox.il2.builder.ViewItem viewType[];
+    java.util.HashMap viewClasses;
+    private java.lang.String _actorInfo[];
+    com.maddox.gwindow.GWindowTabDialogClient.Tab tabActor;
+    com.maddox.gwindow.GWindowLabel wName;
+    com.maddox.gwindow.GWindowComboControl wArmy;
+    com.maddox.gwindow.GWindowLabel wLTimeOutH;
+    com.maddox.gwindow.GWindowEditControl wTimeOutH;
+    com.maddox.gwindow.GWindowLabel wLTimeOutM;
+    com.maddox.gwindow.GWindowEditControl wTimeOutM;
+    com.maddox.gwindow.GWindowLabel wLCountry;
+    com.maddox.gwindow.GWindowComboControl wCountry;
+    com.maddox.gwindow.GWindowLabel wLSleepM;
+    com.maddox.gwindow.GWindowLabel wLSleepS;
+    com.maddox.gwindow.GWindowEditControl wSleepM;
+    com.maddox.gwindow.GWindowEditControl wRHide;
+    com.maddox.gwindow.GWindowLabel wL1RHide;
+    com.maddox.gwindow.GWindowLabel wL2RHide;
+    com.maddox.gwindow.GWindowEditControl wSleepS;
+    com.maddox.gwindow.GWindowLabel wLSkill;
+    com.maddox.gwindow.GWindowComboControl wSkill;
+    com.maddox.gwindow.GWindowLabel wLSlowfire;
+    com.maddox.gwindow.GWindowEditControl wSlowfire;
+    private java.lang.Object pathes[];
+    private java.lang.Object points[];
+
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.il2.builder.PlMisStatic.class, "name", "MisStatic");
+    }
+
+
+
+
+
+
+
+
 }

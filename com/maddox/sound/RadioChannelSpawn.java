@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RadioChannelSpawn.java
+
 package com.maddox.sound;
 
 import com.maddox.il2.net.NetUser;
@@ -8,170 +13,210 @@ import com.maddox.rts.Spawn;
 import java.io.PrintStream;
 import java.util.Vector;
 
+// Referenced classes of package com.maddox.sound:
+//            RadioChannel, AudioDevice
+
 public class RadioChannelSpawn
-  implements NetSpawn
+    implements com.maddox.rts.NetSpawn
 {
-  protected static Vector channels = new Vector();
 
-  protected static boolean hrChannels = true;
-
-  public RadioChannelSpawn()
-  {
-    channels = new Vector();
-    Spawn.add(RadioChannel.class, this);
-  }
-
-  public static boolean getUseHRChannels()
-  {
-    return hrChannels;
-  }
-
-  public static void useHRChannels(boolean paramBoolean)
-  {
-    hrChannels = paramBoolean;
-  }
-
-  public void netSpawn(int paramInt, NetMsgInput paramNetMsgInput)
-  {
-    try {
-      if (!hrChannels) return;
-      RadioChannel localRadioChannel = new RadioChannel(paramNetMsgInput, paramInt, this);
-      channels.addElement(localRadioChannel);
-      ((NetUser)NetEnv.host()).radio_onCreated(localRadioChannel.name);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  public void create(String paramString, int paramInt)
-  {
-    try
+    public RadioChannelSpawn()
     {
-      if (findChannel(paramString) != null) {
-        System.out.println("Channel " + paramString + " already exists !");
-        return;
-      }
-      RadioChannel localRadioChannel = new RadioChannel(paramString, this, paramInt);
-      channels.addElement(localRadioChannel);
-      ((NetUser)NetEnv.host()).radio_onCreated(paramString);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
+        channels = new Vector();
+        com.maddox.rts.Spawn.add(com.maddox.sound.RadioChannel.class, this);
     }
-  }
 
-  protected int getChannelIndex(String paramString)
-  {
-    for (int i = 0; i < channels.size(); i++) {
-      RadioChannel localRadioChannel = (RadioChannel)channels.elementAt(i);
-      if (localRadioChannel.name.equals(paramString)) return i;
+    public static boolean getUseHRChannels()
+    {
+        return hrChannels;
     }
-    return -1;
-  }
 
-  public boolean isExistChannel(String paramString)
-  {
-    return findChannel(paramString) != null;
-  }
-
-  protected RadioChannel findChannel(String paramString)
-  {
-    for (int i = 0; i < channels.size(); i++) {
-      RadioChannel localRadioChannel = (RadioChannel)channels.elementAt(i);
-      if (localRadioChannel.name.equals(paramString)) return (RadioChannel)channels.elementAt(i);
+    public static void useHRChannels(boolean flag)
+    {
+        hrChannels = flag;
     }
-    return null;
-  }
 
-  public void kill(String paramString)
-  {
-    for (int i = 0; i < channels.size(); i++) {
-      RadioChannel localRadioChannel = (RadioChannel)channels.elementAt(i);
-      if (localRadioChannel.name.equals(paramString)) {
-        if (localRadioChannel.isMirror()) {
-          System.out.println("Cannot kill mirror channel !");
-          return;
+    public void netSpawn(int i, com.maddox.rts.NetMsgInput netmsginput)
+    {
+        if(!hrChannels)
+            return;
+        try
+        {
+            com.maddox.sound.RadioChannel radiochannel = new RadioChannel(netmsginput, i, this);
+            channels.addElement(radiochannel);
+            ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).radio_onCreated(radiochannel.name);
         }
-        localRadioChannel.destroy();
-      }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+        return;
     }
-  }
 
-  protected void onDestroyChannel(RadioChannel paramRadioChannel)
-  {
-    channels.removeElement(paramRadioChannel);
-  }
-
-  public void killMasterChannels()
-  {
-    int i = 0;
-    while (i < channels.size()) {
-      RadioChannel localRadioChannel = (RadioChannel)channels.elementAt(i);
-      if (localRadioChannel.isMaster()) localRadioChannel.destroy(); else
-        i++;
-    }
-  }
-
-  public boolean set(String paramString)
-  {
-    RadioChannel localRadioChannel1 = null;
-    if (paramString != null)
-      localRadioChannel1 = findChannel(paramString);
-    if ((paramString != null) && (localRadioChannel1 == null)) {
-      System.out.println("Cannot find radio channel " + paramString);
-      return false;
-    }
-    if ((localRadioChannel1 != null) && (localRadioChannel1 == RadioChannel.activeChannel))
-      return true;
-    for (int i = 0; i < channels.size(); i++) {
-      RadioChannel localRadioChannel2 = (RadioChannel)channels.elementAt(i);
-      if (localRadioChannel2 == localRadioChannel1) continue; localRadioChannel2.setActive(false);
-    }
-    if (localRadioChannel1 == null) AudioDevice.setInput(0); else
-      localRadioChannel1.setActive(true);
-    return true;
-  }
-
-  public int getNumChannels()
-  {
-    return channels.size();
-  }
-
-  public String getChannelName(int paramInt)
-  {
-    if ((paramInt < 0) || (paramInt >= channels.size()))
+    public void create(java.lang.String s, int i)
     {
-      System.out.println("Invalid channel index !" + paramInt);
-      return null;
+        if(findChannel(s) != null)
+        {
+            java.lang.System.out.println("Channel " + s + " already exists !");
+            return;
+        }
+        try
+        {
+            com.maddox.sound.RadioChannel radiochannel = new RadioChannel(s, this, i);
+            channels.addElement(radiochannel);
+            ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).radio_onCreated(s);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+        return;
     }
-    return ((RadioChannel)channels.elementAt(paramInt)).name;
-  }
 
-  public RadioChannel getChannel(int paramInt)
-  {
-    if ((paramInt < 0) || (paramInt >= channels.size())) {
-      System.out.println("Invalid channel index !" + paramInt);
-      return null;
-    }
-    return (RadioChannel)channels.elementAt(paramInt);
-  }
+    protected int getChannelIndex(java.lang.String s)
+    {
+        for(int i = 0; i < channels.size(); i++)
+        {
+            com.maddox.sound.RadioChannel radiochannel = (com.maddox.sound.RadioChannel)channels.elementAt(i);
+            if(radiochannel.name.equals(s))
+                return i;
+        }
 
-  public void list()
-  {
-    System.out.println("Channel list:");
-    for (int i = 0; i < channels.size(); i++) {
-      RadioChannel localRadioChannel = (RadioChannel)channels.elementAt(i);
-      System.out.println("  " + i + " -> " + localRadioChannel.name);
+        return -1;
     }
-  }
 
-  public void printInfo()
-  {
-    int i = -1;
-    for (int j = 0; j < channels.size(); j++) {
-      RadioChannel localRadioChannel = (RadioChannel)channels.elementAt(j);
-      localRadioChannel.printInfo();
+    public boolean isExistChannel(java.lang.String s)
+    {
+        return findChannel(s) != null;
     }
-  }
+
+    protected com.maddox.sound.RadioChannel findChannel(java.lang.String s)
+    {
+        for(int i = 0; i < channels.size(); i++)
+        {
+            com.maddox.sound.RadioChannel radiochannel = (com.maddox.sound.RadioChannel)channels.elementAt(i);
+            if(radiochannel.name.equals(s))
+                return (com.maddox.sound.RadioChannel)channels.elementAt(i);
+        }
+
+        return null;
+    }
+
+    public void kill(java.lang.String s)
+    {
+        for(int i = 0; i < channels.size(); i++)
+        {
+            com.maddox.sound.RadioChannel radiochannel = (com.maddox.sound.RadioChannel)channels.elementAt(i);
+            if(!radiochannel.name.equals(s))
+                continue;
+            if(radiochannel.isMirror())
+            {
+                java.lang.System.out.println("Cannot kill mirror channel !");
+                return;
+            }
+            radiochannel.destroy();
+        }
+
+    }
+
+    protected void onDestroyChannel(com.maddox.sound.RadioChannel radiochannel)
+    {
+        channels.removeElement(radiochannel);
+    }
+
+    public void killMasterChannels()
+    {
+        for(int i = 0; i < channels.size();)
+        {
+            com.maddox.sound.RadioChannel radiochannel = (com.maddox.sound.RadioChannel)channels.elementAt(i);
+            if(radiochannel.isMaster())
+                radiochannel.destroy();
+            else
+                i++;
+        }
+
+    }
+
+    public boolean set(java.lang.String s)
+    {
+        com.maddox.sound.RadioChannel radiochannel = null;
+        if(s != null)
+            radiochannel = findChannel(s);
+        if(s != null && radiochannel == null)
+        {
+            java.lang.System.out.println("Cannot find radio channel " + s);
+            return false;
+        }
+        if(radiochannel != null && radiochannel == com.maddox.sound.RadioChannel.activeChannel)
+            return true;
+        for(int i = 0; i < channels.size(); i++)
+        {
+            com.maddox.sound.RadioChannel radiochannel1 = (com.maddox.sound.RadioChannel)channels.elementAt(i);
+            if(radiochannel1 != radiochannel)
+                radiochannel1.setActive(false);
+        }
+
+        if(radiochannel == null)
+            com.maddox.sound.AudioDevice.setInput(0);
+        else
+            radiochannel.setActive(true);
+        return true;
+    }
+
+    public int getNumChannels()
+    {
+        return channels.size();
+    }
+
+    public java.lang.String getChannelName(int i)
+    {
+        if(i < 0 || i >= channels.size())
+        {
+            java.lang.System.out.println("Invalid channel index !" + i);
+            return null;
+        } else
+        {
+            return ((com.maddox.sound.RadioChannel)channels.elementAt(i)).name;
+        }
+    }
+
+    public com.maddox.sound.RadioChannel getChannel(int i)
+    {
+        if(i < 0 || i >= channels.size())
+        {
+            java.lang.System.out.println("Invalid channel index !" + i);
+            return null;
+        } else
+        {
+            return (com.maddox.sound.RadioChannel)channels.elementAt(i);
+        }
+    }
+
+    public void list()
+    {
+        java.lang.System.out.println("Channel list:");
+        for(int i = 0; i < channels.size(); i++)
+        {
+            com.maddox.sound.RadioChannel radiochannel = (com.maddox.sound.RadioChannel)channels.elementAt(i);
+            java.lang.System.out.println("  " + i + " -> " + radiochannel.name);
+        }
+
+    }
+
+    public void printInfo()
+    {
+        byte byte0 = -1;
+        for(int i = 0; i < channels.size(); i++)
+        {
+            com.maddox.sound.RadioChannel radiochannel = (com.maddox.sound.RadioChannel)channels.elementAt(i);
+            radiochannel.printInfo();
+        }
+
+    }
+
+    protected static java.util.Vector channels = new Vector();
+    protected static boolean hrChannels = true;
+
 }

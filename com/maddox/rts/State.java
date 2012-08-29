@@ -1,42 +1,52 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   State.java
+
 package com.maddox.rts;
 
+
+// Referenced classes of package com.maddox.rts:
+//            MessageListener, Message
+
 public class State
-  implements MessageListener
+    implements com.maddox.rts.MessageListener
 {
-  public static final int UNKNOWN = -1;
-  public static final int DESTROYED = -2;
-  private Object parentListener;
 
-  public Object superObj()
-  {
-    return this.parentListener;
-  }
+    public java.lang.Object superObj()
+    {
+        return parentListener;
+    }
 
-  public Object getParentListener(Message paramMessage)
-  {
-    return this.parentListener;
-  }
+    public java.lang.Object getParentListener(com.maddox.rts.Message message)
+    {
+        return parentListener;
+    }
 
-  public void begin(int paramInt)
-  {
-  }
+    public void begin(int i)
+    {
+    }
 
-  public void end(int paramInt)
-  {
-  }
+    public void end(int i)
+    {
+    }
 
-  protected void setParentListener(Object paramObject)
-  {
-    this.parentListener = paramObject;
-  }
+    protected void setParentListener(java.lang.Object obj)
+    {
+        parentListener = obj;
+    }
 
-  public State()
-  {
-    this.parentListener = null;
-  }
+    public State()
+    {
+        parentListener = null;
+    }
 
-  public State(Object paramObject)
-  {
-    this.parentListener = paramObject;
-  }
+    public State(java.lang.Object obj)
+    {
+        parentListener = obj;
+    }
+
+    public static final int UNKNOWN = -1;
+    public static final int DESTROYED = -2;
+    private java.lang.Object parentListener;
 }

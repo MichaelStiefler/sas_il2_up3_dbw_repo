@@ -1,92 +1,135 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Path.java
+
 package com.maddox.il2.builder;
 
 import com.maddox.il2.engine.Actor;
 import com.maddox.rts.Message;
 import java.util.List;
 
-public class Path extends Actor
+// Referenced classes of package com.maddox.il2.builder:
+//            PPoint, Plugin, Builder, BldConfig, 
+//            Pathes
+
+public class Path extends com.maddox.il2.engine.Actor
 {
-  public static Path player;
-  public static int playerNum;
-  public double startTime = 0.0D;
 
-  public int renderPoints = 0;
+    public boolean isDrawing()
+    {
+        if((flags & 1) == 0)
+        {
+            return false;
+        } else
+        {
+            int i = getArmy();
+            return com.maddox.il2.builder.Plugin.builder.conf.bShowArmy[i];
+        }
+    }
 
-  public int moveType = -1;
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
 
-  private Object[] points = new Object[1];
+    public Path(com.maddox.il2.builder.Pathes pathes)
+    {
+        startTime = 0.0D;
+        renderPoints = 0;
+        moveType = -1;
+        points = new java.lang.Object[1];
+        flags |= 0x2000;
+        setOwner(pathes);
+        drawing(true);
+    }
 
-  public boolean isDrawing()
-  {
-    if ((this.flags & 0x1) == 0) return false;
-    int i = getArmy();
-    return Plugin.builder.conf.bShowArmy[i];
-  }
+    protected void createActorHashCode()
+    {
+        makeActorRealHashCode();
+    }
 
-  public Object getSwitchListener(Message paramMessage) {
-    return this;
-  }
-  public Path(Pathes paramPathes) {
-    this.flags |= 8192;
-    setOwner(paramPathes);
-    drawing(true);
-  }
-  protected void createActorHashCode() {
-    makeActorRealHashCode();
-  }
+    public com.maddox.il2.builder.PPoint selectPrev(com.maddox.il2.builder.PPoint ppoint)
+    {
+        points = getOwnerAttached(points);
+        for(int i = 0; i < points.length; i++)
+        {
+            com.maddox.il2.builder.PPoint ppoint1 = (com.maddox.il2.builder.PPoint)points[i];
+            if(ppoint1 == ppoint)
+            {
+                if(i > 0)
+                    return (com.maddox.il2.builder.PPoint)points[i - 1];
+                if(i + 1 < points.length)
+                    return (com.maddox.il2.builder.PPoint)points[i + 1];
+                else
+                    return null;
+            }
+        }
 
-  public PPoint selectPrev(PPoint paramPPoint) {
-    this.points = getOwnerAttached(this.points);
-    for (int i = 0; i < this.points.length; i++) {
-      PPoint localPPoint = (PPoint)this.points[i];
-      if (localPPoint == paramPPoint) {
-        if (i > 0) return (PPoint)this.points[(i - 1)];
-        if (i + 1 < this.points.length) return (PPoint)this.points[(i + 1)];
         return null;
-      }
     }
-    return null;
-  }
 
-  public int pointIndx(PPoint paramPPoint) {
-    this.points = getOwnerAttached(this.points);
-    for (int i = 0; i < this.points.length; i++) {
-      PPoint localPPoint = (PPoint)this.points[i];
-      if (localPPoint == paramPPoint)
-        return i;
+    public int pointIndx(com.maddox.il2.builder.PPoint ppoint)
+    {
+        points = getOwnerAttached(points);
+        for(int i = 0; i < points.length; i++)
+        {
+            com.maddox.il2.builder.PPoint ppoint1 = (com.maddox.il2.builder.PPoint)points[i];
+            if(ppoint1 == ppoint)
+                return i;
+        }
+
+        return -1;
     }
-    return -1;
-  }
 
-  public int points() {
-    return this.ownerAttached.size();
-  }
-
-  public PPoint point(int paramInt) {
-    return (PPoint)this.ownerAttached.get(paramInt);
-  }
-
-  public void computeTimes() {
-  }
-
-  public void pointMoved(PPoint paramPPoint) {
-    computeTimes();
-  }
-
-  public void destroy()
-  {
-    if (isDestroyed()) return;
-    if (this == player) {
-      player = null;
-      playerNum = 0;
+    public int points()
+    {
+        return ownerAttached.size();
     }
-    Object[] arrayOfObject = getOwnerAttached();
-    for (int i = 0; i < arrayOfObject.length; i++) {
-      Actor localActor = (Actor)arrayOfObject[i];
-      if (localActor == null) break;
-      localActor.destroy();
-      arrayOfObject[i] = null;
+
+    public com.maddox.il2.builder.PPoint point(int i)
+    {
+        return (com.maddox.il2.builder.PPoint)ownerAttached.get(i);
     }
-    super.destroy();
-  }
+
+    public void computeTimes()
+    {
+    }
+
+    public void pointMoved(com.maddox.il2.builder.PPoint ppoint)
+    {
+        computeTimes();
+    }
+
+    public void destroy()
+    {
+        if(isDestroyed())
+            return;
+        if(this == player)
+        {
+            player = null;
+            playerNum = 0;
+        }
+        java.lang.Object aobj[] = getOwnerAttached();
+        int i = 0;
+        do
+        {
+            if(i >= aobj.length)
+                break;
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)aobj[i];
+            if(actor == null)
+                break;
+            actor.destroy();
+            aobj[i] = null;
+            i++;
+        } while(true);
+        super.destroy();
+    }
+
+    public static com.maddox.il2.builder.Path player;
+    public static int playerNum;
+    public double startTime;
+    public int renderPoints;
+    public int moveType;
+    private java.lang.Object points[];
 }

@@ -1,15 +1,36 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RocketGunRS82.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class RocketGunRS82 extends RocketGun
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            RocketGun
+
+public class RocketGunRS82 extends com.maddox.il2.objects.weapons.RocketGun
 {
-  static
-  {
-    Class localClass = RocketGunRS82.class;
-    Property.set(localClass, "bulletClass", RocketRS82.class);
-    Property.set(localClass, "bullets", 1);
-    Property.set(localClass, "shotFreq", 0.25F);
-    Property.set(localClass, "sound", "weapon.rocketgun_132");
-  }
+
+    public RocketGunRS82()
+    {
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.RocketGunRS82.class;
+        com.maddox.rts.Property.set(class1, "bulletClass", com.maddox.il2.objects.weapons.RocketRS82.class);
+        com.maddox.rts.Property.set(class1, "bullets", 1);
+        com.maddox.rts.Property.set(class1, "shotFreq", 0.25F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.rocketgun_132");
+    }
 }

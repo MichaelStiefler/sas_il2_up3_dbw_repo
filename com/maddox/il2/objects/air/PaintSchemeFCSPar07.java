@@ -1,56 +1,57 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PaintSchemeFCSPar07.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.HierMesh;
 
-public class PaintSchemeFCSPar07 extends PaintSchemeFCSPar01
+// Referenced classes of package com.maddox.il2.objects.air:
+//            PaintSchemeFCSPar01, PaintScheme
+
+public class PaintSchemeFCSPar07 extends com.maddox.il2.objects.air.PaintSchemeFCSPar01
 {
-  public void prepareNum(Class paramClass, HierMesh paramHierMesh, Regiment paramRegiment, int paramInt1, int paramInt2, int paramInt3)
-  {
-    int i = paramRegiment.gruppeNumber() - 1;
-    int j;
-    float f;
-    if (paramRegiment.country() == PaintScheme.countryRussia)
+
+    public PaintSchemeFCSPar07()
     {
-      j = World.cur().camouflage;
-      if (j == 1)
-        f = 0.1F;
-      else {
-        f = 0.9F;
-      }
-      if (paramInt3 < 10) {
-        changeMat(paramClass, paramHierMesh, "Overlay1", "psFCS01RUSCNUM" + i + paramInt1 + "0" + paramInt3 + j, "Russian/0" + paramInt3 + ".tga", f, f, f);
-      }
-      else
-      {
-        changeMat(paramHierMesh, "Overlay1", "psFCS01RUSCNUM" + i + paramInt1 + paramInt3 + j, "Russian/0" + paramInt3 / 10 + ".tga", "Russian/0" + paramInt3 % 10 + ".tga", f, f, f, f, f, f);
-      }
-
-      changeMat(paramClass, paramHierMesh, "Overlay6", "redstar1", "Russian/redstar1.tga", 1.0F, 1.0F, 1.0F);
-
-      changeMat(paramClass, paramHierMesh, "Overlay7", "redstar1", "Russian/redstar1.tga", 1.0F, 1.0F, 1.0F);
-
-      changeMat(paramClass, paramHierMesh, "Overlay8", "redstar1", "Russian/redstar1.tga", 1.0F, 1.0F, 1.0F);
-
-      changeMat(paramClass, paramHierMesh, "Overlay2", "psAVGRUSMARKcolor" + paramInt1, "mark.tga", PaintScheme.psRussianBomberColor[paramInt1][0], PaintScheme.psRussianBomberColor[paramInt1][1], PaintScheme.psRussianBomberColor[paramInt1][2]);
     }
-    else if (paramRegiment.country() != PaintScheme.countryNoName)
+
+    public void prepareNum(java.lang.Class class1, com.maddox.il2.engine.HierMesh hiermesh, com.maddox.il2.ai.Regiment regiment, int i, int j, int k)
     {
-      super.prepareNum(paramClass, paramHierMesh, paramRegiment, paramInt1, paramInt2, paramInt3);
-
-      j = World.cur().camouflage;
-      if (j == 1)
-        f = 0.1F;
-      else
-        f = 0.9F;
-      if (paramInt3 < 10) {
-        changeMat(paramClass, paramHierMesh, "Overlay8", "psFCS01RUSCNUM" + i + paramInt1 + "0" + paramInt3 + j, "Russian/0" + paramInt3 + ".tga", f, f, f);
-      }
-      else
-      {
-        changeMat(paramHierMesh, "Overlay8", "psFCS01RUSCNUM" + i + paramInt1 + paramInt3 + j, "Russian/0" + paramInt3 / 10 + ".tga", "Russian/0" + paramInt3 % 10 + ".tga", f, f, f, f, f, f);
-      }
+        int l = regiment.gruppeNumber() - 1;
+        if(regiment.country() == com.maddox.il2.objects.air.PaintScheme.countryRussia)
+        {
+            int i1 = com.maddox.il2.ai.World.cur().camouflage;
+            float f;
+            if(i1 == 1)
+                f = 0.1F;
+            else
+                f = 0.9F;
+            if(k < 10)
+                changeMat(class1, hiermesh, "Overlay1", "psFCS01RUSCNUM" + l + i + "0" + k + i1, "Russian/0" + k + ".tga", f, f, f);
+            else
+                changeMat(hiermesh, "Overlay1", "psFCS01RUSCNUM" + l + i + k + i1, "Russian/0" + k / 10 + ".tga", "Russian/0" + k % 10 + ".tga", f, f, f, f, f, f);
+            changeMat(class1, hiermesh, "Overlay6", "redstar1", "Russian/redstar1.tga", 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay7", "redstar1", "Russian/redstar1.tga", 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay8", "redstar1", "Russian/redstar1.tga", 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay2", "psAVGRUSMARKcolor" + i, "mark.tga", com.maddox.il2.objects.air.PaintScheme.psRussianBomberColor[i][0], com.maddox.il2.objects.air.PaintScheme.psRussianBomberColor[i][1], com.maddox.il2.objects.air.PaintScheme.psRussianBomberColor[i][2]);
+        } else
+        if(regiment.country() != com.maddox.il2.objects.air.PaintScheme.countryNoName)
+        {
+            super.prepareNum(class1, hiermesh, regiment, i, j, k);
+            int j1 = com.maddox.il2.ai.World.cur().camouflage;
+            float f1;
+            if(j1 == 1)
+                f1 = 0.1F;
+            else
+                f1 = 0.9F;
+            if(k < 10)
+                changeMat(class1, hiermesh, "Overlay8", "psFCS01RUSCNUM" + l + i + "0" + k + j1, "Russian/0" + k + ".tga", f1, f1, f1);
+            else
+                changeMat(hiermesh, "Overlay8", "psFCS01RUSCNUM" + l + i + k + j1, "Russian/0" + k / 10 + ".tga", "Russian/0" + k % 10 + ".tga", f1, f1, f1, f1, f1, f1);
+        }
     }
-  }
 }

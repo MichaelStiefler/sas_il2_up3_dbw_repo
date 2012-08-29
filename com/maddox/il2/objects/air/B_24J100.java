@@ -1,11 +1,16 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   B_24J100.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Orientation;
+import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
-import com.maddox.il2.fm.FlightModelMain;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.NetMsgGuaranted;
@@ -13,484 +18,518 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class B_24J100 extends B_24
-  implements TypeBomber, TypeX4Carrier, TypeGuidedBombCarrier
+// Referenced classes of package com.maddox.il2.objects.air:
+//            B_24, PaintSchemeBMPar05, PaintSchemeFMPar06, TypeBomber, 
+//            TypeX4Carrier, TypeGuidedBombCarrier, NetAircraft
+
+public class B_24J100 extends com.maddox.il2.objects.air.B_24
+    implements com.maddox.il2.objects.air.TypeBomber, com.maddox.il2.objects.air.TypeX4Carrier, com.maddox.il2.objects.air.TypeGuidedBombCarrier
 {
-  public boolean bToFire;
-  private long tX4Prev;
-  private float deltaAzimuth;
-  private float deltaTangage;
-  private boolean isGuidingBomb;
-  private boolean isMasterAlive;
-  public static boolean bChangedPit = false;
-  private boolean bSightAutomation;
-  private boolean bSightBombDump;
-  public float fSightCurDistance;
-  public float fSightCurForwardAngle;
-  public float fSightCurSideslip;
-  public float fSightCurAltitude;
-  public float fSightCurSpeed;
-  public float fSightCurReadyness;
 
-  public void onAircraftLoaded()
-  {
-    super.onAircraftLoaded();
-    if (this.thisWeaponsName.endsWith("Bat"))
+    public void onAircraftLoaded()
     {
-      hierMesh().chunkVisible("BatWingRackR_D0", true);
-      hierMesh().chunkVisible("BatWingRackL_D0", true);
-      return;
-    }
-  }
-
-  public boolean typeGuidedBombCisMasterAlive()
-  {
-    return this.isMasterAlive;
-  }
-
-  public void typeGuidedBombCsetMasterAlive(boolean paramBoolean)
-  {
-    this.isMasterAlive = paramBoolean;
-  }
-
-  public boolean typeGuidedBombCgetIsGuiding()
-  {
-    return this.isGuidingBomb;
-  }
-
-  public void typeGuidedBombCsetIsGuiding(boolean paramBoolean)
-  {
-    this.isGuidingBomb = paramBoolean;
-  }
-
-  public void typeX4CAdjSidePlus()
-  {
-    this.deltaAzimuth = 0.002F;
-  }
-
-  public void typeX4CAdjSideMinus()
-  {
-    this.deltaAzimuth = -0.002F;
-  }
-
-  public void typeX4CAdjAttitudePlus()
-  {
-    this.deltaTangage = 0.002F;
-  }
-
-  public void typeX4CAdjAttitudeMinus()
-  {
-    this.deltaTangage = -0.002F;
-  }
-
-  public void typeX4CResetControls()
-  {
-    this.deltaAzimuth = (this.deltaTangage = 0.0F);
-  }
-
-  public float typeX4CgetdeltaAzimuth()
-  {
-    return this.deltaAzimuth;
-  }
-
-  public float typeX4CgetdeltaTangage()
-  {
-    return this.deltaTangage;
-  }
-
-  public B_24J100()
-  {
-    this.bToFire = false;
-    this.tX4Prev = 0L;
-    this.deltaAzimuth = 0.0F;
-    this.deltaTangage = 0.0F;
-    this.isGuidingBomb = false;
-    this.bSightAutomation = false;
-    this.bSightBombDump = false;
-    this.fSightCurDistance = 0.0F;
-    this.fSightCurForwardAngle = 0.0F;
-    this.fSightCurSideslip = 0.0F;
-    this.fSightCurAltitude = 3000.0F;
-    this.fSightCurSpeed = 200.0F;
-    this.fSightCurReadyness = 0.0F;
-  }
-
-  protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
-  {
-    switch (paramInt1)
-    {
-    case 19:
-      killPilot(this, 4);
-    }
-
-    return super.cutFM(paramInt1, paramInt2, paramActor);
-  }
-
-  public void rareAction(float paramFloat, boolean paramBoolean)
-  {
-    super.rareAction(paramFloat, paramBoolean);
-    for (int i = 1; i < 7; i++)
-      if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.getAltitude() < 3000.0F)
-        hierMesh().chunkVisible("HMask" + i + "_D0", false);
-      else
-        hierMesh().chunkVisible("HMask" + i + "_D0", hierMesh().isChunkVisible("Pilot" + i + "_D0"));
-  }
-
-  protected void nextDMGLevel(String paramString, int paramInt, Actor paramActor)
-  {
-    super.nextDMGLevel(paramString, paramInt, paramActor);
-    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers())
-      bChangedPit = true;
-  }
-
-  protected void nextCUTLevel(String paramString, int paramInt, Actor paramActor)
-  {
-    super.nextCUTLevel(paramString, paramInt, paramActor);
-    if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isPlayers())
-      bChangedPit = true;
-  }
-
-  public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
-  {
-    boolean bool = super.turretAngles(paramInt, paramArrayOfFloat);
-    float f1 = -paramArrayOfFloat[0];
-    float f2 = paramArrayOfFloat[1];
-    switch (paramInt)
-    {
-    default:
-      break;
-    case 0:
-      if (f1 < -85.0F)
-      {
-        f1 = -85.0F;
-        bool = false;
-      }
-      if (f1 > 85.0F)
-      {
-        f1 = 85.0F;
-        bool = false;
-      }
-      if (f2 < -32.0F)
-      {
-        f2 = -32.0F;
-        bool = false;
-      }
-      if (f2 <= 46.0F)
-        break;
-      f2 = 46.0F;
-      bool = false; break;
-    case 1:
-      if (f2 < -0.0F)
-      {
-        f2 = -0.0F;
-        bool = false;
-      }
-      if (f2 <= 20.0F)
-        break;
-      f2 = 20.0F;
-      bool = false; break;
-    case 2:
-      if (f2 < -70.0F)
-      {
-        f2 = -70.0F;
-        bool = false;
-      }
-      if (f2 <= 7.0F)
-        break;
-      f2 = 7.0F;
-      bool = false; break;
-    case 3:
-      if (f1 < -35.0F)
-      {
-        f1 = -35.0F;
-        bool = false;
-      }
-      if (f1 > 64.0F)
-      {
-        f1 = 64.0F;
-        bool = false;
-      }
-      if (f2 < -37.0F)
-      {
-        f2 = -37.0F;
-        bool = false;
-      }
-      if (f2 <= 50.0F)
-        break;
-      f2 = 50.0F;
-      bool = false; break;
-    case 4:
-      if (f1 < -67.0F)
-      {
-        f1 = -67.0F;
-        bool = false;
-      }
-      if (f1 > 34.0F)
-      {
-        f1 = 34.0F;
-        bool = false;
-      }
-      if (f2 < -37.0F)
-      {
-        f2 = -37.0F;
-        bool = false;
-      }
-      if (f2 <= 50.0F)
-        break;
-      f2 = 50.0F;
-      bool = false; break;
-    case 5:
-      if (f1 < -85.0F)
-      {
-        f1 = -85.0F;
-        bool = false;
-      }
-      if (f1 > 85.0F)
-      {
-        f1 = 85.0F;
-        bool = false;
-      }
-      if (f2 < -32.0F)
-      {
-        f2 = -32.0F;
-        bool = false;
-      }
-      if (f2 <= 46.0F)
-        break;
-      f2 = 46.0F;
-      bool = false;
-    }
-
-    paramArrayOfFloat[0] = (-f1);
-    paramArrayOfFloat[1] = f2;
-    return bool;
-  }
-
-  public void doKillPilot(int paramInt)
-  {
-    switch (paramInt)
-    {
-    case 2:
-      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[0].bIsOperable = false;
-      break;
-    case 3:
-      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[1].bIsOperable = false;
-      break;
-    case 4:
-      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[2].bIsOperable = false;
-      break;
-    case 5:
-      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[3].bIsOperable = false;
-      this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.turret[4].bIsOperable = false;
-    }
-  }
-
-  private static final float toMeters(float paramFloat)
-  {
-    return 0.3048F * paramFloat;
-  }
-
-  private static final float toMetersPerSecond(float paramFloat)
-  {
-    return 0.4470401F * paramFloat;
-  }
-
-  public boolean typeBomberToggleAutomation()
-  {
-    this.bSightAutomation = (!this.bSightAutomation);
-    this.bSightBombDump = false;
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAutomation" + (this.bSightAutomation ? "ON" : "OFF"));
-    return this.bSightAutomation;
-  }
-
-  public void typeBomberAdjDistanceReset()
-  {
-    this.fSightCurDistance = 0.0F;
-    this.fSightCurForwardAngle = 0.0F;
-  }
-
-  public void typeBomberAdjDistancePlus()
-  {
-    this.fSightCurForwardAngle += 1.0F;
-    if (this.fSightCurForwardAngle > 85.0F)
-      this.fSightCurForwardAngle = 85.0F;
-    this.fSightCurDistance = (toMeters(this.fSightCurAltitude) * (float)Math.tan(Math.toRadians(this.fSightCurForwardAngle)));
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int)this.fSightCurForwardAngle) });
-
-    if (this.bSightAutomation)
-      typeBomberToggleAutomation();
-  }
-
-  public void typeBomberAdjDistanceMinus()
-  {
-    this.fSightCurForwardAngle -= 1.0F;
-    if (this.fSightCurForwardAngle < 0.0F)
-      this.fSightCurForwardAngle = 0.0F;
-    this.fSightCurDistance = (toMeters(this.fSightCurAltitude) * (float)Math.tan(Math.toRadians(this.fSightCurForwardAngle)));
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int)this.fSightCurForwardAngle) });
-
-    if (this.bSightAutomation)
-      typeBomberToggleAutomation();
-  }
-
-  public void typeBomberAdjSideslipReset()
-  {
-    this.fSightCurSideslip = 0.0F;
-  }
-
-  public void typeBomberAdjSideslipPlus()
-  {
-    this.fSightCurSideslip += 0.1F;
-    if (this.fSightCurSideslip > 3.0F)
-      this.fSightCurSideslip = 3.0F;
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int)(this.fSightCurSideslip * 10.0F)) });
-  }
-
-  public void typeBomberAdjSideslipMinus()
-  {
-    this.fSightCurSideslip -= 0.1F;
-    if (this.fSightCurSideslip < -3.0F)
-      this.fSightCurSideslip = -3.0F;
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int)(this.fSightCurSideslip * 10.0F)) });
-  }
-
-  public void typeBomberAdjAltitudeReset()
-  {
-    this.fSightCurAltitude = 3000.0F;
-  }
-
-  public void typeBomberAdjAltitudePlus()
-  {
-    this.fSightCurAltitude += 50.0F;
-    if (this.fSightCurAltitude > 50000.0F)
-      this.fSightCurAltitude = 50000.0F;
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int)this.fSightCurAltitude) });
-
-    this.fSightCurDistance = (toMeters(this.fSightCurAltitude) * (float)Math.tan(Math.toRadians(this.fSightCurForwardAngle)));
-  }
-
-  public void typeBomberAdjAltitudeMinus()
-  {
-    this.fSightCurAltitude -= 50.0F;
-    if (this.fSightCurAltitude < 1000.0F)
-      this.fSightCurAltitude = 1000.0F;
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new Object[] { new Integer((int)this.fSightCurAltitude) });
-
-    this.fSightCurDistance = (toMeters(this.fSightCurAltitude) * (float)Math.tan(Math.toRadians(this.fSightCurForwardAngle)));
-  }
-
-  public void typeBomberAdjSpeedReset()
-  {
-    this.fSightCurSpeed = 200.0F;
-  }
-
-  public void typeBomberAdjSpeedPlus()
-  {
-    this.fSightCurSpeed += 10.0F;
-    if (this.fSightCurSpeed > 450.0F)
-      this.fSightCurSpeed = 450.0F;
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeedMPH", new Object[] { new Integer((int)this.fSightCurSpeed) });
-  }
-
-  public void typeBomberAdjSpeedMinus()
-  {
-    this.fSightCurSpeed -= 10.0F;
-    if (this.fSightCurSpeed < 100.0F)
-      this.fSightCurSpeed = 100.0F;
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeedMPH", new Object[] { new Integer((int)this.fSightCurSpeed) });
-  }
-
-  public void typeBomberUpdate(float paramFloat)
-  {
-    if (Math.abs(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.Or.getKren()) > 4.5D)
-    {
-      this.fSightCurReadyness -= 0.0666666F * paramFloat;
-      if (this.fSightCurReadyness < 0.0F)
-        this.fSightCurReadyness = 0.0F;
-    }
-    if (this.fSightCurReadyness < 1.0F) {
-      this.fSightCurReadyness += 0.0333333F * paramFloat;
-    }
-    else if (this.bSightAutomation)
-    {
-      this.fSightCurDistance -= toMetersPerSecond(this.fSightCurSpeed) * paramFloat;
-      if (this.fSightCurDistance < 0.0F)
-      {
-        this.fSightCurDistance = 0.0F;
-        typeBomberToggleAutomation();
-      }
-      this.fSightCurForwardAngle = (float)Math.toDegrees(Math.atan(this.fSightCurDistance / toMeters(this.fSightCurAltitude)));
-      if (this.fSightCurDistance < toMetersPerSecond(this.fSightCurSpeed) * Math.sqrt(toMeters(this.fSightCurAltitude) * 0.203874F))
-        this.bSightBombDump = true;
-      if (this.bSightBombDump)
-        if (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.isTick(3, 0))
+        super.onAircraftLoaded();
+        if(thisWeaponsName.endsWith("Bat"))
         {
-          if ((this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.Weapons[3] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.Weapons[3].length - 1)] != null) && (this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.Weapons[3][(this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.Weapons[3].length - 1)].haveBullets()))
-          {
-            this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.WeaponControl[3] = true;
-            HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
-          }
+            hierMesh().chunkVisible("BatWingRackR_D0", true);
+            hierMesh().chunkVisible("BatWingRackL_D0", true);
+            return;
+        } else
+        {
+            return;
         }
-        else
-          this.jdField_FM_of_type_ComMaddoxIl2FmFlightModel.CT.WeaponControl[3] = false;
     }
-  }
 
-  public void typeBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted)
-    throws IOException
-  {
-    paramNetMsgGuaranted.writeByte((this.bSightAutomation ? 1 : 0) | (this.bSightBombDump ? 2 : 0));
-    paramNetMsgGuaranted.writeFloat(this.fSightCurDistance);
-    paramNetMsgGuaranted.writeByte((int)this.fSightCurForwardAngle);
-    paramNetMsgGuaranted.writeByte((int)((this.fSightCurSideslip + 3.0F) * 33.333328F));
-    paramNetMsgGuaranted.writeFloat(this.fSightCurAltitude);
-    paramNetMsgGuaranted.writeByte((int)(this.fSightCurSpeed / 2.5F));
-    paramNetMsgGuaranted.writeByte((int)(this.fSightCurReadyness * 200.0F));
-  }
+    public boolean typeGuidedBombCisMasterAlive()
+    {
+        return isMasterAlive;
+    }
 
-  public void typeBomberReplicateFromNet(NetMsgInput paramNetMsgInput)
-    throws IOException
-  {
-    int i = paramNetMsgInput.readUnsignedByte();
-    this.bSightAutomation = ((i & 0x1) != 0);
-    this.bSightBombDump = ((i & 0x2) != 0);
-    this.fSightCurDistance = paramNetMsgInput.readFloat();
-    this.fSightCurForwardAngle = paramNetMsgInput.readUnsignedByte();
-    this.fSightCurSideslip = (-3.0F + paramNetMsgInput.readUnsignedByte() / 33.333328F);
-    this.fSightCurAltitude = paramNetMsgInput.readFloat();
-    this.fSightCurSpeed = (paramNetMsgInput.readUnsignedByte() * 2.5F);
-    this.fSightCurReadyness = (paramNetMsgInput.readUnsignedByte() / 200.0F);
-  }
+    public void typeGuidedBombCsetMasterAlive(boolean flag)
+    {
+        isMasterAlive = flag;
+    }
 
-  static
-  {
-    Class localClass = B_24J100.class;
-    new NetAircraft.SPAWN(localClass);
-    Property.set(localClass, "iconFar_shortClassName", "B-24");
-    Property.set(localClass, "meshName", "3DO/Plane/B-24J-100-CF(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar05());
-    Property.set(localClass, "meshName_us", "3DO/Plane/B-24J-100-CF(USA)/hier.him");
-    Property.set(localClass, "PaintScheme_us", new PaintSchemeFMPar06());
-    Property.set(localClass, "noseart", 1);
-    Property.set(localClass, "yearService", 1943.5F);
-    Property.set(localClass, "yearExpired", 2800.8999F);
-    Property.set(localClass, "FlightModel", "FlightModels/B-24J.fmd");
-    Property.set(localClass, "cockpitClass", new Class[] { CockpitB_24J100.class, CockpitB_24J100_Bombardier.class, CockpitB_24J100_FGunner.class, CockpitB_24J100_TGunner.class, CockpitB_24J100_AGunner.class, CockpitB_24J100_BGunner.class, CockpitB_24J100_RGunner.class, CockpitB_24J100_LGunner.class });
+    public boolean typeGuidedBombCgetIsGuiding()
+    {
+        return isGuidingBomb;
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 10, 10, 11, 11, 12, 12, 13, 14, 15, 15, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 });
+    public void typeGuidedBombCsetIsGuiding(boolean flag)
+    {
+        isGuidingBomb = flag;
+    }
 
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04" });
+    public void typeX4CAdjSidePlus()
+    {
+        deltaAzimuth = 0.002F;
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", null, null, null, null, null, null, null, null, null, null, null, null });
+    public void typeX4CAdjSideMinus()
+    {
+        deltaAzimuth = -0.002F;
+    }
 
-    weaponsRegister(localClass, "16x500", new String[] { "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", null, null, null, null });
+    public void typeX4CAdjAttitudePlus()
+    {
+        deltaTangage = 0.002F;
+    }
 
-    weaponsRegister(localClass, "16xRazon", new String[] { "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", null, null, null, null });
+    public void typeX4CAdjAttitudeMinus()
+    {
+        deltaTangage = -0.002F;
+    }
 
-    weaponsRegister(localClass, "8xRazon", new String[] { "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", null, null, null, null, null, null, null, null });
+    public void typeX4CResetControls()
+    {
+        deltaAzimuth = deltaTangage = 0.0F;
+    }
 
-    weaponsRegister(localClass, "2xBat", new String[] { "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", null, null, null, null, null, null, null, null, "RocketGunBat 1", "BombGunNull 1", "BombGunNull 1", "RocketGunBat 1" });
+    public float typeX4CgetdeltaAzimuth()
+    {
+        return deltaAzimuth;
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-  }
+    public float typeX4CgetdeltaTangage()
+    {
+        return deltaTangage;
+    }
+
+    public B_24J100()
+    {
+        bToFire = false;
+        tX4Prev = 0L;
+        deltaAzimuth = 0.0F;
+        deltaTangage = 0.0F;
+        isGuidingBomb = false;
+        bSightAutomation = false;
+        bSightBombDump = false;
+        fSightCurDistance = 0.0F;
+        fSightCurForwardAngle = 0.0F;
+        fSightCurSideslip = 0.0F;
+        fSightCurAltitude = 3000F;
+        fSightCurSpeed = 200F;
+        fSightCurReadyness = 0.0F;
+    }
+
+    protected boolean cutFM(int i, int j, com.maddox.il2.engine.Actor actor)
+    {
+        switch(i)
+        {
+        case 19: // '\023'
+            killPilot(this, 4);
+            break;
+        }
+        return super.cutFM(i, j, actor);
+    }
+
+    public boolean turretAngles(int i, float af[])
+    {
+        boolean flag = super.turretAngles(i, af);
+        float f = -af[0];
+        float f1 = af[1];
+        switch(i)
+        {
+        default:
+            break;
+
+        case 0: // '\0'
+            if(f < -85F)
+            {
+                f = -85F;
+                flag = false;
+            }
+            if(f > 85F)
+            {
+                f = 85F;
+                flag = false;
+            }
+            if(f1 < -32F)
+            {
+                f1 = -32F;
+                flag = false;
+            }
+            if(f1 > 46F)
+            {
+                f1 = 46F;
+                flag = false;
+            }
+            break;
+
+        case 1: // '\001'
+            if(f1 < -0F)
+            {
+                f1 = -0F;
+                flag = false;
+            }
+            if(f1 > 20F)
+            {
+                f1 = 20F;
+                flag = false;
+            }
+            break;
+
+        case 2: // '\002'
+            if(f1 < -70F)
+            {
+                f1 = -70F;
+                flag = false;
+            }
+            if(f1 > 7F)
+            {
+                f1 = 7F;
+                flag = false;
+            }
+            break;
+
+        case 3: // '\003'
+            if(f < -35F)
+            {
+                f = -35F;
+                flag = false;
+            }
+            if(f > 64F)
+            {
+                f = 64F;
+                flag = false;
+            }
+            if(f1 < -37F)
+            {
+                f1 = -37F;
+                flag = false;
+            }
+            if(f1 > 50F)
+            {
+                f1 = 50F;
+                flag = false;
+            }
+            break;
+
+        case 4: // '\004'
+            if(f < -67F)
+            {
+                f = -67F;
+                flag = false;
+            }
+            if(f > 34F)
+            {
+                f = 34F;
+                flag = false;
+            }
+            if(f1 < -37F)
+            {
+                f1 = -37F;
+                flag = false;
+            }
+            if(f1 > 50F)
+            {
+                f1 = 50F;
+                flag = false;
+            }
+            break;
+
+        case 5: // '\005'
+            if(f < -85F)
+            {
+                f = -85F;
+                flag = false;
+            }
+            if(f > 85F)
+            {
+                f = 85F;
+                flag = false;
+            }
+            if(f1 < -32F)
+            {
+                f1 = -32F;
+                flag = false;
+            }
+            if(f1 > 46F)
+            {
+                f1 = 46F;
+                flag = false;
+            }
+            break;
+        }
+        af[0] = -f;
+        af[1] = f1;
+        return flag;
+    }
+
+    private static final float toMeters(float f)
+    {
+        return 0.3048F * f;
+    }
+
+    private static final float toMetersPerSecond(float f)
+    {
+        return 0.4470401F * f;
+    }
+
+    public boolean typeBomberToggleAutomation()
+    {
+        bSightAutomation = !bSightAutomation;
+        bSightBombDump = false;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightAutomation" + (bSightAutomation ? "ON" : "OFF"));
+        return bSightAutomation;
+    }
+
+    public void typeBomberAdjDistanceReset()
+    {
+        fSightCurDistance = 0.0F;
+        fSightCurForwardAngle = 0.0F;
+    }
+
+    public void typeBomberAdjDistancePlus()
+    {
+        fSightCurForwardAngle++;
+        if(fSightCurForwardAngle > 85F)
+            fSightCurForwardAngle = 85F;
+        fSightCurDistance = com.maddox.il2.objects.air.B_24J100.toMeters(fSightCurAltitude) * (float)java.lang.Math.tan(java.lang.Math.toRadians(fSightCurForwardAngle));
+        if(!isGuidingBomb)
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new java.lang.Object[] {
+                new Integer((int)fSightCurForwardAngle)
+            });
+        if(bSightAutomation)
+            typeBomberToggleAutomation();
+    }
+
+    public void typeBomberAdjDistanceMinus()
+    {
+        fSightCurForwardAngle--;
+        if(fSightCurForwardAngle < 0.0F)
+            fSightCurForwardAngle = 0.0F;
+        fSightCurDistance = com.maddox.il2.objects.air.B_24J100.toMeters(fSightCurAltitude) * (float)java.lang.Math.tan(java.lang.Math.toRadians(fSightCurForwardAngle));
+        if(!isGuidingBomb)
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new java.lang.Object[] {
+                new Integer((int)fSightCurForwardAngle)
+            });
+        if(bSightAutomation)
+            typeBomberToggleAutomation();
+    }
+
+    public void typeBomberAdjSideslipReset()
+    {
+        fSightCurSideslip = 0.0F;
+    }
+
+    public void typeBomberAdjSideslipPlus()
+    {
+        fSightCurSideslip += 0.1F;
+        if(fSightCurSideslip > 3F)
+            fSightCurSideslip = 3F;
+        if(!isGuidingBomb)
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new java.lang.Object[] {
+                new Integer((int)(fSightCurSideslip * 10F))
+            });
+    }
+
+    public void typeBomberAdjSideslipMinus()
+    {
+        fSightCurSideslip -= 0.1F;
+        if(fSightCurSideslip < -3F)
+            fSightCurSideslip = -3F;
+        if(!isGuidingBomb)
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new java.lang.Object[] {
+                new Integer((int)(fSightCurSideslip * 10F))
+            });
+    }
+
+    public void typeBomberAdjAltitudeReset()
+    {
+        fSightCurAltitude = 3000F;
+    }
+
+    public void typeBomberAdjAltitudePlus()
+    {
+        fSightCurAltitude += 50F;
+        if(fSightCurAltitude > 50000F)
+            fSightCurAltitude = 50000F;
+        if(!isGuidingBomb)
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new java.lang.Object[] {
+                new Integer((int)fSightCurAltitude)
+            });
+        fSightCurDistance = com.maddox.il2.objects.air.B_24J100.toMeters(fSightCurAltitude) * (float)java.lang.Math.tan(java.lang.Math.toRadians(fSightCurForwardAngle));
+    }
+
+    public void typeBomberAdjAltitudeMinus()
+    {
+        fSightCurAltitude -= 50F;
+        if(fSightCurAltitude < 1000F)
+            fSightCurAltitude = 1000F;
+        if(!isGuidingBomb)
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightAltitudeft", new java.lang.Object[] {
+                new Integer((int)fSightCurAltitude)
+            });
+        fSightCurDistance = com.maddox.il2.objects.air.B_24J100.toMeters(fSightCurAltitude) * (float)java.lang.Math.tan(java.lang.Math.toRadians(fSightCurForwardAngle));
+    }
+
+    public void typeBomberAdjSpeedReset()
+    {
+        fSightCurSpeed = 200F;
+    }
+
+    public void typeBomberAdjSpeedPlus()
+    {
+        fSightCurSpeed += 10F;
+        if(fSightCurSpeed > 450F)
+            fSightCurSpeed = 450F;
+        if(!isGuidingBomb)
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSpeedMPH", new java.lang.Object[] {
+                new Integer((int)fSightCurSpeed)
+            });
+    }
+
+    public void typeBomberAdjSpeedMinus()
+    {
+        fSightCurSpeed -= 10F;
+        if(fSightCurSpeed < 100F)
+            fSightCurSpeed = 100F;
+        if(!isGuidingBomb)
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSpeedMPH", new java.lang.Object[] {
+                new Integer((int)fSightCurSpeed)
+            });
+    }
+
+    public void typeBomberUpdate(float f)
+    {
+        if((double)java.lang.Math.abs(FM.Or.getKren()) > 4.5D)
+        {
+            fSightCurReadyness -= 0.0666666F * f;
+            if(fSightCurReadyness < 0.0F)
+                fSightCurReadyness = 0.0F;
+        }
+        if(fSightCurReadyness < 1.0F)
+            fSightCurReadyness += 0.0333333F * f;
+        else
+        if(bSightAutomation)
+        {
+            fSightCurDistance -= com.maddox.il2.objects.air.B_24J100.toMetersPerSecond(fSightCurSpeed) * f;
+            if(fSightCurDistance < 0.0F)
+            {
+                fSightCurDistance = 0.0F;
+                typeBomberToggleAutomation();
+            }
+            fSightCurForwardAngle = (float)java.lang.Math.toDegrees(java.lang.Math.atan(fSightCurDistance / com.maddox.il2.objects.air.B_24J100.toMeters(fSightCurAltitude)));
+            if((double)fSightCurDistance < (double)com.maddox.il2.objects.air.B_24J100.toMetersPerSecond(fSightCurSpeed) * java.lang.Math.sqrt(com.maddox.il2.objects.air.B_24J100.toMeters(fSightCurAltitude) * 0.2038736F))
+                bSightBombDump = true;
+            if(bSightBombDump)
+                if(FM.isTick(3, 0))
+                {
+                    if(FM.CT.Weapons[3] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1].haveBullets())
+                    {
+                        FM.CT.WeaponControl[3] = true;
+                        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightBombdrop");
+                    }
+                } else
+                {
+                    FM.CT.WeaponControl[3] = false;
+                }
+        }
+    }
+
+    public void typeBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+        netmsgguaranted.writeByte((bSightAutomation ? 1 : 0) | (bSightBombDump ? 2 : 0));
+        netmsgguaranted.writeFloat(fSightCurDistance);
+        netmsgguaranted.writeByte((int)fSightCurForwardAngle);
+        netmsgguaranted.writeByte((int)((fSightCurSideslip + 3F) * 33.33333F));
+        netmsgguaranted.writeFloat(fSightCurAltitude);
+        netmsgguaranted.writeByte((int)(fSightCurSpeed / 2.5F));
+        netmsgguaranted.writeByte((int)(fSightCurReadyness * 200F));
+    }
+
+    public void typeBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        int i = netmsginput.readUnsignedByte();
+        bSightAutomation = (i & 1) != 0;
+        bSightBombDump = (i & 2) != 0;
+        fSightCurDistance = netmsginput.readFloat();
+        fSightCurForwardAngle = netmsginput.readUnsignedByte();
+        fSightCurSideslip = -3F + (float)netmsginput.readUnsignedByte() / 33.33333F;
+        fSightCurAltitude = netmsginput.readFloat();
+        fSightCurSpeed = (float)netmsginput.readUnsignedByte() * 2.5F;
+        fSightCurReadyness = (float)netmsginput.readUnsignedByte() / 200F;
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    public boolean bToFire;
+    private long tX4Prev;
+    private float deltaAzimuth;
+    private float deltaTangage;
+    private boolean isGuidingBomb;
+    private boolean isMasterAlive;
+    public static boolean bChangedPit = false;
+    private boolean bSightAutomation;
+    private boolean bSightBombDump;
+    public float fSightCurDistance;
+    public float fSightCurForwardAngle;
+    public float fSightCurSideslip;
+    public float fSightCurAltitude;
+    public float fSightCurSpeed;
+    public float fSightCurReadyness;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.B_24J100.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "B-24");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/B-24J-100-CF(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeBMPar05());
+        com.maddox.rts.Property.set(class1, "meshName_us", "3DO/Plane/B-24J-100-CF(USA)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_us", new PaintSchemeFMPar06());
+        com.maddox.rts.Property.set(class1, "noseart", 1);
+        com.maddox.rts.Property.set(class1, "yearService", 1943.5F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 2800.9F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/B-24J.fmd");
+        com.maddox.il2.objects.air.B_24J100.weaponTriggersRegister(class1, new int[] {
+            10, 10, 11, 11, 12, 12, 13, 14, 15, 15, 
+            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 
+            3, 3
+        });
+        com.maddox.il2.objects.air.B_24J100.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_MGUN10", 
+            "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_ExternalBomb01", "_ExternalBomb02", 
+            "_ExternalBomb03", "_ExternalBomb04"
+        });
+        com.maddox.il2.objects.air.B_24J100.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null
+        });
+        com.maddox.il2.objects.air.B_24J100.weaponsRegister(class1, "16x500", new java.lang.String[] {
+            "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", 
+            "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", "BombGun500lbs 2", null, null, 
+            null, null
+        });
+        com.maddox.il2.objects.air.B_24J100.weaponsRegister(class1, "16xRazon", new java.lang.String[] {
+            "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", 
+            "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", null, null, 
+            null, null
+        });
+        com.maddox.il2.objects.air.B_24J100.weaponsRegister(class1, "8xRazon", new java.lang.String[] {
+            "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", 
+            "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", "RocketGunRazon 2", null, null, null, null, null, null, 
+            null, null
+        });
+        com.maddox.il2.objects.air.B_24J100.weaponsRegister(class1, "2xBat", new java.lang.String[] {
+            "MGunBrowning50t 365", "MGunBrowning50t 365", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 610", "MGunBrowning50t 375", "MGunBrowning50t 375", "MGunBrowning50t 500", "MGunBrowning50t 500", 
+            null, null, null, null, null, null, null, null, "RocketGunBat 1", "BombGunNull 1", 
+            "BombGunNull 1", "RocketGunBat 1"
+        });
+        com.maddox.il2.objects.air.B_24J100.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null
+        });
+    }
 }

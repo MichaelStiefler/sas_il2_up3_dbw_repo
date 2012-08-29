@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ZutiSupportMethods.java
+
 package com.maddox.il2.game;
 
 import com.maddox.JGP.Point2d;
@@ -27,20 +32,16 @@ import com.maddox.il2.engine.TTFont;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.gui.GUI;
 import com.maddox.il2.gui.GUIBriefing;
-import com.maddox.il2.gui.GUIBriefing.TargetPoint;
 import com.maddox.il2.gui.GUIPad;
 import com.maddox.il2.net.BornPlace;
 import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.NetAircraft;
-import com.maddox.il2.objects.air.NetAircraft.AircraftNet;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.il2.objects.ships.ShipGeneric;
 import com.maddox.il2.objects.trains.Train;
 import com.maddox.il2.objects.vehicles.artillery.AAA;
-import com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric;
-import com.maddox.il2.objects.vehicles.artillery.RocketryGeneric;
 import com.maddox.il2.objects.vehicles.tanks.TankGeneric;
 import com.maddox.rts.LDRres;
 import com.maddox.rts.NetAddress;
@@ -58,1204 +59,1123 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+// Referenced classes of package com.maddox.il2.game:
+//            ZutiPadObject, ZutiAircraft, ZutiBannedUser, ZutiStayPoint, 
+//            Main, Mission, I18N
+
 public class ZutiSupportMethods
 {
-  private static String ZUTI_LOADOUT_NONE = "";
-  private static String ZUTI_LOADOUT_NULL = "";
-  private static String[] ZUTI_TIP = new String[3];
-  private static boolean ZUTI_TARGETS_LOADED = false;
-  public static int ZUTI_KIA_COUNTER = 0;
-  public static boolean ZUTI_KIA_DELAY_CLEARED = false;
-  public static List ZUTI_BANNED_PILOTS;
-  public static List ZUTI_DEAD_TARGETS;
-  public static long BASE_CAPRUTING_LAST_CHECK = 0L;
-  public static int BASE_CAPTURING_INTERVAL = 2000;
 
-  public static void clear()
-  {
-    if (ZUTI_BANNED_PILOTS != null)
-      ZUTI_BANNED_PILOTS.clear();
-    if (ZUTI_DEAD_TARGETS != null)
-      ZUTI_DEAD_TARGETS.clear();
-  }
-
-  public static void setTargetsLoaded(boolean paramBoolean)
-  {
-    ZUTI_TARGETS_LOADED = paramBoolean;
-  }
-
-  public static void fillAirInterval(GUIPad paramGUIPad)
-  {
-    Mission localMission = Main.cur().mission;
-    if (localMission != null) localMission.getClass(); else {
-      return;
-    }
-    try
+    public ZutiSupportMethods()
     {
-      Actor localActor = null;
-      ZutiPadObject localZutiPadObject = null;
-
-      Aircraft localAircraft = World.getPlayerAircraft();
-      boolean bool = localMission.zutiRadar_RefreshInterval > 0;
-
-      List localList = Engine.targets();
-      int i = localList.size();
-      for (int j = 0; j < i; j++)
-      {
-        localActor = (Actor)localList.get(j);
-
-        if (localActor.equals(localAircraft)) {
-          continue;
-        }
-        if ((!(localActor instanceof Aircraft)) || (localActor.getDiedFlag()) || (paramGUIPad.zutiPadObjects.containsKey(new Integer(localActor.hashCode()))))
-          continue;
-        localZutiPadObject = new ZutiPadObject(localActor, bool);
-        localZutiPadObject.type = 0;
-        paramGUIPad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-      }
-
     }
-    catch (Exception localException)
+
+    public static void clear()
     {
-      localException.printStackTrace();
+        if(ZUTI_BANNED_PILOTS != null)
+            ZUTI_BANNED_PILOTS.clear();
+        if(ZUTI_DEAD_TARGETS != null)
+            ZUTI_DEAD_TARGETS.clear();
     }
-  }
 
-  public static void fillGroundChiefsArray(GUIPad paramGUIPad)
-  {
-    Mission localMission = Main.cur().mission;
-
-    if (localMission != null) localMission.getClass(); else {
-      return;
-    }
-    boolean bool = localMission.zutiRadar_RefreshInterval > 0;
-
-    ZutiPadObject localZutiPadObject = null;
-
-    Actor localActor = null;
-
-    HashMapExt localHashMapExt = Engine.name2Actor();
-
-    for (Map.Entry localEntry = localHashMapExt.nextEntry(null); localEntry != null; localEntry = localHashMapExt.nextEntry(localEntry))
+    public static void setTargetsLoaded(boolean flag)
     {
-      localActor = (Actor)localEntry.getValue();
-
-      if (GUI.pad.zutiPadObjects.containsKey(new Integer(localActor.hashCode()))) {
-        continue;
-      }
-      if (!localActor.isAlive())
-        continue;
-      if ((localActor instanceof TankGeneric))
-      {
-        localZutiPadObject = new ZutiPadObject(localActor, bool);
-        localZutiPadObject.type = 1;
-
-        paramGUIPad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-      }
-      else if ((localActor instanceof Train))
-      {
-        localZutiPadObject = new ZutiPadObject(localActor, bool);
-        localZutiPadObject.type = 5;
-
-        paramGUIPad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-      }
-      else if ((localActor instanceof RocketryGeneric))
-      {
-        localZutiPadObject = new ZutiPadObject(localActor, bool);
-        localZutiPadObject.type = 3;
-
-        paramGUIPad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-      }
-      else if ((localActor instanceof AAA))
-      {
-        if (localActor.getDiedFlag())
-          continue;
-        localZutiPadObject = new ZutiPadObject(localActor, bool);
-        localZutiPadObject.type = 2;
-
-        paramGUIPad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-      }
-      else if ((localActor instanceof ArtilleryGeneric))
-      {
-        if (localActor.getDiedFlag())
-          continue;
-        localZutiPadObject = new ZutiPadObject(localActor, bool);
-        localZutiPadObject.type = 2;
-
-        paramGUIPad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-      }
-      else if ((localActor instanceof ChiefGround))
-      {
-        localZutiPadObject = new ZutiPadObject(localActor, bool);
-        localZutiPadObject.type = 5;
-
-        paramGUIPad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-      } else {
-        if ((!(localActor instanceof BigshipGeneric)) && (!(localActor instanceof ShipGeneric)))
-          continue;
-        if (localActor.getDiedFlag())
-          continue;
-        localZutiPadObject = new ZutiPadObject(localActor, bool);
-        localZutiPadObject.type = 4;
-
-        paramGUIPad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-      }
+        ZUTI_TARGETS_LOADED = flag;
     }
-  }
 
-  public static void fillNeutralHomeBases(ArrayList paramArrayList)
-  {
-    if (paramArrayList == null)
-      paramArrayList = new ArrayList();
-    else {
-      paramArrayList.clear();
-    }
-    ArrayList localArrayList = World.cur().bornPlaces;
-
-    if (localArrayList == null) {
-      return;
-    }
-    int i = localArrayList.size();
-    BornPlace localBornPlace = null;
-
-    for (int j = 0; j < i; j++)
+    public static void fillAirInterval(com.maddox.il2.gui.GUIPad guipad)
     {
-      localBornPlace = (BornPlace)localArrayList.get(j);
-
-      if ((localBornPlace.army != 1) && (localBornPlace.army != 2))
-        paramArrayList.add(localBornPlace);
-    }
-  }
-
-  public static String getCountryFromNetRegiment(String paramString)
-  {
-    ResourceBundle localResourceBundle = ResourceBundle.getBundle("i18n/country", RTSConf.cur.locale, LDRres.loader());
-
-    List localList = Regiment.getAll();
-    int i = localList.size();
-    for (int j = 0; j < i; j++)
-    {
-      Regiment localRegiment = (Regiment)localList.get(j);
-      String str = localResourceBundle.getString(localRegiment.branch());
-      if (localRegiment.name().equals(paramString)) {
-        return str;
-      }
-    }
-    return "NONE";
-  }
-
-  public static String getUserCfgRegiment(String paramString)
-  {
-    ResourceBundle localResourceBundle = ResourceBundle.getBundle("i18n/country", RTSConf.cur.locale, LDRres.loader());
-
-    List localList = Regiment.getAll();
-    int i = localList.size();
-    for (int j = 0; j < i; j++)
-    {
-      Regiment localRegiment = (Regiment)localList.get(j);
-      String str = localResourceBundle.getString(localRegiment.branch());
-      if (str.equals(paramString)) {
-        return localRegiment.name();
-      }
-    }
-    return "NoNe";
-  }
-
-  public static String getHomeBaseFirstCountry(BornPlace paramBornPlace)
-  {
-    ArrayList localArrayList = paramBornPlace.zutiHomeBaseCountries;
-
-    if ((localArrayList == null) || (localArrayList.size() == 0)) {
-      return "None";
-    }
-    return (String)localArrayList.get(0);
-  }
-
-  public static boolean isRegimentValidForSelectedHB(String paramString, BornPlace paramBornPlace)
-  {
-    String str1 = getCountryFromNetRegiment(paramString);
-
-    if (paramBornPlace.zutiHomeBaseCountries == null) {
-      return false;
-    }
-    for (int i = 0; i < paramBornPlace.zutiHomeBaseCountries.size(); i++)
-    {
-      String str2 = (String)paramBornPlace.zutiHomeBaseCountries.get(i);
-      if (str2.equals(str1))
-      {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  public static int getPlayerArmy()
-  {
-    if (Mission.isDogfight()) {
-      return ((NetUser)NetEnv.host()).getArmy();
-    }
-    return World.getPlayerArmy();
-  }
-
-  public static void removeTarget(String paramString)
-  {
-    try
-    {
-      Object localObject = null;
-
-      Iterator localIterator = GUIBriefing.ZUTI_TARGETS.iterator();
-      GUIBriefing.TargetPoint localTargetPoint = null;
-
-      while (localIterator.hasNext())
-      {
-        localTargetPoint = (GUIBriefing.TargetPoint)localIterator.next();
-
-        if ((localTargetPoint.nameTargetOrig == null) || 
-          (localTargetPoint.nameTargetOrig.indexOf(paramString.trim()) <= -1))
-          continue;
-        localObject = localTargetPoint;
-      }
-
-      if (localObject != null)
-      {
-        GUIBriefing.ZUTI_TARGETS.remove(localObject);
-      }
-    } catch (Exception localException) {
-      localException.printStackTrace();
-    }
-  }
-
-  public static boolean removeTarget(double paramDouble1, double paramDouble2)
-  {
-    Object localObject = null;
-    GUIBriefing.TargetPoint localTargetPoint = null;
-    try
-    {
-      Iterator localIterator = GUIBriefing.ZUTI_TARGETS.iterator();
-      while (localIterator.hasNext())
-      {
-        localTargetPoint = (GUIBriefing.TargetPoint)localIterator.next();
-
-        if ((localTargetPoint.x != paramDouble1) || (localTargetPoint.y != paramDouble2))
-          continue;
-        localObject = localTargetPoint;
-      }
-
-      if (localObject != null)
-      {
-        GUIBriefing.ZUTI_TARGETS.remove(localObject);
-        return true;
-      }
-    } catch (Exception localException) {
-      localException.printStackTrace();
-    }
-    return false;
-  }
-
-  public static void changeTargetIconDescription(Target paramTarget)
-  {
-    try
-    {
-      GUIBriefing.TargetPoint localTargetPoint = null;
-      Iterator localIterator = GUIBriefing.ZUTI_TARGETS.iterator();
-      while (localIterator.hasNext())
-      {
-        localTargetPoint = (GUIBriefing.TargetPoint)localIterator.next();
-
-        if (((int)(localTargetPoint.x - paramTarget.pos.getAbsPoint().x) != 0) || ((int)(localTargetPoint.y - paramTarget.pos.getAbsPoint().y) != 0))
-          continue;
-        if (localTargetPoint.type == 1)
+        com.maddox.il2.game.Mission mission = com.maddox.il2.game.Main.cur().mission;
+        if(mission != null)
+            mission.getClass();
+        else
+            return;
+        try
         {
-          localTargetPoint.type = 6;
-          localTargetPoint.icon = IconDraw.get("icons/tdefenceground.mat");
-          localTargetPoint.iconOArmy = IconDraw.get("icons/tdestroyground.mat");
-        } else {
-          if (localTargetPoint.type != 6)
+            Object obj = null;
+            Object obj1 = null;
+            com.maddox.il2.objects.air.Aircraft aircraft = com.maddox.il2.ai.World.getPlayerAircraft();
+            boolean flag = mission.zutiRadar_RefreshInterval > 0;
+            java.util.List list = com.maddox.il2.engine.Engine.targets();
+            int i = list.size();
+            for(int j = 0; j < i; j++)
+            {
+                com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(j);
+                if(!actor.equals(aircraft) && (actor instanceof com.maddox.il2.objects.air.Aircraft) && !actor.getDiedFlag() && !guipad.zutiPadObjects.containsKey(new Integer(actor.hashCode())))
+                {
+                    com.maddox.il2.game.ZutiPadObject zutipadobject = new ZutiPadObject(actor, flag);
+                    zutipadobject.type = 0;
+                    guipad.zutiPadObjects.put(new Integer(zutipadobject.hashCode()), zutipadobject);
+                }
+            }
+
+        }
+        catch(java.lang.Exception exception)
+        {
+            exception.printStackTrace();
+        }
+    }
+
+    public static void fillGroundChiefsArray(com.maddox.il2.gui.GUIPad guipad)
+    {
+        com.maddox.il2.game.Mission mission = com.maddox.il2.game.Main.cur().mission;
+        if(mission != null)
+            mission.getClass();
+        else
+            return;
+        boolean flag = mission.zutiRadar_RefreshInterval > 0;
+        Object obj = null;
+        com.maddox.util.HashMapExt hashmapext = com.maddox.il2.engine.Engine.name2Actor();
+        Object obj1 = null;
+        for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry.getValue();
+            if(com.maddox.il2.gui.GUI.pad.zutiPadObjects.containsKey(new Integer(actor.hashCode())) || !(actor instanceof com.maddox.il2.ai.Chief) || actor.getDiedFlag())
+                continue;
+            if(actor instanceof com.maddox.il2.objects.vehicles.tanks.TankGeneric)
+            {
+                com.maddox.il2.game.ZutiPadObject zutipadobject = new ZutiPadObject(actor, flag);
+                zutipadobject.type = 1;
+                guipad.zutiPadObjects.put(new Integer(zutipadobject.hashCode()), zutipadobject);
+                continue;
+            }
+            if(actor instanceof com.maddox.il2.objects.trains.Train)
+            {
+                com.maddox.il2.game.ZutiPadObject zutipadobject1 = new ZutiPadObject(actor, flag);
+                zutipadobject1.type = 5;
+                guipad.zutiPadObjects.put(new Integer(zutipadobject1.hashCode()), zutipadobject1);
+                continue;
+            }
+            if(actor instanceof com.maddox.il2.objects.vehicles.artillery.AAA)
+            {
+                if(!actor.getDiedFlag())
+                {
+                    com.maddox.il2.game.ZutiPadObject zutipadobject2 = new ZutiPadObject(actor, flag);
+                    zutipadobject2.type = 2;
+                    guipad.zutiPadObjects.put(new Integer(zutipadobject2.hashCode()), zutipadobject2);
+                }
+                continue;
+            }
+            if(actor instanceof com.maddox.il2.ai.ground.ChiefGround)
+            {
+                com.maddox.il2.game.ZutiPadObject zutipadobject3 = new ZutiPadObject(actor, flag);
+                zutipadobject3.type = 5;
+                guipad.zutiPadObjects.put(new Integer(zutipadobject3.hashCode()), zutipadobject3);
+                continue;
+            }
+            if(((actor instanceof com.maddox.il2.objects.ships.BigshipGeneric) || (actor instanceof com.maddox.il2.objects.ships.ShipGeneric)) && !actor.getDiedFlag())
+            {
+                com.maddox.il2.game.ZutiPadObject zutipadobject4 = new ZutiPadObject(actor, flag);
+                zutipadobject4.type = 4;
+                guipad.zutiPadObjects.put(new Integer(zutipadobject4.hashCode()), zutipadobject4);
+            }
+        }
+
+    }
+
+    public static void fillNeutralHomeBases(java.util.ArrayList arraylist)
+    {
+        if(arraylist == null)
+            arraylist = new ArrayList();
+        else
+            arraylist.clear();
+        java.util.ArrayList arraylist1 = com.maddox.il2.ai.World.cur().bornPlaces;
+        if(arraylist1 == null)
+            return;
+        int i = arraylist1.size();
+        Object obj = null;
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.net.BornPlace bornplace = (com.maddox.il2.net.BornPlace)arraylist1.get(j);
+            if(bornplace.army != 1 && bornplace.army != 2)
+                arraylist.add(bornplace);
+        }
+
+    }
+
+    public static java.lang.String getCountryFromNetRegiment(java.lang.String s)
+    {
+        java.util.ResourceBundle resourcebundle = java.util.ResourceBundle.getBundle("i18n/country", com.maddox.rts.RTSConf.cur.locale, com.maddox.rts.LDRres.loader());
+        java.util.List list = com.maddox.il2.ai.Regiment.getAll();
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Regiment regiment = (com.maddox.il2.ai.Regiment)list.get(j);
+            java.lang.String s1 = resourcebundle.getString(regiment.branch());
+            if(regiment.name().equals(s))
+                return s1;
+        }
+
+        return "NONE";
+    }
+
+    public static java.lang.String getUserCfgRegiment(java.lang.String s)
+    {
+        java.util.ResourceBundle resourcebundle = java.util.ResourceBundle.getBundle("i18n/country", com.maddox.rts.RTSConf.cur.locale, com.maddox.rts.LDRres.loader());
+        java.util.List list = com.maddox.il2.ai.Regiment.getAll();
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Regiment regiment = (com.maddox.il2.ai.Regiment)list.get(j);
+            java.lang.String s1 = resourcebundle.getString(regiment.branch());
+            if(s1.equals(s))
+                return regiment.name();
+        }
+
+        return "NoNe";
+    }
+
+    public static java.lang.String getHomeBaseFirstCountry(com.maddox.il2.net.BornPlace bornplace)
+    {
+        java.util.ArrayList arraylist = bornplace.zutiHomeBaseCountries;
+        if(arraylist == null || arraylist.size() == 0)
+            return "None";
+        else
+            return (java.lang.String)arraylist.get(0);
+    }
+
+    public static boolean isRegimentValidForSelectedHB(java.lang.String s, com.maddox.il2.net.BornPlace bornplace)
+    {
+        java.lang.String s1 = com.maddox.il2.game.ZutiSupportMethods.getCountryFromNetRegiment(s);
+        if(bornplace.zutiHomeBaseCountries == null)
+            return false;
+        for(int i = 0; i < bornplace.zutiHomeBaseCountries.size(); i++)
+        {
+            java.lang.String s2 = (java.lang.String)bornplace.zutiHomeBaseCountries.get(i);
+            if(s2.equals(s1))
+                return true;
+        }
+
+        return false;
+    }
+
+    public static int getPlayerArmy()
+    {
+        if(com.maddox.il2.game.Mission.isDogfight())
+            return ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).getArmy();
+        else
+            return com.maddox.il2.ai.World.getPlayerArmy();
+    }
+
+    public static void removeTarget(java.lang.String s)
+    {
+        try
+        {
+            com.maddox.il2.gui.GUIBriefing.TargetPoint targetpoint = null;
+            java.util.Iterator iterator = com.maddox.il2.gui.GUIBriefing.ZUTI_TARGETS.iterator();
+            Object obj = null;
+            do
+            {
+                if(!iterator.hasNext())
+                    break;
+                com.maddox.il2.gui.GUIBriefing.TargetPoint targetpoint1 = (com.maddox.il2.gui.GUIBriefing.TargetPoint)iterator.next();
+                if(targetpoint1.nameTargetOrig == null || targetpoint1.nameTargetOrig.indexOf(s.trim()) <= -1)
+                    continue;
+                targetpoint = targetpoint1;
+                break;
+            } while(true);
+            if(targetpoint != null)
+                com.maddox.il2.gui.GUIBriefing.ZUTI_TARGETS.remove(targetpoint);
+        }
+        catch(java.lang.Exception exception)
+        {
+            exception.printStackTrace();
+        }
+    }
+
+    public static boolean removeTarget(double d, double d1)
+    {
+        com.maddox.il2.gui.GUIBriefing.TargetPoint targetpoint;
+        targetpoint = null;
+        Object obj = null;
+        java.util.Iterator iterator = com.maddox.il2.gui.GUIBriefing.ZUTI_TARGETS.iterator();
+        do
+        {
+            if(!iterator.hasNext())
+                break;
+            com.maddox.il2.gui.GUIBriefing.TargetPoint targetpoint1 = (com.maddox.il2.gui.GUIBriefing.TargetPoint)iterator.next();
+            if((double)targetpoint1.x != d || (double)targetpoint1.y != d1)
+                continue;
+            targetpoint = targetpoint1;
             break;
-          localTargetPoint.type = 1;
-          localTargetPoint.icon = IconDraw.get("icons/tdestroyground.mat");
-          localTargetPoint.iconOArmy = IconDraw.get("icons/tdefenceground.mat");
-        }
-      }
+        } while(true);
+        if(targetpoint == null)
+            break MISSING_BLOCK_LABEL_95;
+        com.maddox.il2.gui.GUIBriefing.ZUTI_TARGETS.remove(targetpoint);
+        return true;
+        java.lang.Exception exception;
+        exception;
+        exception.printStackTrace();
+        return false;
     }
-    catch (Exception localException)
+
+    public static void changeTargetIconDescription(com.maddox.il2.ai.Target target)
     {
-      localException.printStackTrace();
-    }
-  }
-
-  public static Point3d getNearestTarget(Point3d paramPoint3d, boolean paramBoolean)
-  {
-    GUIBriefing.TargetPoint localTargetPoint = null;
-    Point3d localPoint3d = null;
-    double d1 = 100000.0D;
-    Iterator localIterator = GUIBriefing.ZUTI_TARGETS.iterator();
-    while (localIterator.hasNext())
-    {
-      localTargetPoint = (GUIBriefing.TargetPoint)localIterator.next();
-
-      if ((paramBoolean) && ((localTargetPoint.type == 0) || (localTargetPoint.type == 1) || (localTargetPoint.type == 2) || (localTargetPoint.type == 4)))
-      {
-        d2 = Math.sqrt(Math.pow(paramPoint3d.x - localTargetPoint.x, 2.0D) + Math.pow(paramPoint3d.y - localTargetPoint.y, 2.0D));
-
-        if (d2 < d1)
+        try
         {
-          d1 = d2;
-          localPoint3d = new Point3d(localTargetPoint.x, localTargetPoint.y, 0.0D);
-        }
-      }
-
-      if ((paramBoolean) || ((localTargetPoint.type != 4) && (localTargetPoint.type != 5) && (localTargetPoint.type != 6) && (localTargetPoint.type != 7)))
-        continue;
-      double d2 = Math.sqrt(Math.pow(paramPoint3d.x - localTargetPoint.x, 2.0D) + Math.pow(paramPoint3d.y - localTargetPoint.y, 2.0D));
-
-      if (d2 < d1)
-      {
-        d1 = d2;
-        localPoint3d = new Point3d(localTargetPoint.x, localTargetPoint.y, 0.0D);
-      }
-
-    }
-
-    return localPoint3d;
-  }
-
-  public static void assignTargetActor(GUIBriefing.TargetPoint paramTargetPoint)
-  {
-    if (paramTargetPoint == null) {
-      return;
-    }
-
-    Main.cur().mission.getClass();
-    try
-    {
-      paramTargetPoint.actor = Actor.getByName(paramTargetPoint.nameTarget);
-      int j;
-      if ((paramTargetPoint.actor != null) && ((paramTargetPoint.actor instanceof Wing)))
-      {
-        Wing localWing = (Wing)paramTargetPoint.actor;
-        paramTargetPoint.isBaseActorWing = true;
-        paramTargetPoint.wing = localWing;
-        j = localWing.airc.length;
-        for (int k = 0; k < j; k++)
-        {
-          if ((localWing.airc[k] == null) || (localWing.airc[k].getDiedFlag()))
-            continue;
-          paramTargetPoint.actor = localWing.airc[k];
-          break;
-        }
-
-      }
-      else if ((paramTargetPoint.isBaseActorWing) && (paramTargetPoint.wing != null))
-      {
-        int i = paramTargetPoint.wing.airc.length;
-        for (j = 0; j < i; j++)
-        {
-          if ((paramTargetPoint.wing.airc[j] == null) || (paramTargetPoint.wing.airc[j].getDiedFlag()))
-            continue;
-          paramTargetPoint.actor = paramTargetPoint.wing.airc[j];
-          break;
-        }
-      }
-    }
-    catch (Exception localException) {
-      localException.printStackTrace();
-    }
-  }
-
-  public static void fillTargets(SectFile paramSectFile)
-  {
-    if (ZUTI_TARGETS_LOADED) {
-      return;
-    }
-    GUIBriefing.ZUTI_TARGETS.clear();
-
-    int i = paramSectFile.sectionIndex("Target");
-    Object localObject1;
-    if (i >= 0)
-    {
-      int j = paramSectFile.vars(i);
-      for (k = 0; k < j; k++)
-      {
-        localObject1 = new NumberTokenizer(paramSectFile.line(i, k));
-        int m = ((NumberTokenizer)localObject1).next(0, 0, 7);
-        int n = ((NumberTokenizer)localObject1).next(0, 0, 2);
-        if (n == 2)
-          continue;
-        GUIBriefing.TargetPoint localTargetPoint = new GUIBriefing.TargetPoint();
-        localTargetPoint.type = m;
-        localTargetPoint.importance = n;
-        ((NumberTokenizer)localObject1).next(0);
-        ((NumberTokenizer)localObject1).next(0, 0, 720);
-        ((NumberTokenizer)localObject1).next(0);
-        localTargetPoint.x = ((NumberTokenizer)localObject1).next(0);
-        localTargetPoint.y = ((NumberTokenizer)localObject1).next(0);
-        int i1 = ((NumberTokenizer)localObject1).next(0);
-        if ((localTargetPoint.type == 3) || (localTargetPoint.type == 6) || (localTargetPoint.type == 1))
-        {
-          if (i1 < 50) i1 = 50;
-          if (i1 > 3000) i1 = 3000;
-        }
-        localTargetPoint.r = i1;
-        ((NumberTokenizer)localObject1).next(0);
-        localTargetPoint.nameTarget = ((NumberTokenizer)localObject1).next((String)null);
-
-        if ((localTargetPoint.nameTarget != null) && (localTargetPoint.nameTarget.startsWith("Bridge")))
-        {
-          localTargetPoint.nameTargetOrig = localTargetPoint.nameTarget;
-          localTargetPoint.nameTarget = null;
-        }
-        int i2 = ((NumberTokenizer)localObject1).next(0);
-        int i3 = ((NumberTokenizer)localObject1).next(0);
-        if ((i2 != 0) && (i3 != 0))
-        {
-          localTargetPoint.x = i2;
-          localTargetPoint.y = i3;
-        }
-
-        switch (localTargetPoint.type)
-        {
-        case 0:
-          localTargetPoint.icon = IconDraw.get("icons/tdestroyair.mat");
-          localTargetPoint.iconOArmy = IconDraw.get("icons/tdefence.mat");
-          if ((localTargetPoint.nameTarget != null) && (paramSectFile.exist("Chiefs", localTargetPoint.nameTarget)))
-          {
-            localTargetPoint.icon = IconDraw.get("icons/tdestroychief.mat");
-            localTargetPoint.iconOArmy = IconDraw.get("icons/tdefence.mat");
-          }
-
-          assignTargetActor(localTargetPoint);
-          break;
-        case 1:
-          localTargetPoint.icon = IconDraw.get("icons/tdestroyground.mat");
-          localTargetPoint.iconOArmy = IconDraw.get("icons/tdefenceground.mat");
-          break;
-        case 2:
-          localTargetPoint.icon = IconDraw.get("icons/tdestroybridge.mat");
-          localTargetPoint.iconOArmy = IconDraw.get("icons/tdefencebridge.mat");
-          localTargetPoint.nameTarget = null;
-          break;
-        case 3:
-          localTargetPoint.icon = IconDraw.get("icons/tinspect.mat");
-          localTargetPoint.iconOArmy = IconDraw.get("icons/tdefence.mat");
-
-          assignTargetActor(localTargetPoint);
-          break;
-        case 4:
-          localTargetPoint.icon = IconDraw.get("icons/tescort.mat");
-          localTargetPoint.iconOArmy = IconDraw.get("icons/tdestroychief.mat");
-
-          assignTargetActor(localTargetPoint);
-          break;
-        case 5:
-          localTargetPoint.icon = IconDraw.get("icons/tdefence.mat");
-          localTargetPoint.iconOArmy = IconDraw.get("icons/tdestroychief.mat");
-
-          assignTargetActor(localTargetPoint);
-          break;
-        case 6:
-          localTargetPoint.icon = IconDraw.get("icons/tdefenceground.mat");
-          localTargetPoint.iconOArmy = IconDraw.get("icons/tdestroyground.mat");
-          break;
-        case 7:
-          localTargetPoint.icon = IconDraw.get("icons/tdefencebridge.mat");
-          localTargetPoint.iconOArmy = IconDraw.get("icons/tdestroybridge.mat");
-          localTargetPoint.nameTarget = null;
-        }
-
-        if (localTargetPoint.nameTarget != null) {
-          localTargetPoint.nameTargetOrig = localTargetPoint.nameTarget;
-        }
-        else
-        {
-          localTargetPoint.nameTarget = (new Float(localTargetPoint.x).toString() + new Float(localTargetPoint.y).toString());
-          if (localTargetPoint.nameTargetOrig == null) {
-            localTargetPoint.nameTargetOrig = localTargetPoint.nameTarget;
-          }
-        }
-        if (localTargetPoint.nameTarget != null)
-        {
-          Object localObject2;
-          if (paramSectFile.exist("Chiefs", localTargetPoint.nameTarget))
-          {
-            try
+            com.maddox.il2.gui.GUIBriefing.TargetPoint targetpoint = null;
+            java.util.Iterator iterator = com.maddox.il2.gui.GUIBriefing.ZUTI_TARGETS.iterator();
+            do
             {
-              StringTokenizer localStringTokenizer = new StringTokenizer(paramSectFile.get("Chiefs", localTargetPoint.nameTarget, (String)null));
-              localObject2 = localStringTokenizer.nextToken();
-              int i4 = ((String)localObject2).indexOf(".");
-              localTargetPoint.nameTarget = (I18N.technic(((String)localObject2).substring(0, i4)) + " " + I18N.technic(((String)localObject2).substring(i4 + 1)));
+                if(!iterator.hasNext())
+                    break MISSING_BLOCK_LABEL_148;
+                targetpoint = (com.maddox.il2.gui.GUIBriefing.TargetPoint)iterator.next();
+            } while((int)((double)targetpoint.x - target.pos.getAbsPoint().x) != 0 || (int)((double)targetpoint.y - target.pos.getAbsPoint().y) != 0);
+            if(targetpoint.type == 1)
+            {
+                targetpoint.type = 6;
+                targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdefenceground.mat");
+                targetpoint.iconOArmy = com.maddox.il2.engine.IconDraw.get("icons/tdestroyground.mat");
+            } else
+            if(targetpoint.type == 6)
+            {
+                targetpoint.type = 1;
+                targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdestroyground.mat");
+                targetpoint.iconOArmy = com.maddox.il2.engine.IconDraw.get("icons/tdefenceground.mat");
             }
-            catch (Exception localException1)
-            {
-              localTargetPoint.nameTarget = null;
-            }
-          }
-          else if (paramSectFile.sectionIndex(localTargetPoint.nameTarget) >= 0)
-          {
-            try
-            {
-              String str = paramSectFile.get(localTargetPoint.nameTarget, "Class", (String)null);
-              localObject2 = ObjIO.classForName(str);
-              localTargetPoint.nameTarget = Property.stringValue(localObject2, "iconFar_shortClassName", null);
-            }
-            catch (Exception localException2)
-            {
-              localTargetPoint.nameTarget = null;
-            }
-          }
-          else {
-            localTargetPoint.nameTarget = null;
-          }
         }
-
-        GUIBriefing.ZUTI_TARGETS.add(localTargetPoint);
-      }
-
-    }
-
-    ZutiTargetsSupportMethods.checkForDeactivatedTargets();
-
-    ArrayList localArrayList = World.cur().targetsGuard.zutiTargetNamesToRemove;
-    i = localArrayList.size();
-    for (int k = 0; k < i; k++)
-    {
-      removeTarget((String)localArrayList.get(k));
-    }
-    World.cur().targetsGuard.zutiTargetNamesToRemove.clear();
-
-    localArrayList = World.cur().targetsGuard.zutiTargetPosToRemove;
-    i = localArrayList.size();
-    for (k = 0; k < i; k++)
-    {
-      localObject1 = (Target)localArrayList.get(k);
-      removeTarget(((Target)localObject1).pos.getAbs().getX(), ((Target)localObject1).pos.getAbs().getY());
-    }
-    World.cur().targetsGuard.zutiTargetPosToRemove.clear();
-
-    ZUTI_TARGETS_LOADED = true;
-  }
-
-  private static void drawTargets(GUIRenders paramGUIRenders, TTFont paramTTFont, Mat paramMat, CameraOrtho2D paramCameraOrtho2D, Set paramSet, int paramInt, boolean paramBoolean)
-  {
-    Mission localMission = Main.cur().mission;
-
-    localMission.getClass();
-    try
-    {
-      if (paramSet.size() != 0)
-      {
-        GPoint localGPoint = paramGUIRenders.getMouseXY();
-        float f1 = localGPoint.x;
-        float f2 = paramGUIRenders.win.dy - 1.0F - localGPoint.y;
-        float f3 = IconDraw.scrSizeX() / 2;
-        float f4 = f1;
-        float f5 = f2;
-        IconDraw.setColor(-16711681);
-
-        GUIBriefing.TargetPoint localTargetPoint1 = null;
-        GUIBriefing.TargetPoint localTargetPoint2 = null;
-        Iterator localIterator = paramSet.iterator();
-
-        while (localIterator.hasNext())
+        catch(java.lang.Exception exception)
         {
-          localTargetPoint1 = (GUIBriefing.TargetPoint)localIterator.next();
-          if (localTargetPoint1.icon == null)
-          {
-            continue;
-          }
-
-          if ((localTargetPoint1.isBaseActorWing) && ((localTargetPoint1.actor == null) || (localTargetPoint1.actor.getDiedFlag()))) {
-            assignTargetActor(localTargetPoint1);
-          }
-
-          float f6 = (float)((localTargetPoint1.x - paramCameraOrtho2D.worldXOffset) * paramCameraOrtho2D.worldScale);
-          float f8 = (float)((localTargetPoint1.y - paramCameraOrtho2D.worldYOffset) * paramCameraOrtho2D.worldScale);
-
-          localMission.getClass();
-
-          if (paramBoolean)
-            IconDraw.render(localTargetPoint1.icon, f6, f8);
-          else {
-            IconDraw.render(localTargetPoint1.iconOArmy, f6, f8);
-          }
-          if ((f6 >= f1 - f3) && (f6 <= f1 + f3) && (f8 >= f2 - f3) && (f8 <= f2 + f3))
-          {
-            localTargetPoint2 = localTargetPoint1;
-            f4 = f6;
-            f5 = f8;
-          }
-
+            exception.printStackTrace();
         }
+    }
 
-        if (localTargetPoint2 != null)
+    public static com.maddox.JGP.Point3d getNearestTarget(com.maddox.JGP.Point3d point3d, boolean flag)
+    {
+        Object obj = null;
+        com.maddox.JGP.Point3d point3d1 = null;
+        double d = 100000D;
+        java.util.Iterator iterator = com.maddox.il2.gui.GUIBriefing.ZUTI_TARGETS.iterator();
+        do
         {
-          for (int i = 0; i < 3; i++) {
-            ZUTI_TIP[i] = null;
-          }
-          if (localTargetPoint2.importance == 0)
-            ZUTI_TIP[0] = I18N.gui("brief.Primary");
-          else {
-            ZUTI_TIP[0] = I18N.gui("brief.Secondary");
-          }
-          if (paramBoolean)
-          {
-            switch (localTargetPoint2.type)
+            if(!iterator.hasNext())
+                break;
+            com.maddox.il2.gui.GUIBriefing.TargetPoint targetpoint = (com.maddox.il2.gui.GUIBriefing.TargetPoint)iterator.next();
+            if(flag && (targetpoint.type == 0 || targetpoint.type == 1 || targetpoint.type == 2 || targetpoint.type == 4))
             {
-            case 0:
-              ZUTI_TIP[1] = I18N.gui("brief.Destroy");
-              break;
-            case 1:
-              ZUTI_TIP[1] = I18N.gui("brief.DestroyGround");
-              break;
-            case 2:
-              ZUTI_TIP[1] = I18N.gui("brief.DestroyBridge");
-              break;
-            case 3:
-              ZUTI_TIP[1] = I18N.gui("brief.Inspect");
-              break;
-            case 4:
-              ZUTI_TIP[1] = I18N.gui("brief.Escort");
-              break;
-            case 5:
-              ZUTI_TIP[1] = I18N.gui("brief.Defence");
-              break;
-            case 6:
-              ZUTI_TIP[1] = I18N.gui("brief.DefenceGround");
-              break;
-            case 7:
-              ZUTI_TIP[1] = I18N.gui("brief.DefenceBridge");
+                double d1 = java.lang.Math.sqrt(java.lang.Math.pow(point3d.x - (double)targetpoint.x, 2D) + java.lang.Math.pow(point3d.y - (double)targetpoint.y, 2D));
+                if(d1 < d)
+                {
+                    d = d1;
+                    point3d1 = new Point3d(targetpoint.x, targetpoint.y, 0.0D);
+                }
+            }
+            if(!flag && (targetpoint.type == 4 || targetpoint.type == 5 || targetpoint.type == 6 || targetpoint.type == 7))
+            {
+                double d2 = java.lang.Math.sqrt(java.lang.Math.pow(point3d.x - (double)targetpoint.x, 2D) + java.lang.Math.pow(point3d.y - (double)targetpoint.y, 2D));
+                if(d2 < d)
+                {
+                    d = d2;
+                    point3d1 = new Point3d(targetpoint.x, targetpoint.y, 0.0D);
+                }
+            }
+        } while(true);
+        return point3d1;
+    }
+
+    public static void assignTargetActor(com.maddox.il2.gui.GUIBriefing.TargetPoint targetpoint)
+    {
+        if(targetpoint == null)
+            return;
+        com.maddox.il2.game.Main.cur().mission.getClass();
+        try
+        {
+            targetpoint.actor = com.maddox.il2.engine.Actor.getByName(targetpoint.nameTarget);
+            if(targetpoint.actor != null && (targetpoint.actor instanceof com.maddox.il2.ai.Wing))
+            {
+                com.maddox.il2.ai.Wing wing = (com.maddox.il2.ai.Wing)targetpoint.actor;
+                targetpoint.isBaseActorWing = true;
+                targetpoint.wing = wing;
+                int j = wing.airc.length;
+                int l = 0;
+                do
+                {
+                    if(l >= j)
+                        break;
+                    if(wing.airc[l] != null && !wing.airc[l].getDiedFlag())
+                    {
+                        targetpoint.actor = wing.airc[l];
+                        break;
+                    }
+                    l++;
+                } while(true);
+            } else
+            if(targetpoint.isBaseActorWing && targetpoint.wing != null)
+            {
+                int i = targetpoint.wing.airc.length;
+                int k = 0;
+                do
+                {
+                    if(k >= i)
+                        break;
+                    if(targetpoint.wing.airc[k] != null && !targetpoint.wing.airc[k].getDiedFlag())
+                    {
+                        targetpoint.actor = targetpoint.wing.airc[k];
+                        break;
+                    }
+                    k++;
+                } while(true);
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            exception.printStackTrace();
+        }
+    }
+
+    public static void fillTargets(com.maddox.rts.SectFile sectfile)
+    {
+        if(ZUTI_TARGETS_LOADED)
+            return;
+        com.maddox.il2.gui.GUIBriefing.ZUTI_TARGETS.clear();
+        int i = sectfile.sectionIndex("Target");
+        if(i >= 0)
+        {
+            int j = sectfile.vars(i);
+            for(int k = 0; k < j; k++)
+            {
+                com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, k));
+                int j1 = numbertokenizer.next(0, 0, 7);
+                int k1 = numbertokenizer.next(0, 0, 2);
+                if(k1 == 2)
+                    continue;
+                com.maddox.il2.gui.GUIBriefing.TargetPoint targetpoint = new com.maddox.il2.gui.GUIBriefing.TargetPoint();
+                targetpoint.type = j1;
+                targetpoint.importance = k1;
+                numbertokenizer.next(0);
+                numbertokenizer.next(0, 0, 720);
+                numbertokenizer.next(0);
+                targetpoint.x = numbertokenizer.next(0);
+                targetpoint.y = numbertokenizer.next(0);
+                int l1 = numbertokenizer.next(0);
+                if(targetpoint.type == 3 || targetpoint.type == 6 || targetpoint.type == 1)
+                {
+                    if(l1 < 50)
+                        l1 = 50;
+                    if(l1 > 3000)
+                        l1 = 3000;
+                }
+                targetpoint.r = l1;
+                numbertokenizer.next(0);
+                targetpoint.nameTarget = numbertokenizer.next((java.lang.String)null);
+                if(targetpoint.nameTarget != null && targetpoint.nameTarget.startsWith("Bridge"))
+                {
+                    targetpoint.nameTargetOrig = targetpoint.nameTarget;
+                    targetpoint.nameTarget = null;
+                }
+                int i2 = numbertokenizer.next(0);
+                int j2 = numbertokenizer.next(0);
+                if(i2 != 0 && j2 != 0)
+                {
+                    targetpoint.x = i2;
+                    targetpoint.y = j2;
+                }
+                switch(targetpoint.type)
+                {
+                case 0: // '\0'
+                    targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdestroyair.mat");
+                    targetpoint.iconOArmy = com.maddox.il2.engine.IconDraw.get("icons/tdefence.mat");
+                    if(targetpoint.nameTarget != null && sectfile.exist("Chiefs", targetpoint.nameTarget))
+                    {
+                        targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdestroychief.mat");
+                        targetpoint.iconOArmy = com.maddox.il2.engine.IconDraw.get("icons/tdefence.mat");
+                    }
+                    com.maddox.il2.game.ZutiSupportMethods.assignTargetActor(targetpoint);
+                    break;
+
+                case 1: // '\001'
+                    targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdestroyground.mat");
+                    targetpoint.iconOArmy = com.maddox.il2.engine.IconDraw.get("icons/tdefenceground.mat");
+                    break;
+
+                case 2: // '\002'
+                    targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdestroybridge.mat");
+                    targetpoint.iconOArmy = com.maddox.il2.engine.IconDraw.get("icons/tdefencebridge.mat");
+                    targetpoint.nameTarget = null;
+                    break;
+
+                case 3: // '\003'
+                    targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tinspect.mat");
+                    targetpoint.iconOArmy = com.maddox.il2.engine.IconDraw.get("icons/tdefence.mat");
+                    com.maddox.il2.game.ZutiSupportMethods.assignTargetActor(targetpoint);
+                    break;
+
+                case 4: // '\004'
+                    targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tescort.mat");
+                    targetpoint.iconOArmy = com.maddox.il2.engine.IconDraw.get("icons/tdestroychief.mat");
+                    com.maddox.il2.game.ZutiSupportMethods.assignTargetActor(targetpoint);
+                    break;
+
+                case 5: // '\005'
+                    targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdefence.mat");
+                    targetpoint.iconOArmy = com.maddox.il2.engine.IconDraw.get("icons/tdestroychief.mat");
+                    com.maddox.il2.game.ZutiSupportMethods.assignTargetActor(targetpoint);
+                    break;
+
+                case 6: // '\006'
+                    targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdefenceground.mat");
+                    targetpoint.iconOArmy = com.maddox.il2.engine.IconDraw.get("icons/tdestroyground.mat");
+                    break;
+
+                case 7: // '\007'
+                    targetpoint.icon = com.maddox.il2.engine.IconDraw.get("icons/tdefencebridge.mat");
+                    targetpoint.iconOArmy = com.maddox.il2.engine.IconDraw.get("icons/tdestroybridge.mat");
+                    targetpoint.nameTarget = null;
+                    break;
+                }
+                if(targetpoint.nameTarget != null)
+                {
+                    targetpoint.nameTargetOrig = targetpoint.nameTarget;
+                } else
+                {
+                    targetpoint.nameTarget = (new Float(targetpoint.x)).toString() + (new Float(targetpoint.y)).toString();
+                    if(targetpoint.nameTargetOrig == null)
+                        targetpoint.nameTargetOrig = targetpoint.nameTarget;
+                }
+                if(targetpoint.nameTarget != null)
+                    if(sectfile.exist("Chiefs", targetpoint.nameTarget))
+                        try
+                        {
+                            java.util.StringTokenizer stringtokenizer = new StringTokenizer(sectfile.get("Chiefs", targetpoint.nameTarget, (java.lang.String)null));
+                            java.lang.String s1 = stringtokenizer.nextToken();
+                            int k2 = s1.indexOf(".");
+                            targetpoint.nameTarget = com.maddox.il2.game.I18N.technic(s1.substring(0, k2)) + " " + com.maddox.il2.game.I18N.technic(s1.substring(k2 + 1));
+                        }
+                        catch(java.lang.Exception exception)
+                        {
+                            targetpoint.nameTarget = null;
+                        }
+                    else
+                    if(sectfile.sectionIndex(targetpoint.nameTarget) >= 0)
+                        try
+                        {
+                            java.lang.String s = sectfile.get(targetpoint.nameTarget, "Class", (java.lang.String)null);
+                            java.lang.Class class1 = com.maddox.rts.ObjIO.classForName(s);
+                            targetpoint.nameTarget = com.maddox.rts.Property.stringValue(class1, "iconFar_shortClassName", null);
+                        }
+                        catch(java.lang.Exception exception1)
+                        {
+                            targetpoint.nameTarget = null;
+                        }
+                    else
+                        targetpoint.nameTarget = null;
+                com.maddox.il2.gui.GUIBriefing.ZUTI_TARGETS.add(targetpoint);
             }
 
-          }
-          else
-          {
-            switch (localTargetPoint2.type)
-            {
-            case 0:
-              ZUTI_TIP[1] = I18N.gui("brief.Defence");
-              break;
-            case 1:
-              ZUTI_TIP[1] = I18N.gui("brief.DefenceGround");
-              break;
-            case 2:
-              ZUTI_TIP[1] = I18N.gui("brief.DefenceBridge");
-              break;
-            case 3:
-              ZUTI_TIP[1] = I18N.gui("brief.Defence");
-              break;
-            case 4:
-              ZUTI_TIP[1] = I18N.gui("brief.Destroy");
-              break;
-            case 5:
-              ZUTI_TIP[1] = I18N.gui("brief.Destroy");
-              break;
-            case 6:
-              ZUTI_TIP[1] = I18N.gui("brief.DestroyGround");
-              break;
-            case 7:
-              ZUTI_TIP[1] = I18N.gui("brief.DestroyBridge");
-            }
-          }
-
-          if (localTargetPoint2.nameTarget != null)
-            ZUTI_TIP[2] = localTargetPoint2.nameTarget;
-          float f7 = paramTTFont.width(ZUTI_TIP[0]);
-          int j = 1;
-          for (int k = 1; k < 3; k++)
-          {
-            if (ZUTI_TIP[k] == null)
-              break;
-            j = k;
-            f10 = paramTTFont.width(ZUTI_TIP[k]);
-            if (f7 < f10)
-              f7 = f10;
-          }
-          float f9 = -paramTTFont.descender();
-          float f10 = paramTTFont.height() + f9;
-          f7 += 2.0F * f9;
-          float f11 = f10 * (j + 1) + 2.0F * f9;
-          float f12 = f4 - f7 / 2.0F;
-          float f13 = f5 + f3;
-          if (f12 + f7 > paramGUIRenders.win.dx)
-            f12 = paramGUIRenders.win.dx - f7;
-          if (f13 + f11 > paramGUIRenders.win.dy)
-            f13 = paramGUIRenders.win.dy - f11;
-          if (f12 < 0.0F)
-            f12 = 0.0F;
-          if (f13 < 0.0F)
-            f13 = 0.0F;
-          Render.drawTile(f12, f13, f7, f11, 0.0F, paramMat, -813694977, 0.0F, 0.0F, 1.0F, 1.0F);
-          Render.drawEnd();
-          for (int m = 0; m <= j; m++)
-            paramTTFont.output(-16777216, f12 + f9, f13 + f9 + (j - m) * f10 + f9, 0.0F, ZUTI_TIP[m]);
         }
-      }
-    }
-    catch (Exception localException)
-    {
-      localException.printStackTrace();
-    }
-  }
+        com.maddox.il2.ai.ZutiTargetsSupportMethods.checkForDeactivatedTargets();
+        java.util.ArrayList arraylist = com.maddox.il2.ai.World.cur().targetsGuard.zutiTargetNamesToRemove;
+        i = arraylist.size();
+        for(int l = 0; l < i; l++)
+            com.maddox.il2.game.ZutiSupportMethods.removeTarget((java.lang.String)arraylist.get(l));
 
-  public static void drawTargets(GUIRenders paramGUIRenders, TTFont paramTTFont, Mat paramMat, CameraOrtho2D paramCameraOrtho2D)
-  {
-    try
-    {
-      int i = getPlayerArmy();
+        com.maddox.il2.ai.World.cur().targetsGuard.zutiTargetNamesToRemove.clear();
+        arraylist = com.maddox.il2.ai.World.cur().targetsGuard.zutiTargetPosToRemove;
+        i = arraylist.size();
+        for(int i1 = 0; i1 < i; i1++)
+        {
+            com.maddox.il2.ai.Target target = (com.maddox.il2.ai.Target)arraylist.get(i1);
+            com.maddox.il2.game.ZutiSupportMethods.removeTarget(target.pos.getAbs().getX(), target.pos.getAbs().getY());
+        }
 
-      if (i < 1) {
+        com.maddox.il2.ai.World.cur().targetsGuard.zutiTargetPosToRemove.clear();
+        ZUTI_TARGETS_LOADED = true;
+    }
+
+    private static void drawTargets(com.maddox.il2.engine.GUIRenders guirenders, com.maddox.il2.engine.TTFont ttfont, com.maddox.il2.engine.Mat mat, com.maddox.il2.engine.CameraOrtho2D cameraortho2d, java.util.Set set, int i, boolean flag)
+    {
+        com.maddox.il2.game.Mission mission = com.maddox.il2.game.Main.cur().mission;
+        mission.getClass();
+        try
+        {
+            if(set.size() != 0)
+            {
+                com.maddox.gwindow.GPoint gpoint = guirenders.getMouseXY();
+                float f = gpoint.x;
+                float f1 = guirenders.win.dy - 1.0F - gpoint.y;
+                float f2 = com.maddox.il2.engine.IconDraw.scrSizeX() / 2;
+                float f3 = f;
+                float f4 = f1;
+                com.maddox.il2.engine.IconDraw.setColor(0xff00ffff);
+                Object obj = null;
+                com.maddox.il2.gui.GUIBriefing.TargetPoint targetpoint1 = null;
+                java.util.Iterator iterator = set.iterator();
+                do
+                {
+                    if(!iterator.hasNext())
+                        break;
+                    com.maddox.il2.gui.GUIBriefing.TargetPoint targetpoint = (com.maddox.il2.gui.GUIBriefing.TargetPoint)iterator.next();
+                    if(targetpoint.icon != null)
+                    {
+                        if(targetpoint.isBaseActorWing && (targetpoint.actor == null || targetpoint.actor.getDiedFlag()))
+                            com.maddox.il2.game.ZutiSupportMethods.assignTargetActor(targetpoint);
+                        float f5 = (float)(((double)targetpoint.x - cameraortho2d.worldXOffset) * cameraortho2d.worldScale);
+                        float f7 = (float)(((double)targetpoint.y - cameraortho2d.worldYOffset) * cameraortho2d.worldScale);
+                        mission.getClass();
+                        if(flag)
+                            com.maddox.il2.engine.IconDraw.render(targetpoint.icon, f5, f7);
+                        else
+                            com.maddox.il2.engine.IconDraw.render(targetpoint.iconOArmy, f5, f7);
+                        if(f5 >= f - f2 && f5 <= f + f2 && f7 >= f1 - f2 && f7 <= f1 + f2)
+                        {
+                            targetpoint1 = targetpoint;
+                            f3 = f5;
+                            f4 = f7;
+                        }
+                    }
+                } while(true);
+                if(targetpoint1 != null)
+                {
+                    for(int j = 0; j < 3; j++)
+                        ZUTI_TIP[j] = null;
+
+                    if(targetpoint1.importance == 0)
+                        ZUTI_TIP[0] = com.maddox.il2.game.I18N.gui("brief.Primary");
+                    else
+                        ZUTI_TIP[0] = com.maddox.il2.game.I18N.gui("brief.Secondary");
+                    if(flag)
+                        switch(targetpoint1.type)
+                        {
+                        case 0: // '\0'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.Destroy");
+                            break;
+
+                        case 1: // '\001'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.DestroyGround");
+                            break;
+
+                        case 2: // '\002'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.DestroyBridge");
+                            break;
+
+                        case 3: // '\003'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.Inspect");
+                            break;
+
+                        case 4: // '\004'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.Escort");
+                            break;
+
+                        case 5: // '\005'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.Defence");
+                            break;
+
+                        case 6: // '\006'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.DefenceGround");
+                            break;
+
+                        case 7: // '\007'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.DefenceBridge");
+                            break;
+                        }
+                    else
+                        switch(targetpoint1.type)
+                        {
+                        case 0: // '\0'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.Defence");
+                            break;
+
+                        case 1: // '\001'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.DefenceGround");
+                            break;
+
+                        case 2: // '\002'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.DefenceBridge");
+                            break;
+
+                        case 3: // '\003'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.Defence");
+                            break;
+
+                        case 4: // '\004'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.Destroy");
+                            break;
+
+                        case 5: // '\005'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.Destroy");
+                            break;
+
+                        case 6: // '\006'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.DestroyGround");
+                            break;
+
+                        case 7: // '\007'
+                            ZUTI_TIP[1] = com.maddox.il2.game.I18N.gui("brief.DestroyBridge");
+                            break;
+                        }
+                    if(targetpoint1.nameTarget != null)
+                        ZUTI_TIP[2] = targetpoint1.nameTarget;
+                    float f6 = ttfont.width(ZUTI_TIP[0]);
+                    int k = 1;
+                    for(int l = 1; l < 3 && ZUTI_TIP[l] != null; l++)
+                    {
+                        k = l;
+                        float f9 = ttfont.width(ZUTI_TIP[l]);
+                        if(f6 < f9)
+                            f6 = f9;
+                    }
+
+                    float f8 = -ttfont.descender();
+                    float f10 = (float)ttfont.height() + f8;
+                    f6 += 2.0F * f8;
+                    float f11 = f10 * (float)(k + 1) + 2.0F * f8;
+                    float f12 = f3 - f6 / 2.0F;
+                    float f13 = f4 + f2;
+                    if(f12 + f6 > guirenders.win.dx)
+                        f12 = guirenders.win.dx - f6;
+                    if(f13 + f11 > guirenders.win.dy)
+                        f13 = guirenders.win.dy - f11;
+                    if(f12 < 0.0F)
+                        f12 = 0.0F;
+                    if(f13 < 0.0F)
+                        f13 = 0.0F;
+                    com.maddox.il2.engine.Render.drawTile(f12, f13, f6, f11, 0.0F, mat, 0xcf7fffff, 0.0F, 0.0F, 1.0F, 1.0F);
+                    com.maddox.il2.engine.Render.drawEnd();
+                    for(int i1 = 0; i1 <= k; i1++)
+                        ttfont.output(0xff000000, f12 + f8, f13 + f8 + (float)(k - i1) * f10 + f8, 0.0F, ZUTI_TIP[i1]);
+
+                }
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            exception.printStackTrace();
+        }
+    }
+
+    public static void drawTargets(com.maddox.il2.engine.GUIRenders guirenders, com.maddox.il2.engine.TTFont ttfont, com.maddox.il2.engine.Mat mat, com.maddox.il2.engine.CameraOrtho2D cameraortho2d)
+    {
+        int i;
+        i = com.maddox.il2.game.ZutiSupportMethods.getPlayerArmy();
+        if(i < 1)
+            return;
+        try
+        {
+            if(i == com.maddox.il2.ai.World.getMissionArmy())
+                com.maddox.il2.game.ZutiSupportMethods.drawTargets(guirenders, ttfont, mat, cameraortho2d, com.maddox.il2.gui.GUIBriefing.ZUTI_TARGETS, i, true);
+            else
+                com.maddox.il2.game.ZutiSupportMethods.drawTargets(guirenders, ttfont, mat, cameraortho2d, com.maddox.il2.gui.GUIBriefing.ZUTI_TARGETS, i, false);
+        }
+        catch(java.lang.Exception exception)
+        {
+            exception.printStackTrace();
+        }
         return;
-      }
-      if (i == World.getMissionArmy())
-      {
-        drawTargets(paramGUIRenders, paramTTFont, paramMat, paramCameraOrtho2D, GUIBriefing.ZUTI_TARGETS, i, true);
-      }
-      else
-      {
-        drawTargets(paramGUIRenders, paramTTFont, paramMat, paramCameraOrtho2D, GUIBriefing.ZUTI_TARGETS, i, false);
-      }
     }
-    catch (Exception localException)
+
+    public static java.util.ArrayList getAirNames(java.util.ArrayList arraylist)
     {
-      localException.printStackTrace();
-    }
-  }
-
-  public static ArrayList getAirNames(ArrayList paramArrayList)
-  {
-    ArrayList localArrayList = new ArrayList();
-
-    if (paramArrayList == null) {
-      return localArrayList;
-    }
-    for (int i = 0; i < paramArrayList.size(); i++)
-    {
-      ZutiAircraft localZutiAircraft = (ZutiAircraft)paramArrayList.get(i);
-      localArrayList.add(localZutiAircraft.getAcName());
-    }
-
-    return localArrayList;
-  }
-
-  public static Airport getAirport(double paramDouble1, double paramDouble2)
-  {
-    ArrayList localArrayList = new ArrayList();
-    World.getAirports(localArrayList);
-
-    double d1 = 1000000.0D;
-    Object localObject = null;
-    try
-    {
-      int i = localArrayList.size();
-      for (int j = 0; j < i; j++)
-      {
-        Airport localAirport = (Airport)localArrayList.get(j);
-        Point3d localPoint3d = localAirport.pos.getAbsPoint();
-
-        double d2 = Math.sqrt(Math.pow(paramDouble1 - localPoint3d.x, 2.0D) + Math.pow(paramDouble2 - localPoint3d.y, 2.0D));
-        if (d2 >= d1)
-          continue;
-        d1 = d2;
-        localObject = localAirport;
-      }
-    }
-    catch (Exception localException)
-    {
-    }
-    return localObject;
-  }
-
-  public static BornPlace getPlayerBornPlace(Point3d paramPoint3d, int paramInt)
-  {
-    NetUser localNetUser = (NetUser)NetEnv.host();
-    int i = localNetUser.getBornPlace();
-    BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(i);
-
-    if (paramPoint3d == null) {
-      return localBornPlace;
-    }
-    if (i == -1) {
-      localBornPlace = getNearestBornPlace(paramPoint3d.x, paramPoint3d.y, paramInt);
-    }
-    return localBornPlace;
-  }
-
-  public static String getACSelectedLoadoutName(List paramList, String paramString, int paramInt, boolean paramBoolean)
-  {
-    try
-    {
-      if (paramList == null) {
-        return ZUTI_LOADOUT_NONE;
-      }
-      int i = paramList.size();
-      for (int j = 0; j < i; j++)
-      {
-        ZutiAircraft localZutiAircraft = (ZutiAircraft)paramList.get(j);
-        if (!localZutiAircraft.getAcName().equals(paramString))
-          continue;
-        String str = localZutiAircraft.getLoadoutById(paramInt);
-        if (str != null)
+        java.util.ArrayList arraylist1 = new ArrayList();
+        if(arraylist == null)
+            return arraylist1;
+        for(int i = 0; i < arraylist.size(); i++)
         {
-          if (paramBoolean)
-            return localZutiAircraft.getWeaponI18NName(localZutiAircraft.getLoadoutById(paramInt));
-          return localZutiAircraft.getLoadoutById(paramInt);
+            com.maddox.il2.game.ZutiAircraft zutiaircraft = (com.maddox.il2.game.ZutiAircraft)arraylist.get(i);
+            arraylist1.add(zutiaircraft.getAcName());
         }
 
+        return arraylist1;
+    }
+
+    public static com.maddox.il2.ai.Airport getAirport(double d, double d1)
+    {
+        java.util.ArrayList arraylist = new ArrayList();
+        com.maddox.il2.ai.World.getAirports(arraylist);
+        double d2 = 1000000D;
+        com.maddox.il2.ai.Airport airport = null;
+        try
+        {
+            int i = arraylist.size();
+            for(int j = 0; j < i; j++)
+            {
+                com.maddox.il2.ai.Airport airport1 = (com.maddox.il2.ai.Airport)arraylist.get(j);
+                com.maddox.JGP.Point3d point3d = airport1.pos.getAbsPoint();
+                double d3 = java.lang.Math.sqrt(java.lang.Math.pow(d - point3d.x, 2D) + java.lang.Math.pow(d1 - point3d.y, 2D));
+                if(d3 < d2)
+                {
+                    d2 = d3;
+                    airport = airport1;
+                }
+            }
+
+        }
+        catch(java.lang.Exception exception) { }
+        return airport;
+    }
+
+    public static com.maddox.il2.net.BornPlace getPlayerBornPlace(com.maddox.JGP.Point3d point3d, int i)
+    {
+        com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+        int j = netuser.getBornPlace();
+        com.maddox.il2.net.BornPlace bornplace = (com.maddox.il2.net.BornPlace)com.maddox.il2.ai.World.cur().bornPlaces.get(j);
+        if(point3d == null)
+            return bornplace;
+        if(j == -1)
+            bornplace = com.maddox.il2.game.ZutiSupportMethods.getNearestBornPlace(point3d.x, point3d.y, i);
+        return bornplace;
+    }
+
+    public static java.lang.String getACSelectedLoadoutName(java.util.List list, java.lang.String s, int i, boolean flag)
+    {
+        if(list == null)
+            return ZUTI_LOADOUT_NONE;
+        int j;
+        int k;
+        j = list.size();
+        k = 0;
+_L3:
+        com.maddox.il2.game.ZutiAircraft zutiaircraft;
+        java.lang.String s1;
+        if(k >= j)
+            break MISSING_BLOCK_LABEL_131;
+        zutiaircraft = (com.maddox.il2.game.ZutiAircraft)list.get(k);
+        if(!zutiaircraft.getAcName().equals(s))
+            break MISSING_BLOCK_LABEL_91;
+        s1 = zutiaircraft.getLoadoutById(i);
+        if(s1 == null) goto _L2; else goto _L1
+_L1:
+        if(flag)
+            return zutiaircraft.getWeaponI18NName(zutiaircraft.getLoadoutById(i));
+        return zutiaircraft.getLoadoutById(i);
+_L2:
         return ZUTI_LOADOUT_NULL;
-      }
+        k++;
+          goto _L3
+        java.lang.Exception exception;
+        exception;
+        java.lang.System.out.println("BornPlace error, ID_02: " + exception.toString());
+        return ZUTI_LOADOUT_NONE;
     }
-    catch (Exception localException) {
-      System.out.println("BornPlace error, ID_02: " + localException.toString());
-    }return ZUTI_LOADOUT_NONE;
-  }
 
-  public static BornPlace getNearestBornPlace_AnyArmy(double paramDouble1, double paramDouble2)
-  {
-    ArrayList localArrayList = World.cur().bornPlaces;
-    double d1 = 1000000.0D;
-    Object localObject = null;
-    try
+    public static com.maddox.il2.net.BornPlace getNearestBornPlace_AnyArmy(double d, double d1)
     {
-      int i = localArrayList.size();
-      for (int j = 0; j < i; j++)
-      {
-        BornPlace localBornPlace = (BornPlace)localArrayList.get(j);
-        double d2 = Math.sqrt(Math.pow(paramDouble1 - localBornPlace.place.x, 2.0D) + Math.pow(paramDouble2 - localBornPlace.place.y, 2.0D));
-        if (d2 >= d1)
-          continue;
-        d1 = d2;
-        localObject = localBornPlace;
-      }
-    }
-    catch (Exception localException)
-    {
-    }
-
-    if ((localObject == null) || (d1 > localObject.r)) {
-      return null;
-    }
-    return localObject;
-  }
-
-  public static BornPlace getNearestBornPlace(double paramDouble1, double paramDouble2, int paramInt)
-  {
-    ArrayList localArrayList = World.cur().bornPlaces;
-    double d1 = 1000000.0D;
-    Object localObject = null;
-    try
-    {
-      int i = localArrayList.size();
-      for (int j = 0; j < i; j++)
-      {
-        BornPlace localBornPlace = (BornPlace)localArrayList.get(j);
-        if (localBornPlace.army != paramInt)
-          continue;
-        double d2 = Math.sqrt(Math.pow(paramDouble1 - localBornPlace.place.x, 2.0D) + Math.pow(paramDouble2 - localBornPlace.place.y, 2.0D));
-
-        if (d2 >= d1)
-          continue;
-        d1 = d2;
-        localObject = localBornPlace;
-      }
-    }
-    catch (Exception localException)
-    {
-    }
-
-    return localObject;
-  }
-
-  public static List getUnavailableAircraftList(BornPlace paramBornPlace)
-  {
-    ArrayList localArrayList1 = new ArrayList();
-
-    if (paramBornPlace == null) {
-      return localArrayList1;
-    }
-    ArrayList localArrayList2 = paramBornPlace.zutiGetNotAvailablePlanesList();
-    StringBuffer localStringBuffer = new StringBuffer();
-
-    if (localArrayList2 != null)
-    {
-      for (int i = 0; i < localArrayList2.size(); i++)
-      {
-        if (localStringBuffer.toString().length() < 200)
+        java.util.ArrayList arraylist = com.maddox.il2.ai.World.cur().bornPlaces;
+        double d2 = 1000000D;
+        com.maddox.il2.net.BornPlace bornplace = null;
+        try
         {
-          localStringBuffer.append((String)localArrayList2.get(i));
-          localStringBuffer.append(" ");
+            int i = arraylist.size();
+            for(int j = 0; j < i; j++)
+            {
+                com.maddox.il2.net.BornPlace bornplace1 = (com.maddox.il2.net.BornPlace)arraylist.get(j);
+                double d3 = java.lang.Math.sqrt(java.lang.Math.pow(d - bornplace1.place.x, 2D) + java.lang.Math.pow(d1 - bornplace1.place.y, 2D));
+                if(d3 < d2)
+                {
+                    d2 = d3;
+                    bornplace = bornplace1;
+                }
+            }
+
         }
+        catch(java.lang.Exception exception) { }
+        if(bornplace == null || d2 > (double)bornplace.r)
+            return null;
         else
+            return bornplace;
+    }
+
+    public static com.maddox.il2.net.BornPlace getNearestBornPlace(double d, double d1, int i)
+    {
+        java.util.ArrayList arraylist = com.maddox.il2.ai.World.cur().bornPlaces;
+        double d2 = 1000000D;
+        com.maddox.il2.net.BornPlace bornplace = null;
+        try
         {
-          localArrayList1.add(localStringBuffer.toString().trim());
+            int j = arraylist.size();
+            for(int k = 0; k < j; k++)
+            {
+                com.maddox.il2.net.BornPlace bornplace1 = (com.maddox.il2.net.BornPlace)arraylist.get(k);
+                if(bornplace1.army == i)
+                {
+                    double d3 = java.lang.Math.sqrt(java.lang.Math.pow(d - bornplace1.place.x, 2D) + java.lang.Math.pow(d1 - bornplace1.place.y, 2D));
+                    if(d3 < d2)
+                    {
+                        d2 = d3;
+                        bornplace = bornplace1;
+                    }
+                }
+            }
 
-          localStringBuffer = new StringBuffer();
-          localStringBuffer.append((String)localArrayList2.get(i));
-          localStringBuffer.append(" ");
         }
-      }
-
-      localArrayList1.add(localStringBuffer.toString().trim());
+        catch(java.lang.Exception exception) { }
+        return bornplace;
     }
 
-    return localArrayList1;
-  }
-
-  public static void setAircraftAvailabilityForHomeBase(ArrayList paramArrayList, double paramDouble1, double paramDouble2)
-  {
-    if ((World.cur() == null) || (Main.cur().netServerParams == null) || (Main.cur().netServerParams.isMaster()))
+    public static java.util.List getUnavailableAircraftList(com.maddox.il2.net.BornPlace bornplace)
     {
-      return;
-    }
-
-    ArrayList localArrayList = World.cur().bornPlaces;
-
-    if (localArrayList == null)
-    {
-      return;
-    }
-
-    for (int i = 0; i < localArrayList.size(); i++)
-    {
-      BornPlace localBornPlace = (BornPlace)localArrayList.get(i);
-      if ((localBornPlace.place.x == paramDouble1) && (localBornPlace.place.y == paramDouble2))
-        localBornPlace.zutiActivatePlanes(paramArrayList);
-    }
-  }
-
-  public static NetUser getNetUser(String paramString)
-  {
-    List localList = NetEnv.hosts();
-    NetUser localNetUser = null;
-
-    localNetUser = (NetUser)NetEnv.host();
-    if (localNetUser.uniqueName().equals(paramString)) {
-      return localNetUser;
-    }
-    for (int i = 0; i < localList.size(); i++)
-    {
-      localNetUser = (NetUser)localList.get(i);
-
-      if (localNetUser.uniqueName().equals(paramString)) {
-        return localNetUser;
-      }
-    }
-    return localNetUser;
-  }
-
-  public static void setPlayerBanDuration(long paramLong)
-  {
-    NetUser localNetUser = (NetUser)NetEnv.host();
-    String str1 = localNetUser.uniqueName();
-    String str2 = "127.0.0.1";
-    try { str2 = localNetUser.masterChannel().remoteAddress().getHostAddress().toString();
-    }
-    catch (Exception localException)
-    {
-    }
-    Object localObject = null;
-    ZutiBannedUser localZutiBannedUser = null;
-
-    if (ZUTI_BANNED_PILOTS != null)
-    {
-      int i = ZUTI_BANNED_PILOTS.size();
-      for (int j = 0; j < i; j++)
-      {
-        localZutiBannedUser = (ZutiBannedUser)ZUTI_BANNED_PILOTS.get(j);
-        if (!localZutiBannedUser.isMatch(str1, str2))
-          continue;
-        localObject = localZutiBannedUser;
-        break;
-      }
-    }
-
-    if (localObject != null)
-      localObject.setDuration(Time.current() + paramLong * 1000L);
-  }
-
-  public static boolean isPlayerBanned(String paramString1, String paramString2)
-  {
-    if (Main.cur().mission == null) {
-      return false;
-    }
-    Object localObject = null;
-    if (ZUTI_BANNED_PILOTS != null)
-    {
-      int i = ZUTI_BANNED_PILOTS.size();
-      for (int j = 0; j < i; j++)
-      {
-        ZutiBannedUser localZutiBannedUser = (ZutiBannedUser)ZUTI_BANNED_PILOTS.get(j);
-        if (!localZutiBannedUser.isMatch(paramString1, paramString2))
-          continue;
-        localObject = localZutiBannedUser;
-        break;
-      }
-    }
-
-    if (localObject == null)
-    {
-      localObject = new ZutiBannedUser();
-      ((ZutiBannedUser)localObject).setName(paramString1);
-      ((ZutiBannedUser)localObject).setIP(paramString2);
-      ((ZutiBannedUser)localObject).setDuration(0L);
-      ZUTI_BANNED_PILOTS.add(localObject);
-    }
-    else
-    {
-      if ((Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied) && (((ZutiBannedUser)localObject).isBanned()))
-        return true;
-      if (Main.cur().mission.zutiMisc_DisableReflyForMissionDuration) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public static void managePilotBornPlacePlaneCounter(NetAircraft paramNetAircraft, boolean paramBoolean)
-  {
-    if (paramNetAircraft == null) {
-      return;
-    }
-    if (paramNetAircraft.net == null) {
-      return;
-    }
-    NetUser localNetUser = ((NetAircraft.AircraftNet)paramNetAircraft.net).netUser;
-
-    if (localNetUser == null) {
-      return;
-    }
-
-    String str = Property.stringValue(((Aircraft)paramNetAircraft).getClass(), "keyName");
-
-    BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(localNetUser.getBornPlace());
-    if (localBornPlace != null)
-    {
-      localBornPlace.zutiReleaseAircraft(paramNetAircraft.FM, str, ZutiAircraft.isPlaneUsable(paramNetAircraft.FM), false, paramBoolean);
-    }
-  }
-
-  public static Point3d getWingTakeoffLocation(SectFile paramSectFile, String paramString)
-  {
-    String str1 = paramString + "_Way";
-
-    int i = paramSectFile.sectionIndex(str1);
-    if (i < 0) {
-      return null;
-    }
-    int j = paramSectFile.vars(i);
-    if (j < 0) {
-      return null;
-    }
-    String str2 = paramSectFile.var(i, 0);
-    if (str2.equalsIgnoreCase("TAKEOFF"))
-    {
-      NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.value(i, 0));
-      Point3d localPoint3d = new Point3d();
-      localPoint3d.x = localNumberTokenizer.next(0.0F, -1000000.0F, 1000000.0F);
-      localPoint3d.y = localNumberTokenizer.next(0.0F, -1000000.0F, 1000000.0F);
-
-      return localPoint3d;
-    }
-
-    return null;
-  }
-
-  public static boolean isPlaneStationary(FlightModel paramFlightModel)
-  {
-    return (paramFlightModel.getSpeedKMH() < 1.0D) && (paramFlightModel.getVertSpeed() < 1.0D);
-  }
-
-  public static boolean isStaticActor(Actor paramActor)
-  {
-    if ((paramActor instanceof ShipGeneric))
-      return ((ShipGeneric)paramActor).zutiIsStatic();
-    if ((paramActor instanceof BigshipGeneric))
-      return ((BigshipGeneric)paramActor).zutiIsStatic();
-    if ((paramActor instanceof Aircraft))
-      return false;
-    if ((paramActor instanceof Chief))
-      return false;
-    if ((paramActor instanceof Wing))
-      return false;
-    return (!Actor.isValid(paramActor.getOwner())) || (!(paramActor.getOwner() instanceof Chief));
-  }
-
-  public static void removeBornPlace(BornPlace paramBornPlace)
-  {
-    disconnectPilotsFromBornPlace(paramBornPlace);
-    int i = paramBornPlace.zutiBpStayPoints.size();
-    ZutiStayPoint localZutiStayPoint = null;
-
-    for (int j = 0; j < i; j++)
-    {
-      try
-      {
-        localZutiStayPoint = (ZutiStayPoint)paramBornPlace.zutiBpStayPoints.get(j);
-        localZutiStayPoint.pointStay.set(-1000000.0F, -1000000.0F);
-      } catch (Exception localException) {
-      }
-    }
-    World.cur().bornPlaces.remove(paramBornPlace);
-
-    paramBornPlace = null;
-  }
-
-  public static void disconnectPilotsFromBornPlace(BornPlace paramBornPlace)
-  {
-    ArrayList localArrayList = World.cur().bornPlaces;
-    int i = localArrayList.size();
-    NetUser localNetUser = null;
-    List localList = null;
-
-    for (int j = 0; j < i; j++)
-    {
-      try
-      {
-        if ((BornPlace)localArrayList.get(j) == paramBornPlace)
+        java.util.ArrayList arraylist = new ArrayList();
+        if(bornplace == null)
+            return arraylist;
+        java.util.ArrayList arraylist1 = bornplace.zutiGetNotAvailablePlanesList();
+        java.lang.StringBuffer stringbuffer = new StringBuffer();
+        if(arraylist1 != null)
         {
-          localNetUser = (NetUser)NetEnv.host();
-          if (localNetUser.getBornPlace() == j) {
-            localNetUser.setBornPlace(-1);
-          }
-          localList = NetEnv.hosts();
-          int k = localList.size();
-          for (int m = 0; m < k; m++)
-          {
-            localNetUser = (NetUser)localList.get(m);
-            if (localNetUser.getBornPlace() == j)
-              localNetUser.setBornPlace(-1);
-          }
-          break;
+            for(int i = 0; i < arraylist1.size(); i++)
+                if(stringbuffer.toString().length() < 200)
+                {
+                    stringbuffer.append((java.lang.String)arraylist1.get(i));
+                    stringbuffer.append(" ");
+                } else
+                {
+                    arraylist.add(stringbuffer.toString().trim());
+                    stringbuffer = new StringBuffer();
+                    stringbuffer.append((java.lang.String)arraylist1.get(i));
+                    stringbuffer.append(" ");
+                }
+
+            arraylist.add(stringbuffer.toString().trim());
         }
-      }
-      catch (Exception localException)
-      {
-      }
+        return arraylist;
     }
-  }
 
-  public static BornPlace getBornPlace(double paramDouble1, double paramDouble2)
-  {
-    World localWorld = World.cur();
-
-    if ((localWorld == null) || (localWorld.bornPlaces == null)) {
-      return null;
-    }
-    ArrayList localArrayList = localWorld.bornPlaces;
-    BornPlace localBornPlace = null;
-
-    for (int i = 0; i < localArrayList.size(); i++)
+    public static void setAircraftAvailabilityForHomeBase(java.util.ArrayList arraylist, double d, double d1)
     {
-      localBornPlace = (BornPlace)localArrayList.get(i);
-      if ((localBornPlace.place.x == paramDouble1) && (localBornPlace.place.y == paramDouble2)) {
-        return localBornPlace;
-      }
+        if(com.maddox.il2.ai.World.cur() == null || com.maddox.il2.game.Main.cur().netServerParams == null || com.maddox.il2.game.Main.cur().netServerParams.isMaster())
+            return;
+        java.util.ArrayList arraylist1 = com.maddox.il2.ai.World.cur().bornPlaces;
+        if(arraylist1 == null)
+            return;
+        for(int i = 0; i < arraylist1.size(); i++)
+        {
+            com.maddox.il2.net.BornPlace bornplace = (com.maddox.il2.net.BornPlace)arraylist1.get(i);
+            if(bornplace.place.x == d && bornplace.place.y == d1)
+                bornplace.zutiActivatePlanes(arraylist);
+        }
+
     }
-    return null;
-  }
+
+    public static com.maddox.il2.net.NetUser getNetUser(java.lang.String s)
+    {
+        java.util.List list = com.maddox.rts.NetEnv.hosts();
+        com.maddox.il2.net.NetUser netuser = null;
+        netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+        if(netuser.uniqueName().equals(s))
+            return netuser;
+        for(int i = 0; i < list.size(); i++)
+        {
+            netuser = (com.maddox.il2.net.NetUser)list.get(i);
+            if(netuser.uniqueName().equals(s))
+                return netuser;
+        }
+
+        return netuser;
+    }
+
+    public static void setPlayerBanDuration(long l)
+    {
+        com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+        java.lang.String s = netuser.uniqueName();
+        java.lang.String s1 = "127.0.0.1";
+        try
+        {
+            s1 = netuser.masterChannel().remoteAddress().getHostAddress().toString();
+        }
+        catch(java.lang.Exception exception) { }
+        com.maddox.il2.game.ZutiBannedUser zutibanneduser = null;
+        Object obj = null;
+        if(ZUTI_BANNED_PILOTS != null)
+        {
+            int i = ZUTI_BANNED_PILOTS.size();
+            int j = 0;
+            do
+            {
+                if(j >= i)
+                    break;
+                com.maddox.il2.game.ZutiBannedUser zutibanneduser1 = (com.maddox.il2.game.ZutiBannedUser)ZUTI_BANNED_PILOTS.get(j);
+                if(zutibanneduser1.isMatch(s, s1))
+                {
+                    zutibanneduser = zutibanneduser1;
+                    break;
+                }
+                j++;
+            } while(true);
+        }
+        if(zutibanneduser != null)
+            zutibanneduser.setDuration(com.maddox.rts.Time.current() + l * 1000L);
+    }
+
+    public static boolean isPlayerBanned(java.lang.String s, java.lang.String s1)
+    {
+        if(com.maddox.il2.game.Main.cur().mission == null)
+            return false;
+        com.maddox.il2.game.ZutiBannedUser zutibanneduser = null;
+        if(ZUTI_BANNED_PILOTS != null)
+        {
+            int i = ZUTI_BANNED_PILOTS.size();
+            int j = 0;
+            do
+            {
+                if(j >= i)
+                    break;
+                com.maddox.il2.game.ZutiBannedUser zutibanneduser1 = (com.maddox.il2.game.ZutiBannedUser)ZUTI_BANNED_PILOTS.get(j);
+                if(zutibanneduser1.isMatch(s, s1))
+                {
+                    zutibanneduser = zutibanneduser1;
+                    break;
+                }
+                j++;
+            } while(true);
+        }
+        if(zutibanneduser == null)
+        {
+            zutibanneduser = new ZutiBannedUser();
+            zutibanneduser.setName(s);
+            zutibanneduser.setIP(s1);
+            zutibanneduser.setDuration(0L);
+            ZUTI_BANNED_PILOTS.add(zutibanneduser);
+        } else
+        {
+            if(com.maddox.il2.game.Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied && zutibanneduser.isBanned())
+                return true;
+            if(com.maddox.il2.game.Main.cur().mission.zutiMisc_DisableReflyForMissionDuration)
+                return true;
+        }
+        return false;
+    }
+
+    public static void managePilotBornPlacePlaneCounter(com.maddox.il2.objects.air.NetAircraft netaircraft, boolean flag)
+    {
+        if(netaircraft == null)
+            return;
+        if(netaircraft.net == null)
+            return;
+        com.maddox.il2.net.NetUser netuser = ((com.maddox.il2.objects.air.NetAircraft.AircraftNet)netaircraft.net).netUser;
+        if(netuser == null)
+            return;
+        java.lang.String s = com.maddox.rts.Property.stringValue(((com.maddox.il2.objects.air.Aircraft)netaircraft).getClass(), "keyName");
+        com.maddox.il2.net.BornPlace bornplace = (com.maddox.il2.net.BornPlace)com.maddox.il2.ai.World.cur().bornPlaces.get(netuser.getBornPlace());
+        if(bornplace != null)
+            bornplace.zutiReleaseAircraft(netaircraft.FM, s, com.maddox.il2.game.ZutiAircraft.isPlaneUsable(netaircraft.FM), false, flag);
+    }
+
+    public static com.maddox.JGP.Point3d getWingTakeoffLocation(com.maddox.rts.SectFile sectfile, java.lang.String s)
+    {
+        java.lang.String s1 = s + "_Way";
+        int i = sectfile.sectionIndex(s1);
+        if(i < 0)
+            return null;
+        int j = sectfile.vars(i);
+        if(j < 0)
+            return null;
+        java.lang.String s2 = sectfile.var(i, 0);
+        if(s2.equalsIgnoreCase("TAKEOFF"))
+        {
+            com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.value(i, 0));
+            com.maddox.JGP.Point3d point3d = new Point3d();
+            point3d.x = numbertokenizer.next(0.0F, -1000000F, 1000000F);
+            point3d.y = numbertokenizer.next(0.0F, -1000000F, 1000000F);
+            return point3d;
+        } else
+        {
+            return null;
+        }
+    }
+
+    public static boolean isPlaneStationary(com.maddox.il2.fm.FlightModel flightmodel)
+    {
+        return (double)flightmodel.getSpeedKMH() < 1.0D && (double)flightmodel.getVertSpeed() < 1.0D;
+    }
+
+    public static boolean isStaticActor(com.maddox.il2.engine.Actor actor)
+    {
+        if(actor.getArmy() == 0)
+            return false;
+        if(actor instanceof com.maddox.il2.objects.ships.ShipGeneric)
+            return ((com.maddox.il2.objects.ships.ShipGeneric)actor).zutiIsStatic();
+        if(actor instanceof com.maddox.il2.objects.ships.BigshipGeneric)
+            return ((com.maddox.il2.objects.ships.BigshipGeneric)actor).zutiIsStatic();
+        if(actor instanceof com.maddox.il2.objects.air.Aircraft)
+            return false;
+        if(actor instanceof com.maddox.il2.ai.Chief)
+            return false;
+        if(actor instanceof com.maddox.il2.ai.Wing)
+            return false;
+        else
+            return !com.maddox.il2.engine.Actor.isValid(actor.getOwner()) || !(actor.getOwner() instanceof com.maddox.il2.ai.Chief);
+    }
+
+    public static void removeBornPlace(com.maddox.il2.net.BornPlace bornplace)
+    {
+        com.maddox.il2.game.ZutiSupportMethods.disconnectPilotsFromBornPlace(bornplace);
+        int i = bornplace.zutiBpStayPoints.size();
+        Object obj = null;
+        for(int j = 0; j < i; j++)
+            try
+            {
+                com.maddox.il2.game.ZutiStayPoint zutistaypoint = (com.maddox.il2.game.ZutiStayPoint)bornplace.zutiBpStayPoints.get(j);
+                zutistaypoint.pointStay.set(-1000000F, -1000000F);
+            }
+            catch(java.lang.Exception exception) { }
+
+        com.maddox.il2.ai.World.cur().bornPlaces.remove(bornplace);
+        bornplace = null;
+    }
+
+    public static void disconnectPilotsFromBornPlace(com.maddox.il2.net.BornPlace bornplace)
+    {
+        java.util.ArrayList arraylist = com.maddox.il2.ai.World.cur().bornPlaces;
+        int i = arraylist.size();
+        Object obj = null;
+        Object obj1 = null;
+label0:
+        for(int j = 0; j < i;)
+            try
+            {
+                if((com.maddox.il2.net.BornPlace)arraylist.get(j) != bornplace)
+                    continue;
+                com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+                if(netuser.getBornPlace() == j)
+                    netuser.setBornPlace(-1);
+                java.util.List list = com.maddox.rts.NetEnv.hosts();
+                int k = list.size();
+                int l = 0;
+                do
+                {
+                    if(l >= k)
+                        break label0;
+                    com.maddox.il2.net.NetUser netuser1 = (com.maddox.il2.net.NetUser)list.get(l);
+                    if(netuser1.getBornPlace() == j)
+                        netuser1.setBornPlace(-1);
+                    l++;
+                } while(true);
+            }
+            catch(java.lang.Exception exception)
+            {
+                j++;
+            }
+
+    }
+
+    public static com.maddox.il2.net.BornPlace getBornPlace(double d, double d1)
+    {
+        com.maddox.il2.ai.World world = com.maddox.il2.ai.World.cur();
+        if(world == null || world.bornPlaces == null)
+            return null;
+        java.util.ArrayList arraylist = world.bornPlaces;
+        Object obj = null;
+        for(int i = 0; i < arraylist.size(); i++)
+        {
+            com.maddox.il2.net.BornPlace bornplace = (com.maddox.il2.net.BornPlace)arraylist.get(i);
+            if(bornplace.place.x == d && bornplace.place.y == d1)
+                return bornplace;
+        }
+
+        return null;
+    }
+
+    private static java.lang.String ZUTI_LOADOUT_NONE = "";
+    private static java.lang.String ZUTI_LOADOUT_NULL = "";
+    private static java.lang.String ZUTI_TIP[] = new java.lang.String[3];
+    private static boolean ZUTI_TARGETS_LOADED = false;
+    public static int ZUTI_KIA_COUNTER = 0;
+    public static boolean ZUTI_KIA_DELAY_CLEARED = false;
+    public static java.util.List ZUTI_BANNED_PILOTS;
+    public static java.util.List ZUTI_DEAD_TARGETS;
+    public static long BASE_CAPRUTING_LAST_CHECK = 0L;
+    public static int BASE_CAPTURING_INTERVAL = 2000;
+
 }

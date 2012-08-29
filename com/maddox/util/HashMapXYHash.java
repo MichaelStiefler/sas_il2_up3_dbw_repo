@@ -1,141 +1,174 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HashMapXYHash.java
+
 package com.maddox.util;
 
 import java.util.List;
 
+// Referenced classes of package com.maddox.util:
+//            HashMapInt, HashMapExt, HashMapIntEntry
+
 public class HashMapXYHash
 {
-  private transient HashMapInt mapY;
-  private int initialCapacity = 101;
-  private float loadFactor = 0.75F;
 
-  public HashMapXYHash() {
-    this.mapY = new HashMapInt(this.initialCapacity, this.loadFactor);
-  }
-
-  public HashMapXYHash(int paramInt) {
-    this.initialCapacity = paramInt;
-    this.mapY = new HashMapInt(paramInt, this.loadFactor);
-  }
-
-  public HashMapXYHash(int paramInt, float paramFloat) {
-    this.initialCapacity = paramInt;
-    this.loadFactor = paramFloat;
-    this.mapY = new HashMapInt(paramInt, paramFloat);
-  }
-
-  public int capacity() {
-    int i = 0;
-    HashMapIntEntry localHashMapIntEntry1 = this.mapY.nextEntry(null);
-    while (localHashMapIntEntry1 != null) {
-      HashMapInt localHashMapInt = (HashMapInt)(HashMapInt)localHashMapIntEntry1.getValue();
-      HashMapIntEntry localHashMapIntEntry2 = localHashMapInt.nextEntry(null);
-      while (localHashMapIntEntry2 != null) {
-        HashMapExt localHashMapExt = (HashMapExt)(HashMapExt)localHashMapIntEntry2.getValue();
-        i += localHashMapExt.capacity();
-        localHashMapIntEntry2 = localHashMapInt.nextEntry(localHashMapIntEntry2);
-      }
-      localHashMapIntEntry1 = this.mapY.nextEntry(localHashMapIntEntry1);
+    public HashMapXYHash()
+    {
+        initialCapacity = 101;
+        loadFactor = 0.75F;
+        mapY = new HashMapInt(initialCapacity, loadFactor);
     }
-    return i;
-  }
 
-  public int size() {
-    int i = 0;
-    HashMapIntEntry localHashMapIntEntry1 = this.mapY.nextEntry(null);
-    while (localHashMapIntEntry1 != null) {
-      HashMapInt localHashMapInt = (HashMapInt)(HashMapInt)localHashMapIntEntry1.getValue();
-      HashMapIntEntry localHashMapIntEntry2 = localHashMapInt.nextEntry(null);
-      while (localHashMapIntEntry2 != null) {
-        HashMapExt localHashMapExt = (HashMapExt)(HashMapExt)localHashMapIntEntry2.getValue();
-        i += localHashMapExt.size();
-        localHashMapIntEntry2 = localHashMapInt.nextEntry(localHashMapIntEntry2);
-      }
-      localHashMapIntEntry1 = this.mapY.nextEntry(localHashMapIntEntry1);
+    public HashMapXYHash(int i)
+    {
+        initialCapacity = 101;
+        loadFactor = 0.75F;
+        initialCapacity = i;
+        mapY = new HashMapInt(i, loadFactor);
     }
-    return i;
-  }
 
-  public void allValues(List paramList) {
-    HashMapIntEntry localHashMapIntEntry1 = this.mapY.nextEntry(null);
-    while (localHashMapIntEntry1 != null) {
-      HashMapInt localHashMapInt = (HashMapInt)(HashMapInt)localHashMapIntEntry1.getValue();
-      HashMapIntEntry localHashMapIntEntry2 = localHashMapInt.nextEntry(null);
-      while (localHashMapIntEntry2 != null) {
-        HashMapExt localHashMapExt = (HashMapExt)(HashMapExt)localHashMapIntEntry2.getValue();
-        paramList.add(localHashMapExt);
-        localHashMapIntEntry2 = localHashMapInt.nextEntry(localHashMapIntEntry2);
-      }
-      localHashMapIntEntry1 = this.mapY.nextEntry(localHashMapIntEntry1);
+    public HashMapXYHash(int i, float f)
+    {
+        initialCapacity = 101;
+        loadFactor = 0.75F;
+        initialCapacity = i;
+        loadFactor = f;
+        mapY = new HashMapInt(i, f);
     }
-  }
 
-  public boolean isEmpty() {
-    return size() == 0;
-  }
+    public int capacity()
+    {
+        int i = 0;
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = mapY.nextEntry(null); hashmapintentry != null; hashmapintentry = mapY.nextEntry(hashmapintentry))
+        {
+            com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)(com.maddox.util.HashMapInt)hashmapintentry.getValue();
+            for(com.maddox.util.HashMapIntEntry hashmapintentry1 = hashmapint.nextEntry(null); hashmapintentry1 != null; hashmapintentry1 = hashmapint.nextEntry(hashmapintentry1))
+            {
+                com.maddox.util.HashMapExt hashmapext = (com.maddox.util.HashMapExt)(com.maddox.util.HashMapExt)hashmapintentry1.getValue();
+                i += hashmapext.capacity();
+            }
 
-  public HashMapExt get(int paramInt1, int paramInt2) {
-    HashMapInt localHashMapInt = (HashMapInt)this.mapY.get(paramInt1);
-    if (localHashMapInt != null)
-      return (HashMapExt)localHashMapInt.get(paramInt2);
-    return null;
-  }
+        }
 
-  public boolean containsKey(int paramInt1, int paramInt2, Object paramObject) {
-    HashMapInt localHashMapInt = (HashMapInt)this.mapY.get(paramInt1);
-    if (localHashMapInt == null)
-      return false;
-    HashMapExt localHashMapExt = (HashMapExt)localHashMapInt.get(paramInt2);
-    if (localHashMapExt == null)
-      return false;
-    return localHashMapExt.containsKey(paramObject);
-  }
-
-  public Object put(int paramInt1, int paramInt2, Object paramObject1, Object paramObject2) {
-    HashMapInt localHashMapInt = (HashMapInt)this.mapY.get(paramInt1);
-    if (localHashMapInt == null) {
-      localHashMapInt = new HashMapInt(this.initialCapacity, this.loadFactor);
-      this.mapY.put(paramInt1, localHashMapInt);
+        return i;
     }
-    HashMapExt localHashMapExt = (HashMapExt)localHashMapInt.get(paramInt2);
-    if (localHashMapExt == null) {
-      localHashMapExt = new HashMapExt(this.initialCapacity, this.loadFactor);
-      localHashMapInt.put(paramInt2, localHashMapExt);
-    }
-    return localHashMapExt.put(paramObject1, paramObject2);
-  }
 
-  public void clear() {
-    HashMapIntEntry localHashMapIntEntry1 = this.mapY.nextEntry(null);
-    while (localHashMapIntEntry1 != null) {
-      HashMapInt localHashMapInt = (HashMapInt)(HashMapInt)localHashMapIntEntry1.getValue();
-      HashMapIntEntry localHashMapIntEntry2 = localHashMapInt.nextEntry(null);
-      while (localHashMapIntEntry2 != null) {
-        HashMapExt localHashMapExt = (HashMapExt)(HashMapExt)localHashMapIntEntry2.getValue();
-        localHashMapExt.clear();
-        localHashMapIntEntry2 = localHashMapInt.nextEntry(localHashMapIntEntry2);
-      }
-      localHashMapInt.clear();
-      localHashMapIntEntry1 = this.mapY.nextEntry(localHashMapIntEntry1);
-    }
-    this.mapY.clear();
-  }
+    public int size()
+    {
+        int i = 0;
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = mapY.nextEntry(null); hashmapintentry != null; hashmapintentry = mapY.nextEntry(hashmapintentry))
+        {
+            com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)(com.maddox.util.HashMapInt)hashmapintentry.getValue();
+            for(com.maddox.util.HashMapIntEntry hashmapintentry1 = hashmapint.nextEntry(null); hashmapintentry1 != null; hashmapintentry1 = hashmapint.nextEntry(hashmapintentry1))
+            {
+                com.maddox.util.HashMapExt hashmapext = (com.maddox.util.HashMapExt)(com.maddox.util.HashMapExt)hashmapintentry1.getValue();
+                i += hashmapext.size();
+            }
 
-  public Object remove(int paramInt1, int paramInt2, Object paramObject) {
-    HashMapInt localHashMapInt = (HashMapInt)this.mapY.get(paramInt1);
-    if (localHashMapInt != null) {
-      HashMapExt localHashMapExt = (HashMapExt)localHashMapInt.get(paramInt2);
-      if (localHashMapExt != null) {
-        Object localObject = localHashMapExt.remove(paramObject);
-        if (((paramInt2 | paramInt1) != 0) && (localHashMapExt.isEmpty()))
-          localHashMapInt.remove(paramInt2);
-        return localObject;
-      }
-    }
-    return null;
-  }
+        }
 
-  public boolean equals(Object paramObject)
-  {
-    return this == paramObject;
-  }
+        return i;
+    }
+
+    public void allValues(java.util.List list)
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = mapY.nextEntry(null); hashmapintentry != null; hashmapintentry = mapY.nextEntry(hashmapintentry))
+        {
+            com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)(com.maddox.util.HashMapInt)hashmapintentry.getValue();
+            for(com.maddox.util.HashMapIntEntry hashmapintentry1 = hashmapint.nextEntry(null); hashmapintentry1 != null; hashmapintentry1 = hashmapint.nextEntry(hashmapintentry1))
+            {
+                com.maddox.util.HashMapExt hashmapext = (com.maddox.util.HashMapExt)(com.maddox.util.HashMapExt)hashmapintentry1.getValue();
+                list.add(hashmapext);
+            }
+
+        }
+
+    }
+
+    public boolean isEmpty()
+    {
+        return size() == 0;
+    }
+
+    public com.maddox.util.HashMapExt get(int i, int j)
+    {
+        com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)mapY.get(i);
+        if(hashmapint != null)
+            return (com.maddox.util.HashMapExt)hashmapint.get(j);
+        else
+            return null;
+    }
+
+    public boolean containsKey(int i, int j, java.lang.Object obj)
+    {
+        com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)mapY.get(i);
+        if(hashmapint == null)
+            return false;
+        com.maddox.util.HashMapExt hashmapext = (com.maddox.util.HashMapExt)hashmapint.get(j);
+        if(hashmapext == null)
+            return false;
+        else
+            return hashmapext.containsKey(obj);
+    }
+
+    public java.lang.Object put(int i, int j, java.lang.Object obj, java.lang.Object obj1)
+    {
+        com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)mapY.get(i);
+        if(hashmapint == null)
+        {
+            hashmapint = new HashMapInt(initialCapacity, loadFactor);
+            mapY.put(i, hashmapint);
+        }
+        com.maddox.util.HashMapExt hashmapext = (com.maddox.util.HashMapExt)hashmapint.get(j);
+        if(hashmapext == null)
+        {
+            hashmapext = new HashMapExt(initialCapacity, loadFactor);
+            hashmapint.put(j, hashmapext);
+        }
+        return hashmapext.put(obj, obj1);
+    }
+
+    public void clear()
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = mapY.nextEntry(null); hashmapintentry != null; hashmapintentry = mapY.nextEntry(hashmapintentry))
+        {
+            com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)(com.maddox.util.HashMapInt)hashmapintentry.getValue();
+            for(com.maddox.util.HashMapIntEntry hashmapintentry1 = hashmapint.nextEntry(null); hashmapintentry1 != null; hashmapintentry1 = hashmapint.nextEntry(hashmapintentry1))
+            {
+                com.maddox.util.HashMapExt hashmapext = (com.maddox.util.HashMapExt)(com.maddox.util.HashMapExt)hashmapintentry1.getValue();
+                hashmapext.clear();
+            }
+
+            hashmapint.clear();
+        }
+
+        mapY.clear();
+    }
+
+    public java.lang.Object remove(int i, int j, java.lang.Object obj)
+    {
+        com.maddox.util.HashMapInt hashmapint = (com.maddox.util.HashMapInt)mapY.get(i);
+        if(hashmapint != null)
+        {
+            com.maddox.util.HashMapExt hashmapext = (com.maddox.util.HashMapExt)hashmapint.get(j);
+            if(hashmapext != null)
+            {
+                java.lang.Object obj1 = hashmapext.remove(obj);
+                if((j | i) != 0 && hashmapext.isEmpty())
+                    hashmapint.remove(j);
+                return obj1;
+            }
+        }
+        return null;
+    }
+
+    public boolean equals(java.lang.Object obj)
+    {
+        return this == obj;
+    }
+
+    private transient com.maddox.util.HashMapInt mapY;
+    private int initialCapacity;
+    private float loadFactor;
 }

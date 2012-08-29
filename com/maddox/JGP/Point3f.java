@@ -1,71 +1,80 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Point3f.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
-public class Point3f extends Tuple3f
-  implements Serializable, Cloneable
+// Referenced classes of package com.maddox.JGP:
+//            Tuple3f, Point4f, Point3d, Tuple3d
+
+public class Point3f extends com.maddox.JGP.Tuple3f
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public Point3f(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    super(paramFloat1, paramFloat2, paramFloat3);
-  }
 
-  public Point3f(float[] paramArrayOfFloat)
-  {
-    super(paramArrayOfFloat);
-  }
+    public Point3f(float f, float f1, float f2)
+    {
+        super(f, f1, f2);
+    }
 
-  public Point3f(Point3f paramPoint3f)
-  {
-    super(paramPoint3f);
-  }
+    public Point3f(float af[])
+    {
+        super(af);
+    }
 
-  public Point3f(Point3d paramPoint3d)
-  {
-    super(paramPoint3d);
-  }
+    public Point3f(com.maddox.JGP.Point3f point3f)
+    {
+        super(point3f);
+    }
 
-  public Point3f(Tuple3f paramTuple3f)
-  {
-    super(paramTuple3f);
-  }
+    public Point3f(com.maddox.JGP.Point3d point3d)
+    {
+        super(point3d);
+    }
 
-  public Point3f(Tuple3d paramTuple3d)
-  {
-    super(paramTuple3d);
-  }
+    public Point3f(com.maddox.JGP.Tuple3f tuple3f)
+    {
+        super(tuple3f);
+    }
 
-  public Point3f()
-  {
-  }
+    public Point3f(com.maddox.JGP.Tuple3d tuple3d)
+    {
+        super(tuple3d);
+    }
 
-  public final float distanceSquared(Point3f paramPoint3f)
-  {
-    double d1 = this.x - paramPoint3f.x;
-    double d2 = this.y - paramPoint3f.y;
-    double d3 = this.z - paramPoint3f.z;
-    return (float)(d1 * d1 + d2 * d2 + d3 * d3);
-  }
+    public Point3f()
+    {
+    }
 
-  public final float distance(Point3f paramPoint3f)
-  {
-    return (float)Math.sqrt(distanceSquared(paramPoint3f));
-  }
+    public final float distanceSquared(com.maddox.JGP.Point3f point3f)
+    {
+        double d = x - point3f.x;
+        double d1 = y - point3f.y;
+        double d2 = z - point3f.z;
+        return (float)(d * d + d1 * d1 + d2 * d2);
+    }
 
-  public final float distanceL1(Point3f paramPoint3f)
-  {
-    return Math.abs(this.x - paramPoint3f.x) + Math.abs(this.y - paramPoint3f.y) + Math.abs(this.z - paramPoint3f.z);
-  }
+    public final float distance(com.maddox.JGP.Point3f point3f)
+    {
+        return (float)java.lang.Math.sqrt(distanceSquared(point3f));
+    }
 
-  public final float distanceLinf(Point3f paramPoint3f)
-  {
-    return Math.max(Math.max(Math.abs(this.x - paramPoint3f.x), Math.abs(this.y - paramPoint3f.y)), Math.abs(this.z - paramPoint3f.z));
-  }
+    public final float distanceL1(com.maddox.JGP.Point3f point3f)
+    {
+        return java.lang.Math.abs(x - point3f.x) + java.lang.Math.abs(y - point3f.y) + java.lang.Math.abs(z - point3f.z);
+    }
 
-  public final void project(Point4f paramPoint4f)
-  {
-    this.x = (paramPoint4f.x / paramPoint4f.w);
-    this.y = (paramPoint4f.y / paramPoint4f.w);
-    this.z = (paramPoint4f.z / paramPoint4f.w);
-  }
+    public final float distanceLinf(com.maddox.JGP.Point3f point3f)
+    {
+        return java.lang.Math.max(java.lang.Math.max(java.lang.Math.abs(x - point3f.x), java.lang.Math.abs(y - point3f.y)), java.lang.Math.abs(z - point3f.z));
+    }
+
+    public final void project(com.maddox.JGP.Point4f point4f)
+    {
+        x = point4f.x / point4f.w;
+        y = point4f.y / point4f.w;
+        z = point4f.z / point4f.w;
+    }
 }

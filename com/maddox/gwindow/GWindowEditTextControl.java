@@ -1,231 +1,284 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowEditTextControl.java
+
 package com.maddox.gwindow;
 
 import java.util.ArrayList;
 
-public class GWindowEditTextControl extends GWindowDialogControl
+// Referenced classes of package com.maddox.gwindow:
+//            GWindowDialogControl, GWindowEditText, GWindowHScrollBar, GWindowVScrollBar, 
+//            GWindowButton, GRegion, GWindowRoot, GFont, 
+//            GSize, GWindowLookAndFeel, GWindow
+
+public class GWindowEditTextControl extends com.maddox.gwindow.GWindowDialogControl
 {
-  public float border = 4.0F;
-  public float editBorder = 0.0F;
-  public GWindowEditText edit;
-  public GWindowDialogControl e;
-  public GWindowVScrollBar vScroll;
-  public GWindowHScrollBar hScroll;
-  public GWindowButton button;
-  private float editDx;
-  private float editDy;
 
-  public void updateScrollsPos()
-  {
-    if (this.vScroll.isVisible()) this.vScroll.setPos(-this.edit.win.y, false);
-    if (this.hScroll.isVisible()) this.hScroll.setPos(-this.edit.win.x, false); 
-  }
+    public void updateScrollsPos()
+    {
+        if(vScroll.isVisible())
+            vScroll.setPos(-edit.win.y, false);
+        if(hScroll.isVisible())
+            hScroll.setPos(-edit.win.x, false);
+    }
 
-  public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-  {
-    if (paramInt1 == 2) {
-      if (paramGWindow == this.vScroll) {
-        if (this.edit != null) {
-          editSetPos(this.edit.win.x, -this.vScroll.pos());
+    public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+    {
+        if(i == 2)
+        {
+            if(gwindow == vScroll)
+            {
+                if(edit != null)
+                    editSetPos(edit.win.x, -vScroll.pos());
+                return true;
+            }
+            if(gwindow == hScroll)
+            {
+                if(edit != null)
+                    editSetPos(-hScroll.pos(), edit.win.y);
+                return true;
+            }
+            if(gwindow == edit)
+            {
+                if(j == 0)
+                    resized();
+                else
+                if(j == 1)
+                    clampCaretPos();
+                return true;
+            }
+        }
+        if(i == 17)
+        {
+            if(vScroll.isVisible())
+                vScroll.scrollDz(root.mouseRelMoveZ);
+            return true;
+        } else
+        {
+            return super.notify(gwindow, i, j);
+        }
+    }
+
+    private void computeSizeEdit(float f)
+    {
+        edit.win.dx = f;
+        edit.updateTextPos();
+        editDx = 0.0F;
+        editDy = 0.0F;
+        com.maddox.gwindow.GFont gfont = root.textFonts[edit.font];
+        int i = edit.textPos.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.gwindow.GWindowEditText.PosLen poslen = (com.maddox.gwindow.GWindowEditText.PosLen)edit.textPos.get(j);
+            editDy += gfont.height;
+            if(editDx < poslen.width)
+                editDx = poslen.width;
         }
 
-        return true;
-      }
-      if (paramGWindow == this.hScroll) {
-        if (this.edit != null) {
-          editSetPos(-this.hScroll.pos(), this.edit.win.y);
+    }
+
+    public void editSetPos(float f, float f1)
+    {
+        com.maddox.gwindow.GFont gfont = root.textFonts[edit.font];
+        int i = java.lang.Math.round(f1 / gfont.height);
+        edit.setPos(f, (float)i * gfont.height);
+    }
+
+    public void clampCaretPos()
+    {
+        if(edit.isEmpty())
+            return;
+        com.maddox.gwindow.GFont gfont = root.textFonts[edit.font];
+        int i = 0;
+        int j = edit.posCaret.ofs;
+        int k = edit.textPos.size();
+        float f = 0;
+        do
+        {
+            if(f >= k)
+                break;
+            com.maddox.gwindow.GWindowEditText.PosLen poslen = (com.maddox.gwindow.GWindowEditText.PosLen)edit.textPos.get(f);
+            if(edit.posCaret.item == poslen.item && j >= poslen.ofs && j <= poslen.ofs + poslen.len)
+            {
+                i = f;
+                break;
+            }
+            f++;
+        } while(true);
+        f = (float)i * gfont.height;
+        float f1 = 0.0F;
+        if(j > 0)
+        {
+            com.maddox.gwindow.GWindowEditText.PosLen poslen1 = (com.maddox.gwindow.GWindowEditText.PosLen)edit.textPos.get(i);
+            java.lang.StringBuffer stringbuffer = edit.item(poslen1.item);
+            com.maddox.gwindow.GWindowEditText _tmp = edit;
+            char ac[] = com.maddox.gwindow.GWindowEditText._getArrayRenderBuffer(j - poslen1.ofs);
+            stringbuffer.getChars(poslen1.ofs, j, ac, 0);
+            com.maddox.gwindow.GSize gsize1 = gfont.size(ac, 0, j - poslen1.ofs);
+            f1 = gsize1.dx;
         }
-
-        return true;
-      }
-      if (paramGWindow == this.edit) {
-        if (paramInt2 == 0)
-          resized();
-        else if (paramInt2 == 1) {
-          clampCaretPos();
+        float f2 = -edit.win.y;
+        if(f < f2)
+            f2 = f;
+        else
+        if(f > (f2 + e.win.dy) - gfont.height)
+            f2 = (f + gfont.height) - e.win.dy;
+        float f3 = -edit.win.x;
+        if(f1 < f3)
+        {
+            f3 = f1 - lookAndFeel().metric();
+            if(f3 < 0.0F)
+                f3 = 0.0F;
+        } else
+        {
+            com.maddox.gwindow.GSize gsize = gfont.size("|");
+            if(f1 > (f3 + e.win.dx) - gsize.dx)
+                f3 = (f1 - e.win.dx) + gsize.dx;
         }
-        return true;
-      }
-    }
-    if (paramInt1 == 17) {
-      if (this.vScroll.isVisible())
-        this.vScroll.scrollDz(this.root.mouseRelMoveZ);
-      return true;
-    }
-    return super.notify(paramGWindow, paramInt1, paramInt2);
-  }
-
-  private void computeSizeEdit(float paramFloat)
-  {
-    this.edit.win.dx = paramFloat;
-    this.edit.updateTextPos();
-    this.editDx = 0.0F;
-    this.editDy = 0.0F;
-    GFont localGFont = this.root.textFonts[this.edit.font];
-    int i = this.edit.textPos.size();
-    for (int j = 0; j < i; j++) {
-      GWindowEditText.PosLen localPosLen = (GWindowEditText.PosLen)this.edit.textPos.get(j);
-      this.editDy += localGFont.height;
-      if (this.editDx < localPosLen.width)
-        this.editDx = localPosLen.width;
-    }
-  }
-
-  public void editSetPos(float paramFloat1, float paramFloat2) {
-    GFont localGFont = this.root.textFonts[this.edit.font];
-    int i = Math.round(paramFloat2 / localGFont.height);
-    this.edit.setPos(paramFloat1, i * localGFont.height);
-  }
-  public void clampCaretPos() {
-    if (this.edit.isEmpty()) return;
-    GFont localGFont = this.root.textFonts[this.edit.font];
-    int i = 0;
-    int j = this.edit.posCaret.ofs;
-    int k = this.edit.textPos.size();
-    for (int m = 0; m < k; m++) {
-      GWindowEditText.PosLen localPosLen1 = (GWindowEditText.PosLen)this.edit.textPos.get(m);
-      if ((this.edit.posCaret.item != localPosLen1.item) || (j < localPosLen1.ofs) || (j > localPosLen1.ofs + localPosLen1.len))
-        continue;
-      i = m;
-      break;
+        edit.setPos(-f3, -f2);
+        updateScrollsPos();
     }
 
-    float f1 = i * localGFont.height;
-    float f2 = 0.0F;
-    Object localObject;
-    if (j > 0) {
-      GWindowEditText.PosLen localPosLen2 = (GWindowEditText.PosLen)this.edit.textPos.get(i);
-      StringBuffer localStringBuffer = this.edit.item(localPosLen2.item);
-      localObject = GWindowEditText._getArrayRenderBuffer(j - localPosLen2.ofs);
-      localStringBuffer.getChars(localPosLen2.ofs, j, localObject, 0);
-      GSize localGSize = localGFont.size(localObject, 0, j - localPosLen2.ofs);
-      f2 = localGSize.dx;
+    public void resized()
+    {
+        if(edit == null)
+            return;
+        boolean flag = false;
+        boolean flag1 = false;
+        float f = 0.0F;
+        float f1 = 0.0F;
+        int i = 0;
+        do
+        {
+            f = win.dx - 2.0F * (border + editBorder);
+            if(flag1)
+                f -= lookAndFeel().getVScrollBarW();
+            f1 = win.dy - 2.0F * (border + editBorder);
+            if(flag)
+                f1 -= lookAndFeel().getHScrollBarH();
+            computeSizeEdit(f);
+            if(++i == 3)
+                break;
+            flag = editDx > f;
+            flag1 = editDy > f1;
+        } while(true);
+        edit.win.dx = editDx;
+        if(edit.win.dx < f)
+            edit.win.dx = f;
+        edit.win.dy = editDy;
+        if(edit.win.dy < f1)
+            edit.win.dy = f1;
+        e.setPosSize(border + editBorder, border + editBorder, f, f1);
+        float f2 = edit.win.x;
+        float f3 = edit.win.y;
+        if(flag1)
+        {
+            vScroll.setPos(win.dx - lookAndFeel().getVScrollBarW() - border, border);
+            vScroll.setSize(lookAndFeel().getVScrollBarW(), f1 + 2.0F * editBorder);
+            if(f3 + editDy < f1)
+                f3 = f1 - editDy;
+            vScroll.setRange(0.0F, editDy, f1, lookAndFeel().metric(), -f3);
+            vScroll.showWindow();
+        } else
+        {
+            vScroll.hideWindow();
+            f3 = 0.0F;
+        }
+        if(flag)
+        {
+            hScroll.setPos(border, win.dy - lookAndFeel().getHScrollBarH() - border);
+            hScroll.setSize(f + 2.0F * editBorder, lookAndFeel().getHScrollBarH());
+            if(f2 + editDx < f)
+                f2 = f - editDx;
+            hScroll.setRange(0.0F, editDx, f, lookAndFeel().metric(), -f2);
+            hScroll.showWindow();
+        } else
+        {
+            hScroll.hideWindow();
+            f2 = 0.0F;
+        }
+        if(flag && flag1)
+        {
+            button.setPos(win.dx - border - lookAndFeel().getVScrollBarW(), win.dy - border - lookAndFeel().getHScrollBarH());
+            button.setSize(lookAndFeel().getVScrollBarW(), lookAndFeel().getHScrollBarH());
+            button.showWindow();
+        } else
+        {
+            button.hideWindow();
+        }
+        editSetPos(f2, f3);
+        clampCaretPos();
     }
-    float f3 = -this.edit.win.y;
-    if (f1 < f3)
-      f3 = f1;
-    else if (f1 > f3 + this.e.win.dy - localGFont.height) {
-      f3 = f1 + localGFont.height - this.e.win.dy;
+
+    public void resolutionChanged()
+    {
+        border = lookAndFeel().getBorderSizeEditTextControl();
+        resized();
     }
-    float f4 = -this.edit.win.x;
-    if (f2 < f4) {
-      f4 = f2 - lookAndFeel().metric();
-      if (f4 < 0.0F) f4 = 0.0F; 
+
+    public void render()
+    {
+        lookAndFeel().render(this);
     }
-    else {
-      localObject = localGFont.size("|");
-      if (f2 > f4 + this.e.win.dx - ((GSize)localObject).dx)
-        f4 = f2 - this.e.win.dx + ((GSize)localObject).dx;
+
+    public com.maddox.gwindow.GSize getMinSize(com.maddox.gwindow.GSize gsize)
+    {
+        gsize.dx = 2.0F * (lookAndFeel().getVScrollBarW() + border + editBorder);
+        gsize.dy = 2.0F * (lookAndFeel().getHScrollBarH() + border + editBorder);
+        return gsize;
     }
-    this.edit.setPos(-f4, -f3);
-    updateScrollsPos();
-  }
 
-  public void resized() {
-    if (this.edit == null) return;
-
-    int i = 0;
-    int j = 0;
-    float f1 = 0.0F; float f2 = 0.0F;
-    int k = 0;
-    while (true) {
-      f1 = this.win.dx - 2.0F * (this.border + this.editBorder);
-      if (j != 0) f1 -= lookAndFeel().getVScrollBarW();
-      f2 = this.win.dy - 2.0F * (this.border + this.editBorder);
-      if (i != 0) f2 -= lookAndFeel().getHScrollBarH();
-      computeSizeEdit(f1);
-      k++; if (k == 3) break;
-      i = this.editDx > f1 ? 1 : 0;
-      j = this.editDy > f2 ? 1 : 0;
+    public void afterCreated()
+    {
+        e = (com.maddox.gwindow.GWindowDialogControl)create(new GWindowDialogControl());
+        edit = (com.maddox.gwindow.GWindowEditText)e.create(new GWindowEditText());
+        edit.notifyWindow = this;
+        border = lookAndFeel().getBorderSizeEditTextControl();
+        super.afterCreated();
+        hScroll = new GWindowHScrollBar(this);
+        vScroll = new GWindowVScrollBar(this);
+        hScroll.bAlwaysOnTop = true;
+        vScroll.bAlwaysOnTop = true;
+        hScroll.hideWindow();
+        vScroll.hideWindow();
+        button = new GWindowButton(this);
+        button.bAcceptsKeyFocus = false;
+        button.bAlwaysOnTop = true;
+        button.bDrawOnlyUP = true;
+        button.bDrawActive = false;
+        button.hideWindow();
+        resized();
     }
-    this.edit.win.dx = this.editDx;
-    if (this.edit.win.dx < f1)
-      this.edit.win.dx = f1;
-    this.edit.win.dy = this.editDy;
-    if (this.edit.win.dy < f2)
-      this.edit.win.dy = f2;
-    this.e.setPosSize(this.border + this.editBorder, this.border + this.editBorder, f1, f2);
-    float f3 = this.edit.win.x;
-    float f4 = this.edit.win.y;
-    if (j != 0) {
-      this.vScroll.setPos(this.win.dx - lookAndFeel().getVScrollBarW() - this.border, this.border);
-      this.vScroll.setSize(lookAndFeel().getVScrollBarW(), f2 + 2.0F * this.editBorder);
-      if (f4 + this.editDy < f2)
-        f4 = f2 - this.editDy;
-      this.vScroll.setRange(0.0F, this.editDy, f2, lookAndFeel().metric(), -f4);
-      this.vScroll.showWindow();
-    } else {
-      this.vScroll.hideWindow();
-      f4 = 0.0F;
+
+    public GWindowEditTextControl()
+    {
+        border = 4F;
+        editBorder = 0.0F;
     }
-    if (i != 0) {
-      this.hScroll.setPos(this.border, this.win.dy - lookAndFeel().getHScrollBarH() - this.border);
-      this.hScroll.setSize(f1 + 2.0F * this.editBorder, lookAndFeel().getHScrollBarH());
-      if (f3 + this.editDx < f1)
-        f3 = f1 - this.editDx;
-      this.hScroll.setRange(0.0F, this.editDx, f1, lookAndFeel().metric(), -f3);
-      this.hScroll.showWindow();
-    } else {
-      this.hScroll.hideWindow();
-      f3 = 0.0F;
+
+    public GWindowEditTextControl(com.maddox.gwindow.GWindow gwindow)
+    {
+        border = 4F;
+        editBorder = 0.0F;
+        doNew(gwindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
     }
-    if ((i != 0) && (j != 0)) {
-      this.button.setPos(this.win.dx - this.border - lookAndFeel().getVScrollBarW(), this.win.dy - this.border - lookAndFeel().getHScrollBarH());
 
-      this.button.setSize(lookAndFeel().getVScrollBarW(), lookAndFeel().getHScrollBarH());
-      this.button.showWindow();
-    } else {
-      this.button.hideWindow();
+    public GWindowEditTextControl(com.maddox.gwindow.GWindow gwindow, float f, float f1, float f2, float f3, java.lang.String s)
+    {
+        border = 4F;
+        editBorder = 0.0F;
+        toolTip = s;
+        doNew(gwindow, f, f1, f2, f3, true);
     }
-    editSetPos(f3, f4);
-    clampCaretPos();
-  }
 
-  public void resolutionChanged() {
-    this.border = lookAndFeel().getBorderSizeEditTextControl();
-    resized();
-  }
-
-  public void render() {
-    lookAndFeel().render(this);
-  }
-
-  public GSize getMinSize(GSize paramGSize) {
-    paramGSize.dx = (2.0F * (lookAndFeel().getVScrollBarW() + this.border + this.editBorder));
-    paramGSize.dy = (2.0F * (lookAndFeel().getHScrollBarH() + this.border + this.editBorder));
-    return paramGSize;
-  }
-
-  public void afterCreated() {
-    this.e = ((GWindowDialogControl)create(new GWindowDialogControl()));
-    this.edit = ((GWindowEditText)this.e.create(new GWindowEditText()));
-    this.edit.notifyWindow = this;
-    this.border = lookAndFeel().getBorderSizeEditTextControl();
-    super.afterCreated();
-    this.hScroll = new GWindowHScrollBar(this);
-    this.vScroll = new GWindowVScrollBar(this);
-    this.hScroll.bAlwaysOnTop = true;
-    this.vScroll.bAlwaysOnTop = true;
-    this.hScroll.hideWindow();
-    this.vScroll.hideWindow();
-    this.button = new GWindowButton(this);
-    this.button.bAcceptsKeyFocus = false;
-    this.button.bAlwaysOnTop = true;
-    this.button.bDrawOnlyUP = true;
-    this.button.bDrawActive = false;
-    this.button.hideWindow();
-
-    resized();
-  }
-  public GWindowEditTextControl() {
-  }
-
-  public GWindowEditTextControl(GWindow paramGWindow) {
-    doNew(paramGWindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
-  }
-
-  public GWindowEditTextControl(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, String paramString)
-  {
-    this.toolTip = paramString;
-    doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, paramFloat4, true);
-  }
+    public float border;
+    public float editBorder;
+    public com.maddox.gwindow.GWindowEditText edit;
+    public com.maddox.gwindow.GWindowDialogControl e;
+    public com.maddox.gwindow.GWindowVScrollBar vScroll;
+    public com.maddox.gwindow.GWindowHScrollBar hScroll;
+    public com.maddox.gwindow.GWindowButton button;
+    private float editDx;
+    private float editDy;
 }

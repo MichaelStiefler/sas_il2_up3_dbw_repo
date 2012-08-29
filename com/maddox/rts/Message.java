@@ -1,652 +1,801 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Message.java
+
 package com.maddox.rts;
+
+
+// Referenced classes of package com.maddox.rts:
+//            MessageException, MessageComponent, MessageProxy, MessageListener, 
+//            States, Destroy, Time, RTSConf, 
+//            MessageQueue, RTSProfile
 
 public class Message
 {
-  public static final String ERR_BUSY = "message is busy";
-  public static final int BUSY = 1;
-  public static final int IN_CACHE = 2;
-  public static final int CLEAR_AFTER_SEND = 4;
-  public static final int NEXT_TICK = 8;
-  public static final int CLEAR_TIME = 16;
-  public static final int END_TICK_TIME = 32;
-  public static final int REAL_TIME = 64;
-  public static final int SYS_FLAGS = 7;
-  protected int _flags;
-  protected Object _listener;
-  protected long _time;
-  protected int _tickPos;
-  protected long _queueStamp;
-  protected Object _sender;
 
-  public final boolean busy()
-  {
-    return (this._flags & 0x1) != 0;
-  }
-
-  public final boolean incache()
-  {
-    return (this._flags & 0x2) != 0;
-  }
-
-  public final boolean isRealTime()
-  {
-    return (this._flags & 0x40) != 0;
-  }
-
-  public final Object listener()
-  {
-    return this._listener;
-  }
-
-  public final long time()
-  {
-    return this._time;
-  }
-
-  public final int tickPos()
-  {
-    return this._tickPos;
-  }
-
-  public final Object sender()
-  {
-    return this._sender;
-  }
-
-  public final int flags()
-  {
-    return this._flags;
-  }
-
-  public final void setFlags(int paramInt)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._flags = (paramInt & 0xFFFFFFF8 | this._flags & 0x7);
-  }
-
-  public final void setNotCleanAfterSend()
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._flags &= -5;
-  }
-
-  public final void setListener(Object paramObject)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._listener = paramObject;
-  }
-
-  public final void setTime(long paramLong)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._time = paramLong;
-  }
-
-  public final void setTickPos(int paramInt)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._tickPos = paramInt;
-  }
-
-  public final void setSender(Object paramObject)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._sender = paramObject;
-  }
-
-  public Message()
-  {
-    this._flags = 4; this._listener = null; this._time = Time.current(); this._tickPos = 0; this._sender = null;
-  }
-
-  public void clean()
-  {
-    this._listener = null; this._sender = null; this._tickPos = 0;
-    this._flags &= 7;
-  }
-
-  public void remove()
-  {
-    if ((this._flags & 0x1) == 0) return;
-    if ((this._flags & 0x40) != 0) {
-      if ((!RTSConf.cur.queueRealTime.remove(this)) && ((this._flags & 0x8) != 0))
-        RTSConf.cur.queueRealTimeNextTick.remove(this);
-    }
-    else if ((!RTSConf.cur.queue.remove(this)) && ((this._flags & 0x8) != 0))
-      RTSConf.cur.queueNextTick.remove(this);
-  }
-
-  public static Message current()
-  {
-    return RTSConf.cur.message;
-  }
-
-  public static long currentTime(boolean paramBoolean)
-  {
-    if (RTSConf.cur.message == null) {
-      if (paramBoolean) return Time.currentReal();
-      return Time.current();
-    }
-    if ((RTSConf.cur.message._flags & 0x40) != 0) {
-      if (paramBoolean) return RTSConf.cur.message._time;
-      return Time.fromReal(RTSConf.cur.message._time);
-    }
-    if (paramBoolean) return Time.toReal(RTSConf.cur.message._time);
-    return RTSConf.cur.message._time;
-  }
-
-  public static long currentRealTime()
-  {
-    if (RTSConf.cur.message == null) {
-      return Time.currentReal();
-    }
-    if ((RTSConf.cur.message._flags & 0x40) != 0) {
-      return RTSConf.cur.message._time;
-    }
-    return Time.toReal(RTSConf.cur.message._time);
-  }
-
-  public static long currentGameTime()
-  {
-    if (RTSConf.cur.message == null) {
-      return Time.current();
-    }
-    if ((RTSConf.cur.message._flags & 0x40) != 0) {
-      return Time.fromReal(RTSConf.cur.message._time);
-    }
-    return RTSConf.cur.message._time;
-  }
-
-  private MessageQueue selectQueue()
-  {
-    if ((this._flags & 0x48) == 0) return RTSConf.cur.queue;
-    if ((this._flags & 0x40) == 0) {
-      return RTSConf.cur.queueNextTick;
-    }
-    if ((this._flags & 0x8) != 0) return RTSConf.cur.queueRealTimeNextTick;
-    return RTSConf.cur.queueRealTime;
-  }
-
-  private MessageQueue selectQueue(int paramInt)
-  {
-    if ((paramInt & 0x48) == 0) return RTSConf.cur.queue;
-    if ((paramInt & 0x40) == 0) {
-      return RTSConf.cur.queueNextTick;
-    }
-    if ((paramInt & 0x8) != 0) return RTSConf.cur.queueRealTimeNextTick;
-    return RTSConf.cur.queueRealTime;
-  }
-
-  public static long s2ms(int paramInt, double paramDouble)
-  {
-    long l = (paramInt & 0x40) != 0 ? Time.currentReal() : Time.current();
-    return l + ()(paramDouble * 1000.0D + 0.5D);
-  }
-
-  public void post(Object paramObject1, long paramLong, int paramInt, Object paramObject2)
-    throws MessageException
-  {
-    selectQueue().put(this, paramObject1, paramLong, paramInt, paramObject2);
-  }
-
-  public void post(Object paramObject1, double paramDouble, int paramInt, Object paramObject2)
-    throws MessageException
-  {
-    selectQueue().put(this, paramObject1, s2ms(this._flags, paramDouble), paramInt, paramObject2);
-  }
-
-  public void post(int paramInt1, Object paramObject1, long paramLong, int paramInt2, Object paramObject2)
-    throws MessageException
-  {
-    selectQueue(paramInt1).put(paramInt1, this, paramObject1, paramLong, paramInt2, paramObject2);
-  }
-
-  public void post(int paramInt1, Object paramObject1, double paramDouble, int paramInt2, Object paramObject2)
-    throws MessageException
-  {
-    selectQueue(paramInt1).put(paramInt1, this, paramObject1, s2ms(paramInt1, paramDouble), paramInt2, paramObject2);
-  }
-
-  public void post(Object paramObject, long paramLong, int paramInt)
-    throws MessageException
-  {
-    selectQueue().put(this, paramObject, paramLong, paramInt);
-  }
-
-  public void post(Object paramObject, double paramDouble, int paramInt)
-    throws MessageException
-  {
-    selectQueue().put(this, paramObject, s2ms(this._flags, paramDouble), paramInt);
-  }
-
-  public void post(int paramInt1, Object paramObject, long paramLong, int paramInt2)
-    throws MessageException
-  {
-    selectQueue(paramInt1).put(paramInt1, this, paramObject, paramLong, paramInt2);
-  }
-
-  public void post(int paramInt1, Object paramObject, double paramDouble, int paramInt2)
-    throws MessageException
-  {
-    selectQueue(paramInt1).put(paramInt1, this, paramObject, s2ms(paramInt1, paramDouble), paramInt2);
-  }
-
-  public void post(Object paramObject1, long paramLong, Object paramObject2)
-    throws MessageException
-  {
-    selectQueue().put(this, paramObject1, paramLong, paramObject2);
-  }
-
-  public void post(Object paramObject1, double paramDouble, Object paramObject2)
-    throws MessageException
-  {
-    selectQueue().put(this, paramObject1, s2ms(this._flags, paramDouble), paramObject2);
-  }
-
-  public void post(int paramInt, Object paramObject1, long paramLong, Object paramObject2)
-    throws MessageException
-  {
-    selectQueue(paramInt).put(paramInt, this, paramObject1, paramLong, paramObject2);
-  }
-
-  public void post(int paramInt, Object paramObject1, double paramDouble, Object paramObject2)
-    throws MessageException
-  {
-    selectQueue(paramInt).put(paramInt, this, paramObject1, s2ms(paramInt, paramDouble), paramObject2);
-  }
-
-  public void post(Object paramObject1, int paramInt, Object paramObject2)
-    throws MessageException
-  {
-    selectQueue().put(this, paramObject1, paramInt, paramObject2);
-  }
-
-  public void post(int paramInt1, Object paramObject1, int paramInt2, Object paramObject2)
-    throws MessageException
-  {
-    selectQueue(paramInt1).put(paramInt1, this, paramObject1, paramInt2, paramObject2);
-  }
-
-  public void post(long paramLong, int paramInt, Object paramObject)
-    throws MessageException
-  {
-    selectQueue().put(this, paramLong, paramInt, paramObject);
-  }
-
-  public void post(double paramDouble, int paramInt, Object paramObject)
-    throws MessageException
-  {
-    selectQueue().put(this, s2ms(this._flags, paramDouble), paramInt, paramObject);
-  }
-
-  public void post(int paramInt1, long paramLong, int paramInt2, Object paramObject)
-    throws MessageException
-  {
-    selectQueue(paramInt1).put(paramInt1, this, paramLong, paramInt2, paramObject);
-  }
-
-  public void post(int paramInt1, double paramDouble, int paramInt2, Object paramObject)
-    throws MessageException
-  {
-    selectQueue(paramInt1).put(paramInt1, this, s2ms(paramInt1, paramDouble), paramInt2, paramObject);
-  }
-
-  public void post(long paramLong, Object paramObject)
-    throws MessageException
-  {
-    selectQueue().put(this, paramLong, paramObject);
-  }
-
-  public void post(double paramDouble, Object paramObject)
-    throws MessageException
-  {
-    selectQueue().put(this, s2ms(this._flags, paramDouble), paramObject);
-  }
-
-  public void post(int paramInt, long paramLong, Object paramObject)
-    throws MessageException
-  {
-    selectQueue(paramInt).put(paramInt, this, paramLong, paramObject);
-  }
-
-  public void post(int paramInt, double paramDouble, Object paramObject)
-    throws MessageException
-  {
-    selectQueue(paramInt).put(paramInt, this, s2ms(paramInt, paramDouble), paramObject);
-  }
-
-  public void post(int paramInt1, int paramInt2, Object paramObject)
-    throws MessageException
-  {
-    selectQueue(paramInt1).put(paramInt1, this, paramInt2, paramObject);
-  }
-
-  public void post(long paramLong, int paramInt)
-    throws MessageException
-  {
-    selectQueue().put(this, paramLong, paramInt);
-  }
-
-  public void post(double paramDouble, int paramInt)
-    throws MessageException
-  {
-    selectQueue().put(this, s2ms(this._flags, paramDouble), paramInt);
-  }
-
-  public void post(int paramInt1, long paramLong, int paramInt2)
-    throws MessageException
-  {
-    selectQueue(paramInt1).put(paramInt1, this, paramLong, paramInt2);
-  }
-
-  public void post(int paramInt1, double paramDouble, int paramInt2)
-    throws MessageException
-  {
-    selectQueue(paramInt1).put(paramInt1, this, s2ms(paramInt1, paramDouble), paramInt2);
-  }
-
-  public void post(long paramLong)
-    throws MessageException
-  {
-    selectQueue().put(this, paramLong);
-  }
-
-  public void post(double paramDouble)
-    throws MessageException
-  {
-    selectQueue().put(this, s2ms(this._flags, paramDouble));
-  }
-
-  public void post(int paramInt, long paramLong)
-    throws MessageException
-  {
-    selectQueue(paramInt).put(paramInt, this, paramLong);
-  }
-
-  public void post(int paramInt, double paramDouble)
-    throws MessageException
-  {
-    selectQueue(paramInt).put(paramInt, this, s2ms(paramInt, paramDouble));
-  }
-
-  public void post(int paramInt1, int paramInt2)
-    throws MessageException
-  {
-    selectQueue(paramInt1).put(paramInt1, this, paramInt2);
-  }
-
-  public void post(int paramInt)
-    throws MessageException
-  {
-    selectQueue(paramInt).put(paramInt, this);
-  }
-
-  public void post(Object paramObject, long paramLong)
-    throws MessageException
-  {
-    selectQueue().put(this, paramObject, paramLong);
-  }
-
-  public void post(Object paramObject, double paramDouble)
-    throws MessageException
-  {
-    selectQueue().put(this, paramObject, s2ms(this._flags, paramDouble));
-  }
-
-  public void post(int paramInt, Object paramObject, long paramLong)
-    throws MessageException
-  {
-    selectQueue(paramInt).put(paramInt, this, paramObject, paramLong);
-  }
-
-  public void post(int paramInt, Object paramObject, double paramDouble)
-    throws MessageException
-  {
-    selectQueue(paramInt).put(paramInt, this, paramObject, s2ms(paramInt, paramDouble));
-  }
-
-  public void post(Object paramObject, int paramInt)
-    throws MessageException
-  {
-    selectQueue().put(this, paramObject, paramInt);
-  }
-
-  public void post(int paramInt1, Object paramObject, int paramInt2)
-    throws MessageException
-  {
-    selectQueue(paramInt1).put(paramInt1, this, paramObject, paramInt2);
-  }
-
-  public void post(Object paramObject1, Object paramObject2)
-    throws MessageException
-  {
-    selectQueue().put(this, paramObject1, paramObject2);
-  }
-
-  public void post(int paramInt, Object paramObject1, Object paramObject2)
-    throws MessageException
-  {
-    selectQueue(paramInt).put(paramInt, this, paramObject1, paramObject2);
-  }
-
-  public void post(Object paramObject)
-    throws MessageException
-  {
-    selectQueue().put(this, paramObject);
-  }
-
-  public void post(int paramInt, Object paramObject)
-    throws MessageException
-  {
-    selectQueue(paramInt).put(paramInt, this, paramObject);
-  }
-
-  public void post()
-    throws MessageException
-  {
-    selectQueue().put(this);
-  }
-
-  public void send(Object paramObject1, long paramLong, int paramInt, Object paramObject2)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._listener = paramObject1; this._time = paramLong; this._tickPos = paramInt; this._sender = paramObject2;
-    trySend();
-  }
-
-  public void send(Object paramObject, long paramLong, int paramInt)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._listener = paramObject; this._time = paramLong; this._tickPos = paramInt;
-    trySend();
-  }
-
-  public void send(Object paramObject1, long paramLong, Object paramObject2)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._listener = paramObject1; this._time = paramLong; this._sender = paramObject2;
-    trySend();
-  }
-
-  public void send(Object paramObject1, int paramInt, Object paramObject2)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._listener = paramObject1; this._tickPos = paramInt; this._sender = paramObject2;
-    trySend();
-  }
-
-  public void send(long paramLong, int paramInt, Object paramObject)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._time = paramLong; this._tickPos = paramInt; this._sender = paramObject;
-    trySend();
-  }
-
-  public void send(int paramInt, Object paramObject)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._tickPos = paramInt; this._sender = paramObject;
-    trySend();
-  }
-
-  public void send(Object paramObject, long paramLong)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._listener = paramObject; this._time = paramLong;
-    trySend();
-  }
-
-  public void send(Object paramObject, int paramInt)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._listener = paramObject; this._tickPos = paramInt;
-    trySend();
-  }
-
-  public void send(Object paramObject1, Object paramObject2)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._listener = paramObject1; this._sender = paramObject2;
-    trySend();
-  }
-
-  public void send(Object paramObject)
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    this._listener = paramObject;
-    trySend();
-  }
-
-  public void send()
-    throws MessageException
-  {
-    if ((this._flags & 0x1) != 0) throw new MessageException("message is busy");
-    trySend();
-  }
-
-  public boolean invokeListener(Object paramObject)
-  {
-    return true;
-  }
-
-  protected final synchronized void trySend()
-  {
-    Message localMessage = RTSConf.cur.message;
-    RTSConf.cur.message = this;
-    RTSConf.cur.profile.countMessages += 1;
-    try {
-      sendTo(this._listener);
-    } catch (Exception localException) {
-      if ((this._flags & 0x6) != 0)
-        clean();
-      this._flags &= -2;
-      if (!(localException instanceof NullPointerException))
-        localException.printStackTrace();
-    }
-    RTSConf.cur.message = localMessage;
-  }
-
-  private final void sendTo(Object paramObject) {
-    if ((paramObject instanceof Object[])) {
-      sendToArray(paramObject);
-      if ((this._flags & 0x6) != 0)
-        clean();
-      this._flags &= -2;
-    } else {
-      this._flags &= -2;
-      sendToObject(paramObject);
-      if (((this._flags & 0x1) == 0) && ((this._flags & 0x6) != 0))
-      {
-        clean();
-      }
-    }
-  }
-
-  private final void sendToArray(Object paramObject) {
-    int j = ((Object[])(Object[])paramObject).length;
-    for (int i = 0; i < j; i++) {
-      Object localObject = ((Object[])(Object[])paramObject)[i];
-      if (localObject != null)
-        sendToObject(localObject);
-    }
-  }
-
-  private final void sendToObject(Object paramObject)
-  {
-    Object localObject;
-    if ((paramObject instanceof MessageComponent)) {
-      localObject = ((MessageComponent)paramObject).getSwitchListener(this);
-      if (localObject != null) {
-        if (localObject == paramObject) {
-          _send(localObject);
-          return;
-        }
-        if ((localObject instanceof MessageProxy)) {
-          localObject = ((MessageProxy)localObject).getListener(this);
-          if ((localObject != null) && 
-            (!_send(localObject)) && 
-            ((localObject instanceof MessageListener))) {
-            localObject = ((MessageListener)localObject).getParentListener(this);
-            if (localObject != null)
-              _send(localObject);
-          }
-        }
-        else
-        {
-          sendToObject(localObject);
-        }
-      }
-    } else if ((paramObject instanceof States)) {
-      localObject = ((MessageProxy)paramObject).getListener(this);
-      if ((localObject != null) && 
-        (!_send(localObject)) && 
-        ((localObject instanceof MessageListener))) {
-        localObject = ((MessageListener)localObject).getParentListener(this);
-        if (localObject != null) {
-          _send(localObject);
-        }
-      }
-    }
-    else if ((paramObject instanceof MessageProxy)) {
-      localObject = ((MessageProxy)paramObject).getListener(this);
-      if (localObject != null)
-        sendToObject(localObject);
-    } else if ((!_send(paramObject)) && 
-      ((paramObject instanceof MessageListener))) {
-      localObject = ((MessageListener)paramObject).getParentListener(this);
-      if (localObject != null)
-        _send(localObject);
-    }
-  }
-
-  private final boolean _send(Object paramObject)
-  {
-    if (((paramObject instanceof Destroy)) && (((Destroy)paramObject).isDestroyed())) {
-      return true;
-    }
-
-    try
+    public final boolean busy()
     {
-      return invokeListener(paramObject);
-    } catch (Exception localException) {
-      localException.printStackTrace();
+        return (_flags & 1) != 0;
     }
-    return true;
-  }
+
+    public final boolean incache()
+    {
+        return (_flags & 2) != 0;
+    }
+
+    public final boolean isRealTime()
+    {
+        return (_flags & 0x40) != 0;
+    }
+
+    public final java.lang.Object listener()
+    {
+        return _listener;
+    }
+
+    public final long time()
+    {
+        return _time;
+    }
+
+    public final int tickPos()
+    {
+        return _tickPos;
+    }
+
+    public final java.lang.Object sender()
+    {
+        return _sender;
+    }
+
+    public final int flags()
+    {
+        return _flags;
+    }
+
+    public final void setFlags(int i)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _flags = i & -8 | _flags & 7;
+            return;
+        }
+    }
+
+    public final void setNotCleanAfterSend()
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _flags &= -5;
+            return;
+        }
+    }
+
+    public final void setListener(java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _listener = obj;
+            return;
+        }
+    }
+
+    public final void setTime(long l)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _time = l;
+            return;
+        }
+    }
+
+    public final void setTickPos(int i)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _tickPos = i;
+            return;
+        }
+    }
+
+    public final void setSender(java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _sender = obj;
+            return;
+        }
+    }
+
+    public Message()
+    {
+        _flags = 4;
+        _listener = null;
+        _time = com.maddox.rts.Time.current();
+        _tickPos = 0;
+        _sender = null;
+    }
+
+    public void clean()
+    {
+        _listener = null;
+        _sender = null;
+        _tickPos = 0;
+        _flags &= 7;
+    }
+
+    public void remove()
+    {
+        if((_flags & 1) == 0)
+            return;
+        if((_flags & 0x40) != 0)
+        {
+            if(!com.maddox.rts.RTSConf.cur.queueRealTime.remove(this) && (_flags & 8) != 0)
+                com.maddox.rts.RTSConf.cur.queueRealTimeNextTick.remove(this);
+        } else
+        if(!com.maddox.rts.RTSConf.cur.queue.remove(this) && (_flags & 8) != 0)
+            com.maddox.rts.RTSConf.cur.queueNextTick.remove(this);
+    }
+
+    public static com.maddox.rts.Message current()
+    {
+        return com.maddox.rts.RTSConf.cur.message;
+    }
+
+    public static long currentTime(boolean flag)
+    {
+        if(com.maddox.rts.RTSConf.cur.message == null)
+            if(flag)
+                return com.maddox.rts.Time.currentReal();
+            else
+                return com.maddox.rts.Time.current();
+        if((com.maddox.rts.RTSConf.cur.message._flags & 0x40) != 0)
+            if(flag)
+                return com.maddox.rts.RTSConf.cur.message._time;
+            else
+                return com.maddox.rts.Time.fromReal(com.maddox.rts.RTSConf.cur.message._time);
+        if(flag)
+            return com.maddox.rts.Time.toReal(com.maddox.rts.RTSConf.cur.message._time);
+        else
+            return com.maddox.rts.RTSConf.cur.message._time;
+    }
+
+    public static long currentRealTime()
+    {
+        if(com.maddox.rts.RTSConf.cur.message == null)
+            return com.maddox.rts.Time.currentReal();
+        if((com.maddox.rts.RTSConf.cur.message._flags & 0x40) != 0)
+            return com.maddox.rts.RTSConf.cur.message._time;
+        else
+            return com.maddox.rts.Time.toReal(com.maddox.rts.RTSConf.cur.message._time);
+    }
+
+    public static long currentGameTime()
+    {
+        if(com.maddox.rts.RTSConf.cur.message == null)
+            return com.maddox.rts.Time.current();
+        if((com.maddox.rts.RTSConf.cur.message._flags & 0x40) != 0)
+            return com.maddox.rts.Time.fromReal(com.maddox.rts.RTSConf.cur.message._time);
+        else
+            return com.maddox.rts.RTSConf.cur.message._time;
+    }
+
+    private com.maddox.rts.MessageQueue selectQueue()
+    {
+        if((_flags & 0x48) == 0)
+            return com.maddox.rts.RTSConf.cur.queue;
+        if((_flags & 0x40) == 0)
+            return com.maddox.rts.RTSConf.cur.queueNextTick;
+        if((_flags & 8) != 0)
+            return com.maddox.rts.RTSConf.cur.queueRealTimeNextTick;
+        else
+            return com.maddox.rts.RTSConf.cur.queueRealTime;
+    }
+
+    private com.maddox.rts.MessageQueue selectQueue(int i)
+    {
+        if((i & 0x48) == 0)
+            return com.maddox.rts.RTSConf.cur.queue;
+        if((i & 0x40) == 0)
+            return com.maddox.rts.RTSConf.cur.queueNextTick;
+        if((i & 8) != 0)
+            return com.maddox.rts.RTSConf.cur.queueRealTimeNextTick;
+        else
+            return com.maddox.rts.RTSConf.cur.queueRealTime;
+    }
+
+    public static long s2ms(int i, double d)
+    {
+        long l = (i & 0x40) == 0 ? com.maddox.rts.Time.current() : com.maddox.rts.Time.currentReal();
+        return l + (long)(d * 1000D + 0.5D);
+    }
+
+    public void post(java.lang.Object obj, long l, int i, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, obj, l, i, obj1);
+    }
+
+    public void post(java.lang.Object obj, double d, int i, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, obj, com.maddox.rts.Message.s2ms(_flags, d), i, obj1);
+    }
+
+    public void post(int i, java.lang.Object obj, long l, int j, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, obj, l, j, obj1);
+    }
+
+    public void post(int i, java.lang.Object obj, double d, int j, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, obj, com.maddox.rts.Message.s2ms(i, d), j, obj1);
+    }
+
+    public void post(java.lang.Object obj, long l, int i)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, obj, l, i);
+    }
+
+    public void post(java.lang.Object obj, double d, int i)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, obj, com.maddox.rts.Message.s2ms(_flags, d), i);
+    }
+
+    public void post(int i, java.lang.Object obj, long l, int j)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, obj, l, j);
+    }
+
+    public void post(int i, java.lang.Object obj, double d, int j)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, obj, com.maddox.rts.Message.s2ms(i, d), j);
+    }
+
+    public void post(java.lang.Object obj, long l, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, obj, l, obj1);
+    }
+
+    public void post(java.lang.Object obj, double d, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, obj, com.maddox.rts.Message.s2ms(_flags, d), obj1);
+    }
+
+    public void post(int i, java.lang.Object obj, long l, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, obj, l, obj1);
+    }
+
+    public void post(int i, java.lang.Object obj, double d, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, obj, com.maddox.rts.Message.s2ms(i, d), obj1);
+    }
+
+    public void post(java.lang.Object obj, int i, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, obj, i, obj1);
+    }
+
+    public void post(int i, java.lang.Object obj, int j, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, obj, j, obj1);
+    }
+
+    public void post(long l, int i, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, l, i, obj);
+    }
+
+    public void post(double d, int i, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, com.maddox.rts.Message.s2ms(_flags, d), i, obj);
+    }
+
+    public void post(int i, long l, int j, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, l, j, obj);
+    }
+
+    public void post(int i, double d, int j, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, com.maddox.rts.Message.s2ms(i, d), j, obj);
+    }
+
+    public void post(long l, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, l, obj);
+    }
+
+    public void post(double d, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, com.maddox.rts.Message.s2ms(_flags, d), obj);
+    }
+
+    public void post(int i, long l, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, l, obj);
+    }
+
+    public void post(int i, double d, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, com.maddox.rts.Message.s2ms(i, d), obj);
+    }
+
+    public void post(int i, int j, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, j, obj);
+    }
+
+    public void post(long l, int i)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, l, i);
+    }
+
+    public void post(double d, int i)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, com.maddox.rts.Message.s2ms(_flags, d), i);
+    }
+
+    public void post(int i, long l, int j)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, l, j);
+    }
+
+    public void post(int i, double d, int j)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, com.maddox.rts.Message.s2ms(i, d), j);
+    }
+
+    public void post(long l)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, l);
+    }
+
+    public void post(double d)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, com.maddox.rts.Message.s2ms(_flags, d));
+    }
+
+    public void post(int i, long l)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, l);
+    }
+
+    public void post(int i, double d)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, com.maddox.rts.Message.s2ms(i, d));
+    }
+
+    public void post(int i, int j)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, j);
+    }
+
+    public void post(int i)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this);
+    }
+
+    public void post(java.lang.Object obj, long l)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, obj, l);
+    }
+
+    public void post(java.lang.Object obj, double d)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, obj, com.maddox.rts.Message.s2ms(_flags, d));
+    }
+
+    public void post(int i, java.lang.Object obj, long l)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, obj, l);
+    }
+
+    public void post(int i, java.lang.Object obj, double d)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, obj, com.maddox.rts.Message.s2ms(i, d));
+    }
+
+    public void post(java.lang.Object obj, int i)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, obj, i);
+    }
+
+    public void post(int i, java.lang.Object obj, int j)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, obj, j);
+    }
+
+    public void post(java.lang.Object obj, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, obj, obj1);
+    }
+
+    public void post(int i, java.lang.Object obj, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, obj, obj1);
+    }
+
+    public void post(java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this, obj);
+    }
+
+    public void post(int i, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue(i).put(i, this, obj);
+    }
+
+    public void post()
+        throws com.maddox.rts.MessageException
+    {
+        selectQueue().put(this);
+    }
+
+    public void send(java.lang.Object obj, long l, int i, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _listener = obj;
+            _time = l;
+            _tickPos = i;
+            _sender = obj1;
+            trySend();
+            return;
+        }
+    }
+
+    public void send(java.lang.Object obj, long l, int i)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _listener = obj;
+            _time = l;
+            _tickPos = i;
+            trySend();
+            return;
+        }
+    }
+
+    public void send(java.lang.Object obj, long l, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _listener = obj;
+            _time = l;
+            _sender = obj1;
+            trySend();
+            return;
+        }
+    }
+
+    public void send(java.lang.Object obj, int i, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _listener = obj;
+            _tickPos = i;
+            _sender = obj1;
+            trySend();
+            return;
+        }
+    }
+
+    public void send(long l, int i, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _time = l;
+            _tickPos = i;
+            _sender = obj;
+            trySend();
+            return;
+        }
+    }
+
+    public void send(int i, java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _tickPos = i;
+            _sender = obj;
+            trySend();
+            return;
+        }
+    }
+
+    public void send(java.lang.Object obj, long l)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _listener = obj;
+            _time = l;
+            trySend();
+            return;
+        }
+    }
+
+    public void send(java.lang.Object obj, int i)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _listener = obj;
+            _tickPos = i;
+            trySend();
+            return;
+        }
+    }
+
+    public void send(java.lang.Object obj, java.lang.Object obj1)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _listener = obj;
+            _sender = obj1;
+            trySend();
+            return;
+        }
+    }
+
+    public void send(java.lang.Object obj)
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            _listener = obj;
+            trySend();
+            return;
+        }
+    }
+
+    public void send()
+        throws com.maddox.rts.MessageException
+    {
+        if((_flags & 1) != 0)
+        {
+            throw new MessageException("message is busy");
+        } else
+        {
+            trySend();
+            return;
+        }
+    }
+
+    public boolean invokeListener(java.lang.Object obj)
+    {
+        return true;
+    }
+
+    protected final synchronized void trySend()
+    {
+        com.maddox.rts.Message message = com.maddox.rts.RTSConf.cur.message;
+        com.maddox.rts.RTSConf.cur.message = this;
+        com.maddox.rts.RTSConf.cur.profile.countMessages++;
+        try
+        {
+            sendTo(_listener);
+        }
+        catch(java.lang.Exception exception)
+        {
+            if((_flags & 6) != 0)
+                clean();
+            _flags &= -2;
+            if(!(exception instanceof java.lang.NullPointerException))
+                exception.printStackTrace();
+        }
+        com.maddox.rts.RTSConf.cur.message = message;
+    }
+
+    private final void sendTo(java.lang.Object obj)
+    {
+        if(obj instanceof java.lang.Object[])
+        {
+            sendToArray(obj);
+            if((_flags & 6) != 0)
+                clean();
+            _flags &= -2;
+        } else
+        {
+            _flags &= -2;
+            sendToObject(obj);
+            if((_flags & 1) == 0 && (_flags & 6) != 0)
+                clean();
+        }
+    }
+
+    private final void sendToArray(java.lang.Object obj)
+    {
+        int j = ((java.lang.Object[])(java.lang.Object[])obj).length;
+        for(int i = 0; i < j; i++)
+        {
+            java.lang.Object obj1 = ((java.lang.Object[])(java.lang.Object[])obj)[i];
+            if(obj1 != null)
+                sendToObject(obj1);
+        }
+
+    }
+
+    private final void sendToObject(java.lang.Object obj)
+    {
+        if(obj instanceof com.maddox.rts.MessageComponent)
+        {
+            java.lang.Object obj1 = ((com.maddox.rts.MessageComponent)obj).getSwitchListener(this);
+            if(obj1 != null)
+            {
+                if(obj1 == obj)
+                {
+                    _send(obj1);
+                    return;
+                }
+                if(obj1 instanceof com.maddox.rts.MessageProxy)
+                {
+                    obj1 = ((com.maddox.rts.MessageProxy)obj1).getListener(this);
+                    if(obj1 != null && !_send(obj1) && (obj1 instanceof com.maddox.rts.MessageListener))
+                    {
+                        obj1 = ((com.maddox.rts.MessageListener)obj1).getParentListener(this);
+                        if(obj1 != null)
+                            _send(obj1);
+                    }
+                } else
+                {
+                    sendToObject(obj1);
+                }
+            }
+        } else
+        if(obj instanceof com.maddox.rts.States)
+        {
+            java.lang.Object obj2 = ((com.maddox.rts.MessageProxy)obj).getListener(this);
+            if(obj2 != null && !_send(obj2) && (obj2 instanceof com.maddox.rts.MessageListener))
+            {
+                obj2 = ((com.maddox.rts.MessageListener)obj2).getParentListener(this);
+                if(obj2 != null)
+                    _send(obj2);
+            }
+        } else
+        if(obj instanceof com.maddox.rts.MessageProxy)
+        {
+            java.lang.Object obj3 = ((com.maddox.rts.MessageProxy)obj).getListener(this);
+            if(obj3 != null)
+                sendToObject(obj3);
+        } else
+        if(!_send(obj) && (obj instanceof com.maddox.rts.MessageListener))
+        {
+            java.lang.Object obj4 = ((com.maddox.rts.MessageListener)obj).getParentListener(this);
+            if(obj4 != null)
+                _send(obj4);
+        }
+    }
+
+    private final boolean _send(java.lang.Object obj)
+    {
+        if((obj instanceof com.maddox.rts.Destroy) && ((com.maddox.rts.Destroy)obj).isDestroyed())
+            return true;
+        return invokeListener(obj);
+        java.lang.Exception exception;
+        exception;
+        exception.printStackTrace();
+        return true;
+    }
+
+    public static final java.lang.String ERR_BUSY = "message is busy";
+    public static final int BUSY = 1;
+    public static final int IN_CACHE = 2;
+    public static final int CLEAR_AFTER_SEND = 4;
+    public static final int NEXT_TICK = 8;
+    public static final int CLEAR_TIME = 16;
+    public static final int END_TICK_TIME = 32;
+    public static final int REAL_TIME = 64;
+    public static final int SYS_FLAGS = 7;
+    protected int _flags;
+    protected java.lang.Object _listener;
+    protected long _time;
+    protected int _tickPos;
+    protected long _queueStamp;
+    protected java.lang.Object _sender;
 }

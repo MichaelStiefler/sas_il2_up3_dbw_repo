@@ -1,34 +1,52 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowLabel.java
+
 package com.maddox.gwindow;
 
-public class GWindowLabel extends GWindowDialogControl
+
+// Referenced classes of package com.maddox.gwindow:
+//            GWindowDialogControl, GCaption, GWindowLookAndFeel, GSize, 
+//            GRegion, GWindow
+
+public class GWindowLabel extends com.maddox.gwindow.GWindowDialogControl
 {
-  public boolean isMousePassThrough(float paramFloat1, float paramFloat2)
-  {
-    return true;
-  }
 
-  public void render() {
-    lookAndFeel().render(this);
-  }
-  public GSize getMinSize(GSize paramGSize) {
-    return lookAndFeel().getMinSize(this, paramGSize);
-  }
-  public GRegion getClientRegion(GRegion paramGRegion, float paramFloat) {
-    return lookAndFeel().getClientRegion(this, paramGRegion, paramFloat);
-  }
+    public boolean isMousePassThrough(float f, float f1)
+    {
+        return true;
+    }
 
-  public GWindowLabel(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, String paramString1, String paramString2)
-  {
-    this.cap = new GCaption(paramString1);
-    this.toolTip = paramString2;
-    this.align = 0;
-    doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, paramFloat4, true);
-  }
+    public void render()
+    {
+        lookAndFeel().render(this);
+    }
 
-  public GWindowLabel(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, String paramString1, String paramString2, int paramInt) {
-    this.cap = new GCaption(paramString1);
-    this.toolTip = paramString2;
-    this.align = paramInt;
-    doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, paramFloat4, true);
-  }
+    public com.maddox.gwindow.GSize getMinSize(com.maddox.gwindow.GSize gsize)
+    {
+        return lookAndFeel().getMinSize(this, gsize);
+    }
+
+    public com.maddox.gwindow.GRegion getClientRegion(com.maddox.gwindow.GRegion gregion, float f)
+    {
+        return lookAndFeel().getClientRegion(this, gregion, f);
+    }
+
+    public GWindowLabel(com.maddox.gwindow.GWindow gwindow, float f, float f1, float f2, float f3, java.lang.String s, java.lang.String s1)
+    {
+        cap = new GCaption(s);
+        toolTip = s1;
+        align = 0;
+        doNew(gwindow, f, f1, f2, f3, true);
+    }
+
+    public GWindowLabel(com.maddox.gwindow.GWindow gwindow, float f, float f1, float f2, float f3, java.lang.String s, java.lang.String s1, 
+            int i)
+    {
+        cap = new GCaption(s);
+        toolTip = s1;
+        align = i;
+        doNew(gwindow, f, f1, f2, f3, true);
+    }
 }

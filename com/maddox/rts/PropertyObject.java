@@ -1,28 +1,106 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Property.java
+
 package com.maddox.rts;
 
-class PropertyObject extends Property
+
+// Referenced classes of package com.maddox.rts:
+//            Property
+
+class PropertyObject extends com.maddox.rts.Property
 {
-  private Object value = null;
 
-  public PropertyObject(Object paramObject, String paramString) { super(paramObject, paramString);
-    invokeObserver(lastMapInt, lastAction); }
+    public PropertyObject(java.lang.Object obj, java.lang.String s)
+    {
+        super(obj, s);
+        value = null;
+        invokeObserver(lastMapInt, lastAction);
+    }
 
-  public PropertyObject(Object paramObject1, String paramString, Object paramObject2) {
-    super(paramObject1, paramString);
-    this.value = paramObject2;
-    invokeObserver(lastMapInt, lastAction);
-  }
-  public Class classValue() { if (this.value == null) return Object.class; return this.value.getClass(); } 
-  public int intValue() { if ((this.value instanceof Number)) return ((Number)this.value).intValue(); return super.intValue(); } 
-  public float floatValue() { if ((this.value instanceof Number)) return ((Number)this.value).floatValue(); return super.floatValue(); } 
-  public long longValue() { if ((this.value instanceof Number)) return ((Number)this.value).longValue(); return super.longValue(); } 
-  public double doubleValue() { if ((this.value instanceof Number)) return ((Number)this.value).doubleValue(); return super.doubleValue(); } 
-  public Object value() { return this.value; } 
-  public String stringValue() { return this.value == null ? null : this.value.toString(); } 
-  public void set(int paramInt) { this.value = new Integer(paramInt); } 
-  public void set(float paramFloat) { this.value = new Float(paramFloat); } 
-  public void set(long paramLong) { this.value = new Long(paramLong); } 
-  public void set(double paramDouble) { this.value = new Double(paramDouble); } 
-  public void set(Object paramObject) { this.value = paramObject;
-  }
+    public PropertyObject(java.lang.Object obj, java.lang.String s, java.lang.Object obj1)
+    {
+        super(obj, s);
+        value = null;
+        value = obj1;
+        invokeObserver(lastMapInt, lastAction);
+    }
+
+    public java.lang.Class classValue()
+    {
+        if(value == null)
+            return java.lang.Object.class;
+        else
+            return value.getClass();
+    }
+
+    public int intValue()
+    {
+        if(value instanceof java.lang.Number)
+            return ((java.lang.Number)value).intValue();
+        else
+            return super.intValue();
+    }
+
+    public float floatValue()
+    {
+        if(value instanceof java.lang.Number)
+            return ((java.lang.Number)value).floatValue();
+        else
+            return super.floatValue();
+    }
+
+    public long longValue()
+    {
+        if(value instanceof java.lang.Number)
+            return ((java.lang.Number)value).longValue();
+        else
+            return super.longValue();
+    }
+
+    public double doubleValue()
+    {
+        if(value instanceof java.lang.Number)
+            return ((java.lang.Number)value).doubleValue();
+        else
+            return super.doubleValue();
+    }
+
+    public java.lang.Object value()
+    {
+        return value;
+    }
+
+    public java.lang.String stringValue()
+    {
+        return value != null ? value.toString() : null;
+    }
+
+    public void set(int i)
+    {
+        value = new Integer(i);
+    }
+
+    public void set(float f)
+    {
+        value = new Float(f);
+    }
+
+    public void set(long l)
+    {
+        value = new Long(l);
+    }
+
+    public void set(double d)
+    {
+        value = new Double(d);
+    }
+
+    public void set(java.lang.Object obj)
+    {
+        value = obj;
+    }
+
+    private java.lang.Object value;
 }

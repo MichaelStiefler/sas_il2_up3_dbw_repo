@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Zuti_WManageAircrafts.java
+
 package com.maddox.il2.builder;
 
 import com.maddox.gwindow.GFont;
@@ -12,17 +17,12 @@ import com.maddox.gwindow.GWindowEditControl;
 import com.maddox.gwindow.GWindowFramed;
 import com.maddox.gwindow.GWindowLabel;
 import com.maddox.gwindow.GWindowLookAndFeel;
+import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
+import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.game.I18N;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.ZutiAircraft;
-import com.maddox.il2.objects.air.Scheme1;
-import com.maddox.il2.objects.air.TypeBomber;
-import com.maddox.il2.objects.air.TypeDiveBomber;
-import com.maddox.il2.objects.air.TypeFighter;
-import com.maddox.il2.objects.air.TypeSailPlane;
-import com.maddox.il2.objects.air.TypeScout;
-import com.maddox.il2.objects.air.TypeStormovik;
 import com.maddox.rts.LDRres;
 import com.maddox.rts.Property;
 import com.maddox.rts.RTSConf;
@@ -32,752 +32,816 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class Zuti_WManageAircrafts extends GWindowFramed
+// Referenced classes of package com.maddox.il2.builder:
+//            Zuti_WAircraftLoadout, Plugin, PlMission, Builder, 
+//            PlMisBorn
+
+public class Zuti_WManageAircrafts extends com.maddox.gwindow.GWindowFramed
 {
-  Table lstAvailable;
-  Table lstInReserve;
-  GWindowButton bAddAll;
-  GWindowButton bAdd;
-  GWindowButton bRemAll;
-  GWindowButton bRem;
-  GWindowButton bModifyPlane;
-  GWindowLabel lSeparate;
-  GWindowBoxSeparate bSeparate;
-  GWindowLabel lCountry;
-  GWindowComboControl cCountry;
-  static ArrayList lstCountry = new ArrayList();
-  GWindowButton bCountryAdd;
-  GWindowButton bCountryRem;
-  GWindowLabel lYear;
-  GWindowComboControl cYear;
-  static ArrayList lstYear = new ArrayList();
-  GWindowButton bYearAdd;
-  GWindowButton bYearRem;
-  GWindowLabel lType;
-  GWindowComboControl cType;
-  static ArrayList lstType = new ArrayList();
-  GWindowButton bTypeAdd;
-  GWindowButton bTypeRem;
-  private ArrayList airNames = null;
-  private GWindowEditControl parentEditControl = null;
-  public Zuti_WAircraftLoadout zutiCapturedAcLoadouts = null;
+    static class Item
+    {
 
-  private static boolean showAI = false;
+        public java.lang.String name;
 
-  public void windowShown()
-  {
-    super.windowShown();
-  }
-
-  public void windowHidden()
-  {
-    super.windowHidden();
-    setShowAIPlanes(false);
-  }
-
-  public void created()
-  {
-    this.bAlwaysOnTop = true;
-    super.created();
-    this.title = Plugin.i18n("mds.zAircrafts.title");
-    this.clientWindow = create(new GWindowDialogClient()
-    {
-      public void resized()
-      {
-        super.resized();
-        Zuti_WManageAircrafts.this.setAircraftSizes(this);
-      }
-    });
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.clientWindow;
-
-    this.lstAvailable = new Table(localGWindowDialogClient, Plugin.i18n("bplace_planes"), 1.0F, 1.0F, 6.0F, 10.0F);
-    this.lstInReserve = new Table(localGWindowDialogClient, Plugin.i18n("bplace_list"), 14.0F, 1.0F, 6.0F, 10.0F);
-    localGWindowDialogClient.addControl(this.bAddAll = new GWindowButton(localGWindowDialogClient, 8.0F, 1.0F, 5.0F, 2.0F, Plugin.i18n("bplace_addall"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) {
-          return false;
-        }
-        Zuti_WManageAircrafts.this.lstAvailable.lst.clear();
-        Zuti_WManageAircrafts.this.addAllAircraft(Zuti_WManageAircrafts.this.lstAvailable.lst);
-        Zuti_WManageAircrafts.this.fillTabAircraft();
-        return true;
-      }
-    });
-    localGWindowDialogClient.addControl(this.bAdd = new GWindowButton(localGWindowDialogClient, 8.0F, 3.0F, 5.0F, 2.0F, Plugin.i18n("bplace_add"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) {
-          return false;
-        }
-        int i = Zuti_WManageAircrafts.this.lstInReserve.selectRow;
-        if ((i < 0) || (i >= Zuti_WManageAircrafts.this.lstInReserve.lst.size())) {
-          return true;
-        }
-        Zuti_WManageAircrafts.this.lstAvailable.lst.add(Zuti_WManageAircrafts.this.lstInReserve.lst.get(i));
-        Zuti_WManageAircrafts.this.fillTabAircraft();
-        return true;
-      }
-    });
-    localGWindowDialogClient.addControl(this.bRemAll = new GWindowButton(localGWindowDialogClient, 8.0F, 6.0F, 5.0F, 2.0F, Plugin.i18n("bplace_delall"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) {
-          return false;
-        }
-        Zuti_WManageAircrafts.this.lstAvailable.lst.clear();
-        Zuti_WManageAircrafts.this.fillTabAircraft();
-        return true;
-      }
-    });
-    localGWindowDialogClient.addControl(this.bRem = new GWindowButton(localGWindowDialogClient, 8.0F, 8.0F, 5.0F, 2.0F, Plugin.i18n("bplace_del"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) return false;
-        int i = Zuti_WManageAircrafts.this.lstAvailable.selectRow;
-        if ((i < 0) || (i >= Zuti_WManageAircrafts.this.lstAvailable.lst.size())) return true;
-        Zuti_WManageAircrafts.this.lstAvailable.lst.remove(i);
-        Zuti_WManageAircrafts.this.fillTabAircraft();
-        return true;
-      }
-    });
-    localGWindowDialogClient.addControl(this.bModifyPlane = new GWindowButton(localGWindowDialogClient, 8.0F, 12.0F, 5.0F, 2.0F, Plugin.i18n("mds.aircraft.modify"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) {
-          return false;
-        }
-        if (Zuti_WManageAircrafts.this.zutiCapturedAcLoadouts == null) {
-          return false;
-        }
-        if (!Zuti_WManageAircrafts.this.zutiCapturedAcLoadouts.isVisible())
+        public Item(java.lang.String s)
         {
-          if ((Zuti_WManageAircrafts.this.lstAvailable.selectRow < 0) || (Zuti_WManageAircrafts.this.lstAvailable.selectRow >= Zuti_WManageAircrafts.this.lstAvailable.lst.size())) {
-            return true;
-          }
+            name = s;
+        }
+    }
 
-          Zuti_WManageAircrafts.this.zutiCapturedAcLoadouts.setSelectedAircraft((String)Zuti_WManageAircrafts.this.lstAvailable.lst.get(Zuti_WManageAircrafts.this.lstAvailable.selectRow));
-          Zuti_WManageAircrafts.this.zutiCapturedAcLoadouts.setTitle((String)Zuti_WManageAircrafts.this.lstAvailable.lst.get(Zuti_WManageAircrafts.this.lstAvailable.selectRow));
-          Zuti_WManageAircrafts.this.zutiCapturedAcLoadouts.showWindow();
-          return true;
+    class Table extends com.maddox.gwindow.GWindowTable
+    {
+
+        public int countRows()
+        {
+            return lst == null ? 0 : lst.size();
         }
 
-        return true;
-      }
-    });
-    localGWindowDialogClient.addLabel(this.lSeparate = new GWindowLabel(localGWindowDialogClient, 3.0F, 12.0F, 12.0F, 1.6F, " " + Plugin.i18n("bplace_cats") + " ", null));
-    this.bSeparate = new GWindowBoxSeparate(localGWindowDialogClient, 1.0F, 12.5F, 27.0F, 8.0F);
-    this.bSeparate.exclude = this.lSeparate;
-    localGWindowDialogClient.addLabel(this.lCountry = new GWindowLabel(localGWindowDialogClient, 2.0F, 14.0F, 7.0F, 1.6F, Plugin.i18n("bplace_country"), null));
-    localGWindowDialogClient.addControl(this.cCountry = new GWindowComboControl(localGWindowDialogClient, 9.0F, 14.0F, 7.0F)
+        public java.lang.Object getValueAt(int i, int j)
+        {
+            if(lst == null)
+                return null;
+            if(i < 0 || i >= lst.size())
+            {
+                return null;
+            } else
+            {
+                java.lang.String s = (java.lang.String)lst.get(i);
+                return com.maddox.il2.game.I18N.plane(s);
+            }
+        }
+
+        public void resolutionChanged()
+        {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
+        }
+
+        public java.util.ArrayList lst;
+
+        public Table(com.maddox.gwindow.GWindow gwindow, java.lang.String s, float f, float f1, float f2, float f3)
+        {
+            super(gwindow, f, f1, f2, f3);
+            lst = new ArrayList();
+            bColumnsSizable = false;
+            addColumn(s, null);
+            vSB.scroll = rowHeight(0);
+            resized();
+        }
+    }
+
+
+    public void windowShown()
     {
-      public void afterCreated()
-      {
+        super.windowShown();
+    }
+
+    public void windowHidden()
+    {
+        super.windowHidden();
+    }
+
+    public void created()
+    {
+        bAlwaysOnTop = true;
+        super.created();
+        title = com.maddox.il2.builder.Plugin.i18n("mds.zAircrafts.title");
+        clientWindow = create(new com.maddox.gwindow.GWindowDialogClient() {
+
+            public void resized()
+            {
+                super.resized();
+                setAircraftSizes(this);
+            }
+
+        }
+);
+        com.maddox.gwindow.GWindowDialogClient gwindowdialogclient = (com.maddox.gwindow.GWindowDialogClient)clientWindow;
+        lstAvailable = new Table(gwindowdialogclient, com.maddox.il2.builder.Plugin.i18n("bplace_planes"), 1.0F, 1.0F, 6F, 10F);
+        lstInReserve = new Table(gwindowdialogclient, com.maddox.il2.builder.Plugin.i18n("bplace_list"), 14F, 1.0F, 6F, 10F);
+        gwindowdialogclient.addControl(bAddAll = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 8F, 1.0F, 5F, 2.0F, com.maddox.il2.builder.Plugin.i18n("bplace_addall"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                {
+                    return false;
+                } else
+                {
+                    lstAvailable.lst.clear();
+                    addAllAircraft(lstAvailable.lst);
+                    fillTabAircraft();
+                    return true;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bAdd = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 8F, 3F, 5F, 2.0F, com.maddox.il2.builder.Plugin.i18n("bplace_add"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                    return false;
+                int k = lstInReserve.selectRow;
+                if(k < 0 || k >= lstInReserve.lst.size())
+                {
+                    return true;
+                } else
+                {
+                    lstAvailable.lst.add(lstInReserve.lst.get(k));
+                    fillTabAircraft();
+                    return true;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bRemAll = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 8F, 6F, 5F, 2.0F, com.maddox.il2.builder.Plugin.i18n("bplace_delall"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                {
+                    return false;
+                } else
+                {
+                    lstAvailable.lst.clear();
+                    fillTabAircraft();
+                    return true;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bRem = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 8F, 8F, 5F, 2.0F, com.maddox.il2.builder.Plugin.i18n("bplace_del"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                    return false;
+                int k = lstAvailable.selectRow;
+                if(k < 0 || k >= lstAvailable.lst.size())
+                {
+                    return true;
+                } else
+                {
+                    lstAvailable.lst.remove(k);
+                    fillTabAircraft();
+                    return true;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bModifyPlane = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 8F, 12F, 5F, 2.0F, com.maddox.il2.builder.Plugin.i18n("mds.aircraft.modify"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                    return false;
+                if(zutiCapturedAcLoadouts == null)
+                    return false;
+                if(!zutiCapturedAcLoadouts.isVisible())
+                {
+                    if(lstAvailable.selectRow < 0 || lstAvailable.selectRow >= lstAvailable.lst.size())
+                    {
+                        return true;
+                    } else
+                    {
+                        zutiCapturedAcLoadouts.setSelectedAircraft((java.lang.String)lstAvailable.lst.get(lstAvailable.selectRow));
+                        zutiCapturedAcLoadouts.setTitle((java.lang.String)lstAvailable.lst.get(lstAvailable.selectRow));
+                        zutiCapturedAcLoadouts.showWindow();
+                        return true;
+                    }
+                } else
+                {
+                    return true;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addLabel(lSeparate = new GWindowLabel(gwindowdialogclient, 3F, 12F, 12F, 1.6F, " " + com.maddox.il2.builder.Plugin.i18n("bplace_cats") + " ", null));
+        bSeparate = new GWindowBoxSeparate(gwindowdialogclient, 1.0F, 12.5F, 27F, 8F);
+        bSeparate.exclude = lSeparate;
+        gwindowdialogclient.addLabel(lCountry = new GWindowLabel(gwindowdialogclient, 2.0F, 14F, 7F, 1.6F, com.maddox.il2.builder.Plugin.i18n("bplace_country"), null));
+        gwindowdialogclient.addControl(cCountry = new com.maddox.gwindow.GWindowComboControl(gwindowdialogclient, 9F, 14F, 7F) {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                setEditable(false);
+                java.util.ResourceBundle resourcebundle = java.util.ResourceBundle.getBundle("i18n/country", com.maddox.rts.RTSConf.cur.locale, com.maddox.rts.LDRres.loader());
+                java.util.TreeMap treemap = new TreeMap();
+                java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().airClasses;
+                for(int i = 0; i < arraylist.size(); i++)
+                {
+                    java.lang.Class class1 = (java.lang.Class)arraylist.get(i);
+                    if(!com.maddox.rts.Property.containsValue(class1, "cockpitClass"))
+                        continue;
+                    java.lang.String s1 = com.maddox.rts.Property.stringValue(class1, "originCountry", null);
+                    if(s1 == null)
+                        continue;
+                    java.lang.String s3;
+                    try
+                    {
+                        s3 = resourcebundle.getString(s1);
+                    }
+                    catch(java.lang.Exception exception)
+                    {
+                        continue;
+                    }
+                    treemap.put(s3, s1);
+                }
+
+                java.lang.String s;
+                for(java.util.Iterator iterator = treemap.keySet().iterator(); iterator.hasNext(); add(s))
+                {
+                    s = (java.lang.String)iterator.next();
+                    java.lang.String s2 = (java.lang.String)treemap.get(s);
+                    com.maddox.il2.builder.Zuti_WManageAircrafts.lstCountry.add(s2);
+                }
+
+                if(com.maddox.il2.builder.Zuti_WManageAircrafts.lstCountry.size() > 0)
+                    setSelected(0, true, false);
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bCountryAdd = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 17F, 14F, 5F, 1.6F, com.maddox.il2.builder.Plugin.i18n("bplace_add"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                    return false;
+                java.lang.String s = (java.lang.String)com.maddox.il2.builder.Zuti_WManageAircrafts.lstCountry.get(cCountry.getSelected());
+                java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().airClasses;
+                for(int k = 0; k < arraylist.size(); k++)
+                {
+                    java.lang.Class class1 = (java.lang.Class)arraylist.get(k);
+                    if(!com.maddox.rts.Property.containsValue(class1, "cockpitClass") || !s.equals(com.maddox.rts.Property.stringValue(class1, "originCountry", null)))
+                        continue;
+                    java.lang.String s1 = com.maddox.rts.Property.stringValue(class1, "keyName");
+                    if(!lstAvailable.lst.contains(s1))
+                        lstAvailable.lst.add(s1);
+                }
+
+                fillTabAircraft();
+                return true;
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bCountryRem = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 22F, 14F, 5F, 1.6F, com.maddox.il2.builder.Plugin.i18n("bplace_del"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                    return false;
+                java.lang.String s = (java.lang.String)com.maddox.il2.builder.Zuti_WManageAircrafts.lstCountry.get(cCountry.getSelected());
+                java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().airClasses;
+                for(int k = 0; k < arraylist.size(); k++)
+                {
+                    java.lang.Class class1 = (java.lang.Class)arraylist.get(k);
+                    if(!com.maddox.rts.Property.containsValue(class1, "cockpitClass") || !s.equals(com.maddox.rts.Property.stringValue(class1, "originCountry", null)))
+                        continue;
+                    java.lang.String s1 = com.maddox.rts.Property.stringValue(class1, "keyName");
+                    int l = lstAvailable.lst.indexOf(s1);
+                    if(l >= 0)
+                        lstAvailable.lst.remove(l);
+                }
+
+                fillTabAircraft();
+                return true;
+            }
+
+        }
+);
+        gwindowdialogclient.addLabel(lYear = new GWindowLabel(gwindowdialogclient, 2.0F, 16F, 7F, 1.6F, com.maddox.il2.builder.Plugin.i18n("bplace_year"), null));
+        gwindowdialogclient.addControl(cYear = new com.maddox.gwindow.GWindowComboControl(gwindowdialogclient, 9F, 16F, 7F) {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                setEditable(false);
+                java.util.TreeMap treemap = new TreeMap();
+                java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().airClasses;
+                for(int i = 0; i < arraylist.size(); i++)
+                {
+                    java.lang.Class class1 = (java.lang.Class)arraylist.get(i);
+                    if(!com.maddox.rts.Property.containsValue(class1, "cockpitClass"))
+                        continue;
+                    float f = com.maddox.rts.Property.floatValue(class1, "yearService", 0.0F);
+                    if(f != 0.0F)
+                        treemap.put("" + (int)f, null);
+                }
+
+                java.lang.String s;
+                for(java.util.Iterator iterator = treemap.keySet().iterator(); iterator.hasNext(); add(s))
+                {
+                    s = (java.lang.String)iterator.next();
+                    com.maddox.il2.builder.Zuti_WManageAircrafts.lstYear.add(s);
+                }
+
+                if(com.maddox.il2.builder.Zuti_WManageAircrafts.lstYear.size() > 0)
+                    setSelected(0, true, false);
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bYearAdd = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 17F, 16F, 5F, 1.6F, com.maddox.il2.builder.Plugin.i18n("bplace_add"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                    return false;
+                java.lang.String s = (java.lang.String)com.maddox.il2.builder.Zuti_WManageAircrafts.lstYear.get(cYear.getSelected());
+                java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().airClasses;
+                for(int k = 0; k < arraylist.size(); k++)
+                {
+                    java.lang.Class class1 = (java.lang.Class)arraylist.get(k);
+                    if(!com.maddox.rts.Property.containsValue(class1, "cockpitClass") || !s.equals("" + (int)com.maddox.rts.Property.floatValue(class1, "yearService", 0.0F)))
+                        continue;
+                    java.lang.String s1 = com.maddox.rts.Property.stringValue(class1, "keyName");
+                    if(!lstAvailable.lst.contains(s1))
+                        lstAvailable.lst.add(s1);
+                }
+
+                fillTabAircraft();
+                return true;
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bYearRem = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 22F, 16F, 5F, 1.6F, com.maddox.il2.builder.Plugin.i18n("bplace_del"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                    return false;
+                java.lang.String s = (java.lang.String)com.maddox.il2.builder.Zuti_WManageAircrafts.lstYear.get(cYear.getSelected());
+                java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().airClasses;
+                for(int k = 0; k < arraylist.size(); k++)
+                {
+                    java.lang.Class class1 = (java.lang.Class)arraylist.get(k);
+                    if(!com.maddox.rts.Property.containsValue(class1, "cockpitClass") || !s.equals("" + (int)com.maddox.rts.Property.floatValue(class1, "yearService", 0.0F)))
+                        continue;
+                    java.lang.String s1 = com.maddox.rts.Property.stringValue(class1, "keyName");
+                    int l = lstAvailable.lst.indexOf(s1);
+                    if(l >= 0)
+                        lstAvailable.lst.remove(l);
+                }
+
+                fillTabAircraft();
+                return true;
+            }
+
+        }
+);
+        gwindowdialogclient.addLabel(lType = new GWindowLabel(gwindowdialogclient, 2.0F, 18F, 7F, 1.6F, com.maddox.il2.builder.Plugin.i18n("bplace_category"), null));
+        gwindowdialogclient.addControl(cType = new com.maddox.gwindow.GWindowComboControl(gwindowdialogclient, 9F, 18F, 7F) {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                setEditable(false);
+                java.util.TreeMap treemap = new TreeMap();
+                java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().airClasses;
+                for(int i = 0; i < arraylist.size(); i++)
+                {
+                    java.lang.Class class1 = (java.lang.Class)arraylist.get(i);
+                    if(!com.maddox.rts.Property.containsValue(class1, "cockpitClass"))
+                        continue;
+                    if((com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeStormovik != null ? com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeStormovik : (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeStormovik = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.TypeStormovik"))).isAssignableFrom(class1))
+                        treemap.put(com.maddox.il2.builder.Plugin.i18n("bplace_sturm"), com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeStormovik != null ? ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeStormovik)) : ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeStormovik = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.TypeStormovik"))));
+                    if((com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeFighter != null ? com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeFighter : (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeFighter = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.TypeFighter"))).isAssignableFrom(class1))
+                        treemap.put(com.maddox.il2.builder.Plugin.i18n("bplace_fiter"), com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeFighter != null ? ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeFighter)) : ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeFighter = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.TypeFighter"))));
+                    if((com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeBomber != null ? com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeBomber : (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeBomber = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.TypeBomber"))).isAssignableFrom(class1))
+                        treemap.put(com.maddox.il2.builder.Plugin.i18n("bplace_bomber"), com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeBomber != null ? ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeBomber)) : ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeBomber = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.TypeBomber"))));
+                    if((com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeScout != null ? com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeScout : (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeScout = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.TypeScout"))).isAssignableFrom(class1))
+                        treemap.put(com.maddox.il2.builder.Plugin.i18n("bplace_recon"), com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeScout != null ? ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeScout)) : ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeScout = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.TypeScout"))));
+                    if((com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeDiveBomber != null ? com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeDiveBomber : (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeDiveBomber = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.TypeDiveBomber"))).isAssignableFrom(class1))
+                        treemap.put(com.maddox.il2.builder.Plugin.i18n("bplace_diver"), com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeDiveBomber != null ? ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeDiveBomber)) : ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeDiveBomber = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.TypeDiveBomber"))));
+                    if((com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeSailPlane != null ? com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeSailPlane : (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeSailPlane = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.TypeSailPlane"))).isAssignableFrom(class1))
+                        treemap.put(com.maddox.il2.builder.Plugin.i18n("bplace_sailer"), com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeSailPlane != null ? ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeSailPlane)) : ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$TypeSailPlane = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.TypeSailPlane"))));
+                    if((com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$Scheme1 != null ? com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$Scheme1 : (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$Scheme1 = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.Scheme1"))).isAssignableFrom(class1))
+                        treemap.put(com.maddox.il2.builder.Plugin.i18n("bplace_single"), com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$Scheme1 != null ? ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$Scheme1)) : ((java.lang.Object) (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$Scheme1 = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.Scheme1"))));
+                    else
+                        treemap.put(com.maddox.il2.builder.Plugin.i18n("bplace_multi"), null);
+                }
+
+                java.lang.String s;
+                for(java.util.Iterator iterator = treemap.keySet().iterator(); iterator.hasNext(); add(s))
+                {
+                    s = (java.lang.String)iterator.next();
+                    java.lang.Class class2 = (java.lang.Class)treemap.get(s);
+                    com.maddox.il2.builder.PlMisBorn.lstType.add(class2);
+                }
+
+                if(com.maddox.il2.builder.PlMisBorn.lstType.size() > 0)
+                    setSelected(0, true, false);
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bTypeAdd = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 17F, 18F, 5F, 1.6F, com.maddox.il2.builder.Plugin.i18n("bplace_add"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                    return false;
+                java.lang.Class class1 = (java.lang.Class)com.maddox.il2.builder.PlMisBorn.lstType.get(cType.getSelected());
+                java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().airClasses;
+                for(int k = 0; k < arraylist.size(); k++)
+                {
+                    java.lang.Class class2 = (java.lang.Class)arraylist.get(k);
+                    if(!com.maddox.rts.Property.containsValue(class2, "cockpitClass") || (class1 != null ? !class1.isAssignableFrom(class2) : (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$Scheme1 != null ? com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$Scheme1 : (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$Scheme1 = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.Scheme1"))).isAssignableFrom(class2)))
+                        continue;
+                    java.lang.String s = com.maddox.rts.Property.stringValue(class2, "keyName");
+                    if(!lstAvailable.lst.contains(s))
+                        lstAvailable.lst.add(s);
+                }
+
+                fillTabAircraft();
+                return true;
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bTypeRem = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 22F, 18F, 5F, 1.6F, com.maddox.il2.builder.Plugin.i18n("bplace_del"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                    return false;
+                java.lang.Class class1 = (java.lang.Class)com.maddox.il2.builder.PlMisBorn.lstType.get(cType.getSelected());
+                java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().airClasses;
+                for(int k = 0; k < arraylist.size(); k++)
+                {
+                    java.lang.Class class2 = (java.lang.Class)arraylist.get(k);
+                    if(!com.maddox.rts.Property.containsValue(class2, "cockpitClass") || (class1 != null ? !class1.isAssignableFrom(class2) : (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$Scheme1 != null ? com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$Scheme1 : (com.maddox.il2.builder.Zuti_WManageAircrafts.class$com$maddox$il2$objects$air$Scheme1 = com.maddox.il2.builder.Zuti_WManageAircrafts._mthclass$("com.maddox.il2.objects.air.Scheme1"))).isAssignableFrom(class2)))
+                        continue;
+                    java.lang.String s = com.maddox.rts.Property.stringValue(class2, "keyName");
+                    int l = lstAvailable.lst.indexOf(s);
+                    if(l >= 0)
+                        lstAvailable.lst.remove(l);
+                }
+
+                fillTabAircraft();
+                return true;
+            }
+
+        }
+);
+    }
+
+    private void fillTabAircraft()
+    {
+        int i = lstAvailable.selectRow;
+        int j = lstInReserve.selectRow;
+        lstAvailable.lst = airNames;
+        lstInReserve.lst.clear();
+        java.util.ArrayList arraylist = com.maddox.il2.game.Main.cur().airClasses;
+        for(int k = 0; k < arraylist.size(); k++)
+        {
+            java.lang.Class class1 = (java.lang.Class)arraylist.get(k);
+            if(!com.maddox.rts.Property.containsValue(class1, "cockpitClass"))
+                continue;
+            java.lang.String s = com.maddox.rts.Property.stringValue(class1, "keyName");
+            if(!lstAvailable.lst.contains(s))
+                lstInReserve.lst.add(s);
+        }
+
+        if(lstAvailable.lst.size() > 0)
+        {
+            lstAvailable.lst.clear();
+            for(int l = 0; l < arraylist.size(); l++)
+            {
+                java.lang.Class class2 = (java.lang.Class)arraylist.get(l);
+                if(!com.maddox.rts.Property.containsValue(class2, "cockpitClass"))
+                    continue;
+                java.lang.String s1 = com.maddox.rts.Property.stringValue(class2, "keyName");
+                if(!lstInReserve.lst.contains(s1))
+                    lstAvailable.lst.add(s1);
+            }
+
+        }
+        if(i >= 0)
+            if(lstAvailable.lst.size() > 0)
+            {
+                if(i >= lstAvailable.lst.size())
+                    i = lstAvailable.lst.size() - 1;
+            } else
+            {
+                i = -1;
+            }
+        lstAvailable.setSelect(i, 0);
+        if(j >= 0)
+            if(lstInReserve.lst.size() > 0)
+            {
+                if(j >= lstInReserve.lst.size())
+                    j = lstInReserve.lst.size() - 1;
+            } else
+            {
+                j = -1;
+            }
+        lstInReserve.setSelect(j, 0);
+        lstAvailable.resized();
+        lstInReserve.resized();
+    }
+
+    private void addAllAircraft(java.util.ArrayList arraylist)
+    {
+        java.util.ArrayList arraylist1 = com.maddox.il2.game.Main.cur().airClasses;
+        for(int i = 0; i < arraylist1.size(); i++)
+        {
+            java.lang.Class class1 = (java.lang.Class)arraylist1.get(i);
+            if(!com.maddox.rts.Property.containsValue(class1, "cockpitClass"))
+                continue;
+            java.lang.String s = com.maddox.rts.Property.stringValue(class1, "keyName");
+            if(!arraylist.contains(s))
+                arraylist.add(s);
+        }
+
+    }
+
+    private void setAircraftSizes(com.maddox.gwindow.GWindow gwindow)
+    {
+        float f = gwindow.win.dx;
+        float f1 = gwindow.win.dy;
+        com.maddox.gwindow.GFont gfont = gwindow.root.textFonts[0];
+        float f2 = gwindow.lAF().metric();
+        com.maddox.gwindow.GSize gsize = new GSize();
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_addall"), gsize);
+        float f3 = gsize.dx;
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_add"), gsize);
+        float f4 = gsize.dx;
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_delall"), gsize);
+        float f5 = gsize.dx;
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_del"), gsize);
+        float f6 = gsize.dx;
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_planes"), gsize);
+        float f7 = gsize.dx;
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_list"), gsize);
+        float f8 = gsize.dx;
+        float f9 = f3;
+        if(f9 < f4)
+            f9 = f4;
+        if(f9 < f5)
+            f9 = f5;
+        if(f9 < f6)
+            f9 = f6;
+        float f10 = f2 + f9;
+        f9 += f2 + 4F * f2 + f7 + 4F * f2 + f8 + 4F * f2;
+        if(f < f9)
+            f = f9;
+        float f11 = 10F * f2 + 10F * f2 + 2.0F * f2;
+        if(f1 < f11)
+            f1 = f11;
+        float f12 = (f - f10) / 2.0F;
+        bAddAll.setPosSize(f12, f2, f10, 2.0F * f2);
+        bAdd.setPosSize(f12, f2 + 2.0F * f2, f10, 2.0F * f2);
+        bRemAll.setPosSize(f12, 2.0F * f2 + 4F * f2, f10, 2.0F * f2);
+        bRem.setPosSize(f12, 2.0F * f2 + 6F * f2, f10, 2.0F * f2);
+        bModifyPlane.setPosSize(f12, 2.0F * f2 + 10F * f2, f10, 2.0F * f2);
+        float f13 = (f - f10 - 4F * f2) / 2.0F;
+        float f14 = f1 - 6F * f2 - 2.0F * f2 - 3F * f2;
+        lstAvailable.setPosSize(f2, f2, f13, f14);
+        lstInReserve.setPosSize(f - f2 - f13, f2, f13, f14);
+        gfont.size(" " + com.maddox.il2.builder.Plugin.i18n("bplace_cats") + " ", gsize);
+        f13 = gsize.dx;
+        float f15 = f2 + f14;
+        lSeparate.setPosSize(2.0F * f2, f15, f13, 2.0F * f2);
+        bSeparate.setPosSize(f2, f15 + f2, f - 2.0F * f2, f1 - f15 - 2.0F * f2);
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_country"), gsize);
+        float f16 = gsize.dx;
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_year"), gsize);
+        if(f16 < gsize.dx)
+            f16 = gsize.dx;
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_category"), gsize);
+        if(f16 < gsize.dx)
+            f16 = gsize.dx;
+        f10 = 2.0F * f2 + f4 + f6;
+        f13 = f - f16 - f10 - 6F * f2;
+        float f17 = gwindow.lAF().getComboH();
+        lCountry.setPosSize(2.0F * f2, f15 + 2.0F * f2, f16, 2.0F * f2);
+        cCountry.setPosSize(2.0F * f2 + f16 + f2, f15 + 2.0F * f2 + (2.0F * f2 - f17) / 2.0F, f13, f17);
+        bCountryAdd.setPosSize(f - 4F * f2 - f6 - f4, f15 + 2.0F * f2, f2 + f4, 2.0F * f2);
+        bCountryRem.setPosSize(f - 3F * f2 - f6, f15 + 2.0F * f2, f2 + f6, 2.0F * f2);
+        lYear.setPosSize(2.0F * f2, f15 + 4F * f2, f16, 2.0F * f2);
+        cYear.setPosSize(2.0F * f2 + f16 + f2, f15 + 4F * f2 + (2.0F * f2 - f17) / 2.0F, f13, f17);
+        bYearAdd.setPosSize(f - 4F * f2 - f6 - f4, f15 + 4F * f2, f2 + f4, 2.0F * f2);
+        bYearRem.setPosSize(f - 3F * f2 - f6, f15 + 4F * f2, f2 + f6, 2.0F * f2);
+        lType.setPosSize(2.0F * f2, f15 + 6F * f2, f16, 2.0F * f2);
+        cType.setPosSize(2.0F * f2 + f16 + f2, f15 + 6F * f2 + (2.0F * f2 - f17) / 2.0F, f13, f17);
+        bTypeAdd.setPosSize(f - 4F * f2 - f6 - f4, f15 + 6F * f2, f2 + f4, 2.0F * f2);
+        bTypeRem.setPosSize(f - 3F * f2 - f6, f15 + 6F * f2, f2 + f6, 2.0F * f2);
+    }
+
+    public void afterCreated()
+    {
         super.afterCreated();
-        setEditable(false);
-        ResourceBundle localResourceBundle = ResourceBundle.getBundle("i18n/country", RTSConf.cur.locale, LDRres.loader());
-        TreeMap localTreeMap = new TreeMap();
-        ArrayList localArrayList = Main.cur().airClasses;
-        Object localObject;
-        String str1;
-        for (int i = 0; i < localArrayList.size(); i++)
+        resized();
+        close(false);
+    }
+
+    public void close(boolean flag)
+    {
+        if(parentEditControl != null)
         {
-          localObject = (Class)localArrayList.get(i);
-          if ((!Property.containsValue((Class)localObject, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI))
-            continue;
-          str1 = Property.stringValue((Class)localObject, "originCountry", null);
-          if (str1 == null)
-            continue;
-          String str2;
-          try {
-            str2 = localResourceBundle.getString(str1);
-          }
-          catch (Exception localException)
-          {
-            continue;
-          }
-          localTreeMap.put(str2, str1);
+            java.lang.StringBuffer stringbuffer = new StringBuffer();
+            for(int i = 0; i < lstAvailable.lst.size(); i++)
+            {
+                stringbuffer.append(lstAvailable.lst.get(i));
+                stringbuffer.append(" ");
+            }
+
+            parentEditControl.setValue(stringbuffer.toString());
+            parentEditControl.notify(2, 0);
+            syncLists();
+            com.maddox.il2.builder.PlMission.setChanged();
+        }
+        super.close(flag);
+    }
+
+    public Zuti_WManageAircrafts()
+    {
+        airNames = null;
+        parentEditControl = null;
+        zutiCapturedAcLoadouts = null;
+        doNew(com.maddox.il2.builder.Plugin.builder.clientWindow, 2.0F, 2.0F, 40F, 40F, true);
+        bSizable = true;
+    }
+
+    public void setParentEditControl(com.maddox.gwindow.GWindowEditControl gwindoweditcontrol)
+    {
+        parentEditControl = gwindoweditcontrol;
+        if(gwindoweditcontrol != null)
+        {
+            zutiParseCapturedBaseAircrafts(parentEditControl.getValue());
+            fillTabAircraft();
+        }
+        if(airNames == null)
+            airNames = new ArrayList();
+    }
+
+    public void clearAirNames()
+    {
+        airNames.clear();
+        airNames = null;
+    }
+
+    private void zutiParseCapturedBaseAircrafts(java.lang.String s)
+    {
+        airNames = new ArrayList();
+        int i = 0;
+        if(s == null)
+            return;
+        do
+        {
+            i++;
+            if(s.indexOf(" ") > 0)
+            {
+                java.lang.String s1 = s.substring(0, s.indexOf(" ")).trim();
+                s = s.substring(s.indexOf(" ") + 1, s.length()).trim();
+                if(s1.length() > 0)
+                    airNames.add(s1);
+                continue;
+            }
+            if(s.length() > 0)
+                airNames.add(s);
+            break;
+        } while(i <= 1000);
+    }
+
+    public void setTitle(java.lang.String s)
+    {
+        title = s;
+    }
+
+    public void setAircraftLoadout(com.maddox.il2.builder.Zuti_WAircraftLoadout zuti_waircraftloadout)
+    {
+        zutiCapturedAcLoadouts = zuti_waircraftloadout;
+        if(zutiCapturedAcLoadouts == null)
+            zutiCapturedAcLoadouts = new Zuti_WAircraftLoadout();
+    }
+
+    public com.maddox.il2.builder.Zuti_WAircraftLoadout getAircraftLoadout()
+    {
+        return zutiCapturedAcLoadouts;
+    }
+
+    private void syncLists()
+    {
+        java.util.ArrayList arraylist = new ArrayList();
+        if(zutiCapturedAcLoadouts == null)
+            zutiCapturedAcLoadouts = new Zuti_WAircraftLoadout();
+        if(zutiCapturedAcLoadouts.modifiedAircrafts == null)
+            zutiCapturedAcLoadouts.modifiedAircrafts = new ArrayList();
+        for(int i = 0; i < airNames.size(); i++)
+        {
+            java.lang.String s = (java.lang.String)airNames.get(i);
+            boolean flag = false;
+            int i1 = 0;
+            do
+            {
+                if(i1 >= zutiCapturedAcLoadouts.modifiedAircrafts.size())
+                    break;
+                com.maddox.il2.game.ZutiAircraft zutiaircraft2 = (com.maddox.il2.game.ZutiAircraft)zutiCapturedAcLoadouts.modifiedAircrafts.get(i1);
+                if(zutiaircraft2.getAcName().equals(s))
+                {
+                    flag = true;
+                    break;
+                }
+                i1++;
+            } while(true);
+            if(!flag)
+            {
+                com.maddox.il2.game.ZutiAircraft zutiaircraft1 = new ZutiAircraft();
+                zutiaircraft1.setAcName(s);
+                zutiaircraft1.setMaxAllowed(0);
+                java.util.ArrayList arraylist1 = new ArrayList();
+                arraylist1.add("Default");
+                zutiaircraft1.setSelectedWeapons(arraylist1);
+                arraylist.add(zutiaircraft1);
+            }
         }
 
-        Iterator localIterator = localTreeMap.keySet().iterator();
-        while (localIterator.hasNext())
+        for(int j = 0; j < arraylist.size(); j++)
+            zutiCapturedAcLoadouts.modifiedAircrafts.add(arraylist.get(j));
+
+        arraylist.clear();
+        for(int k = 0; k < zutiCapturedAcLoadouts.modifiedAircrafts.size(); k++)
         {
-          localObject = (String)localIterator.next();
-          str1 = (String)localTreeMap.get(localObject);
-          Zuti_WManageAircrafts.lstCountry.add(str1);
-          add((String)localObject);
-        }
-        if (Zuti_WManageAircrafts.lstCountry.size() > 0) setSelected(0, true, false);
-      }
-    });
-    localGWindowDialogClient.addControl(this.bCountryAdd = new GWindowButton(localGWindowDialogClient, 17.0F, 14.0F, 5.0F, 1.6F, Plugin.i18n("bplace_add"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) return false;
-        String str1 = (String)Zuti_WManageAircrafts.lstCountry.get(Zuti_WManageAircrafts.this.cCountry.getSelected());
-        ArrayList localArrayList = Main.cur().airClasses;
-        for (int i = 0; i < localArrayList.size(); i++)
-        {
-          Class localClass = (Class)localArrayList.get(i);
-          if (((!Property.containsValue(localClass, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI)) || (!str1.equals(Property.stringValue(localClass, "originCountry", null))))
-            continue;
-          String str2 = Property.stringValue(localClass, "keyName");
-          if (Zuti_WManageAircrafts.this.lstAvailable.lst.contains(str2)) continue; Zuti_WManageAircrafts.this.lstAvailable.lst.add(str2);
+            com.maddox.il2.game.ZutiAircraft zutiaircraft = (com.maddox.il2.game.ZutiAircraft)zutiCapturedAcLoadouts.modifiedAircrafts.get(k);
+            boolean flag1 = false;
+            int j1 = 0;
+            do
+            {
+                if(j1 >= airNames.size())
+                    break;
+                java.lang.String s1 = (java.lang.String)airNames.get(j1);
+                if(zutiaircraft.getAcName().equals(s1))
+                {
+                    flag1 = true;
+                    break;
+                }
+                j1++;
+            } while(true);
+            if(!flag1)
+                arraylist.add(zutiaircraft);
         }
 
-        Zuti_WManageAircrafts.this.fillTabAircraft();
-        return true;
-      }
-    });
-    localGWindowDialogClient.addControl(this.bCountryRem = new GWindowButton(localGWindowDialogClient, 22.0F, 14.0F, 5.0F, 1.6F, Plugin.i18n("bplace_del"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) return false;
-        String str1 = (String)Zuti_WManageAircrafts.lstCountry.get(Zuti_WManageAircrafts.this.cCountry.getSelected());
-        ArrayList localArrayList = Main.cur().airClasses;
-        for (int i = 0; i < localArrayList.size(); i++)
-        {
-          Class localClass = (Class)localArrayList.get(i);
-          if (((!Property.containsValue(localClass, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI)) || (!str1.equals(Property.stringValue(localClass, "originCountry", null))))
-            continue;
-          String str2 = Property.stringValue(localClass, "keyName");
-          int j = Zuti_WManageAircrafts.this.lstAvailable.lst.indexOf(str2);
-          if (j < 0) continue; Zuti_WManageAircrafts.this.lstAvailable.lst.remove(j);
-        }
+        for(int l = 0; l < arraylist.size(); l++)
+            zutiCapturedAcLoadouts.modifiedAircrafts.remove(arraylist.get(l));
 
-        Zuti_WManageAircrafts.this.fillTabAircraft();
-        return true;
-      }
-    });
-    localGWindowDialogClient.addLabel(this.lYear = new GWindowLabel(localGWindowDialogClient, 2.0F, 16.0F, 7.0F, 1.6F, Plugin.i18n("bplace_year"), null));
-    localGWindowDialogClient.addControl(this.cYear = new GWindowComboControl(localGWindowDialogClient, 9.0F, 16.0F, 7.0F)
-    {
-      public void afterCreated()
-      {
-        super.afterCreated();
-        setEditable(false);
-        TreeMap localTreeMap = new TreeMap();
-        ArrayList localArrayList = Main.cur().airClasses;
-        Object localObject;
-        for (int i = 0; i < localArrayList.size(); i++)
-        {
-          localObject = (Class)localArrayList.get(i);
-          if ((!Property.containsValue((Class)localObject, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI))
-            continue;
-          float f = Property.floatValue((Class)localObject, "yearService", 0.0F);
-          if (f == 0.0F) continue; localTreeMap.put("" + (int)f, null);
-        }
-
-        Iterator localIterator = localTreeMap.keySet().iterator();
-        while (localIterator.hasNext())
-        {
-          localObject = (String)localIterator.next();
-          Zuti_WManageAircrafts.lstYear.add(localObject);
-          add((String)localObject);
-        }
-        if (Zuti_WManageAircrafts.lstYear.size() > 0) setSelected(0, true, false);
-      }
-    });
-    localGWindowDialogClient.addControl(this.bYearAdd = new GWindowButton(localGWindowDialogClient, 17.0F, 16.0F, 5.0F, 1.6F, Plugin.i18n("bplace_add"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) return false;
-        String str1 = (String)Zuti_WManageAircrafts.lstYear.get(Zuti_WManageAircrafts.this.cYear.getSelected());
-        ArrayList localArrayList = Main.cur().airClasses;
-        for (int i = 0; i < localArrayList.size(); i++)
-        {
-          Class localClass = (Class)localArrayList.get(i);
-          if (((!Property.containsValue(localClass, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI)) || (!str1.equals("" + (int)Property.floatValue(localClass, "yearService", 0.0F))))
-            continue;
-          String str2 = Property.stringValue(localClass, "keyName");
-          if (Zuti_WManageAircrafts.this.lstAvailable.lst.contains(str2)) continue; Zuti_WManageAircrafts.this.lstAvailable.lst.add(str2);
-        }
-
-        Zuti_WManageAircrafts.this.fillTabAircraft();
-        return true;
-      }
-    });
-    localGWindowDialogClient.addControl(this.bYearRem = new GWindowButton(localGWindowDialogClient, 22.0F, 16.0F, 5.0F, 1.6F, Plugin.i18n("bplace_del"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) return false;
-        String str1 = (String)Zuti_WManageAircrafts.lstYear.get(Zuti_WManageAircrafts.this.cYear.getSelected());
-        ArrayList localArrayList = Main.cur().airClasses;
-        for (int i = 0; i < localArrayList.size(); i++)
-        {
-          Class localClass = (Class)localArrayList.get(i);
-          if (((!Property.containsValue(localClass, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI)) || (!str1.equals("" + (int)Property.floatValue(localClass, "yearService", 0.0F))))
-            continue;
-          String str2 = Property.stringValue(localClass, "keyName");
-          int j = Zuti_WManageAircrafts.this.lstAvailable.lst.indexOf(str2);
-          if (j < 0) continue; Zuti_WManageAircrafts.this.lstAvailable.lst.remove(j);
-        }
-
-        Zuti_WManageAircrafts.this.fillTabAircraft();
-        return true;
-      }
-    });
-    localGWindowDialogClient.addLabel(this.lType = new GWindowLabel(localGWindowDialogClient, 2.0F, 18.0F, 7.0F, 1.6F, Plugin.i18n("bplace_category"), null));
-    localGWindowDialogClient.addControl(this.cType = new GWindowComboControl(localGWindowDialogClient, 9.0F, 18.0F, 7.0F)
-    {
-      public void afterCreated()
-      {
-        super.afterCreated();
-        setEditable(false);
-        TreeMap localTreeMap = new TreeMap();
-        ArrayList localArrayList = Main.cur().airClasses;
-        Object localObject;
-        for (int i = 0; i < localArrayList.size(); i++)
-        {
-          localObject = (Class)localArrayList.get(i);
-          if ((!Property.containsValue((Class)localObject, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI))
-            continue;
-          if (TypeStormovik.class.isAssignableFrom((Class)localObject))
-            localTreeMap.put(Plugin.i18n("bplace_sturm"), TypeStormovik.class);
-          if (TypeFighter.class.isAssignableFrom((Class)localObject)) {
-            localTreeMap.put(Plugin.i18n("bplace_fiter"), TypeFighter.class);
-          }
-
-          if (TypeBomber.class.isAssignableFrom((Class)localObject))
-            localTreeMap.put(Plugin.i18n("bplace_bomber"), TypeBomber.class);
-          if (TypeScout.class.isAssignableFrom((Class)localObject))
-            localTreeMap.put(Plugin.i18n("bplace_recon"), TypeScout.class);
-          if (TypeDiveBomber.class.isAssignableFrom((Class)localObject))
-            localTreeMap.put(Plugin.i18n("bplace_diver"), TypeDiveBomber.class);
-          if (TypeSailPlane.class.isAssignableFrom((Class)localObject))
-            localTreeMap.put(Plugin.i18n("bplace_sailer"), TypeSailPlane.class);
-          if (Scheme1.class.isAssignableFrom((Class)localObject))
-            localTreeMap.put(Plugin.i18n("bplace_single"), Scheme1.class);
-          else {
-            localTreeMap.put(Plugin.i18n("bplace_multi"), null);
-          }
-        }
-        Iterator localIterator = localTreeMap.keySet().iterator();
-        while (localIterator.hasNext())
-        {
-          localObject = (String)localIterator.next();
-          Class localClass = (Class)localTreeMap.get(localObject);
-          PlMisBorn.lstType.add(localClass);
-          add((String)localObject);
-        }
-        if (PlMisBorn.lstType.size() > 0) setSelected(0, true, false);
-      }
-    });
-    localGWindowDialogClient.addControl(this.bTypeAdd = new GWindowButton(localGWindowDialogClient, 17.0F, 18.0F, 5.0F, 1.6F, Plugin.i18n("bplace_add"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) return false;
-        Class localClass1 = (Class)PlMisBorn.lstType.get(Zuti_WManageAircrafts.this.cType.getSelected());
-        ArrayList localArrayList = Main.cur().airClasses;
-        for (int i = 0; i < localArrayList.size(); i++)
-        {
-          Class localClass2 = (Class)localArrayList.get(i);
-          if ((!Property.containsValue(localClass2, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI))
-            continue;
-          if (localClass1 == null ? 
-            Scheme1.class.isAssignableFrom(localClass2) : 
-            !localClass1.isAssignableFrom(localClass2)) continue;
-          String str = Property.stringValue(localClass2, "keyName");
-          if (Zuti_WManageAircrafts.this.lstAvailable.lst.contains(str)) continue; Zuti_WManageAircrafts.this.lstAvailable.lst.add(str);
-        }
-
-        Zuti_WManageAircrafts.this.fillTabAircraft();
-        return true;
-      }
-    });
-    localGWindowDialogClient.addControl(this.bTypeRem = new GWindowButton(localGWindowDialogClient, 22.0F, 18.0F, 5.0F, 1.6F, Plugin.i18n("bplace_del"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) return false;
-        Class localClass1 = (Class)PlMisBorn.lstType.get(Zuti_WManageAircrafts.this.cType.getSelected());
-        ArrayList localArrayList = Main.cur().airClasses;
-        for (int i = 0; i < localArrayList.size(); i++)
-        {
-          Class localClass2 = (Class)localArrayList.get(i);
-          if ((!Property.containsValue(localClass2, "cockpitClass")) && (!Zuti_WManageAircrafts.showAI))
-            continue;
-          if (localClass1 == null ? 
-            Scheme1.class.isAssignableFrom(localClass2) : 
-            !localClass1.isAssignableFrom(localClass2)) continue;
-          String str = Property.stringValue(localClass2, "keyName");
-          int j = Zuti_WManageAircrafts.this.lstAvailable.lst.indexOf(str);
-          if (j < 0) continue; Zuti_WManageAircrafts.this.lstAvailable.lst.remove(j);
-        }
-
-        Zuti_WManageAircrafts.this.fillTabAircraft();
-        return true;
-      }
-    });
-  }
-
-  private void fillTabAircraft() {
-    int i = this.lstAvailable.selectRow;
-    int j = this.lstInReserve.selectRow;
-    this.lstAvailable.lst = this.airNames;
-    this.lstInReserve.lst.clear();
-    ArrayList localArrayList = Main.cur().airClasses;
-    Class localClass;
-    String str;
-    for (int k = 0; k < localArrayList.size(); k++)
-    {
-      localClass = (Class)localArrayList.get(k);
-      if ((!Property.containsValue(localClass, "cockpitClass")) && (!showAI))
-        continue;
-      str = Property.stringValue(localClass, "keyName");
-      if (!this.lstAvailable.lst.contains(str)) {
-        this.lstInReserve.lst.add(str);
-      }
-    }
-    if (this.lstAvailable.lst.size() > 0)
-    {
-      this.lstAvailable.lst.clear();
-      for (k = 0; k < localArrayList.size(); k++)
-      {
-        localClass = (Class)localArrayList.get(k);
-        if ((!Property.containsValue(localClass, "cockpitClass")) && (!showAI))
-          continue;
-        str = Property.stringValue(localClass, "keyName");
-        if (this.lstInReserve.lst.contains(str)) continue; this.lstAvailable.lst.add(str);
-      }
     }
 
-    if (i >= 0)
+    static java.lang.Class _mthclass$(java.lang.String s)
     {
-      if (this.lstAvailable.lst.size() > 0)
-      {
-        if (i >= this.lstAvailable.lst.size()) i = this.lstAvailable.lst.size() - 1;
-      }
-      else
-        i = -1;
-    }
-    this.lstAvailable.setSelect(i, 0);
-    if (j >= 0)
-    {
-      if (this.lstInReserve.lst.size() > 0)
-      {
-        if (j >= this.lstInReserve.lst.size()) j = this.lstInReserve.lst.size() - 1;
-      }
-      else
-        j = -1;
-    }
-    this.lstInReserve.setSelect(j, 0);
-    this.lstAvailable.resized();
-    this.lstInReserve.resized();
-  }
-
-  private void addAllAircraft(ArrayList paramArrayList)
-  {
-    ArrayList localArrayList = Main.cur().airClasses;
-    for (int i = 0; i < localArrayList.size(); i++)
-    {
-      Class localClass = (Class)localArrayList.get(i);
-      if ((!Property.containsValue(localClass, "cockpitClass")) && (!showAI))
-        continue;
-      String str = Property.stringValue(localClass, "keyName");
-      if (!paramArrayList.contains(str))
-        paramArrayList.add(str);
-    }
-  }
-
-  private void setAircraftSizes(GWindow paramGWindow)
-  {
-    float f1 = paramGWindow.win.dx;
-    float f2 = paramGWindow.win.dy;
-    GFont localGFont = paramGWindow.root.textFonts[0];
-    float f3 = paramGWindow.lAF().metric();
-    GSize localGSize = new GSize();
-    localGFont.size(Plugin.i18n("bplace_addall"), localGSize);
-    float f4 = localGSize.dx;
-    localGFont.size(Plugin.i18n("bplace_add"), localGSize);
-    float f5 = localGSize.dx;
-    localGFont.size(Plugin.i18n("bplace_delall"), localGSize);
-    float f6 = localGSize.dx;
-    localGFont.size(Plugin.i18n("bplace_del"), localGSize);
-    float f7 = localGSize.dx;
-    localGFont.size(Plugin.i18n("bplace_planes"), localGSize);
-    float f8 = localGSize.dx;
-    localGFont.size(Plugin.i18n("bplace_list"), localGSize);
-    float f9 = localGSize.dx;
-    float f10 = f4;
-    if (f10 < f5)
-      f10 = f5;
-    if (f10 < f6)
-      f10 = f6;
-    if (f10 < f7)
-      f10 = f7;
-    float f11 = f3 + f10;
-    f10 += f3 + 4.0F * f3 + f8 + 4.0F * f3 + f9 + 4.0F * f3;
-    if (f1 < f10)
-      f1 = f10;
-    float f12 = 10.0F * f3 + 10.0F * f3 + 2.0F * f3;
-    if (f2 < f12)
-      f2 = f12;
-    float f13 = (f1 - f11) / 2.0F;
-    this.bAddAll.setPosSize(f13, f3, f11, 2.0F * f3);
-    this.bAdd.setPosSize(f13, f3 + 2.0F * f3, f11, 2.0F * f3);
-    this.bRemAll.setPosSize(f13, 2.0F * f3 + 4.0F * f3, f11, 2.0F * f3);
-    this.bRem.setPosSize(f13, 2.0F * f3 + 6.0F * f3, f11, 2.0F * f3);
-    this.bModifyPlane.setPosSize(f13, 2.0F * f3 + 10.0F * f3, f11, 2.0F * f3);
-    float f14 = (f1 - f11 - 4.0F * f3) / 2.0F;
-    float f15 = f2 - 6.0F * f3 - 2.0F * f3 - 3.0F * f3;
-    this.lstAvailable.setPosSize(f3, f3, f14, f15);
-    this.lstInReserve.setPosSize(f1 - f3 - f14, f3, f14, f15);
-    localGFont.size(" " + Plugin.i18n("bplace_cats") + " ", localGSize);
-    f14 = localGSize.dx;
-    float f16 = f3 + f15;
-    this.lSeparate.setPosSize(2.0F * f3, f16, f14, 2.0F * f3);
-    this.bSeparate.setPosSize(f3, f16 + f3, f1 - 2.0F * f3, f2 - f16 - 2.0F * f3);
-    localGFont.size(Plugin.i18n("bplace_country"), localGSize);
-    float f17 = localGSize.dx;
-    localGFont.size(Plugin.i18n("bplace_year"), localGSize);
-    if (f17 < localGSize.dx)
-      f17 = localGSize.dx;
-    localGFont.size(Plugin.i18n("bplace_category"), localGSize);
-    if (f17 < localGSize.dx)
-      f17 = localGSize.dx;
-    f11 = 2.0F * f3 + f5 + f7;
-    f14 = f1 - f17 - f11 - 6.0F * f3;
-    float f18 = paramGWindow.lAF().getComboH();
-    this.lCountry.setPosSize(2.0F * f3, f16 + 2.0F * f3, f17, 2.0F * f3);
-    this.cCountry.setPosSize(2.0F * f3 + f17 + f3, f16 + 2.0F * f3 + (2.0F * f3 - f18) / 2.0F, f14, f18);
-    this.bCountryAdd.setPosSize(f1 - 4.0F * f3 - f7 - f5, f16 + 2.0F * f3, f3 + f5, 2.0F * f3);
-    this.bCountryRem.setPosSize(f1 - 3.0F * f3 - f7, f16 + 2.0F * f3, f3 + f7, 2.0F * f3);
-    this.lYear.setPosSize(2.0F * f3, f16 + 4.0F * f3, f17, 2.0F * f3);
-    this.cYear.setPosSize(2.0F * f3 + f17 + f3, f16 + 4.0F * f3 + (2.0F * f3 - f18) / 2.0F, f14, f18);
-    this.bYearAdd.setPosSize(f1 - 4.0F * f3 - f7 - f5, f16 + 4.0F * f3, f3 + f5, 2.0F * f3);
-    this.bYearRem.setPosSize(f1 - 3.0F * f3 - f7, f16 + 4.0F * f3, f3 + f7, 2.0F * f3);
-    this.lType.setPosSize(2.0F * f3, f16 + 6.0F * f3, f17, 2.0F * f3);
-    this.cType.setPosSize(2.0F * f3 + f17 + f3, f16 + 6.0F * f3 + (2.0F * f3 - f18) / 2.0F, f14, f18);
-    this.bTypeAdd.setPosSize(f1 - 4.0F * f3 - f7 - f5, f16 + 6.0F * f3, f3 + f5, 2.0F * f3);
-    this.bTypeRem.setPosSize(f1 - 3.0F * f3 - f7, f16 + 6.0F * f3, f3 + f7, 2.0F * f3);
-  }
-
-  public void afterCreated()
-  {
-    super.afterCreated();
-
-    resized();
-    close(false);
-  }
-
-  public void close(boolean paramBoolean)
-  {
-    if (this.parentEditControl != null)
-    {
-      StringBuffer localStringBuffer = new StringBuffer();
-      for (int i = 0; i < this.lstAvailable.lst.size(); i++)
-      {
-        localStringBuffer.append(this.lstAvailable.lst.get(i));
-        localStringBuffer.append(" ");
-      }
-      this.parentEditControl.setValue(localStringBuffer.toString());
-      this.parentEditControl.notify(2, 0);
-
-      syncLists();
-
-      PlMission.setChanged();
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
     }
 
-    super.close(paramBoolean);
-  }
+    com.maddox.il2.builder.Table lstAvailable;
+    com.maddox.il2.builder.Table lstInReserve;
+    com.maddox.gwindow.GWindowButton bAddAll;
+    com.maddox.gwindow.GWindowButton bAdd;
+    com.maddox.gwindow.GWindowButton bRemAll;
+    com.maddox.gwindow.GWindowButton bRem;
+    com.maddox.gwindow.GWindowButton bModifyPlane;
+    com.maddox.gwindow.GWindowLabel lSeparate;
+    com.maddox.gwindow.GWindowBoxSeparate bSeparate;
+    com.maddox.gwindow.GWindowLabel lCountry;
+    com.maddox.gwindow.GWindowComboControl cCountry;
+    static java.util.ArrayList lstCountry = new ArrayList();
+    com.maddox.gwindow.GWindowButton bCountryAdd;
+    com.maddox.gwindow.GWindowButton bCountryRem;
+    com.maddox.gwindow.GWindowLabel lYear;
+    com.maddox.gwindow.GWindowComboControl cYear;
+    static java.util.ArrayList lstYear = new ArrayList();
+    com.maddox.gwindow.GWindowButton bYearAdd;
+    com.maddox.gwindow.GWindowButton bYearRem;
+    com.maddox.gwindow.GWindowLabel lType;
+    com.maddox.gwindow.GWindowComboControl cType;
+    static java.util.ArrayList lstType = new ArrayList();
+    com.maddox.gwindow.GWindowButton bTypeAdd;
+    com.maddox.gwindow.GWindowButton bTypeRem;
+    private java.util.ArrayList airNames;
+    private com.maddox.gwindow.GWindowEditControl parentEditControl;
+    public com.maddox.il2.builder.Zuti_WAircraftLoadout zutiCapturedAcLoadouts;
+    static java.lang.Class class$com$maddox$il2$objects$air$TypeStormovik; /* synthetic field */
+    static java.lang.Class class$com$maddox$il2$objects$air$TypeFighter; /* synthetic field */
+    static java.lang.Class class$com$maddox$il2$objects$air$TypeBomber; /* synthetic field */
+    static java.lang.Class class$com$maddox$il2$objects$air$TypeScout; /* synthetic field */
+    static java.lang.Class class$com$maddox$il2$objects$air$TypeDiveBomber; /* synthetic field */
+    static java.lang.Class class$com$maddox$il2$objects$air$TypeSailPlane; /* synthetic field */
+    static java.lang.Class class$com$maddox$il2$objects$air$Scheme1; /* synthetic field */
 
-  public Zuti_WManageAircrafts()
-  {
-    doNew(Plugin.builder.clientWindow, 2.0F, 2.0F, 40.0F, 40.0F, true);
-    this.bSizable = true;
-  }
 
-  public void setShowAIPlanes(boolean paramBoolean)
-  {
-    showAI = paramBoolean;
-    this.bModifyPlane.bEnable = (!showAI);
-    this.bModifyPlane.bVisible = (!showAI);
-  }
 
-  public void setParentEditControl(GWindowEditControl paramGWindowEditControl)
-  {
-    this.parentEditControl = paramGWindowEditControl;
 
-    if (paramGWindowEditControl != null)
-    {
-      zutiParseCapturedBaseAircrafts(this.parentEditControl.getValue());
-      fillTabAircraft();
-    }
-
-    if (this.airNames == null)
-      this.airNames = new ArrayList();
-  }
-
-  public void clearAirNames()
-  {
-    this.airNames.clear();
-    this.airNames = null;
-  }
-
-  private void zutiParseCapturedBaseAircrafts(String paramString)
-  {
-    this.airNames = new ArrayList();
-    int i = 0;
-
-    if (paramString == null) {
-      return;
-    }
-    while (true)
-    {
-      i++;
-
-      if (paramString.indexOf(" ") > 0)
-      {
-        String str = paramString.substring(0, paramString.indexOf(" ")).trim();
-        paramString = paramString.substring(paramString.indexOf(" ") + 1, paramString.length()).trim();
-
-        if (str.length() > 0)
-          this.airNames.add(str);
-      }
-      else
-      {
-        if (paramString.length() <= 0) break;
-        this.airNames.add(paramString); break;
-      }
-
-      if (i > 1000)
-        break;
-    }
-  }
-
-  public void setTitle(String paramString) {
-    this.title = paramString;
-  }
-
-  public void setAircraftLoadout(Zuti_WAircraftLoadout paramZuti_WAircraftLoadout)
-  {
-    this.zutiCapturedAcLoadouts = paramZuti_WAircraftLoadout;
-
-    if (this.zutiCapturedAcLoadouts == null)
-    {
-      this.zutiCapturedAcLoadouts = new Zuti_WAircraftLoadout();
-    }
-  }
-
-  public Zuti_WAircraftLoadout getAircraftLoadout()
-  {
-    return this.zutiCapturedAcLoadouts;
-  }
-
-  private void syncLists()
-  {
-    ArrayList localArrayList = new ArrayList();
-
-    if (this.zutiCapturedAcLoadouts == null)
-      this.zutiCapturedAcLoadouts = new Zuti_WAircraftLoadout();
-    if (this.zutiCapturedAcLoadouts.modifiedAircrafts == null)
-      this.zutiCapturedAcLoadouts.modifiedAircrafts = new ArrayList();
-    Object localObject1;
-    int j;
-    Object localObject2;
-    for (int i = 0; i < this.airNames.size(); i++)
-    {
-      localObject1 = (String)this.airNames.get(i);
-      j = 0;
-      for (int k = 0; k < this.zutiCapturedAcLoadouts.modifiedAircrafts.size(); k++)
-      {
-        localObject2 = (ZutiAircraft)this.zutiCapturedAcLoadouts.modifiedAircrafts.get(k);
-
-        if (!((ZutiAircraft)localObject2).getAcName().equals(localObject1))
-          continue;
-        j = 1;
-        break;
-      }
-
-      if (j != 0) {
-        continue;
-      }
-      ZutiAircraft localZutiAircraft = new ZutiAircraft();
-      localZutiAircraft.setAcName((String)localObject1);
-      localZutiAircraft.setMaxAllowed(0);
-      localObject2 = new ArrayList();
-      ((ArrayList)localObject2).add("Default");
-      localZutiAircraft.setSelectedWeapons((ArrayList)localObject2);
-      localArrayList.add(localZutiAircraft);
-    }
-
-    for (i = 0; i < localArrayList.size(); i++) {
-      this.zutiCapturedAcLoadouts.modifiedAircrafts.add(localArrayList.get(i));
-    }
-
-    localArrayList.clear();
-    for (i = 0; i < this.zutiCapturedAcLoadouts.modifiedAircrafts.size(); i++)
-    {
-      localObject1 = (ZutiAircraft)this.zutiCapturedAcLoadouts.modifiedAircrafts.get(i);
-      j = 0;
-      for (int m = 0; m < this.airNames.size(); m++)
-      {
-        localObject2 = (String)this.airNames.get(m);
-        if (!((ZutiAircraft)localObject1).getAcName().equals(localObject2))
-          continue;
-        j = 1;
-        break;
-      }
-
-      if (j == 0) {
-        localArrayList.add(localObject1);
-      }
-    }
-    for (i = 0; i < localArrayList.size(); i++)
-      this.zutiCapturedAcLoadouts.modifiedAircrafts.remove(localArrayList.get(i));
-  }
-
-  static class Item
-  {
-    public String name;
-
-    public Item(String paramString)
-    {
-      this.name = paramString;
-    }
-  }
-
-  class Table extends GWindowTable
-  {
-    public ArrayList lst = new ArrayList();
-
-    public int countRows()
-    {
-      return this.lst != null ? this.lst.size() : 0;
-    }
-
-    public Object getValueAt(int paramInt1, int paramInt2)
-    {
-      if (this.lst == null) return null;
-      if ((paramInt1 < 0) || (paramInt1 >= this.lst.size())) return null;
-      String str = (String)this.lst.get(paramInt1);
-      return I18N.plane(str);
-    }
-
-    public void resolutionChanged()
-    {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
-    }
-
-    public Table(GWindow paramString, String paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float arg7)
-    {
-      super(paramFloat2, paramFloat3, paramFloat4, localObject);
-      this.bColumnsSizable = false;
-      addColumn(paramFloat1, null);
-      this.vSB.scroll = rowHeight(0);
-      resized();
-    }
-  }
 }

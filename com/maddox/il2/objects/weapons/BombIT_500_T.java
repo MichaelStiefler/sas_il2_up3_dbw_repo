@@ -1,18 +1,39 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BombIT_500_T.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class BombIT_500_T extends Bomb
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Bomb
+
+public class BombIT_500_T extends com.maddox.il2.objects.weapons.Bomb
 {
-  static
-  {
-    Class localClass = BombIT_500_T.class;
-    Property.set(localClass, "mesh", "3DO/Arms/500kgBombT/mono.sim");
-    Property.set(localClass, "radius", 170.0F);
-    Property.set(localClass, "power", 216.0F);
-    Property.set(localClass, "powerType", 0);
-    Property.set(localClass, "kalibr", 0.38F);
-    Property.set(localClass, "massa", 508.0F);
-    Property.set(localClass, "sound", "weapon.bomb_mid");
-  }
+
+    public BombIT_500_T()
+    {
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.BombIT_500_T.class;
+        com.maddox.rts.Property.set(class1, "mesh", "3DO/Arms/500kgBombT/mono.sim");
+        com.maddox.rts.Property.set(class1, "radius", 170F);
+        com.maddox.rts.Property.set(class1, "power", 216F);
+        com.maddox.rts.Property.set(class1, "powerType", 0);
+        com.maddox.rts.Property.set(class1, "kalibr", 0.38F);
+        com.maddox.rts.Property.set(class1, "massa", 508F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.bomb_mid");
+    }
 }

@@ -1,28 +1,49 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BombTorpType91Late.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class BombTorpType91Late extends Torpedo
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Torpedo
+
+public class BombTorpType91Late extends com.maddox.il2.objects.weapons.Torpedo
 {
-  static
-  {
-    Class localClass = BombTorpType91Late.class;
-    Property.set(localClass, "mesh", "3DO/Arms/Mk13_Torpedo/mono.sim");
-    Property.set(localClass, "radius", 90.800003F);
-    Property.set(localClass, "power", 181.89999F);
-    Property.set(localClass, "powerType", 0);
-    Property.set(localClass, "kalibr", 0.569F);
-    Property.set(localClass, "massa", 874.09998F);
-    Property.set(localClass, "sound", "weapon.torpedo");
-    Property.set(localClass, "velocity", 17.25F);
-    Property.set(localClass, "traveltime", 333.95361F);
-    Property.set(localClass, "startingspeed", 0.0F);
-    Property.set(localClass, "impactAngle", 20.0F);
-    Property.set(localClass, "impactAngleMin", 13.5F);
-    Property.set(localClass, "impactAngleMax", 26.5F);
-    Property.set(localClass, "impactSpeed", 117.0F);
-    Property.set(localClass, "armingTime", 4.0F);
-    Property.set(localClass, "dropAltitude", 60.0F);
-    Property.set(localClass, "dropSpeed", 330.0F);
-  }
+
+    public BombTorpType91Late()
+    {
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.BombTorpType91Late.class;
+        com.maddox.rts.Property.set(class1, "mesh", "3DO/Arms/Mk13_Torpedo/mono.sim");
+        com.maddox.rts.Property.set(class1, "radius", 90.8F);
+        com.maddox.rts.Property.set(class1, "power", 181.9F);
+        com.maddox.rts.Property.set(class1, "powerType", 0);
+        com.maddox.rts.Property.set(class1, "kalibr", 0.569F);
+        com.maddox.rts.Property.set(class1, "massa", 874.1F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.torpedo");
+        com.maddox.rts.Property.set(class1, "velocity", 17.25F);
+        com.maddox.rts.Property.set(class1, "traveltime", 333.9536F);
+        com.maddox.rts.Property.set(class1, "startingspeed", 0.0F);
+        com.maddox.rts.Property.set(class1, "impactAngle", 20F);
+        com.maddox.rts.Property.set(class1, "impactAngleMin", 13.5F);
+        com.maddox.rts.Property.set(class1, "impactAngleMax", 26.5F);
+        com.maddox.rts.Property.set(class1, "impactSpeed", 117F);
+        com.maddox.rts.Property.set(class1, "armingTime", 4F);
+        com.maddox.rts.Property.set(class1, "dropAltitude", 60F);
+        com.maddox.rts.Property.set(class1, "dropSpeed", 330F);
+    }
 }

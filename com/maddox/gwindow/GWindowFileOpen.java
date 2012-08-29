@@ -1,13 +1,24 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowFileOpen.java
+
 package com.maddox.gwindow;
 
-public class GWindowFileOpen extends GWindowFileBox
-{
-  public GWindowFileOpen(GWindow paramGWindow, boolean paramBoolean, String paramString, GFileFilter[] paramArrayOfGFileFilter)
-  {
-    super(paramGWindow, paramBoolean, paramGWindow.lAF().i18n("Open_file"), paramString, paramArrayOfGFileFilter);
-  }
 
-  public GWindowFileOpen(GWindow paramGWindow, boolean paramBoolean, String paramString1, String paramString2, GFileFilter[] paramArrayOfGFileFilter) {
-    super(paramGWindow, paramBoolean, paramString1, paramString2, paramArrayOfGFileFilter);
-  }
+// Referenced classes of package com.maddox.gwindow:
+//            GWindowFileBox, GWindow, GWindowLookAndFeel, GFileFilter
+
+public class GWindowFileOpen extends com.maddox.gwindow.GWindowFileBox
+{
+
+    public GWindowFileOpen(com.maddox.gwindow.GWindow gwindow, boolean flag, java.lang.String s, com.maddox.gwindow.GFileFilter agfilefilter[])
+    {
+        super(gwindow, flag, gwindow.lAF().i18n("Open_file"), s, agfilefilter);
+    }
+
+    public GWindowFileOpen(com.maddox.gwindow.GWindow gwindow, boolean flag, java.lang.String s, java.lang.String s1, com.maddox.gwindow.GFileFilter agfilefilter[])
+    {
+        super(gwindow, flag, s, s1, agfilefilter);
+    }
 }

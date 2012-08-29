@@ -1,34 +1,56 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MC_202_7.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
-public class MC_202_7 extends MC_202xyz
+// Referenced classes of package com.maddox.il2.objects.air:
+//            MC_202xyz, PaintSchemeFCSPar02, PaintSchemeFMPar01, NetAircraft
+
+public class MC_202_7 extends com.maddox.il2.objects.air.MC_202xyz
 {
-  static
-  {
-    Class localClass = CLASS.THIS();
-    new NetAircraft.SPAWN(localClass);
 
-    Property.set(localClass, "iconFar_shortClassName", "M.C.202");
+    public MC_202_7()
+    {
+    }
 
-    Property.set(localClass, "meshName_it", "3DO/Plane/MC-202_VII(it)/hier.him");
-    Property.set(localClass, "PaintScheme_it", new PaintSchemeFCSPar02());
-    Property.set(localClass, "meshName", "3DO/Plane/MC-202_VII(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar01());
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "yearService", 1942.0F);
-    Property.set(localClass, "yearExpired", 1948.5F);
-
-    Property.set(localClass, "FlightModel", "FlightModels/MC-202.fmd");
-    Property.set(localClass, "cockpitClass", CockpitMC_202.class);
-    Property.set(localClass, "LOSElevation", 0.81305F);
-
-    weaponTriggersRegister(localClass, new int[] { 1, 1, 0, 0 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunBredaSAFAT127siMC202 370", "MGunBredaSAFAT127siMC202 370", "MGunBredaSAFAT77k 500", "MGunBredaSAFAT77k 500" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.rts.CLASS.THIS();
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "M.C.202");
+        com.maddox.rts.Property.set(class1, "meshName_it", "3DO/Plane/MC-202_VII(it)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_it", new PaintSchemeFCSPar02());
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/MC-202_VII(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
+        com.maddox.rts.Property.set(class1, "yearService", 1942F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1948.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/MC-202.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitMC_202.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.81305F);
+        com.maddox.il2.objects.air.MC_202_7.weaponTriggersRegister(class1, new int[] {
+            1, 1, 0, 0
+        });
+        com.maddox.il2.objects.air.MC_202_7.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04"
+        });
+        com.maddox.il2.objects.air.MC_202_7.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBredaSAFAT127siMC202 370", "MGunBredaSAFAT127siMC202 370", "MGunBredaSAFAT77k 500", "MGunBredaSAFAT77k 500"
+        });
+        com.maddox.il2.objects.air.MC_202_7.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null
+        });
+    }
 }

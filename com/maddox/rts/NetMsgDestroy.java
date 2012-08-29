@@ -1,14 +1,24 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetMsgDestroy.java
+
 package com.maddox.rts;
 
-public class NetMsgDestroy extends NetMsgGuaranted
+
+// Referenced classes of package com.maddox.rts:
+//            NetMsgGuaranted, NetObj
+
+public class NetMsgDestroy extends com.maddox.rts.NetMsgGuaranted
 {
-  public NetMsgDestroy(NetObj paramNetObj)
-  {
-    super(null);
-    try { writeNetObj(paramNetObj);
-    }
-    catch (Exception localException)
+
+    public NetMsgDestroy(com.maddox.rts.NetObj netobj)
     {
+        super(null);
+        try
+        {
+            writeNetObj(netobj);
+        }
+        catch(java.lang.Exception exception) { }
     }
-  }
 }

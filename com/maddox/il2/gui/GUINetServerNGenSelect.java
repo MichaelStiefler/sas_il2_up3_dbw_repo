@@ -1,12 +1,16 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUINetServerNGenSelect.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
-import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowLookAndFeel;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
-import com.maddox.gwindow.GWindowTable.Column;
+import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.game.GameState;
 import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.I18N;
@@ -26,410 +30,513 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class GUINetServerNGenSelect extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUILookAndFeel, 
+//            GUIButton, GUIDialogClient, GUINetServer, GUISeparate
+
+public class GUINetServerNGenSelect extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public Table wTable;
-  public GUIButton bExit;
-  public GUIButton bDel;
-  public GUIButton bStart;
-  static Item cur = null;
-
-  public void _enter() {
-    NetEnv.cur().connect.bindEnable(true);
-
-    Main.cur().netServerParams.USGSupdate();
-    fillCampList();
-    this.wTable.resized();
-    this.client.activateWindow();
-  }
-  public void _leave() {
-    this.wTable.campList.clear();
-    this.client.hideWindow();
-  }
-
-  private void fillCampList() {
-    String str1 = RTSConf.cur.locale.getLanguage();
-    String str2 = "campaign";
-    String str3 = null;
-    if (!"us".equals(str1))
-      str3 = "_" + str1 + ".dat";
-    String str4 = ".dat";
-
-    File localFile = new File(HomePath.get(0), "ngen");
-    File[] arrayOfFile = localFile.listFiles();
-    String[] arrayOfString = localFile.list();
-    if ((arrayOfString == null) || (arrayOfString.length == 0)) return;
-
-    TreeMap localTreeMap = new TreeMap();
-    String str5;
-    Object localObject2;
-    for (int i = 0; i < arrayOfString.length; i++) {
-      if ((arrayOfFile[i].isDirectory()) || (arrayOfFile[i].isHidden()))
-        continue;
-      str5 = arrayOfString[i];
-      if (str5 != null) {
-        str5 = str5.toLowerCase();
-        if ((str5.length() <= str2.length()) || (!str5.regionMatches(true, 0, str2, 0, str2.length())))
-          continue;
-        int k = -1;
-        int m = 0;
-        if ((str3 != null) && (str5.length() > str3.length()) && (str5.regionMatches(true, str5.length() - str3.length(), str3, 0, str3.length())))
-        {
-          k = str5.length() - str3.length();
-          m = 1;
-        }
-        if ((k == -1) && (str5.length() > str4.length()) && (str5.regionMatches(true, str5.length() - str4.length(), str4, 0, str4.length())))
-        {
-          k = str5.length() - str4.length();
-          if ((str5.length() > str4.length() + 3) && (str5.charAt(str5.length() - str4.length() - 3) == '_'))
-            continue;
-          m = 0;
-        }
-        if (k >= str2.length()) {
-          localObject2 = str5.substring(str2.length(), k);
-          if ((m == 0) && (localTreeMap.containsKey(localObject2)))
-            continue;
-          localTreeMap.put(localObject2, str5);
-        }
-      }
-    }
-    if (localTreeMap.size() == 0) {
-      return;
-    }
-    Iterator localIterator = localTreeMap.keySet().iterator();
-    Object localObject1;
-    Item localItem2;
-    while (localIterator.hasNext()) {
-      str5 = (String)localIterator.next();
-      localObject1 = (String)localTreeMap.get(str5);
-      localItem2 = new Item();
-      localItem2.bNew = true;
-      localItem2.prefix = str5;
-      localItem2.fileName = ("ngen/" + (String)localObject1);
-      localObject2 = new SectFile(localItem2.fileName, 4, true, null, RTSConf.charEncoding, true);
-      localItem2.name = ((SectFile)localObject2).get("$locale", "name", "");
-      localItem2.note = ((SectFile)localObject2).get("$locale", "note", "");
-      this.wTable.campList.add(localItem2);
-    }
-
-    localFile = new File(HomePath.get(0), "missions/net/ngen");
-    arrayOfFile = localFile.listFiles();
-    int j;
-    if ((arrayOfFile != null) && (arrayOfFile.length > 0)) {
-      for (j = 0; j < arrayOfFile.length; j++) {
-        if ((!arrayOfFile[j].isDirectory()) || (arrayOfFile[j].isHidden())) continue;
-        try {
-          localObject1 = new File(arrayOfFile[j], "conf.dat");
-          if (((File)localObject1).exists()) {
-            localItem2 = new Item();
-            localItem2.bNew = false;
-            localItem2.fileName = ("missions/net/ngen/" + arrayOfFile[j].getName().toLowerCase() + "/conf.dat");
-            localObject2 = new SectFile(localItem2.fileName, 4, true, null, RTSConf.charEncoding, true);
-            localItem2.bEnd = ((SectFile)localObject2).get("$select", "complete", false);
-            localItem2.name = ((SectFile)localObject2).get("$locale", "name", "");
-            localItem2.note = ((SectFile)localObject2).get("$locale", "note", "");
-            this.wTable.campList.add(localItem2);
-            int n = ((SectFile)localObject2).sectionIndex("$missions");
-            if (n >= 0)
-              localItem2.missions = ((SectFile)localObject2).vars(n);
-          }
-        } catch (Exception localException) {
-          System.out.println(localException.getMessage());
-          localException.printStackTrace();
-        }
-      }
-    }
-
-    if (this.wTable.campList.size() == 0)
-      return;
-    if (cur != null) {
-      j = 0;
-      for (; j < this.wTable.campList.size(); j++) {
-        Item localItem1 = (Item)this.wTable.campList.get(j);
-        if (cur.equals(localItem1))
-          break;
-      }
-      if (j < this.wTable.campList.size())
-        this.wTable.setSelect(j, 0);
-      else
-        this.wTable.setSelect(0, 0);
-    }
-    else {
-      this.wTable.setSelect(0, 0);
-    }
-  }
-
-  public GUINetServerNGenSelect(GWindowRoot paramGWindowRoot)
-  {
-    super(68);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("ngens.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.wTable = new Table(this.dialogClient);
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-
-    this.bExit = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.bDel = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.bStart = ((GUIButton)this.dialogClient.addDefault(new GUIButton(this.dialogClient, localGTexture, 0.0F, 192.0F, 48.0F, 48.0F)));
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-    }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) {
-        return super.notify(paramGWindow, paramInt1, paramInt2);
-      }
-      if (paramGWindow == GUINetServerNGenSelect.this.bExit) {
-        GUINetServer.exitServer(true);
-        return true;
-      }
-      GUINetServerNGenSelect.Item localItem;
-      int i;
-      Object localObject;
-      if (paramGWindow == GUINetServerNGenSelect.this.bDel) {
-        if (GUINetServerNGenSelect.this.wTable.selectRow < 0) return true;
-        if (GUINetServerNGenSelect.this.wTable.selectRow >= GUINetServerNGenSelect.this.wTable.campList.size()) return true;
-        GUINetServerNGenSelect.cur = null;
-        localItem = (GUINetServerNGenSelect.Item)GUINetServerNGenSelect.this.wTable.campList.get(GUINetServerNGenSelect.this.wTable.selectRow);
-        try {
-          String str1 = localItem.fileName;
-          i = str1.lastIndexOf("/conf.dat");
-          if (i >= 0)
-            str1 = str1.substring(0, i);
-          localObject = new File(HomePath.get(0), str1);
-          clearDir((File)localObject);
-          GUINetServerNGenSelect.this.wTable.campList.remove(GUINetServerNGenSelect.this.wTable.selectRow);
-          if (GUINetServerNGenSelect.this.wTable.selectRow >= GUINetServerNGenSelect.this.wTable.campList.size())
-            GUINetServerNGenSelect.this.wTable.setSelect(GUINetServerNGenSelect.this.wTable.campList.size() - 1, 0);
-        } catch (Exception localException1) {
-          System.out.println(localException1.getMessage());
-          localException1.printStackTrace();
-          return true;
-        }
-        return true;
-      }if (paramGWindow == GUINetServerNGenSelect.this.bStart) {
-        if (GUINetServerNGenSelect.this.wTable.selectRow < 0) return true;
-        if (GUINetServerNGenSelect.this.wTable.selectRow >= GUINetServerNGenSelect.this.wTable.campList.size()) return true;
-        GUINetServerNGenSelect.cur = null;
-        localItem = (GUINetServerNGenSelect.Item)GUINetServerNGenSelect.this.wTable.campList.get(GUINetServerNGenSelect.this.wTable.selectRow);
-        if (localItem.bNew) {
-          try {
-            String str2 = localItem.prefix;
-            for (i = 1; i > 0; i++) {
-              localObject = new File(HomePath.get(0), "missions/net/ngen/" + str2 + i);
-              if (!((File)localObject).exists()) {
-                str2 = "missions/net/ngen/" + str2 + i;
-                ((File)localObject).mkdirs();
-                break;
-              }
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bExit)
+            {
+                com.maddox.il2.gui.GUINetServer.exitServer(true);
+                return true;
             }
-            String str3 = str2 + "/conf.dat";
-            localObject = new GUINetServerNGenSelect.Item(localItem);
-            ((GUINetServerNGenSelect.Item)localObject).bNew = false;
-            ((GUINetServerNGenSelect.Item)localObject).fileName = str3;
-            SectFile localSectFile = new SectFile(localItem.fileName, 0, true, null, RTSConf.charEncoding, true);
-            localSectFile.saveFile(str3);
+            if(gwindow == bDel)
+            {
+                if(wTable.selectRow < 0)
+                    return true;
+                if(wTable.selectRow >= wTable.campList.size())
+                    return true;
+                com.maddox.il2.gui.GUINetServerNGenSelect.cur = null;
+                com.maddox.il2.gui.Item item = (com.maddox.il2.gui.Item)wTable.campList.get(wTable.selectRow);
+                try
+                {
+                    java.lang.String s = item.fileName;
+                    int k = s.lastIndexOf("/conf.dat");
+                    if(k >= 0)
+                        s = s.substring(0, k);
+                    java.io.File file = new File(com.maddox.rts.HomePath.get(0), s);
+                    clearDir(file);
+                    wTable.campList.remove(wTable.selectRow);
+                    if(wTable.selectRow >= wTable.campList.size())
+                        wTable.setSelect(wTable.campList.size() - 1, 0);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    java.lang.System.out.println(exception.getMessage());
+                    exception.printStackTrace();
+                    return true;
+                }
+                return true;
+            }
+            if(gwindow == bStart)
+            {
+                if(wTable.selectRow < 0)
+                    return true;
+                if(wTable.selectRow >= wTable.campList.size())
+                    return true;
+                com.maddox.il2.gui.GUINetServerNGenSelect.cur = null;
+                com.maddox.il2.gui.Item item1 = (com.maddox.il2.gui.Item)wTable.campList.get(wTable.selectRow);
+                if(item1.bNew)
+                    try
+                    {
+                        java.lang.String s1 = item1.prefix;
+                        int l = 1;
+                        do
+                        {
+                            if(l <= 0)
+                                break;
+                            java.io.File file1 = new File(com.maddox.rts.HomePath.get(0), "missions/net/ngen/" + s1 + l);
+                            if(!file1.exists())
+                            {
+                                s1 = "missions/net/ngen/" + s1 + l;
+                                file1.mkdirs();
+                                break;
+                            }
+                            l++;
+                        } while(true);
+                        java.lang.String s2 = s1 + "/conf.dat";
+                        com.maddox.il2.gui.Item item2 = new Item(item1);
+                        item2.bNew = false;
+                        item2.fileName = s2;
+                        com.maddox.rts.SectFile sectfile = new SectFile(item1.fileName, 0, true, null, com.maddox.rts.RTSConf.charEncoding, true);
+                        sectfile.saveFile(s2);
+                        com.maddox.il2.gui.GUINetServerNGenSelect.cur = item2;
+                    }
+                    catch(java.lang.Exception exception1)
+                    {
+                        java.lang.System.out.println(exception1.getMessage());
+                        exception1.printStackTrace();
+                        return true;
+                    }
+                else
+                    com.maddox.il2.gui.GUINetServerNGenSelect.cur = item1;
+                if(com.maddox.il2.gui.GUINetServerNGenSelect.cur != null)
+                    com.maddox.il2.game.Main.stateStack().change(69);
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
+        }
 
-            GUINetServerNGenSelect.cur = (GUINetServerNGenSelect.Item)localObject;
-          }
-          catch (Exception localException2) {
-            System.out.println(localException2.getMessage());
-            localException2.printStackTrace();
-            return true;
-          }
-        }
-        else {
-          GUINetServerNGenSelect.cur = localItem;
-        }
-        if (GUINetServerNGenSelect.cur != null) {
-          Main.stateStack().change(69);
-        }
-        return true;
-      }
+        private void clearDir(java.io.File file)
+        {
+            java.io.File afile[] = file.listFiles();
+            if(afile != null)
+            {
+                for(int i = 0; i < afile.length; i++)
+                {
+                    java.io.File file1 = afile[i];
+                    java.lang.String s = file1.getName();
+                    if(".".equals(s) || "..".equals(s))
+                        continue;
+                    if(file1.isDirectory())
+                        clearDir(file1);
+                    else
+                        file1.delete();
+                }
 
-      return super.notify(paramGWindow, paramInt1, paramInt2);
+            }
+            file.delete();
+        }
+
+        public void preRender()
+        {
+            super.preRender();
+            if(wTable.isEnableDel())
+            {
+                if(!bDel.isVisible())
+                    bDel.showWindow();
+            } else
+            if(bDel.isVisible())
+                bDel.hideWindow();
+            if(wTable.isEnableLoad())
+            {
+                if(!bStart.isVisible())
+                    bStart.showWindow();
+            } else
+            if(bStart.isVisible())
+                bStart.hideWindow();
+        }
+
+        public void render()
+        {
+            super.render();
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(624F), x1024(960F), 2.0F);
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(96F), y1024(658F), x1024(128F), y1024(48F), 0, !com.maddox.il2.net.USGS.isUsed() && com.maddox.il2.game.Main.cur().netGameSpy == null ? i18n("netsms.MainMenu") : i18n("main.Quit"));
+            if(wTable.isEnableDel())
+                draw(x1024(256F), y1024(658F), x1024(160F), y1024(48F), 2, i18n("camps.Delete"));
+            if(wTable.isEnableLoad())
+                draw(x1024(766F), y1024(658F), x1024(160F), y1024(48F), 2, i18n("camps.Load"));
+        }
+
+        public void setPosSize()
+        {
+            set1024PosSize(0.0F, 32F, 1024F, 736F);
+            bExit.setPosC(x1024(56F), y1024(682F));
+            bDel.setPosC(x1024(456F), y1024(682F));
+            bStart.setPosC(x1024(968F), y1024(682F));
+            wTable.set1024PosSize(32F, 32F, 960F, 480F);
+        }
+
+        public DialogClient()
+        {
+        }
     }
 
-    private void clearDir(File paramFile) {
-      File[] arrayOfFile = paramFile.listFiles();
-      if (arrayOfFile != null) {
-        for (int i = 0; i < arrayOfFile.length; i++) {
-          File localFile = arrayOfFile[i];
-          String str = localFile.getName();
-          if ((".".equals(str)) || ("..".equals(str)))
-            continue;
-          if (localFile.isDirectory())
-            clearDir(localFile);
-          else
-            localFile.delete();
-        }
-      }
-      paramFile.delete();
-    }
-
-    public void preRender() {
-      super.preRender();
-      if (GUINetServerNGenSelect.this.wTable.isEnableDel()) {
-        if (!GUINetServerNGenSelect.this.bDel.isVisible()) GUINetServerNGenSelect.this.bDel.showWindow();
-      }
-      else if (GUINetServerNGenSelect.this.bDel.isVisible()) GUINetServerNGenSelect.this.bDel.hideWindow();
-
-      if (GUINetServerNGenSelect.this.wTable.isEnableLoad()) {
-        if (!GUINetServerNGenSelect.this.bStart.isVisible()) GUINetServerNGenSelect.this.bStart.showWindow();
-      }
-      else if (GUINetServerNGenSelect.this.bStart.isVisible()) GUINetServerNGenSelect.this.bStart.hideWindow();
-    }
-
-    public void render()
+    public class Table extends com.maddox.gwindow.GWindowTable
     {
-      super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(624.0F), x1024(960.0F), 2.0F);
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
 
-      draw(x1024(96.0F), y1024(658.0F), x1024(128.0F), y1024(48.0F), 0, (USGS.isUsed()) || (Main.cur().netGameSpy != null) ? GUINetServerNGenSelect.this.i18n("main.Quit") : GUINetServerNGenSelect.this.i18n("netsms.MainMenu"));
+        public int countRows()
+        {
+            return campList == null ? 0 : campList.size();
+        }
 
-      if (GUINetServerNGenSelect.this.wTable.isEnableDel())
-        draw(x1024(256.0F), y1024(658.0F), x1024(160.0F), y1024(48.0F), 2, GUINetServerNGenSelect.this.i18n("camps.Delete"));
-      if (GUINetServerNGenSelect.this.wTable.isEnableLoad())
-        draw(x1024(766.0F), y1024(658.0F), x1024(160.0F), y1024(48.0F), 2, GUINetServerNGenSelect.this.i18n("camps.Load"));
+        public void renderCell(int i, int j, boolean flag, float f, float f1)
+        {
+            setCanvasFont(0);
+            if(flag)
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
+            }
+            com.maddox.il2.gui.Item item = (com.maddox.il2.gui.Item)campList.get(i);
+            float f2 = 0.0F;
+            java.lang.String s = null;
+            int k = 0;
+            switch(j)
+            {
+            case 0: // '\0'
+                s = item.name;
+                break;
+
+            case 1: // '\001'
+                if(item.bNew)
+                    s = com.maddox.il2.game.I18N.gui("ngens.new");
+                else
+                if(item.bEnd)
+                    s = com.maddox.il2.game.I18N.gui("ngens.complete");
+                else
+                    s = com.maddox.il2.game.I18N.gui("ngens.progress");
+                k = 1;
+                break;
+
+            case 2: // '\002'
+                s = "" + item.missions;
+                k = 1;
+                break;
+
+            case 3: // '\003'
+                s = item.note;
+                break;
+            }
+            if(flag)
+            {
+                setCanvasColorWHITE();
+                draw(f2, 0.0F, f, f1, k, s);
+            } else
+            {
+                setCanvasColorBLACK();
+                draw(f2, 0.0F, f, f1, k, s);
+            }
+        }
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(super.notify(gwindow, i, j))
+            {
+                return true;
+            } else
+            {
+                notify(i, j);
+                return false;
+            }
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            bColumnsSizable = true;
+            bSelectRow = true;
+            addColumn(com.maddox.il2.game.I18N.gui("ngens.name"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("ngens.state"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("ngens.missions"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("ngens.note"), null);
+            vSB.scroll = rowHeight(0);
+            getColumn(0).setRelativeDx(10F);
+            getColumn(1).setRelativeDx(5F);
+            getColumn(2).setRelativeDx(5F);
+            getColumn(3).setRelativeDx(20F);
+            alignColumns();
+            bNotify = true;
+            wClient.bNotify = true;
+            resized();
+        }
+
+        public boolean isEnableDel()
+        {
+            if(campList == null)
+                return false;
+            if(selectRow < 0)
+                return false;
+            if(selectRow >= campList.size())
+            {
+                return false;
+            } else
+            {
+                com.maddox.il2.gui.Item item = (com.maddox.il2.gui.Item)campList.get(selectRow);
+                return !item.bNew;
+            }
+        }
+
+        public boolean isEnableLoad()
+        {
+            if(campList == null)
+                return false;
+            if(selectRow < 0)
+                return false;
+            if(selectRow >= campList.size())
+            {
+                return false;
+            } else
+            {
+                com.maddox.il2.gui.Item item = (com.maddox.il2.gui.Item)campList.get(selectRow);
+                return !item.bEnd;
+            }
+        }
+
+        public void resolutionChanged()
+        {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
+        }
+
+        public java.util.ArrayList campList;
+
+        public Table(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+            campList = new ArrayList();
+        }
     }
 
-    public void setPosSize() {
-      set1024PosSize(0.0F, 32.0F, 1024.0F, 736.0F);
-      GUINetServerNGenSelect.this.bExit.setPosC(x1024(56.0F), y1024(682.0F));
-      GUINetServerNGenSelect.this.bDel.setPosC(x1024(456.0F), y1024(682.0F));
-      GUINetServerNGenSelect.this.bStart.setPosC(x1024(968.0F), y1024(682.0F));
-      GUINetServerNGenSelect.this.wTable.set1024PosSize(32.0F, 32.0F, 960.0F, 480.0F);
-    }
-  }
+    static class Item
+    {
 
-  public class Table extends GWindowTable
-  {
-    public ArrayList campList = new ArrayList();
+        public boolean equals(java.lang.Object obj)
+        {
+            if(obj == null)
+                return false;
+            if(!(obj instanceof com.maddox.il2.gui.Item))
+            {
+                return false;
+            } else
+            {
+                com.maddox.il2.gui.Item item = (com.maddox.il2.gui.Item)obj;
+                return fileName.equalsIgnoreCase(item.fileName);
+            }
+        }
 
-    public int countRows() { return this.campList != null ? this.campList.size() : 0; }
+        public boolean bNew;
+        public boolean bEnd;
+        public java.lang.String prefix;
+        public java.lang.String fileName;
+        public java.lang.String name;
+        public int missions;
+        public java.lang.String note;
 
-    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-      setCanvasFont(0);
-      if (paramBoolean) {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, lookAndFeel().regionWhite);
-      }
-      GUINetServerNGenSelect.Item localItem = (GUINetServerNGenSelect.Item)this.campList.get(paramInt1);
-      float f = 0.0F;
-      String str = null;
-      int i = 0;
-      switch (paramInt2) { case 0:
-        str = localItem.name; break;
-      case 1:
-        if (localItem.bNew) str = I18N.gui("ngens.new");
-        else if (localItem.bEnd) str = I18N.gui("ngens.complete"); else
-          str = I18N.gui("ngens.progress");
-        i = 1; break;
-      case 2:
-        str = "" + localItem.missions;
-        i = 1; break;
-      case 3:
-        str = localItem.note;
-      }
-      if (paramBoolean) {
-        setCanvasColorWHITE();
-        draw(f, 0.0F, paramFloat1, paramFloat2, i, str);
-      } else {
-        setCanvasColorBLACK();
-        draw(f, 0.0F, paramFloat1, paramFloat2, i, str);
-      }
+        public Item()
+        {
+            name = "";
+            missions = 0;
+            note = "";
+        }
+
+        public Item(com.maddox.il2.gui.Item item)
+        {
+            name = "";
+            missions = 0;
+            note = "";
+            bNew = item.bNew;
+            bEnd = item.bEnd;
+            fileName = item.fileName;
+            name = item.name;
+            missions = item.missions;
+            note = item.note;
+        }
     }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-      if (super.notify(paramGWindow, paramInt1, paramInt2))
-        return true;
-      notify(paramInt1, paramInt2);
-      return false;
-    }
-    public void afterCreated() {
-      super.afterCreated();
-      this.bColumnsSizable = true;
-      this.bSelectRow = true;
-      addColumn(I18N.gui("ngens.name"), null);
-      addColumn(I18N.gui("ngens.state"), null);
-      addColumn(I18N.gui("ngens.missions"), null);
-      addColumn(I18N.gui("ngens.note"), null);
-      this.vSB.scroll = rowHeight(0);
-      getColumn(0).setRelativeDx(10.0F);
-      getColumn(1).setRelativeDx(5.0F);
-      getColumn(2).setRelativeDx(5.0F);
-      getColumn(3).setRelativeDx(20.0F);
-      alignColumns();
-      this.bNotify = true;
-      this.wClient.bNotify = true;
 
-      resized();
+    public void _enter()
+    {
+        com.maddox.rts.NetEnv.cur().connect.bindEnable(true);
+        com.maddox.il2.game.Main.cur().netServerParams.USGSupdate();
+        fillCampList();
+        wTable.resized();
+        client.activateWindow();
     }
-    public boolean isEnableDel() {
-      if (this.campList == null) return false;
-      if (this.selectRow < 0) return false;
-      if (this.selectRow >= this.campList.size()) return false;
-      GUINetServerNGenSelect.Item localItem = (GUINetServerNGenSelect.Item)this.campList.get(this.selectRow);
-      return !localItem.bNew;
-    }
-    public boolean isEnableLoad() {
-      if (this.campList == null) return false;
-      if (this.selectRow < 0) return false;
-      if (this.selectRow >= this.campList.size()) return false;
-      GUINetServerNGenSelect.Item localItem = (GUINetServerNGenSelect.Item)this.campList.get(this.selectRow);
-      return !localItem.bEnd;
-    }
-    public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
-    }
-    public Table(GWindow arg2) {
-      super();
-    }
-  }
 
-  static class Item
-  {
-    public boolean bNew;
-    public boolean bEnd;
-    public String prefix;
-    public String fileName;
-    public String name = "";
-    public int missions = 0;
-    public String note = "";
+    public void _leave()
+    {
+        wTable.campList.clear();
+        client.hideWindow();
+    }
 
-    public boolean equals(Object paramObject) {
-      if (paramObject == null) return false;
-      if (!(paramObject instanceof Item)) return false;
-      Item localItem = (Item)paramObject;
-      return this.fileName.equalsIgnoreCase(localItem.fileName);
+    private void fillCampList()
+    {
+        java.lang.String s = com.maddox.rts.RTSConf.cur.locale.getLanguage();
+        java.lang.String s1 = "campaign";
+        java.lang.String s2 = null;
+        if(!"us".equals(s))
+            s2 = "_" + s + ".dat";
+        java.lang.String s3 = ".dat";
+        java.io.File file = new File(com.maddox.rts.HomePath.get(0), "ngen");
+        java.io.File afile[] = file.listFiles();
+        java.lang.String as[] = file.list();
+        if(as == null || as.length == 0)
+            return;
+        java.util.TreeMap treemap = new TreeMap();
+        for(int i = 0; i < as.length; i++)
+        {
+            if(afile[i].isDirectory() || afile[i].isHidden())
+                continue;
+            java.lang.String s4 = as[i];
+            if(s4 == null)
+                continue;
+            s4 = s4.toLowerCase();
+            if(s4.length() <= s1.length() || !s4.regionMatches(true, 0, s1, 0, s1.length()))
+                continue;
+            int l = -1;
+            boolean flag = false;
+            if(s2 != null && s4.length() > s2.length() && s4.regionMatches(true, s4.length() - s2.length(), s2, 0, s2.length()))
+            {
+                l = s4.length() - s2.length();
+                flag = true;
+            }
+            if(l == -1 && s4.length() > s3.length() && s4.regionMatches(true, s4.length() - s3.length(), s3, 0, s3.length()))
+            {
+                l = s4.length() - s3.length();
+                if(s4.length() > s3.length() + 3 && s4.charAt(s4.length() - s3.length() - 3) == '_')
+                    continue;
+                flag = false;
+            }
+            if(l < s1.length())
+                continue;
+            java.lang.String s7 = s4.substring(s1.length(), l);
+            if(flag || !treemap.containsKey(s7))
+                treemap.put(s7, s4);
+        }
+
+        if(treemap.size() == 0)
+            return;
+        com.maddox.il2.gui.Item item1;
+        for(java.util.Iterator iterator = treemap.keySet().iterator(); iterator.hasNext(); wTable.campList.add(item1))
+        {
+            java.lang.String s5 = (java.lang.String)iterator.next();
+            java.lang.String s6 = (java.lang.String)treemap.get(s5);
+            item1 = new Item();
+            item1.bNew = true;
+            item1.prefix = s5;
+            item1.fileName = "ngen/" + s6;
+            com.maddox.rts.SectFile sectfile = new SectFile(item1.fileName, 4, true, null, com.maddox.rts.RTSConf.charEncoding, true);
+            item1.name = sectfile.get("$locale", "name", "");
+            item1.note = sectfile.get("$locale", "note", "");
+        }
+
+        file = new File(com.maddox.rts.HomePath.get(0), "missions/net/ngen");
+        afile = file.listFiles();
+        if(afile != null && afile.length > 0)
+        {
+            for(int j = 0; j < afile.length;)
+            {
+                if(!afile[j].isDirectory() || afile[j].isHidden())
+                    continue;
+                try
+                {
+                    java.io.File file1 = new File(afile[j], "conf.dat");
+                    if(!file1.exists())
+                        continue;
+                    com.maddox.il2.gui.Item item2 = new Item();
+                    item2.bNew = false;
+                    item2.fileName = "missions/net/ngen/" + afile[j].getName().toLowerCase() + "/conf.dat";
+                    com.maddox.rts.SectFile sectfile1 = new SectFile(item2.fileName, 4, true, null, com.maddox.rts.RTSConf.charEncoding, true);
+                    item2.bEnd = sectfile1.get("$select", "complete", false);
+                    item2.name = sectfile1.get("$locale", "name", "");
+                    item2.note = sectfile1.get("$locale", "note", "");
+                    wTable.campList.add(item2);
+                    int i1 = sectfile1.sectionIndex("$missions");
+                    if(i1 >= 0)
+                        item2.missions = sectfile1.vars(i1);
+                    continue;
+                }
+                catch(java.lang.Exception exception)
+                {
+                    java.lang.System.out.println(exception.getMessage());
+                    exception.printStackTrace();
+                    j++;
+                }
+            }
+
+        }
+        if(wTable.campList.size() == 0)
+            return;
+        if(cur != null)
+        {
+            int k = 0;
+            do
+            {
+                if(k >= wTable.campList.size())
+                    break;
+                com.maddox.il2.gui.Item item = (com.maddox.il2.gui.Item)wTable.campList.get(k);
+                if(cur.equals(item))
+                    break;
+                k++;
+            } while(true);
+            if(k < wTable.campList.size())
+                wTable.setSelect(k, 0);
+            else
+                wTable.setSelect(0, 0);
+        } else
+        {
+            wTable.setSelect(0, 0);
+        }
     }
-    public Item() {
+
+    public GUINetServerNGenSelect(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(68);
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("ngens.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        wTable = new Table(dialogClient);
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bExit = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        bDel = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        bStart = (com.maddox.il2.gui.GUIButton)dialogClient.addDefault(new GUIButton(dialogClient, gtexture, 0.0F, 192F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
     }
-    public Item(Item paramItem) {
-      this.bNew = paramItem.bNew;
-      this.bEnd = paramItem.bEnd;
-      this.fileName = paramItem.fileName;
-      this.name = paramItem.name;
-      this.missions = paramItem.missions;
-      this.note = paramItem.note;
-    }
-  }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.Table wTable;
+    public com.maddox.il2.gui.GUIButton bExit;
+    public com.maddox.il2.gui.GUIButton bDel;
+    public com.maddox.il2.gui.GUIButton bStart;
+    static com.maddox.il2.gui.Item cur = null;
+
 }

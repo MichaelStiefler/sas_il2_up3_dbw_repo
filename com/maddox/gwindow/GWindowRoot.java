@@ -1,342 +1,445 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowRoot.java
+
 package com.maddox.gwindow;
 
 import com.maddox.rts.Mouse;
 import java.util.ArrayList;
 
-public class GWindowRoot extends GWindow
+// Referenced classes of package com.maddox.gwindow:
+//            GWindow, GFont, GCursor, GPoint, 
+//            GSize, GRegion, GWindowManager, GWindowLookAndFeel, 
+//            GCanvas
+
+public class GWindowRoot extends com.maddox.gwindow.GWindow
 {
-  public static long TIME_DOUBLE_CLICK = 600L;
 
-  public boolean bInRender = false;
-
-  public float deltaTimeSec = 0.0F;
-  public GCanvas C;
-  public GWindowLookAndFeel lookAndFeel;
-  public GFont[] textFonts = new GFont[8];
-
-  public GCursor[] mouseCursors = new GCursor[16];
-  public GCursor mouseOverCursor;
-  public GWindowManager manager;
-  public GWindow modalWindow;
-  public boolean bMouseCapture = false;
-  public GWindow mouseWindow;
-  public GWindow mouseOldWindow;
-  public GPoint mousePos = new GPoint();
-  public float mousePosZ = 0.0F;
-
-  public GPoint mouseOldPos = new GPoint();
-  public float mouseOldPosZ = 0.0F;
-
-  public GSize mouseStep = new GSize();
-  public float mouseStepZ = 0.0F;
-
-  public GSize mouseRelMove = new GSize();
-  public float mouseRelMoveZ = 0.0F;
-
-  public GWindow[] mouseWindowDown = new GWindow[7];
-
-  protected GWindow[] mouseWindowUp = new GWindow[7];
-  protected long[] mouseTimeUp = new long[7];
-  public GWindow keyFocusWindow;
-  protected boolean bDoCheckKeyFocusWindow = false;
-  private GWindow _findWindowUnder;
-  private GPoint _findTest = new GPoint();
-  private GPoint _findOrg = new GPoint();
-  private GRegion _findClip = new GRegion();
-
-  protected ArrayList mouseListeners = new ArrayList();
-
-  protected ArrayList keyListeners = new ArrayList();
-
-  public final GWindow findWindowUnder(float paramFloat1, float paramFloat2)
-  {
-    this._findWindowUnder = this;
-    this._findTest.set(paramFloat1, paramFloat2);
-    this._findOrg.set(0.0F, 0.0F);
-    this._findClip.set(this.win);
-    findWindowUnder(this, paramFloat1, paramFloat2);
-    return this._findWindowUnder;
-  }
-
-  private void findWindowUnder(GWindow paramGWindow, float paramFloat1, float paramFloat2) {
-    GPoint localGPoint = this._findOrg;
-    GRegion localGRegion = this._findClip;
-    float f1 = localGPoint.x;
-    float f2 = localGPoint.y;
-    localGPoint.add(paramGWindow.win.x, paramGWindow.win.y);
-    paramFloat1 -= paramGWindow.win.x; paramFloat2 -= paramGWindow.win.y;
-    float f3 = localGRegion.x;
-    float f4 = localGRegion.y;
-    float f5 = localGRegion.dx;
-    float f6 = localGRegion.dy;
-
-    if (paramGWindow.bClip) {
-      float f7 = localGRegion.x - localGPoint.x;
-      if (f7 < 0.0F) {
-        localGRegion.dx += f7; if (localGRegion.dx <= 0.0F) break label569; localGRegion.x = localGPoint.x;
-        f7 = 0.0F;
-      }
-      f7 = localGRegion.dx + f7 - paramGWindow.win.dx;
-      if (f7 > 0.0F) {
-        localGRegion.dx -= f7; if (localGRegion.dx <= 0.0F) break label569; 
-      }
-      f7 = localGRegion.y - localGPoint.y;
-      if (f7 < 0.0F) {
-        localGRegion.dy += f7; if (localGRegion.dy <= 0.0F) break label569; localGRegion.y = localGPoint.y;
-        f7 = 0.0F;
-      }
-      f7 = localGRegion.dy + f7 - paramGWindow.win.dy;
-      if (f7 > 0.0F) {
-        localGRegion.dy -= f7; if (localGRegion.dy <= 0.0F) break label569; 
-      }
-      if ((this._findTest.x >= localGRegion.x) && (this._findTest.x < localGRegion.x + localGRegion.dx) && (this._findTest.y >= localGRegion.y) && (this._findTest.y < localGRegion.y + localGRegion.dy) && (!paramGWindow.isMousePassThrough(paramFloat1, paramFloat2)))
-      {
-        this._findWindowUnder = paramGWindow;
-      }
-    } else {
-      localGRegion.set(this.root.win);
-      if ((this._findTest.x >= localGPoint.x) && (this._findTest.x < localGPoint.x + paramGWindow.win.dx) && (this._findTest.y >= localGPoint.y) && (this._findTest.y < localGPoint.y + paramGWindow.win.dy) && (!paramGWindow.isMousePassThrough(paramFloat1, paramFloat2)))
-      {
-        this._findWindowUnder = paramGWindow;
-      }
-    }
-    if (paramGWindow.childWindow != null) {
-      int i = paramGWindow.childWindow.size();
-      for (int j = 0; j < i; j++) {
-        GWindow localGWindow = (GWindow)paramGWindow.childWindow.get(j);
-        findWindowUnder(localGWindow, paramFloat1, paramFloat2);
-      }
-
+    public final com.maddox.gwindow.GWindow findWindowUnder(float f, float f1)
+    {
+        _findWindowUnder = this;
+        _findTest.set(f, f1);
+        _findOrg.set(0.0F, 0.0F);
+        _findClip.set(win);
+        findWindowUnder(((com.maddox.gwindow.GWindow) (this)), f, f1);
+        return _findWindowUnder;
     }
 
-    label569: localGRegion.set(f3, f4, f5, f6);
-    localGPoint.set(f1, f2);
-  }
+    private void findWindowUnder(com.maddox.gwindow.GWindow gwindow, float f, float f1)
+    {
+        com.maddox.gwindow.GPoint gpoint;
+        com.maddox.gwindow.GRegion gregion;
+        float f2;
+        float f3;
+        float f4;
+        float f5;
+        float f6;
+        float f7;
+label0:
+        {
+            gpoint = _findOrg;
+            gregion = _findClip;
+            f2 = gpoint.x;
+            f3 = gpoint.y;
+            gpoint.add(gwindow.win.x, gwindow.win.y);
+            f -= gwindow.win.x;
+            f1 -= gwindow.win.y;
+            f4 = gregion.x;
+            f5 = gregion.y;
+            f6 = gregion.dx;
+            f7 = gregion.dy;
+            if(gwindow.bClip)
+            {
+                float f8 = gregion.x - gpoint.x;
+                if(f8 < 0.0F)
+                {
+                    gregion.dx += f8;
+                    if(gregion.dx <= 0.0F)
+                        break label0;
+                    gregion.x = gpoint.x;
+                    f8 = 0.0F;
+                }
+                f8 = (gregion.dx + f8) - gwindow.win.dx;
+                if(f8 > 0.0F)
+                {
+                    gregion.dx -= f8;
+                    if(gregion.dx <= 0.0F)
+                        break label0;
+                }
+                f8 = gregion.y - gpoint.y;
+                if(f8 < 0.0F)
+                {
+                    gregion.dy += f8;
+                    if(gregion.dy <= 0.0F)
+                        break label0;
+                    gregion.y = gpoint.y;
+                    f8 = 0.0F;
+                }
+                f8 = (gregion.dy + f8) - gwindow.win.dy;
+                if(f8 > 0.0F)
+                {
+                    gregion.dy -= f8;
+                    if(gregion.dy <= 0.0F)
+                        break label0;
+                }
+                if(_findTest.x >= gregion.x && _findTest.x < gregion.x + gregion.dx && _findTest.y >= gregion.y && _findTest.y < gregion.y + gregion.dy && !gwindow.isMousePassThrough(f, f1))
+                    _findWindowUnder = gwindow;
+            } else
+            {
+                gregion.set(root.win);
+                if(_findTest.x >= gpoint.x && _findTest.x < gpoint.x + gwindow.win.dx && _findTest.y >= gpoint.y && _findTest.y < gpoint.y + gwindow.win.dy && !gwindow.isMousePassThrough(f, f1))
+                    _findWindowUnder = gwindow;
+            }
+            if(gwindow.childWindow != null)
+            {
+                int i = gwindow.childWindow.size();
+                for(int j = 0; j < i; j++)
+                {
+                    com.maddox.gwindow.GWindow gwindow1 = (com.maddox.gwindow.GWindow)gwindow.childWindow.get(j);
+                    findWindowUnder(gwindow1, f, f1);
+                }
 
-  protected void doPreRender()
-  {
-    super.doRender(false);
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
-    if (this.manager.bMouseActive) {
-      GCursor localGCursor = this.mouseOverCursor;
-      if (localGCursor == null)
-        localGCursor = this.mouseCursors[this.mouseWindow.mouseCursor];
-      if ((localGCursor != null) && 
-        (!Mouse.adapter().isExistMouseCursorAdapter()))
-        localGCursor.preRender(this);
+            }
+        }
+        gregion.set(f4, f5, f6, f7);
+        gpoint.set(f2, f3);
     }
-  }
 
-  protected void doRender()
-  {
-    super.doRender(true);
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
-    if (this.manager.bMouseActive) {
-      GCursor localGCursor = this.mouseOverCursor;
-      if (localGCursor == null)
-        localGCursor = this.mouseCursors[this.mouseWindow.mouseCursor];
-      if (localGCursor != null)
-        if (Mouse.adapter().isExistMouseCursorAdapter())
-          Mouse.adapter().setMouseCursor(localGCursor.nativeCursor);
-        else
-          localGCursor.render(this);
+    protected void doPreRender()
+    {
+        super.doRender(false);
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+        if(manager.bMouseActive)
+        {
+            com.maddox.gwindow.GCursor gcursor = mouseOverCursor;
+            if(gcursor == null)
+                gcursor = mouseCursors[mouseWindow.mouseCursor];
+            if(gcursor != null && !com.maddox.rts.Mouse.adapter().isExistMouseCursorAdapter())
+                gcursor.preRender(this);
+        }
     }
-  }
 
-  protected void doMouseMove(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    this.mouseRelMove.set(paramFloat1, paramFloat2);
-    this.mouseRelMoveZ = paramFloat3;
-    if (this.mouseWindow != null)
-      this.mouseWindow.mouseRelMove(paramFloat1, paramFloat2, paramFloat3);
-  }
-
-  protected void doMouseAbsMove(float paramFloat1, float paramFloat2, float paramFloat3) {
-    this.mouseOldPos.set(this.mousePos);
-    this.mouseOldPosZ = this.mousePosZ;
-    this.mousePos.set(paramFloat1, paramFloat2);
-    this.mousePosZ = paramFloat3;
-    this.mouseStep.set(this.mousePos.x - this.mouseOldPos.x, this.mousePos.y - this.mouseOldPos.y);
-    this.mouseStepZ = (this.mousePosZ - this.mouseOldPosZ);
-    Object localObject;
-    for (int i = 0; i < this.mouseListeners.size(); i++) {
-      localObject = (GWindow)this.mouseListeners.get(i);
-      if (!((GWindow)localObject).isWaitModal())
-        ((GWindow)localObject).msgMouseMove(true, paramFloat1, paramFloat2);
+    protected void doRender()
+    {
+        super.doRender(true);
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+        if(manager.bMouseActive)
+        {
+            com.maddox.gwindow.GCursor gcursor = mouseOverCursor;
+            if(gcursor == null)
+                gcursor = mouseCursors[mouseWindow.mouseCursor];
+            if(gcursor != null)
+                if(com.maddox.rts.Mouse.adapter().isExistMouseCursorAdapter())
+                    com.maddox.rts.Mouse.adapter().setMouseCursor(gcursor.nativeCursor);
+                else
+                    gcursor.render(this);
+        }
     }
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
-    GWindow localGWindow1;
-    if (!this.bMouseCapture) {
-      localGWindow1 = findWindowUnder(paramFloat1, paramFloat2);
-      if (localGWindow1.isWaitModal())
-        localGWindow1 = this.modalWindow;
-    } else {
-      localGWindow1 = this.mouseWindow;
+
+    protected void doMouseMove(float f, float f1, float f2)
+    {
+        mouseRelMove.set(f, f1);
+        mouseRelMoveZ = f2;
+        if(mouseWindow != null)
+            mouseWindow.mouseRelMove(f, f1, f2);
     }
-    if (localGWindow1 != this.mouseWindow) {
-      this.mouseOldWindow = this.mouseWindow;
-      this.mouseWindow = localGWindow1;
-      this.mouseOldWindow.mouseLeave();
-      this.mouseWindow.mouseEnter();
-      localObject = this.mouseWindow.getMouseXY();
-      this.mouseWindow.mouseMove(((GPoint)localObject).x, ((GPoint)localObject).y);
-    } else if ((this.mousePos.x != this.mouseOldPos.x) || (this.mousePos.y != this.mouseOldPos.y)) {
-      localObject = this.mouseWindow.getMouseXY();
-      this.mouseWindow.mouseMove(((GPoint)localObject).x, ((GPoint)localObject).y);
+
+    protected void doMouseAbsMove(float f, float f1, float f2)
+    {
+        mouseOldPos.set(mousePos);
+        mouseOldPosZ = mousePosZ;
+        mousePos.set(f, f1);
+        mousePosZ = f2;
+        mouseStep.set(mousePos.x - mouseOldPos.x, mousePos.y - mouseOldPos.y);
+        mouseStepZ = mousePosZ - mouseOldPosZ;
+        for(int i = 0; i < mouseListeners.size(); i++)
+        {
+            com.maddox.gwindow.GWindow gwindow1 = (com.maddox.gwindow.GWindow)mouseListeners.get(i);
+            if(!gwindow1.isWaitModal())
+                gwindow1.msgMouseMove(true, f, f1);
+        }
+
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+        com.maddox.gwindow.GWindow gwindow;
+        if(!bMouseCapture)
+        {
+            gwindow = findWindowUnder(f, f1);
+            if(gwindow.isWaitModal())
+                gwindow = modalWindow;
+        } else
+        {
+            gwindow = mouseWindow;
+        }
+        if(gwindow != mouseWindow)
+        {
+            mouseOldWindow = mouseWindow;
+            mouseWindow = gwindow;
+            mouseOldWindow.mouseLeave();
+            mouseWindow.mouseEnter();
+            com.maddox.gwindow.GPoint gpoint = mouseWindow.getMouseXY();
+            mouseWindow.mouseMove(gpoint.x, gpoint.y);
+        } else
+        if(mousePos.x != mouseOldPos.x || mousePos.y != mouseOldPos.y)
+        {
+            com.maddox.gwindow.GPoint gpoint1 = mouseWindow.getMouseXY();
+            mouseWindow.mouseMove(gpoint1.x, gpoint1.y);
+        }
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+        for(int j = 0; j < mouseListeners.size(); j++)
+        {
+            com.maddox.gwindow.GWindow gwindow2 = (com.maddox.gwindow.GWindow)mouseListeners.get(j);
+            if(!gwindow2.isWaitModal())
+                gwindow2.msgMouseMove(false, f, f1);
+        }
+
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
     }
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
-    for (int j = 0; j < this.mouseListeners.size(); j++) {
-      GWindow localGWindow2 = (GWindow)this.mouseListeners.get(j);
-      if (!localGWindow2.isWaitModal())
-        localGWindow2.msgMouseMove(false, paramFloat1, paramFloat2);
+
+    protected void doMouseButton(int i, boolean flag, float f, float f1)
+    {
+        for(int j = 0; j < mouseListeners.size(); j++)
+        {
+            com.maddox.gwindow.GWindow gwindow1 = (com.maddox.gwindow.GWindow)mouseListeners.get(j);
+            if(!gwindow1.isWaitModal())
+                gwindow1.msgMouseButton(true, i, flag, f, f1);
+        }
+
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+        if(!bMouseCapture)
+        {
+            com.maddox.gwindow.GWindow gwindow = findWindowUnder(f, f1);
+            if(gwindow.isWaitModal())
+                gwindow = modalWindow;
+            if(gwindow != mouseWindow)
+            {
+                mouseOldWindow = mouseWindow;
+                mouseWindow = gwindow;
+                mouseOldWindow.mouseLeave();
+                mouseWindow.mouseEnter();
+                if(bDoCheckKeyFocusWindow)
+                    doCheckKeyFocusWindow();
+            }
+        }
+        com.maddox.gwindow.GPoint gpoint = mouseWindow.getMouseXY();
+        mouseWindow._mouseButton(i, flag, gpoint.x, gpoint.y);
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+        for(int k = 0; k < mouseListeners.size(); k++)
+        {
+            com.maddox.gwindow.GWindow gwindow2 = (com.maddox.gwindow.GWindow)mouseListeners.get(k);
+            if(!gwindow2.isWaitModal())
+                gwindow2.msgMouseButton(false, i, flag, f, f1);
+        }
+
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
     }
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow(); 
-  }
 
-  protected void doMouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
-  {
-    for (int i = 0; i < this.mouseListeners.size(); i++) {
-      GWindow localGWindow1 = (GWindow)this.mouseListeners.get(i);
-      if (!localGWindow1.isWaitModal())
-        localGWindow1.msgMouseButton(true, paramInt, paramBoolean, paramFloat1, paramFloat2);
+    public void registerMouseListener(com.maddox.gwindow.GWindow gwindow)
+    {
+        if(!mouseListeners.contains(gwindow))
+            mouseListeners.add(gwindow);
     }
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
 
-    if (!this.bMouseCapture) {
-      localObject = findWindowUnder(paramFloat1, paramFloat2);
-      if (((GWindow)localObject).isWaitModal())
-        localObject = this.modalWindow;
-      if (localObject != this.mouseWindow) {
-        this.mouseOldWindow = this.mouseWindow;
-        this.mouseWindow = ((GWindow)localObject);
-        this.mouseOldWindow.mouseLeave();
-        this.mouseWindow.mouseEnter();
-        if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
-      }
+    public void unRegisterMouseListener(com.maddox.gwindow.GWindow gwindow)
+    {
+        int i = mouseListeners.indexOf(gwindow);
+        if(i >= 0)
+            mouseListeners.remove(i);
     }
-    Object localObject = this.mouseWindow.getMouseXY();
-    this.mouseWindow._mouseButton(paramInt, paramBoolean, ((GPoint)localObject).x, ((GPoint)localObject).y);
 
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
-
-    for (int j = 0; j < this.mouseListeners.size(); j++) {
-      GWindow localGWindow2 = (GWindow)this.mouseListeners.get(j);
-      if (!localGWindow2.isWaitModal())
-        localGWindow2.msgMouseButton(false, paramInt, paramBoolean, paramFloat1, paramFloat2);
+    public void registerKeyListener(com.maddox.gwindow.GWindow gwindow)
+    {
+        if(!keyListeners.contains(gwindow))
+            keyListeners.add(gwindow);
     }
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
-  }
 
-  public void registerMouseListener(GWindow paramGWindow)
-  {
-    if (!this.mouseListeners.contains(paramGWindow))
-      this.mouseListeners.add(paramGWindow);
-  }
-
-  public void unRegisterMouseListener(GWindow paramGWindow) {
-    int i = this.mouseListeners.indexOf(paramGWindow);
-    if (i >= 0)
-      this.mouseListeners.remove(i);
-  }
-
-  public void registerKeyListener(GWindow paramGWindow)
-  {
-    if (!this.keyListeners.contains(paramGWindow))
-      this.keyListeners.add(paramGWindow);
-  }
-
-  public void unRegisterKeyListener(GWindow paramGWindow) {
-    int i = this.keyListeners.indexOf(paramGWindow);
-    if (i >= 0)
-      this.keyListeners.remove(i);
-  }
-
-  protected void doCheckKeyFocusWindow()
-  {
-    this.bDoCheckKeyFocusWindow = false;
-    GWindow localGWindow = checkKeyFocusWindow();
-    if (localGWindow.isWaitModal())
-      return;
-    if (localGWindow != this.keyFocusWindow) {
-      this.keyFocusWindow.keyFocusExit();
-      this.keyFocusWindow = localGWindow;
-      this.keyFocusWindow.keyFocusEnter();
+    public void unRegisterKeyListener(com.maddox.gwindow.GWindow gwindow)
+    {
+        int i = keyListeners.indexOf(gwindow);
+        if(i >= 0)
+            keyListeners.remove(i);
     }
-  }
 
-  protected void doKeyboardKey(int paramInt, boolean paramBoolean) {
-    for (int i = this.keyListeners.size() - 1; i >= 0; i--) {
-      GWindow localGWindow = (GWindow)this.keyListeners.get(i);
-      if ((!localGWindow.isWaitModal()) && 
-        (localGWindow.hotKey(paramInt, paramBoolean)))
-        return;
+    protected void doCheckKeyFocusWindow()
+    {
+        bDoCheckKeyFocusWindow = false;
+        com.maddox.gwindow.GWindow gwindow = checkKeyFocusWindow();
+        if(gwindow.isWaitModal())
+            return;
+        if(gwindow != keyFocusWindow)
+        {
+            keyFocusWindow.keyFocusExit();
+            keyFocusWindow = gwindow;
+            keyFocusWindow.keyFocusEnter();
+        }
     }
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
-    this.keyFocusWindow.keyboardKey(paramInt, paramBoolean);
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow(); 
-  }
 
-  protected void doKeyboardChar(char paramChar) {
-    for (int i = this.keyListeners.size() - 1; i >= 0; i--) {
-      GWindow localGWindow = (GWindow)this.keyListeners.get(i);
-      if ((!localGWindow.isWaitModal()) && 
-        (localGWindow.hotKeyChar(paramChar)))
-        return;
+    protected void doKeyboardKey(int i, boolean flag)
+    {
+        for(int j = keyListeners.size() - 1; j >= 0; j--)
+        {
+            com.maddox.gwindow.GWindow gwindow = (com.maddox.gwindow.GWindow)keyListeners.get(j);
+            if(!gwindow.isWaitModal() && gwindow.hotKey(i, flag))
+                return;
+        }
+
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+        keyFocusWindow.keyboardKey(i, flag);
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
     }
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();
-    this.keyFocusWindow.keyboardChar(paramChar);
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow(); 
-  }
 
-  protected void doJoyButton(int paramInt1, int paramInt2, boolean paramBoolean)
-  {
-    this.keyFocusWindow.joyButton(paramInt1, paramInt2, paramBoolean);
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow(); 
-  }
+    protected void doKeyboardChar(char c)
+    {
+        for(int i = keyListeners.size() - 1; i >= 0; i--)
+        {
+            com.maddox.gwindow.GWindow gwindow = (com.maddox.gwindow.GWindow)keyListeners.get(i);
+            if(!gwindow.isWaitModal() && gwindow.hotKeyChar(c))
+                return;
+        }
 
-  protected void doJoyMove(int paramInt1, int paramInt2, int paramInt3) {
-    this.keyFocusWindow.joyMove(paramInt1, paramInt2, paramInt3);
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow(); 
-  }
-
-  protected void doJoyPov(int paramInt1, int paramInt2) {
-    this.keyFocusWindow.joyPov(paramInt1, paramInt2);
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow(); 
-  }
-
-  protected void doJoyPoll() {
-    this.keyFocusWindow.joyPoll();
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow(); 
-  }
-
-  public boolean isActivated() {
-    return true;
-  }
-  public void showWindow() {
-  }
-  public void hideWindow() {  }
-
-  public void doResolutionChanged() { this.resolutionChangeCounter += 1;
-    if (this.lookAndFeel != null)
-      this.lookAndFeel.resolutionChanged(this);
-    resolutionChanged();
-    if (this.childWindow != null) {
-      for (int i = 0; i < this.childWindow.size(); i++) {
-        GWindow localGWindow = (GWindow)this.childWindow.get(i);
-        localGWindow.doResolutionChanged();
-      }
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+        keyFocusWindow.keyboardChar(c);
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
     }
-    if (this.bDoCheckKeyFocusWindow) doCheckKeyFocusWindow();  }
 
-  public void created()
-  {
-  }
+    protected void doJoyButton(int i, int j, boolean flag)
+    {
+        keyFocusWindow.joyButton(i, j, flag);
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+    }
 
-  public GWindowRoot() {
-    this.root = this;
-    this.mouseOldWindow = this;
-    this.mouseWindow = this;
-    this.keyFocusWindow = this;
-    this.resolutionChangeCounter = 1;
-  }
+    protected void doJoyMove(int i, int j, int k)
+    {
+        keyFocusWindow.joyMove(i, j, k);
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+    }
+
+    protected void doJoyPov(int i, int j)
+    {
+        keyFocusWindow.joyPov(i, j);
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+    }
+
+    protected void doJoyPoll()
+    {
+        keyFocusWindow.joyPoll();
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+    }
+
+    public boolean isActivated()
+    {
+        return true;
+    }
+
+    public void showWindow()
+    {
+    }
+
+    public void hideWindow()
+    {
+    }
+
+    public void doResolutionChanged()
+    {
+        resolutionChangeCounter++;
+        if(lookAndFeel != null)
+            lookAndFeel.resolutionChanged(this);
+        resolutionChanged();
+        if(childWindow != null)
+        {
+            for(int i = 0; i < childWindow.size(); i++)
+            {
+                com.maddox.gwindow.GWindow gwindow = (com.maddox.gwindow.GWindow)childWindow.get(i);
+                gwindow.doResolutionChanged();
+            }
+
+        }
+        if(bDoCheckKeyFocusWindow)
+            doCheckKeyFocusWindow();
+    }
+
+    public void created()
+    {
+    }
+
+    public GWindowRoot()
+    {
+        bInRender = false;
+        deltaTimeSec = 0.0F;
+        textFonts = new com.maddox.gwindow.GFont[8];
+        mouseCursors = new com.maddox.gwindow.GCursor[16];
+        bMouseCapture = false;
+        mousePos = new GPoint();
+        mousePosZ = 0.0F;
+        mouseOldPos = new GPoint();
+        mouseOldPosZ = 0.0F;
+        mouseStep = new GSize();
+        mouseStepZ = 0.0F;
+        mouseRelMove = new GSize();
+        mouseRelMoveZ = 0.0F;
+        mouseWindowDown = new com.maddox.gwindow.GWindow[7];
+        mouseWindowUp = new com.maddox.gwindow.GWindow[7];
+        mouseTimeUp = new long[7];
+        bDoCheckKeyFocusWindow = false;
+        _findTest = new GPoint();
+        _findOrg = new GPoint();
+        _findClip = new GRegion();
+        mouseListeners = new ArrayList();
+        keyListeners = new ArrayList();
+        root = this;
+        mouseOldWindow = this;
+        mouseWindow = this;
+        keyFocusWindow = this;
+        resolutionChangeCounter = 1;
+    }
+
+    public static long TIME_DOUBLE_CLICK = 600L;
+    public boolean bInRender;
+    public float deltaTimeSec;
+    public com.maddox.gwindow.GCanvas C;
+    public com.maddox.gwindow.GWindowLookAndFeel lookAndFeel;
+    public com.maddox.gwindow.GFont textFonts[];
+    public com.maddox.gwindow.GCursor mouseCursors[];
+    public com.maddox.gwindow.GCursor mouseOverCursor;
+    public com.maddox.gwindow.GWindowManager manager;
+    public com.maddox.gwindow.GWindow modalWindow;
+    public boolean bMouseCapture;
+    public com.maddox.gwindow.GWindow mouseWindow;
+    public com.maddox.gwindow.GWindow mouseOldWindow;
+    public com.maddox.gwindow.GPoint mousePos;
+    public float mousePosZ;
+    public com.maddox.gwindow.GPoint mouseOldPos;
+    public float mouseOldPosZ;
+    public com.maddox.gwindow.GSize mouseStep;
+    public float mouseStepZ;
+    public com.maddox.gwindow.GSize mouseRelMove;
+    public float mouseRelMoveZ;
+    public com.maddox.gwindow.GWindow mouseWindowDown[];
+    protected com.maddox.gwindow.GWindow mouseWindowUp[];
+    protected long mouseTimeUp[];
+    public com.maddox.gwindow.GWindow keyFocusWindow;
+    protected boolean bDoCheckKeyFocusWindow;
+    private com.maddox.gwindow.GWindow _findWindowUnder;
+    private com.maddox.gwindow.GPoint _findTest;
+    private com.maddox.gwindow.GPoint _findOrg;
+    private com.maddox.gwindow.GRegion _findClip;
+    protected java.util.ArrayList mouseListeners;
+    protected java.util.ArrayList keyListeners;
+
 }

@@ -1,55 +1,82 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   LAGG_3IT.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.rts.Property;
 
-public class LAGG_3IT extends LAGG_3
+// Referenced classes of package com.maddox.il2.objects.air:
+//            LAGG_3, PaintSchemeFMPar01, NetAircraft
+
+public class LAGG_3IT extends com.maddox.il2.objects.air.LAGG_3
 {
-  public void update(float paramFloat)
-  {
-    if (this.FM.getSpeed() > 5.0F) {
-      hierMesh().chunkSetAngles("SlatL_D0", 0.0F, cvt(this.FM.getAOA(), 6.8F, 11.0F, 0.0F, 1.2F), 0.0F);
-      hierMesh().chunkSetAngles("SlatR_D0", 0.0F, cvt(this.FM.getAOA(), 6.8F, 11.0F, 0.0F, 1.2F), 0.0F);
+
+    public LAGG_3IT()
+    {
     }
-    super.update(paramFloat);
-  }
 
-  public static void moveGear(HierMesh paramHierMesh, float paramFloat)
-  {
-    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, 80.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, -80.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearL3_D0", 0.0F, -100.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR3_D0", 0.0F, 100.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC2_D0", -75.0F * paramFloat, 0.0F, 0.0F);
-    float f = Math.max(-paramFloat * 1200.0F, -80.0F);
-    paramHierMesh.chunkSetAngles("GearC3_D0", 0.0F, -f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC4_D0", 0.0F, -f, 0.0F);
-  }
-  protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat);
-  }
+    public void update(float f)
+    {
+        if(FM.getSpeed() > 5F)
+        {
+            hierMesh().chunkSetAngles("SlatL_D0", 0.0F, com.maddox.il2.objects.air.LAGG_3IT.cvt(FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
+            hierMesh().chunkSetAngles("SlatR_D0", 0.0F, com.maddox.il2.objects.air.LAGG_3IT.cvt(FM.getAOA(), 6.8F, 11F, 0.0F, 1.2F), 0.0F);
+        }
+        super.update(f);
+    }
 
-  static
-  {
-    Class localClass = LAGG_3IT.class;
-    new NetAircraft.SPAWN(localClass);
+    public static void moveGear(com.maddox.il2.engine.HierMesh hiermesh, float f)
+    {
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 80F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -80F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearL3_D0", 0.0F, -100F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, 100F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", -75F * f, 0.0F, 0.0F);
+        float f1 = java.lang.Math.max(-f * 1200F, -80F);
+        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, -f1, 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, -f1, 0.0F);
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "LaGG");
-    Property.set(localClass, "meshName", "3do/plane/LaGG-3IT/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar01());
+    protected void moveGear(float f)
+    {
+        com.maddox.il2.objects.air.LAGG_3IT.moveGear(hierMesh(), f);
+    }
 
-    Property.set(localClass, "yearService", 1943.0F);
-    Property.set(localClass, "yearExpired", 1945.5F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/LaGG-3IT.fmd");
-    Property.set(localClass, "cockpitClass", CockpitLAGG_3SERIES66.class);
-    Property.set(localClass, "LOSElevation", 0.69445F);
-
-    weaponTriggersRegister(localClass, new int[] { 0, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunUBs 220", "MGunNS37ki 22" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.LAGG_3IT.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "LaGG");
+        com.maddox.rts.Property.set(class1, "meshName", "3do/plane/LaGG-3IT/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
+        com.maddox.rts.Property.set(class1, "yearService", 1943F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/LaGG-3IT.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitLAGG_3SERIES66.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.69445F);
+        com.maddox.il2.objects.air.LAGG_3IT.weaponTriggersRegister(class1, new int[] {
+            0, 1
+        });
+        com.maddox.il2.objects.air.LAGG_3IT.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_CANNON01"
+        });
+        com.maddox.il2.objects.air.LAGG_3IT.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunUBs 220", "MGunNS37ki 22"
+        });
+        com.maddox.il2.objects.air.LAGG_3IT.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null
+        });
+    }
 }

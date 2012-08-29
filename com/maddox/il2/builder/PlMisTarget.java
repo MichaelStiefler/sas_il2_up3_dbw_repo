@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PlMisTarget.java
+
 package com.maddox.il2.builder;
 
 import com.maddox.JGP.Point2d;
@@ -15,7 +20,6 @@ import com.maddox.gwindow.GWindowLabel;
 import com.maddox.gwindow.GWindowMenu;
 import com.maddox.gwindow.GWindowMenuItem;
 import com.maddox.gwindow.GWindowTabDialogClient;
-import com.maddox.gwindow.GWindowTabDialogClient.Tab;
 import com.maddox.il2.ai.Army;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorPos;
@@ -29,594 +33,808 @@ import com.maddox.rts.SectFile;
 import com.maddox.util.NumberTokenizer;
 import java.util.ArrayList;
 
-public class PlMisTarget extends Plugin
+// Referenced classes of package com.maddox.il2.builder:
+//            Plugin, ActorTarget, PPoint, Path, 
+//            PlMission, PathAir, PathChief, Builder, 
+//            BldConfig, WSelect
+
+public class PlMisTarget extends com.maddox.il2.builder.Plugin
 {
-  protected ArrayList allActors = new ArrayList();
+    static class Item
+    {
 
-  Item[] item = { new Item("Destroy", 0), new Item("DestroyGround", 1), new Item("DestroyBridge", 2), new Item("Inspect", 3), new Item("Escort", 4), new Item("Defence", 5), new Item("DefenceGround", 6), new Item("DefenceBridge", 7) };
+        public java.lang.String name;
+        public int indx;
 
-  private float[] line2XYZ = new float[6];
-  private Point2d p2d = new Point2d();
-  private Point2d p2dt = new Point2d();
-  private Point3d p3d = new Point3d();
-  private static final int NCIRCLESEGMENTS = 48;
-  private static float[] _circleXYZ = new float[''];
-  private PlMission pluginMission;
-  private int startComboBox1;
-  private GWindowMenuItem viewType;
-  private String[] _actorInfo = new String[2];
-  GWindowTabDialogClient.Tab tabTarget;
-  GWindowLabel wType;
-  GWindowLabel wTarget;
-  GWindowCheckBox wBTimeout;
-  GWindowLabel wLTimeout;
-  GWindowEditControl wTimeoutH;
-  GWindowEditControl wTimeoutM;
-  GWindowHSliderInt wR;
-  GWindowCheckBox wBLanding;
-  GWindowLabel wLLanding;
-  GWindowComboControl wImportance;
-  GWindowLabel wLDestruct;
-  GWindowComboControl wDestruct;
-  GWindowLabel wLArmy;
-  GWindowComboControl wArmy;
-
-  private int targetColor(int paramInt, boolean paramBoolean)
-  {
-    if (paramBoolean) return Builder.colorSelected();
-    switch (paramInt) { case 0:
-      return -1;
-    case 1:
-      return -16711936;
-    case 2:
-      return -8454144;
-    }
-    return 0;
-  }
-
-  public void renderMap2DBefore() {
-    if (builder.isFreeView()) return;
-    if (!this.viewType.bChecked) return;
-    Actor localActor = builder.selectedActor();
-    int i = this.allActors.size();
-    for (int j = 0; j < i; j++) {
-      ActorTarget localActorTarget = (ActorTarget)this.allActors.get(j);
-      if ((!Actor.isValid(localActorTarget.getTarget())) || 
-        (!builder.project2d(localActorTarget.pos.getAbsPoint(), this.p2d)) || (!builder.project2d(localActorTarget.getTarget().pos.getAbsPoint(), this.p2dt)))
-        continue;
-      if (this.p2d.distance(this.p2dt) > 4.0D) {
-        int k = targetColor(localActorTarget.importance, localActorTarget == localActor);
-        this.line2XYZ[0] = (float)this.p2d.x; this.line2XYZ[1] = (float)this.p2d.y; this.line2XYZ[2] = 0.0F;
-        this.line2XYZ[3] = (float)this.p2dt.x; this.line2XYZ[4] = (float)this.p2dt.y; this.line2XYZ[5] = 0.0F;
-        Render.drawBeginLines(-1);
-        Render.drawLines(this.line2XYZ, 2, 1.0F, k, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 3);
-
-        Render.drawEnd();
-      }
-    }
-  }
-
-  public void renderMap2DAfter()
-  {
-    if (builder.isFreeView()) return;
-    if (!this.viewType.bChecked) return;
-    Actor localActor = builder.selectedActor();
-    int i = this.allActors.size();
-    for (int j = 0; j < i; j++) {
-      ActorTarget localActorTarget = (ActorTarget)this.allActors.get(j);
-      if (builder.project2d(localActorTarget.pos.getAbsPoint(), this.p2d)) {
-        int k = targetColor(localActorTarget.importance, localActorTarget == localActor);
-        IconDraw.setColor(k);
-        if ((Actor.isValid(localActorTarget.getTarget())) && 
-          (builder.project2d(localActorTarget.getTarget().pos.getAbsPoint(), this.p2dt)) && 
-          (this.p2d.distance(this.p2dt) > 4.0D)) {
-          Render.drawTile((float)(this.p2dt.x - builder.conf.iconSize / 2), (float)(this.p2dt.y - builder.conf.iconSize / 2), builder.conf.iconSize, builder.conf.iconSize, 0.0F, Plugin.targetIcon, k, 0.0F, 1.0F, 1.0F, -1.0F);
-        }
-
-        IconDraw.render(localActorTarget, this.p2d.x, this.p2d.y);
-        if ((localActorTarget.type != 3) && (localActorTarget.type != 6) && (localActorTarget.type != 1)) {
-          continue;
-        }
-        localActorTarget.pos.getAbs(this.p3d);
-        this.p3d.x += localActorTarget.r;
-        if (builder.project2d(this.p3d, this.p2dt)) {
-          double d = this.p2dt.x - this.p2d.x;
-          if (d > builder.conf.iconSize / 3)
-            drawCircle(this.p2d.x, this.p2d.y, d, k);
-        }
-      }
-    }
-  }
-
-  private void drawCircle(double paramDouble1, double paramDouble2, double paramDouble3, int paramInt)
-  {
-    int i = 48;
-    double d1 = 6.283185307179586D / i;
-    double d2 = 0.0D;
-    for (int j = 0; j < i; j++) {
-      _circleXYZ[(j * 3 + 0)] = (float)(paramDouble1 + paramDouble3 * Math.cos(d2));
-      _circleXYZ[(j * 3 + 1)] = (float)(paramDouble2 + paramDouble3 * Math.sin(d2));
-      _circleXYZ[(j * 3 + 2)] = 0.0F;
-      d2 += d1;
-    }
-    Render.drawBeginLines(-1);
-    Render.drawLines(_circleXYZ, i, 1.0F, paramInt, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE, 4);
-
-    Render.drawEnd();
-  }
-
-  public boolean save(SectFile paramSectFile)
-  {
-    int i = this.allActors.size();
-    if (i == 0) return true;
-    int j = paramSectFile.sectionAdd("Target");
-    for (int k = 0; k < i; k++) {
-      ActorTarget localActorTarget = (ActorTarget)this.allActors.get(k);
-      String str = "";
-      int m = 0;
-      int n = 0;
-      int i1 = 0;
-      if (Actor.isValid(localActorTarget.target)) {
-        if ((localActorTarget.target instanceof PPoint)) {
-          str = localActorTarget.target.getOwner().name();
-          m = ((Path)localActorTarget.target.getOwner()).pointIndx((PPoint)localActorTarget.target);
-        } else {
-          str = localActorTarget.target.name();
-        }
-        Point3d localPoint3d = localActorTarget.target.pos.getAbsPoint();
-        n = (int)localPoint3d.x;
-        i1 = (int)localPoint3d.y;
-      }
-      paramSectFile.lineAdd(j, "" + localActorTarget.type + " " + localActorTarget.importance + " " + (localActorTarget.bTimeout ? "1 " : "0 ") + localActorTarget.timeout + " " + localActorTarget.destructLevel + (localActorTarget.bLanding ? 1 : 0) + " " + (int)localActorTarget.pos.getAbsPoint().x + " " + (int)localActorTarget.pos.getAbsPoint().y + " " + localActorTarget.r + (str.length() > 0 ? " " + m + " " + str + " " + n + " " + i1 : ""));
-    }
-
-    return true;
-  }
-
-  public void load(SectFile paramSectFile) {
-    int i = paramSectFile.sectionIndex("Target");
-    if (i >= 0) {
-      int j = paramSectFile.vars(i);
-      Point3d localPoint3d = new Point3d();
-      for (int k = 0; k < j; k++) {
-        NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, k));
-        int m = localNumberTokenizer.next(0, 0, 7);
-        int n = localNumberTokenizer.next(0, 0, 2);
-        boolean bool1 = localNumberTokenizer.next(0) == 1;
-        int i1 = localNumberTokenizer.next(0, 0, 720);
-        int i2 = localNumberTokenizer.next(0);
-        boolean bool2 = (i2 & 0x1) == 1;
-        i2 /= 10;
-        if (i2 < 0) i2 = 0;
-        if (i2 > 100) i2 = 100;
-        localPoint3d.x = localNumberTokenizer.next(0);
-        localPoint3d.y = localNumberTokenizer.next(0);
-        int i3 = localNumberTokenizer.next(0);
-        if ((m == 3) || (m == 6) || (m == 1))
+        public Item(java.lang.String s, int i)
         {
-          if (i3 < 2) i3 = 2;
-          if (i3 > 3000) i3 = 3000;
+            name = s;
+            indx = i;
         }
-        int i4 = localNumberTokenizer.next(0);
-        String str = localNumberTokenizer.next(null);
-        if ((str != null) && (str.startsWith("Bridge")))
-          str = " " + str;
-        ActorTarget localActorTarget = insert(localPoint3d, m, str, i4, false);
-        if (localActorTarget != null) {
-          localActorTarget.importance = n;
-          localActorTarget.bTimeout = bool1;
-          localActorTarget.timeout = i1;
-          localActorTarget.r = i3;
-          localActorTarget.bLanding = bool2;
-          localActorTarget.destructLevel = i2;
+    }
+
+
+    public PlMisTarget()
+    {
+        allActors = new ArrayList();
+        line2XYZ = new float[6];
+        p2d = new Point2d();
+        p2dt = new Point2d();
+        p3d = new Point3d();
+        _actorInfo = new java.lang.String[2];
+    }
+
+    private int targetColor(int i, boolean flag)
+    {
+        if(flag)
+            return com.maddox.il2.builder.Builder.colorSelected();
+        switch(i)
+        {
+        case 0: // '\0'
+            return -1;
+
+        case 1: // '\001'
+            return 0xff00ff00;
+
+        case 2: // '\002'
+            return 0xff7f0000;
         }
-      }
+        return 0;
     }
-  }
 
-  public void deleteAll() {
-    int i = this.allActors.size();
-    for (int j = 0; j < i; j++) {
-      ActorTarget localActorTarget = (ActorTarget)this.allActors.get(j);
-      localActorTarget.destroy();
-    }
-    this.allActors.clear();
-  }
-
-  public void delete(Actor paramActor) {
-    this.allActors.remove(paramActor);
-    paramActor.destroy();
-  }
-
-  public void afterDelete() {
-    for (int i = 0; i < this.allActors.size(); ) {
-      ActorTarget localActorTarget = (ActorTarget)this.allActors.get(i);
-      if ((localActorTarget.target != null) && (!Actor.isValid(localActorTarget.target))) {
-        localActorTarget.destroy();
-        this.allActors.remove(i);
-      } else {
-        i++;
-      }
-    }
-  }
-
-  private ActorTarget insert(Point3d paramPoint3d, int paramInt1, String paramString, int paramInt2, boolean paramBoolean)
-  {
-    try {
-      ActorTarget localActorTarget1 = new ActorTarget(paramPoint3d, paramInt1, paramString, paramInt2);
-      if (Actor.isValid(localActorTarget1.target)) {
-        for (int i = 0; i < this.allActors.size(); i++) {
-          ActorTarget localActorTarget2 = (ActorTarget)this.allActors.get(i);
-          if ((localActorTarget1.type != localActorTarget2.type) || (!Actor.isValid(localActorTarget2.target)) || (
-            (localActorTarget2.target != localActorTarget1.target) && ((!(localActorTarget1.target instanceof PPoint)) || (localActorTarget1.target.getOwner() != localActorTarget2.target.getOwner()))))
-            continue;
-          localActorTarget1.destroy();
-          return null;
+    public void renderMap2DBefore()
+    {
+        if(builder.isFreeView())
+            return;
+        if(!viewType.bChecked)
+            return;
+        com.maddox.il2.engine.Actor actor = builder.selectedActor();
+        int i = allActors.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)allActors.get(j);
+            if(com.maddox.il2.engine.Actor.isValid(actortarget.getTarget()) && builder.project2d(actortarget.pos.getAbsPoint(), p2d) && builder.project2d(actortarget.getTarget().pos.getAbsPoint(), p2dt) && p2d.distance(p2dt) > 4D)
+            {
+                int k = targetColor(actortarget.importance, actortarget == actor);
+                line2XYZ[0] = (float)p2d.x;
+                line2XYZ[1] = (float)p2d.y;
+                line2XYZ[2] = 0.0F;
+                line2XYZ[3] = (float)p2dt.x;
+                line2XYZ[4] = (float)p2dt.y;
+                line2XYZ[5] = 0.0F;
+                com.maddox.il2.engine.Render.drawBeginLines(-1);
+                com.maddox.il2.engine.Render.drawLines(line2XYZ, 2, 1.0F, k, com.maddox.il2.engine.Mat.NOWRITEZ | com.maddox.il2.engine.Mat.MODULATE | com.maddox.il2.engine.Mat.NOTEXTURE | com.maddox.il2.engine.Mat.BLEND, 3);
+                com.maddox.il2.engine.Render.drawEnd();
+            }
         }
 
-      }
-
-      builder.align(localActorTarget1);
-      Property.set(localActorTarget1, "builderSpawn", "");
-      Property.set(localActorTarget1, "builderPlugin", this);
-      this.allActors.add(localActorTarget1);
-      if (paramBoolean)
-        builder.setSelected(localActorTarget1);
-      PlMission.setChanged();
-      return localActorTarget1; } catch (Exception localException) {
     }
-    return null;
-  }
 
-  public void insert(Loc paramLoc, boolean paramBoolean) {
-    int i = builder.wSelect.comboBox1.getSelected();
-    int j = builder.wSelect.comboBox2.getSelected();
-    if (i != this.startComboBox1)
-      return;
-    if ((j < 0) || (j >= this.item.length))
-      return;
-    insert(paramLoc.getPoint(), this.item[j].indx, null, 0, paramBoolean);
-  }
-
-  public void changeType() {
-    builder.setSelected(null);
-  }
-
-  private void updateView() {
-    int i = this.allActors.size();
-    for (int j = 0; j < i; j++) {
-      ActorTarget localActorTarget = (ActorTarget)this.allActors.get(j);
-      localActorTarget.drawing(this.viewType.bChecked);
-    }
-  }
-
-  public void configure()
-  {
-    if (getPlugin("Mission") == null)
-      throw new RuntimeException("PlMisTarget: plugin 'Mission' not found");
-    this.pluginMission = ((PlMission)getPlugin("Mission"));
-  }
-
-  private void fillComboBox2(int paramInt) {
-    if (paramInt != this.startComboBox1)
-      return;
-    if (builder.wSelect.curFilledType != paramInt) {
-      builder.wSelect.curFilledType = paramInt;
-      builder.wSelect.comboBox2.clear(false);
-      for (int i = 0; i < this.item.length; i++)
-        builder.wSelect.comboBox2.add(i18n(this.item[i].name));
-      builder.wSelect.comboBox1.setSelected(paramInt, true, false);
-    }
-    builder.wSelect.comboBox2.setSelected(0, true, false);
-    builder.wSelect.setMesh(null, true);
-  }
-
-  public void viewTypeAll(boolean paramBoolean) {
-    this.viewType.bChecked = paramBoolean;
-    updateView();
-  }
-
-  public String[] actorInfo(Actor paramActor) {
-    ActorTarget localActorTarget = (ActorTarget)paramActor;
-    switch (localActorTarget.importance) { case 0:
-      this._actorInfo[0] = (i18n("Primary") + " " + i18n(this.item[localActorTarget.type].name)); break;
-    case 1:
-      this._actorInfo[0] = (i18n("Secondary") + " " + i18n(this.item[localActorTarget.type].name)); break;
-    case 2:
-      this._actorInfo[0] = (i18n("Secret") + " " + i18n(this.item[localActorTarget.type].name));
-    }
-    if ((Actor.isValid(localActorTarget.getTarget())) && ((localActorTarget.getTarget() instanceof PPoint))) {
-      Path localPath = (Path)localActorTarget.getTarget().getOwner();
-      if ((localPath instanceof PathAir))
-        this._actorInfo[1] = ((PathAir)localPath).typedName;
-      else if ((localPath instanceof PathChief))
-        this._actorInfo[1] = Property.stringValue(localPath, "i18nName", "");
-      else
-        this._actorInfo[1] = localPath.name();
-    } else {
-      this._actorInfo[1] = null;
-    }
-    return this._actorInfo;
-  }
-
-  public void syncSelector()
-  {
-    ActorTarget localActorTarget = (ActorTarget)builder.selectedActor();
-    fillComboBox2(this.startComboBox1);
-    builder.wSelect.comboBox2.setSelected(localActorTarget.type, true, false);
-    builder.wSelect.tabsClient.addTab(1, this.tabTarget);
-    this.wType.cap.set(i18n(this.item[localActorTarget.type].name));
-    float f = 3.0F;
-    if ((Actor.isValid(localActorTarget.getTarget())) && ((localActorTarget.getTarget() instanceof PPoint))) {
-      this.wTarget.showWindow();
-      Path localPath = (Path)localActorTarget.getTarget().getOwner();
-      if ((localPath instanceof PathAir))
-        this.wTarget.cap.set(((PathAir)localPath).typedName);
-      else if ((localPath instanceof PathChief))
-        this.wTarget.cap.set(Property.stringValue(localPath, "i18nName", ""));
-      else
-        this.wTarget.cap.set(localPath.name());
-      f += 2.0F;
-    } else {
-      this.wTarget.hideWindow();
-    }
-    if ((localActorTarget.type == 3) || (localActorTarget.type == 6) || (localActorTarget.type == 7))
+    public void renderMap2DAfter()
     {
-      this.wBTimeout.hideWindow();
-    } else {
-      this.wBTimeout.showWindow();
-      this.wBTimeout.setMetricPos(this.wBTimeout.metricWin.x, f);
-    }
-
-    this.wBTimeout.setChecked(localActorTarget.bTimeout, false);
-    this.wLTimeout.setMetricPos(this.wLTimeout.metricWin.x, f);
-    this.wTimeoutH.setEnable(localActorTarget.bTimeout);
-    this.wTimeoutM.setEnable(localActorTarget.bTimeout);
-    this.wTimeoutH.setMetricPos(this.wTimeoutH.metricWin.x, f);
-    this.wTimeoutM.setMetricPos(this.wTimeoutM.metricWin.x, f);
-    this.wTimeoutH.setValue("" + localActorTarget.timeout / 60 % 24, false);
-    this.wTimeoutM.setValue("" + localActorTarget.timeout % 60, false);
-    f += 2.0F;
-    if ((localActorTarget.type == 3) || (localActorTarget.type == 6) || (localActorTarget.type == 1))
-    {
-      this.wR.setPos(localActorTarget.r / 50, false);
-      this.wR.showWindow();
-      this.wR.setMetricPos(this.wR.metricWin.x, f);
-      f += 2.0F;
-    } else {
-      this.wR.hideWindow();
-    }
-    if (localActorTarget.type == 3) {
-      this.wBLanding.showWindow();
-      this.wLLanding.showWindow();
-      this.wBLanding.setMetricPos(this.wBLanding.metricWin.x, f);
-      this.wLLanding.setMetricPos(this.wLLanding.metricWin.x, f);
-      this.wBLanding.setChecked(localActorTarget.bLanding, false);
-      f += 2.0F;
-    } else {
-      this.wBLanding.hideWindow();
-      this.wLLanding.hideWindow();
-    }
-    this.wImportance.setMetricPos(this.wImportance.metricWin.x, f);
-    this.wImportance.setSelected(localActorTarget.importance, true, false);
-    f += 2.0F;
-
-    if ((localActorTarget.type == 3) || (localActorTarget.type == 2) || (localActorTarget.type == 7))
-    {
-      this.wLDestruct.hideWindow();
-      this.wDestruct.hideWindow();
-    } else {
-      this.wLDestruct.showWindow();
-      this.wDestruct.showWindow();
-      this.wLDestruct.setMetricPos(this.wLDestruct.metricWin.x, f);
-      f += 2.0F;
-      this.wDestruct.setMetricPos(this.wDestruct.metricWin.x, f);
-      f += 2.0F;
-      int i;
-      if (localActorTarget.destructLevel < 12) i = 0;
-      else if (localActorTarget.destructLevel < 37) i = 1;
-      else if (localActorTarget.destructLevel < 62) i = 2;
-      else if (localActorTarget.destructLevel < 87) i = 3; else
-        i = 4;
-      this.wDestruct.setSelected(i, true, false);
-      if ((localActorTarget.type == 0) || (localActorTarget.type == 1))
-      {
-        this.wDestruct.posEnable[0] = false;
-        this.wDestruct.posEnable[4] = true;
-      } else {
-        this.wDestruct.posEnable[0] = true;
-        this.wDestruct.posEnable[4] = false;
-      }
-    }
-
-    this.wLArmy.setMetricPos(this.wLArmy.metricWin.x, f);
-    f += 2.0F;
-    this.wArmy.setMetricPos(this.wArmy.metricWin.x, f);
-    if (Actor.isValid(Path.player)) {
-      this.wArmy.setSelected(Path.player.getArmy() - 1, true, false);
-      this.wArmy.bEnable = false;
-    } else {
-      this.wArmy.setSelected(PlMission.cur.missionArmy - 1, true, false);
-      this.wArmy.bEnable = true;
-    }
-  }
-
-  public void createGUI()
-  {
-    this.startComboBox1 = builder.wSelect.comboBox1.size();
-    builder.wSelect.comboBox1.add(i18n("tTarget"));
-    builder.wSelect.comboBox1.addNotifyListener(new GNotifyListener() {
-      public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-        int i = Plugin.builder.wSelect.comboBox1.getSelected();
-        if ((i >= 0) && (paramInt1 == 2))
-          PlMisTarget.this.fillComboBox2(i);
-        return false;
-      }
-    });
-    int i = builder.mDisplayFilter.subMenu.size() - 1;
-    while ((i >= 0) && 
-      (this.pluginMission.viewBridge != builder.mDisplayFilter.subMenu.getItem(i)))
-    {
-      i--;
-    }
-    i--;
-    if (i >= 0) {
-      this.viewType = builder.mDisplayFilter.subMenu.addItem(i, new GWindowMenuItem(builder.mDisplayFilter.subMenu, i18n("showTarget"), null)
-      {
-        public void execute() {
-          this.bChecked = (!this.bChecked);
-          PlMisTarget.this.updateView();
+        if(builder.isFreeView())
+            return;
+        if(!viewType.bChecked)
+            return;
+        com.maddox.il2.engine.Actor actor = builder.selectedActor();
+        int i = allActors.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)allActors.get(j);
+            if(!builder.project2d(actortarget.pos.getAbsPoint(), p2d))
+                continue;
+            int k = targetColor(actortarget.importance, actortarget == actor);
+            com.maddox.il2.engine.IconDraw.setColor(k);
+            if(com.maddox.il2.engine.Actor.isValid(actortarget.getTarget()) && builder.project2d(actortarget.getTarget().pos.getAbsPoint(), p2dt) && p2d.distance(p2dt) > 4D)
+                com.maddox.il2.engine.Render.drawTile((float)(p2dt.x - (double)(builder.conf.iconSize / 2)), (float)(p2dt.y - (double)(builder.conf.iconSize / 2)), builder.conf.iconSize, builder.conf.iconSize, 0.0F, com.maddox.il2.builder.Plugin.targetIcon, k, 0.0F, 1.0F, 1.0F, -1F);
+            com.maddox.il2.engine.IconDraw.render(actortarget, p2d.x, p2d.y);
+            if(actortarget.type != 3 && actortarget.type != 6 && actortarget.type != 1)
+                continue;
+            actortarget.pos.getAbs(p3d);
+            p3d.x += actortarget.r;
+            if(!builder.project2d(p3d, p2dt))
+                continue;
+            double d = p2dt.x - p2d.x;
+            if(d > (double)(builder.conf.iconSize / 3))
+                drawCircle(p2d.x, p2d.y, d, k);
         }
-      });
-      this.viewType.bChecked = true;
+
     }
 
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)builder.wSelect.tabsClient.create(new GWindowDialogClient());
-    this.tabTarget = builder.wSelect.tabsClient.createTab(i18n("tTarget"), localGWindowDialogClient);
-    localGWindowDialogClient.addLabel(this.wType = new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 15.0F, 1.3F, i18n("lType"), null));
-    localGWindowDialogClient.addLabel(this.wTarget = new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 15.0F, 1.3F, i18n("tTarget"), null));
-    localGWindowDialogClient.addControl(this.wBTimeout = new GWindowCheckBox(localGWindowDialogClient, 1.0F, 5.0F, null) {
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        ActorTarget localActorTarget = (ActorTarget)Plugin.builder.selectedActor();
-        localActorTarget.bTimeout = isChecked();
-        PlMisTarget.this.wTimeoutH.setEnable(localActorTarget.bTimeout);
-        PlMisTarget.this.wTimeoutM.setEnable(localActorTarget.bTimeout);
-        PlMission.setChanged();
-        return false;
-      }
-    });
-    localGWindowDialogClient.addLabel(this.wLTimeout = new GWindowLabel(localGWindowDialogClient, 3.0F, 5.0F, 5.0F, 1.3F, i18n("TimeOut"), null));
-    localGWindowDialogClient.addControl(this.wTimeoutH = new GWindowEditControl(localGWindowDialogClient, 9.0F, 5.0F, 2.0F, 1.3F, "") {
-      public void afterCreated() { super.afterCreated();
-        this.bNumericOnly = true;
-        this.bDelayedNotify = true; }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        PlMisTarget.this.getTimeOut();
-        return false;
-      }
-    });
-    localGWindowDialogClient.addControl(this.wTimeoutM = new GWindowEditControl(localGWindowDialogClient, 12.0F, 5.0F, 2.0F, 1.3F, "") {
-      public void afterCreated() { super.afterCreated();
-        this.bNumericOnly = true;
-        this.bDelayedNotify = true; }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        PlMisTarget.this.getTimeOut();
-        return false;
-      }
-    });
-    localGWindowDialogClient.addControl(this.wR = new GWindowHSliderInt(localGWindowDialogClient, 0, 61, 11, 1.0F, 7.0F, 10.0F) {
-      public void afterCreated() { super.afterCreated();
-        this.bSlidingNotify = true; }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        ActorTarget localActorTarget = (ActorTarget)Plugin.builder.selectedActor();
-        localActorTarget.r = (pos() * 50);
-        if (localActorTarget.r < 2) localActorTarget.r = 2;
-        PlMission.setChanged();
-        return false;
-      }
-    });
-    localGWindowDialogClient.addControl(this.wBLanding = new GWindowCheckBox(localGWindowDialogClient, 1.0F, 9.0F, null) {
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        ActorTarget localActorTarget = (ActorTarget)Plugin.builder.selectedActor();
-        localActorTarget.bLanding = isChecked();
-        PlMission.setChanged();
-        return false;
-      }
-    });
-    localGWindowDialogClient.addLabel(this.wLLanding = new GWindowLabel(localGWindowDialogClient, 3.0F, 9.0F, 7.0F, 1.3F, i18n("landing"), null));
-    localGWindowDialogClient.addControl(this.wImportance = new GWindowComboControl(localGWindowDialogClient, 1.0F, 11.0F, 10.0F) {
-      public void afterCreated() { super.afterCreated();
-        setEditable(false);
-        add(Plugin.i18n("Primary"));
-        add(Plugin.i18n("Secondary"));
-        add(Plugin.i18n("Secret")); }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        ActorTarget localActorTarget = (ActorTarget)Plugin.builder.selectedActor();
-        localActorTarget.importance = getSelected();
-        PlMission.setChanged();
-        return false;
-      }
-    });
-    localGWindowDialogClient.addLabel(this.wLDestruct = new GWindowLabel(localGWindowDialogClient, 1.0F, 13.0F, 12.0F, 1.3F, i18n("DestructLevel"), null));
-    localGWindowDialogClient.addControl(this.wDestruct = new GWindowComboControl(localGWindowDialogClient, 1.0F, 15.0F, 10.0F) {
-      public void afterCreated() { super.afterCreated();
-        setEditable(false);
-        add("0 %");
-        add("25 %");
-        add("50 %");
-        add("75 %");
-        add("100 %");
-        boolean[] arrayOfBoolean = new boolean[5];
-        for (int i = 0; i < 5; i++)
-          arrayOfBoolean[i] = true;
-        this.posEnable = arrayOfBoolean; }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        ActorTarget localActorTarget = (ActorTarget)Plugin.builder.selectedActor();
-        localActorTarget.destructLevel = (getSelected() * 25);
-        PlMission.setChanged();
-        return false;
-      }
-    });
-    localGWindowDialogClient.addLabel(this.wLArmy = new GWindowLabel(localGWindowDialogClient, 1.0F, 15.0F, 12.0F, 1.3F, i18n("AppliesArmy"), null));
-    localGWindowDialogClient.addControl(this.wArmy = new GWindowComboControl(localGWindowDialogClient, 1.0F, 17.0F, 10.0F) {
-      public void afterCreated() { super.afterCreated();
-        setEditable(false);
-        add(I18N.army(Army.name(1)));
-        add(I18N.army(Army.name(2))); }
-
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 != 2) return false;
-        PlMission.cur.missionArmy = (getSelected() + 1);
-        PlMission.setChanged();
-        return false;
-      } } );
-  }
-
-  private void getTimeOut() {
-    ActorTarget localActorTarget = (ActorTarget)builder.selectedActor();
-    String str = this.wTimeoutH.getValue();
-    double d1 = 0.0D;
-    try { d1 = Double.parseDouble(str); } catch (Exception localException1) {
-    }
-    if (d1 < 0.0D) d1 = 0.0D;
-    if (d1 > 12.0D) d1 = 12.0D;
-    str = this.wTimeoutM.getValue();
-    double d2 = 0.0D;
-    try { d2 = Double.parseDouble(str); } catch (Exception localException2) {
-    }
-    if (d2 < 0.0D) d2 = 0.0D;
-    if (d2 > 59.0D) d2 = 59.0D;
-    localActorTarget.timeout = (int)(d1 * 60.0D + d2);
-
-    this.wTimeoutH.setValue("" + localActorTarget.timeout / 60 % 24, false);
-    this.wTimeoutM.setValue("" + localActorTarget.timeout % 60, false);
-    PlMission.setChanged();
-  }
-  static {
-    Property.set(PlMisTarget.class, "name", "MisTarget");
-  }
-
-  static class Item
-  {
-    public String name;
-    public int indx;
-
-    public Item(String paramString, int paramInt)
+    private void drawCircle(double d, double d1, double d2, int i)
     {
-      this.name = paramString;
-      this.indx = paramInt;
+        int j = 48;
+        double d3 = 6.2831853071795862D / (double)j;
+        double d4 = 0.0D;
+        for(int k = 0; k < j; k++)
+        {
+            _circleXYZ[k * 3 + 0] = (float)(d + d2 * java.lang.Math.cos(d4));
+            _circleXYZ[k * 3 + 1] = (float)(d1 + d2 * java.lang.Math.sin(d4));
+            _circleXYZ[k * 3 + 2] = 0.0F;
+            d4 += d3;
+        }
+
+        com.maddox.il2.engine.Render.drawBeginLines(-1);
+        com.maddox.il2.engine.Render.drawLines(_circleXYZ, j, 1.0F, i, com.maddox.il2.engine.Mat.NOWRITEZ | com.maddox.il2.engine.Mat.MODULATE | com.maddox.il2.engine.Mat.NOTEXTURE, 4);
+        com.maddox.il2.engine.Render.drawEnd();
     }
-  }
+
+    public boolean save(com.maddox.rts.SectFile sectfile)
+    {
+        int i = allActors.size();
+        if(i == 0)
+            return true;
+        int j = sectfile.sectionAdd("Target");
+        for(int k = 0; k < i; k++)
+        {
+            com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)allActors.get(k);
+            java.lang.String s = "";
+            int l = 0;
+            int i1 = 0;
+            int j1 = 0;
+            if(com.maddox.il2.engine.Actor.isValid(actortarget.target))
+            {
+                if(actortarget.target instanceof com.maddox.il2.builder.PPoint)
+                {
+                    s = actortarget.target.getOwner().name();
+                    l = ((com.maddox.il2.builder.Path)actortarget.target.getOwner()).pointIndx((com.maddox.il2.builder.PPoint)actortarget.target);
+                } else
+                {
+                    s = actortarget.target.name();
+                }
+                com.maddox.JGP.Point3d point3d = actortarget.target.pos.getAbsPoint();
+                i1 = (int)point3d.x;
+                j1 = (int)point3d.y;
+            }
+            sectfile.lineAdd(j, "" + actortarget.type + " " + actortarget.importance + " " + (actortarget.bTimeout ? "1 " : "0 ") + actortarget.timeout + " " + actortarget.destructLevel + (actortarget.bLanding ? 1 : 0) + " " + (int)actortarget.pos.getAbsPoint().x + " " + (int)actortarget.pos.getAbsPoint().y + " " + actortarget.r + (s.length() <= 0 ? "" : " " + l + " " + s + " " + i1 + " " + j1));
+        }
+
+        return true;
+    }
+
+    public void load(com.maddox.rts.SectFile sectfile)
+    {
+        int i = sectfile.sectionIndex("Target");
+        if(i >= 0)
+        {
+            int j = sectfile.vars(i);
+            com.maddox.JGP.Point3d point3d = new Point3d();
+            for(int k = 0; k < j; k++)
+            {
+                com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(i, k));
+                int l = numbertokenizer.next(0, 0, 7);
+                int i1 = numbertokenizer.next(0, 0, 2);
+                boolean flag = numbertokenizer.next(0) == 1;
+                int j1 = numbertokenizer.next(0, 0, 720);
+                int k1 = numbertokenizer.next(0);
+                boolean flag1 = (k1 & 1) == 1;
+                k1 /= 10;
+                if(k1 < 0)
+                    k1 = 0;
+                if(k1 > 100)
+                    k1 = 100;
+                point3d.x = numbertokenizer.next(0);
+                point3d.y = numbertokenizer.next(0);
+                int l1 = numbertokenizer.next(0);
+                if(l == 3 || l == 6 || l == 1)
+                {
+                    if(l1 < 2)
+                        l1 = 2;
+                    if(l1 > 3000)
+                        l1 = 3000;
+                }
+                int i2 = numbertokenizer.next(0);
+                java.lang.String s = numbertokenizer.next(null);
+                if(s != null && s.startsWith("Bridge"))
+                    s = " " + s;
+                com.maddox.il2.builder.ActorTarget actortarget = insert(point3d, l, s, i2, false);
+                if(actortarget != null)
+                {
+                    actortarget.importance = i1;
+                    actortarget.bTimeout = flag;
+                    actortarget.timeout = j1;
+                    actortarget.r = l1;
+                    actortarget.bLanding = flag1;
+                    actortarget.destructLevel = k1;
+                }
+            }
+
+        }
+    }
+
+    public void deleteAll()
+    {
+        int i = allActors.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)allActors.get(j);
+            actortarget.destroy();
+        }
+
+        allActors.clear();
+    }
+
+    public void delete(com.maddox.il2.engine.Actor actor)
+    {
+        allActors.remove(actor);
+        actor.destroy();
+    }
+
+    public void afterDelete()
+    {
+        for(int i = 0; i < allActors.size();)
+        {
+            com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)allActors.get(i);
+            if(actortarget.target != null && !com.maddox.il2.engine.Actor.isValid(actortarget.target))
+            {
+                actortarget.destroy();
+                allActors.remove(i);
+            } else
+            {
+                i++;
+            }
+        }
+
+    }
+
+    private com.maddox.il2.builder.ActorTarget insert(com.maddox.JGP.Point3d point3d, int i, java.lang.String s, int j, boolean flag)
+    {
+        com.maddox.il2.builder.ActorTarget actortarget;
+        int k;
+        actortarget = new ActorTarget(point3d, i, s, j);
+        if(!com.maddox.il2.engine.Actor.isValid(actortarget.target))
+            break MISSING_BLOCK_LABEL_134;
+        k = 0;
+_L1:
+        if(k >= allActors.size())
+            break MISSING_BLOCK_LABEL_134;
+        com.maddox.il2.builder.ActorTarget actortarget1 = (com.maddox.il2.builder.ActorTarget)allActors.get(k);
+        if(actortarget.type != actortarget1.type || !com.maddox.il2.engine.Actor.isValid(actortarget1.target) || actortarget1.target != actortarget.target && (!(actortarget.target instanceof com.maddox.il2.builder.PPoint) || actortarget.target.getOwner() != actortarget1.target.getOwner()))
+            break MISSING_BLOCK_LABEL_128;
+        actortarget.destroy();
+        return null;
+        k++;
+          goto _L1
+        builder.align(actortarget);
+        com.maddox.rts.Property.set(actortarget, "builderSpawn", "");
+        com.maddox.rts.Property.set(actortarget, "builderPlugin", this);
+        allActors.add(actortarget);
+        if(flag)
+            builder.setSelected(actortarget);
+        com.maddox.il2.builder.PlMission.setChanged();
+        return actortarget;
+        java.lang.Exception exception;
+        exception;
+        return null;
+    }
+
+    public void insert(com.maddox.il2.engine.Loc loc, boolean flag)
+    {
+        int i = builder.wSelect.comboBox1.getSelected();
+        int j = builder.wSelect.comboBox2.getSelected();
+        if(i != startComboBox1)
+            return;
+        if(j < 0 || j >= item.length)
+        {
+            return;
+        } else
+        {
+            insert(loc.getPoint(), item[j].indx, null, 0, flag);
+            return;
+        }
+    }
+
+    public void changeType()
+    {
+        builder.setSelected(null);
+    }
+
+    private void updateView()
+    {
+        int i = allActors.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)allActors.get(j);
+            actortarget.drawing(viewType.bChecked);
+        }
+
+    }
+
+    public void configure()
+    {
+        if(com.maddox.il2.builder.PlMisTarget.getPlugin("Mission") == null)
+        {
+            throw new RuntimeException("PlMisTarget: plugin 'Mission' not found");
+        } else
+        {
+            pluginMission = (com.maddox.il2.builder.PlMission)com.maddox.il2.builder.PlMisTarget.getPlugin("Mission");
+            return;
+        }
+    }
+
+    private void fillComboBox2(int i)
+    {
+        if(i != startComboBox1)
+            return;
+        if(builder.wSelect.curFilledType != i)
+        {
+            builder.wSelect.curFilledType = i;
+            builder.wSelect.comboBox2.clear(false);
+            for(int j = 0; j < item.length; j++)
+                builder.wSelect.comboBox2.add(com.maddox.il2.builder.PlMisTarget.i18n(item[j].name));
+
+            builder.wSelect.comboBox1.setSelected(i, true, false);
+        }
+        builder.wSelect.comboBox2.setSelected(0, true, false);
+        builder.wSelect.setMesh(null, true);
+    }
+
+    public void viewTypeAll(boolean flag)
+    {
+        viewType.bChecked = flag;
+        updateView();
+    }
+
+    public java.lang.String[] actorInfo(com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)actor;
+        switch(actortarget.importance)
+        {
+        case 0: // '\0'
+            _actorInfo[0] = com.maddox.il2.builder.PlMisTarget.i18n("Primary") + " " + com.maddox.il2.builder.PlMisTarget.i18n(item[actortarget.type].name);
+            break;
+
+        case 1: // '\001'
+            _actorInfo[0] = com.maddox.il2.builder.PlMisTarget.i18n("Secondary") + " " + com.maddox.il2.builder.PlMisTarget.i18n(item[actortarget.type].name);
+            break;
+
+        case 2: // '\002'
+            _actorInfo[0] = com.maddox.il2.builder.PlMisTarget.i18n("Secret") + " " + com.maddox.il2.builder.PlMisTarget.i18n(item[actortarget.type].name);
+            break;
+        }
+        if(com.maddox.il2.engine.Actor.isValid(actortarget.getTarget()) && (actortarget.getTarget() instanceof com.maddox.il2.builder.PPoint))
+        {
+            com.maddox.il2.builder.Path path = (com.maddox.il2.builder.Path)actortarget.getTarget().getOwner();
+            if(path instanceof com.maddox.il2.builder.PathAir)
+                _actorInfo[1] = ((com.maddox.il2.builder.PathAir)path).typedName;
+            else
+            if(path instanceof com.maddox.il2.builder.PathChief)
+                _actorInfo[1] = com.maddox.rts.Property.stringValue(path, "i18nName", "");
+            else
+                _actorInfo[1] = path.name();
+        } else
+        {
+            _actorInfo[1] = null;
+        }
+        return _actorInfo;
+    }
+
+    public void syncSelector()
+    {
+        com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)builder.selectedActor();
+        fillComboBox2(startComboBox1);
+        builder.wSelect.comboBox2.setSelected(actortarget.type, true, false);
+        builder.wSelect.tabsClient.addTab(1, tabTarget);
+        wType.cap.set(com.maddox.il2.builder.PlMisTarget.i18n(item[actortarget.type].name));
+        float f = 3F;
+        if(com.maddox.il2.engine.Actor.isValid(actortarget.getTarget()) && (actortarget.getTarget() instanceof com.maddox.il2.builder.PPoint))
+        {
+            wTarget.showWindow();
+            com.maddox.il2.builder.Path path = (com.maddox.il2.builder.Path)actortarget.getTarget().getOwner();
+            if(path instanceof com.maddox.il2.builder.PathAir)
+                wTarget.cap.set(((com.maddox.il2.builder.PathAir)path).typedName);
+            else
+            if(path instanceof com.maddox.il2.builder.PathChief)
+                wTarget.cap.set(com.maddox.rts.Property.stringValue(path, "i18nName", ""));
+            else
+                wTarget.cap.set(path.name());
+            f += 2.0F;
+        } else
+        {
+            wTarget.hideWindow();
+        }
+        if(actortarget.type == 3 || actortarget.type == 6 || actortarget.type == 7)
+        {
+            wBTimeout.hideWindow();
+        } else
+        {
+            wBTimeout.showWindow();
+            wBTimeout.setMetricPos(wBTimeout.metricWin.x, f);
+        }
+        wBTimeout.setChecked(actortarget.bTimeout, false);
+        wLTimeout.setMetricPos(wLTimeout.metricWin.x, f);
+        wTimeoutH.setEnable(actortarget.bTimeout);
+        wTimeoutM.setEnable(actortarget.bTimeout);
+        wTimeoutH.setMetricPos(wTimeoutH.metricWin.x, f);
+        wTimeoutM.setMetricPos(wTimeoutM.metricWin.x, f);
+        wTimeoutH.setValue("" + (actortarget.timeout / 60) % 24, false);
+        wTimeoutM.setValue("" + actortarget.timeout % 60, false);
+        f += 2.0F;
+        if(actortarget.type == 3 || actortarget.type == 6 || actortarget.type == 1)
+        {
+            wR.setPos(actortarget.r / 50, false);
+            wR.showWindow();
+            wR.setMetricPos(wR.metricWin.x, f);
+            f += 2.0F;
+        } else
+        {
+            wR.hideWindow();
+        }
+        if(actortarget.type == 3)
+        {
+            wBLanding.showWindow();
+            wLLanding.showWindow();
+            wBLanding.setMetricPos(wBLanding.metricWin.x, f);
+            wLLanding.setMetricPos(wLLanding.metricWin.x, f);
+            wBLanding.setChecked(actortarget.bLanding, false);
+            f += 2.0F;
+        } else
+        {
+            wBLanding.hideWindow();
+            wLLanding.hideWindow();
+        }
+        wImportance.setMetricPos(wImportance.metricWin.x, f);
+        wImportance.setSelected(actortarget.importance, true, false);
+        f += 2.0F;
+        if(actortarget.type == 3 || actortarget.type == 2 || actortarget.type == 7)
+        {
+            wLDestruct.hideWindow();
+            wDestruct.hideWindow();
+        } else
+        {
+            wLDestruct.showWindow();
+            wDestruct.showWindow();
+            wLDestruct.setMetricPos(wLDestruct.metricWin.x, f);
+            f += 2.0F;
+            wDestruct.setMetricPos(wDestruct.metricWin.x, f);
+            f += 2.0F;
+            byte byte0;
+            if(actortarget.destructLevel < 12)
+                byte0 = 0;
+            else
+            if(actortarget.destructLevel < 37)
+                byte0 = 1;
+            else
+            if(actortarget.destructLevel < 62)
+                byte0 = 2;
+            else
+            if(actortarget.destructLevel < 87)
+                byte0 = 3;
+            else
+                byte0 = 4;
+            wDestruct.setSelected(byte0, true, false);
+            if(actortarget.type == 0 || actortarget.type == 1)
+            {
+                wDestruct.posEnable[0] = false;
+                wDestruct.posEnable[4] = true;
+            } else
+            {
+                wDestruct.posEnable[0] = true;
+                wDestruct.posEnable[4] = false;
+            }
+        }
+        wLArmy.setMetricPos(wLArmy.metricWin.x, f);
+        f += 2.0F;
+        wArmy.setMetricPos(wArmy.metricWin.x, f);
+        if(com.maddox.il2.engine.Actor.isValid(com.maddox.il2.builder.Path.player))
+        {
+            wArmy.setSelected(com.maddox.il2.builder.Path.player.getArmy() - 1, true, false);
+            wArmy.bEnable = false;
+        } else
+        {
+            wArmy.setSelected(com.maddox.il2.builder.PlMission.cur.missionArmy - 1, true, false);
+            wArmy.bEnable = true;
+        }
+    }
+
+    public void createGUI()
+    {
+        startComboBox1 = builder.wSelect.comboBox1.size();
+        builder.wSelect.comboBox1.add(com.maddox.il2.builder.PlMisTarget.i18n("tTarget"));
+        builder.wSelect.comboBox1.addNotifyListener(new com.maddox.gwindow.GNotifyListener() {
+
+            public boolean notify(com.maddox.gwindow.GWindow gwindow, int j, int k)
+            {
+                int l = com.maddox.il2.builder.Plugin.builder.wSelect.comboBox1.getSelected();
+                if(l >= 0 && j == 2)
+                    fillComboBox2(l);
+                return false;
+            }
+
+        }
+);
+        int i;
+        for(i = builder.mDisplayFilter.subMenu.size() - 1; i >= 0 && pluginMission.viewBridge != builder.mDisplayFilter.subMenu.getItem(i); i--);
+        if(--i >= 0)
+        {
+            viewType = builder.mDisplayFilter.subMenu.addItem(i, new com.maddox.gwindow.GWindowMenuItem(builder.mDisplayFilter.subMenu, com.maddox.il2.builder.PlMisTarget.i18n("showTarget"), null) {
+
+                public void execute()
+                {
+                    bChecked = !bChecked;
+                    updateView();
+                }
+
+            }
+);
+            viewType.bChecked = true;
+        }
+        com.maddox.gwindow.GWindowDialogClient gwindowdialogclient = (com.maddox.gwindow.GWindowDialogClient)builder.wSelect.tabsClient.create(new GWindowDialogClient());
+        tabTarget = builder.wSelect.tabsClient.createTab(com.maddox.il2.builder.PlMisTarget.i18n("tTarget"), gwindowdialogclient);
+        gwindowdialogclient.addLabel(wType = new GWindowLabel(gwindowdialogclient, 1.0F, 1.0F, 15F, 1.3F, com.maddox.il2.builder.PlMisTarget.i18n("lType"), null));
+        gwindowdialogclient.addLabel(wTarget = new GWindowLabel(gwindowdialogclient, 1.0F, 3F, 15F, 1.3F, com.maddox.il2.builder.PlMisTarget.i18n("tTarget"), null));
+        gwindowdialogclient.addControl(wBTimeout = new com.maddox.gwindow.GWindowCheckBox(gwindowdialogclient, 1.0F, 5F, null) {
+
+            public boolean notify(int j, int k)
+            {
+                if(j != 2)
+                {
+                    return false;
+                } else
+                {
+                    com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)com.maddox.il2.builder.Plugin.builder.selectedActor();
+                    actortarget.bTimeout = isChecked();
+                    wTimeoutH.setEnable(actortarget.bTimeout);
+                    wTimeoutM.setEnable(actortarget.bTimeout);
+                    com.maddox.il2.builder.PlMission.setChanged();
+                    return false;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addLabel(wLTimeout = new GWindowLabel(gwindowdialogclient, 3F, 5F, 5F, 1.3F, com.maddox.il2.builder.PlMisTarget.i18n("TimeOut"), null));
+        gwindowdialogclient.addControl(wTimeoutH = new com.maddox.gwindow.GWindowEditControl(gwindowdialogclient, 9F, 5F, 2.0F, 1.3F, "") {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                bNumericOnly = true;
+                bDelayedNotify = true;
+            }
+
+            public boolean notify(int j, int k)
+            {
+                if(j != 2)
+                {
+                    return false;
+                } else
+                {
+                    getTimeOut();
+                    return false;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(wTimeoutM = new com.maddox.gwindow.GWindowEditControl(gwindowdialogclient, 12F, 5F, 2.0F, 1.3F, "") {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                bNumericOnly = true;
+                bDelayedNotify = true;
+            }
+
+            public boolean notify(int j, int k)
+            {
+                if(j != 2)
+                {
+                    return false;
+                } else
+                {
+                    getTimeOut();
+                    return false;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(wR = new com.maddox.gwindow.GWindowHSliderInt(gwindowdialogclient, 0, 61, 11, 1.0F, 7F, 10F) {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                bSlidingNotify = true;
+            }
+
+            public boolean notify(int j, int k)
+            {
+                if(j != 2)
+                    return false;
+                com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)com.maddox.il2.builder.Plugin.builder.selectedActor();
+                actortarget.r = pos() * 50;
+                if(actortarget.r < 2)
+                    actortarget.r = 2;
+                com.maddox.il2.builder.PlMission.setChanged();
+                return false;
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(wBLanding = new com.maddox.gwindow.GWindowCheckBox(gwindowdialogclient, 1.0F, 9F, null) {
+
+            public boolean notify(int j, int k)
+            {
+                if(j != 2)
+                {
+                    return false;
+                } else
+                {
+                    com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)com.maddox.il2.builder.Plugin.builder.selectedActor();
+                    actortarget.bLanding = isChecked();
+                    com.maddox.il2.builder.PlMission.setChanged();
+                    return false;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addLabel(wLLanding = new GWindowLabel(gwindowdialogclient, 3F, 9F, 7F, 1.3F, com.maddox.il2.builder.PlMisTarget.i18n("landing"), null));
+        gwindowdialogclient.addControl(wImportance = new com.maddox.gwindow.GWindowComboControl(gwindowdialogclient, 1.0F, 11F, 10F) {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                setEditable(false);
+                add(com.maddox.il2.builder.Plugin.i18n("Primary"));
+                add(com.maddox.il2.builder.Plugin.i18n("Secondary"));
+                add(com.maddox.il2.builder.Plugin.i18n("Secret"));
+            }
+
+            public boolean notify(int j, int k)
+            {
+                if(j != 2)
+                {
+                    return false;
+                } else
+                {
+                    com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)com.maddox.il2.builder.Plugin.builder.selectedActor();
+                    actortarget.importance = getSelected();
+                    com.maddox.il2.builder.PlMission.setChanged();
+                    return false;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addLabel(wLDestruct = new GWindowLabel(gwindowdialogclient, 1.0F, 13F, 12F, 1.3F, com.maddox.il2.builder.PlMisTarget.i18n("DestructLevel"), null));
+        gwindowdialogclient.addControl(wDestruct = new com.maddox.gwindow.GWindowComboControl(gwindowdialogclient, 1.0F, 15F, 10F) {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                setEditable(false);
+                add("0 %");
+                add("25 %");
+                add("50 %");
+                add("75 %");
+                add("100 %");
+                boolean aflag[] = new boolean[5];
+                for(int j = 0; j < 5; j++)
+                    aflag[j] = true;
+
+                posEnable = aflag;
+            }
+
+            public boolean notify(int j, int k)
+            {
+                if(j != 2)
+                {
+                    return false;
+                } else
+                {
+                    com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)com.maddox.il2.builder.Plugin.builder.selectedActor();
+                    actortarget.destructLevel = getSelected() * 25;
+                    com.maddox.il2.builder.PlMission.setChanged();
+                    return false;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addLabel(wLArmy = new GWindowLabel(gwindowdialogclient, 1.0F, 15F, 12F, 1.3F, com.maddox.il2.builder.PlMisTarget.i18n("AppliesArmy"), null));
+        gwindowdialogclient.addControl(wArmy = new com.maddox.gwindow.GWindowComboControl(gwindowdialogclient, 1.0F, 17F, 10F) {
+
+            public void afterCreated()
+            {
+                super.afterCreated();
+                setEditable(false);
+                add(com.maddox.il2.game.I18N.army(com.maddox.il2.ai.Army.name(1)));
+                add(com.maddox.il2.game.I18N.army(com.maddox.il2.ai.Army.name(2)));
+            }
+
+            public boolean notify(int j, int k)
+            {
+                if(j != 2)
+                {
+                    return false;
+                } else
+                {
+                    com.maddox.il2.builder.PlMission.cur.missionArmy = getSelected() + 1;
+                    com.maddox.il2.builder.PlMission.setChanged();
+                    return false;
+                }
+            }
+
+        }
+);
+    }
+
+    private void getTimeOut()
+    {
+        com.maddox.il2.builder.ActorTarget actortarget = (com.maddox.il2.builder.ActorTarget)builder.selectedActor();
+        java.lang.String s = wTimeoutH.getValue();
+        double d = 0.0D;
+        try
+        {
+            d = java.lang.Double.parseDouble(s);
+        }
+        catch(java.lang.Exception exception) { }
+        if(d < 0.0D)
+            d = 0.0D;
+        if(d > 12D)
+            d = 12D;
+        s = wTimeoutM.getValue();
+        double d1 = 0.0D;
+        try
+        {
+            d1 = java.lang.Double.parseDouble(s);
+        }
+        catch(java.lang.Exception exception1) { }
+        if(d1 < 0.0D)
+            d1 = 0.0D;
+        if(d1 > 59D)
+            d1 = 59D;
+        actortarget.timeout = (int)(d * 60D + d1);
+        wTimeoutH.setValue("" + (actortarget.timeout / 60) % 24, false);
+        wTimeoutM.setValue("" + actortarget.timeout % 60, false);
+        com.maddox.il2.builder.PlMission.setChanged();
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    protected java.util.ArrayList allActors;
+    com.maddox.il2.builder.Item item[] = {
+        new Item("Destroy", 0), new Item("DestroyGround", 1), new Item("DestroyBridge", 2), new Item("Inspect", 3), new Item("Escort", 4), new Item("Defence", 5), new Item("DefenceGround", 6), new Item("DefenceBridge", 7)
+    };
+    private float line2XYZ[];
+    private com.maddox.JGP.Point2d p2d;
+    private com.maddox.JGP.Point2d p2dt;
+    private com.maddox.JGP.Point3d p3d;
+    private static final int NCIRCLESEGMENTS = 48;
+    private static float _circleXYZ[] = new float[144];
+    private com.maddox.il2.builder.PlMission pluginMission;
+    private int startComboBox1;
+    private com.maddox.gwindow.GWindowMenuItem viewType;
+    private java.lang.String _actorInfo[];
+    com.maddox.gwindow.GWindowTabDialogClient.Tab tabTarget;
+    com.maddox.gwindow.GWindowLabel wType;
+    com.maddox.gwindow.GWindowLabel wTarget;
+    com.maddox.gwindow.GWindowCheckBox wBTimeout;
+    com.maddox.gwindow.GWindowLabel wLTimeout;
+    com.maddox.gwindow.GWindowEditControl wTimeoutH;
+    com.maddox.gwindow.GWindowEditControl wTimeoutM;
+    com.maddox.gwindow.GWindowHSliderInt wR;
+    com.maddox.gwindow.GWindowCheckBox wBLanding;
+    com.maddox.gwindow.GWindowLabel wLLanding;
+    com.maddox.gwindow.GWindowComboControl wImportance;
+    com.maddox.gwindow.GWindowLabel wLDestruct;
+    com.maddox.gwindow.GWindowComboControl wDestruct;
+    com.maddox.gwindow.GWindowLabel wLArmy;
+    com.maddox.gwindow.GWindowComboControl wArmy;
+
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.il2.builder.PlMisTarget.class, "name", "MisTarget");
+    }
+
+
+
 }

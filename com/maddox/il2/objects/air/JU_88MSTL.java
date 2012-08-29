@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   JU_88MSTL.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
@@ -8,7 +13,6 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.ai.air.Maneuver;
 import com.maddox.il2.ai.air.Pilot;
 import com.maddox.il2.engine.Actor;
-import com.maddox.il2.engine.ActorNet;
 import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.Engine;
 import com.maddox.il2.engine.Hook;
@@ -16,6 +20,8 @@ import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.engine.Loc;
 import com.maddox.il2.fm.AircraftState;
+import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.EnginesInterface;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Motor;
@@ -26,239 +32,275 @@ import com.maddox.rts.NetObj;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class JU_88MSTL extends JU_88
-  implements TypeDockable
+// Referenced classes of package com.maddox.il2.objects.air:
+//            JU_88, Aircraft, TypeDockable, PaintSchemeBMPar02, 
+//            NetAircraft
+
+public class JU_88MSTL extends com.maddox.il2.objects.air.JU_88
+    implements com.maddox.il2.objects.air.TypeDockable
 {
-  private Actor[] drones = { null };
-  private Actor droneInitiator = null;
 
-  public void msgEndAction(Object paramObject, int paramInt)
-  {
-    super.msgEndAction(paramObject, paramInt);
-    switch (paramInt) {
-    case 2:
-      MsgExplosion.send(this, null, this.FM.Loc, this.droneInitiator, 0.0F, 4550.0F, 0, 890.0F);
-    }
-  }
-
-  protected void doExplosion()
-  {
-    super.doExplosion();
-    World.cur(); if (this.FM.Loc.z - 300.0D < World.land().HQ_Air(this.FM.Loc.x, this.FM.Loc.y))
-      if (Engine.land().isWater(this.FM.Loc.x, this.FM.Loc.y))
-        Explosions.bomb1000_water(this.FM.Loc, 1.0F, 1.0F);
-      else
-        Explosions.bomb1000_land(this.FM.Loc, 1.0F, 1.0F, true);
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    setShot(paramShot);
-    if ((paramShot.chunkName.startsWith("WingLMid")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 0, 1);
-    if ((paramShot.chunkName.startsWith("WingRMid")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 3, 1);
-    if ((paramShot.chunkName.startsWith("WingLIn")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 1, 1);
-    if ((paramShot.chunkName.startsWith("WingRIn")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 2, 1);
-    if ((paramShot.chunkName.startsWith("Engine1")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitEngine(paramShot.initiator, 0, 1);
-    if ((paramShot.chunkName.startsWith("Engine2")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)) {
-      this.FM.AS.hitEngine(paramShot.initiator, 1, 1);
-    }
-    super.msgShot(paramShot);
-  }
-
-  public boolean typeDockableIsDocked()
-  {
-    return true;
-  }
-
-  public void typeDockableAttemptAttach() {
-  }
-
-  public void typeDockableAttemptDetach() {
-    if (this.FM.AS.isMaster())
+    public JU_88MSTL()
     {
-      for (int i = 0; i < this.drones.length; i++) {
-        if (!Actor.isValid(this.drones[i]))
-          continue;
-        typeDockableRequestDetach(this.drones[i], i, true);
-      }
+        droneInitiator = null;
     }
-  }
 
-  public void typeDockableRequestAttach(Actor paramActor)
-  {
-  }
-
-  public void typeDockableRequestDetach(Actor paramActor)
-  {
-    for (int i = 0; i < this.drones.length; i++) {
-      if (paramActor != this.drones[i])
-        continue;
-      Aircraft localAircraft = (Aircraft)paramActor;
-      if (localAircraft.FM.AS.isMaster())
-        if (this.FM.AS.isMaster())
-        {
-          typeDockableRequestDetach(paramActor, i, true);
-        }
-        else
-          this.FM.AS.netToMaster(33, i, 1, paramActor);
-    }
-  }
-
-  public void typeDockableRequestAttach(Actor paramActor, int paramInt, boolean paramBoolean)
-  {
-    if (paramInt != 0) {
-      return;
-    }
-    if (paramBoolean) {
-      if (this.FM.AS.isMaster()) {
-        this.FM.AS.netToMirrors(34, paramInt, 1, paramActor);
-        typeDockableDoAttachToDrone(paramActor, paramInt);
-      } else {
-        this.FM.AS.netToMaster(34, paramInt, 1, paramActor);
-      }
-    }
-    else if (this.FM.AS.isMaster()) {
-      if (!Actor.isValid(this.drones[paramInt])) {
-        this.FM.AS.netToMirrors(34, paramInt, 1, paramActor);
-        typeDockableDoAttachToDrone(paramActor, paramInt);
-      }
-    }
-    else this.FM.AS.netToMaster(34, paramInt, 0, paramActor);
-  }
-
-  public void typeDockableRequestDetach(Actor paramActor, int paramInt, boolean paramBoolean)
-  {
-    if (paramBoolean)
-      if (this.FM.AS.isMaster()) {
-        this.FM.AS.netToMirrors(35, paramInt, 1, paramActor);
-        typeDockableDoDetachFromDrone(paramInt);
-      } else {
-        this.FM.AS.netToMaster(35, paramInt, 1, paramActor);
-      }
-  }
-
-  public void typeDockableDoAttachToDrone(Actor paramActor, int paramInt)
-  {
-    if (!Actor.isValid(this.drones[paramInt])) {
-      HookNamed localHookNamed = new HookNamed(this, "_Dockport" + paramInt);
-      Loc localLoc1 = new Loc();
-      Loc localLoc2 = new Loc();
-      this.pos.getAbs(localLoc2);
-      localHookNamed.computePos(this, localLoc2, localLoc1);
-      paramActor.pos.setAbs(localLoc1);
-      paramActor.pos.setBase(this, null, true);
-
-      paramActor.pos.resetAsBase();
-      this.drones[paramInt] = paramActor;
-      this.droneInitiator = paramActor;
-      ((TypeDockable)this.drones[paramInt]).typeDockableDoAttachToQueen(this, paramInt);
-    }
-  }
-
-  public void typeDockableDoDetachFromDrone(int paramInt) {
-    if (!Actor.isValid(this.drones[paramInt])) {
-      return;
-    }
-    this.drones[paramInt].pos.setBase(null, null, true);
-    ((TypeDockable)this.drones[paramInt]).typeDockableDoDetachFromQueen(paramInt);
-    this.drones[paramInt] = null;
-  }
-  public void typeDockableDoAttachToQueen(Actor paramActor, int paramInt) {
-  }
-  public void typeDockableDoDetachFromQueen(int paramInt) {
-  }
-  public void typeDockableReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-    for (int i = 0; i < this.drones.length; i++)
+    public void msgEndAction(java.lang.Object obj, int i)
     {
-      if (Actor.isValid(this.drones[i]))
-      {
-        paramNetMsgGuaranted.writeByte(1);
-        ActorNet localActorNet = this.drones[i].net;
-
-        if (localActorNet.countNoMirrors() == 0)
+        super.msgEndAction(obj, i);
+        switch(i)
         {
-          paramNetMsgGuaranted.writeNetObj(localActorNet);
+        case 2: // '\002'
+            com.maddox.il2.ai.MsgExplosion.send(this, null, FM.Loc, droneInitiator, 0.0F, 4550F, 0, 890F);
+            break;
         }
-        else
-          paramNetMsgGuaranted.writeNetObj(null);
-      }
-      else
-      {
-        paramNetMsgGuaranted.writeByte(0);
-      }
     }
-  }
 
-  public void typeDockableReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-    for (int i = 0; i < this.drones.length; i++)
-      if (paramNetMsgInput.readByte() == 1) {
-        NetObj localNetObj = paramNetMsgInput.readNetObj();
-        if (localNetObj != null)
-          typeDockableDoAttachToDrone((Actor)localNetObj.superObj(), i);
-      }
-  }
+    protected void doExplosion()
+    {
+        super.doExplosion();
+        if(FM.Loc.z - 300D < com.maddox.il2.ai.World.cur().land().HQ_Air(FM.Loc.x, FM.Loc.y))
+            if(com.maddox.il2.engine.Engine.land().isWater(FM.Loc.x, FM.Loc.y))
+                com.maddox.il2.objects.effects.Explosions.bomb1000_water(FM.Loc, 1.0F, 1.0F);
+            else
+                com.maddox.il2.objects.effects.Explosions.bomb1000_land(FM.Loc, 1.0F, 1.0F, true);
+    }
 
-  protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
-  {
-    if (this.FM.AS.isMaster()) {
-      if (paramInt1 == 2) {
-        typeDockableRequestDetach(this.drones[0], 0, true);
-      }
-      if ((paramInt1 == 13) && (paramInt2 == 0))
-      {
-        nextDMGLevels(4, 1, "CF_D0", this);
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        setShot(shot);
+        if(shot.chunkName.startsWith("WingLMid") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitTank(shot.initiator, 0, 1);
+        if(shot.chunkName.startsWith("WingRMid") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitTank(shot.initiator, 3, 1);
+        if(shot.chunkName.startsWith("WingLIn") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitTank(shot.initiator, 1, 1);
+        if(shot.chunkName.startsWith("WingRIn") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitTank(shot.initiator, 2, 1);
+        if(shot.chunkName.startsWith("Engine1") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitEngine(shot.initiator, 0, 1);
+        if(shot.chunkName.startsWith("Engine2") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitEngine(shot.initiator, 1, 1);
+        super.msgShot(shot);
+    }
+
+    public boolean typeDockableIsDocked()
+    {
         return true;
-      }
     }
-    return super.cutFM(paramInt1, paramInt2, paramActor);
-  }
 
-  public void update(float paramFloat)
-  {
-    if ((this.FM instanceof Pilot)) {
-      ((Pilot)this.FM).setDumbTime(9999L);
-    }
-    if (((this.FM instanceof Maneuver)) && 
-      (this.FM.EI.engines[0].getStage() == 6) && (this.FM.EI.engines[1].getStage() == 6))
+    public void typeDockableAttemptAttach()
     {
-      ((Maneuver)this.FM).set_maneuver(44);
-      ((Maneuver)this.FM).setSpeedMode(-1);
     }
 
-    this.FM.CT.bHasGearControl = (!this.FM.Gears.onGround());
-    super.update(paramFloat);
-  }
+    public void typeDockableAttemptDetach()
+    {
+        if(FM.AS.isMaster())
+        {
+            for(int i = 0; i < drones.length; i++)
+                if(com.maddox.il2.engine.Actor.isValid(drones[i]))
+                    typeDockableRequestDetach(drones[i], i, true);
 
-  static
-  {
-    Class localClass = JU_88MSTL.class;
-    new NetAircraft.SPAWN(localClass);
+        }
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "Ju-88");
-    Property.set(localClass, "meshName", "3DO/Plane/Ju-88MSTL/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar02());
+    public void typeDockableRequestAttach(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-    Property.set(localClass, "yearService", 1943.0F);
-    Property.set(localClass, "yearExpired", 1945.5F);
+    public void typeDockableRequestDetach(com.maddox.il2.engine.Actor actor)
+    {
+        for(int i = 0; i < drones.length; i++)
+        {
+            if(actor != drones[i])
+                continue;
+            com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft)actor;
+            if(!aircraft.FM.AS.isMaster())
+                continue;
+            if(FM.AS.isMaster())
+                typeDockableRequestDetach(actor, i, true);
+            else
+                FM.AS.netToMaster(33, i, 1, actor);
+        }
 
-    Property.set(localClass, "FlightModel", "FlightModels/Ju-88A-4Mistel.fmd");
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 9 });
-    weaponHooksRegister(localClass, new String[] { "_Dockport0" });
+    public void typeDockableRequestAttach(com.maddox.il2.engine.Actor actor, int i, boolean flag)
+    {
+        if(i != 0)
+            return;
+        if(flag)
+        {
+            if(FM.AS.isMaster())
+            {
+                FM.AS.netToMirrors(34, i, 1, actor);
+                typeDockableDoAttachToDrone(actor, i);
+            } else
+            {
+                FM.AS.netToMaster(34, i, 1, actor);
+            }
+        } else
+        if(FM.AS.isMaster())
+        {
+            if(!com.maddox.il2.engine.Actor.isValid(drones[i]))
+            {
+                FM.AS.netToMirrors(34, i, 1, actor);
+                typeDockableDoAttachToDrone(actor, i);
+            }
+        } else
+        {
+            FM.AS.netToMaster(34, i, 0, actor);
+        }
+    }
 
-    weaponsRegister(localClass, "default", new String[] { null });
+    public void typeDockableRequestDetach(com.maddox.il2.engine.Actor actor, int i, boolean flag)
+    {
+        if(flag)
+            if(FM.AS.isMaster())
+            {
+                FM.AS.netToMirrors(35, i, 1, actor);
+                typeDockableDoDetachFromDrone(i);
+            } else
+            {
+                FM.AS.netToMaster(35, i, 1, actor);
+            }
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null });
-  }
+    public void typeDockableDoAttachToDrone(com.maddox.il2.engine.Actor actor, int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(drones[i]))
+        {
+            com.maddox.il2.engine.HookNamed hooknamed = new HookNamed(this, "_Dockport" + i);
+            com.maddox.il2.engine.Loc loc = new Loc();
+            com.maddox.il2.engine.Loc loc1 = new Loc();
+            pos.getAbs(loc1);
+            hooknamed.computePos(this, loc1, loc);
+            actor.pos.setAbs(loc);
+            actor.pos.setBase(this, null, true);
+            actor.pos.resetAsBase();
+            drones[i] = actor;
+            droneInitiator = actor;
+            ((com.maddox.il2.objects.air.TypeDockable)drones[i]).typeDockableDoAttachToQueen(this, i);
+        }
+    }
+
+    public void typeDockableDoDetachFromDrone(int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(drones[i]))
+        {
+            return;
+        } else
+        {
+            drones[i].pos.setBase(null, null, true);
+            ((com.maddox.il2.objects.air.TypeDockable)drones[i]).typeDockableDoDetachFromQueen(i);
+            drones[i] = null;
+            return;
+        }
+    }
+
+    public void typeDockableDoAttachToQueen(com.maddox.il2.engine.Actor actor, int i)
+    {
+    }
+
+    public void typeDockableDoDetachFromQueen(int i)
+    {
+    }
+
+    public void typeDockableReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+        for(int i = 0; i < drones.length; i++)
+            if(com.maddox.il2.engine.Actor.isValid(drones[i]))
+            {
+                netmsgguaranted.writeByte(1);
+                com.maddox.il2.engine.ActorNet actornet = drones[i].net;
+                if(actornet.countNoMirrors() == 0)
+                    netmsgguaranted.writeNetObj(actornet);
+                else
+                    netmsgguaranted.writeNetObj(null);
+            } else
+            {
+                netmsgguaranted.writeByte(0);
+            }
+
+    }
+
+    public void typeDockableReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        for(int i = 0; i < drones.length; i++)
+        {
+            if(netmsginput.readByte() != 1)
+                continue;
+            com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+            if(netobj != null)
+                typeDockableDoAttachToDrone((com.maddox.il2.engine.Actor)netobj.superObj(), i);
+        }
+
+    }
+
+    protected boolean cutFM(int i, int j, com.maddox.il2.engine.Actor actor)
+    {
+        if(FM.AS.isMaster())
+        {
+            if(i == 2)
+                typeDockableRequestDetach(drones[0], 0, true);
+            if(i == 13 && j == 0)
+            {
+                nextDMGLevels(4, 1, "CF_D0", this);
+                return true;
+            }
+        }
+        return super.cutFM(i, j, actor);
+    }
+
+    public void update(float f)
+    {
+        if(FM instanceof com.maddox.il2.ai.air.Pilot)
+            ((com.maddox.il2.ai.air.Pilot)FM).setDumbTime(9999L);
+        if((FM instanceof com.maddox.il2.ai.air.Maneuver) && FM.EI.engines[0].getStage() == 6 && FM.EI.engines[1].getStage() == 6)
+        {
+            ((com.maddox.il2.ai.air.Maneuver)FM).set_maneuver(44);
+            ((com.maddox.il2.ai.air.Maneuver)FM).setSpeedMode(-1);
+        }
+        FM.CT.bHasGearControl = !FM.Gears.onGround();
+        super.update(f);
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private com.maddox.il2.engine.Actor drones[] = {
+        null
+    };
+    private com.maddox.il2.engine.Actor droneInitiator;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.JU_88MSTL.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "Ju-88");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/Ju-88MSTL/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
+        com.maddox.rts.Property.set(class1, "yearService", 1943F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/Ju-88A-4Mistel.fmd");
+        com.maddox.il2.objects.air.JU_88MSTL.weaponTriggersRegister(class1, new int[] {
+            9
+        });
+        com.maddox.il2.objects.air.JU_88MSTL.weaponHooksRegister(class1, new java.lang.String[] {
+            "_Dockport0"
+        });
+        com.maddox.il2.objects.air.JU_88MSTL.weaponsRegister(class1, "default", new java.lang.String[] {
+            null
+        });
+        com.maddox.il2.objects.air.JU_88MSTL.weaponsRegister(class1, "none", new java.lang.String[] {
+            null
+        });
+    }
 }

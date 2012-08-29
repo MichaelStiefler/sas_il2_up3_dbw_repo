@@ -1,74 +1,137 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CfgIntValue.java
+
 package com.maddox.rts;
 
+
+// Referenced classes of package com.maddox.rts:
+//            CfgInt, CfgTools, IniFile
+
 public class CfgIntValue
-  implements CfgInt
+    implements com.maddox.rts.CfgInt
 {
-  private String name;
-  private int[] state;
-  private int first;
-  private int count;
-  private int def;
-  protected IniFile iniFile;
-  protected String iniSect;
 
-  public int firstState()
-  {
-    return this.first; } 
-  public int countStates() { return this.count; } 
-  public int defaultState() { return this.def; }
+    public int firstState()
+    {
+        return first;
+    }
 
-  public void set(int paramInt) {
-    this.state[0] = clamp(paramInt, firstState(), countStates());
-  }
-  public int get() { return this.state[0]; } 
-  public int apply() {
-    return 0; } 
-  public void reset() {  }
+    public int countStates()
+    {
+        return count;
+    }
 
-  public int applyStatus() { return 0; } 
-  public void applyExtends(int paramInt) {
-  }
+    public int defaultState()
+    {
+        return def;
+    }
 
-  public boolean isEnabledState(int paramInt) {
-    return paramInt == clamp(paramInt, firstState(), countStates());
-  }
+    public void set(int i)
+    {
+        state[0] = clamp(i, firstState(), countStates());
+    }
 
-  public String nameState(int paramInt) {
-    return "Unknown"; } 
-  public String name() { return this.name; } 
-  public boolean isPermanent() { return true; } 
-  public boolean isEnabled() { return true; }
+    public int get()
+    {
+        return state[0];
+    }
 
-  public void load(IniFile paramIniFile, String paramString) {
-    CfgTools.load(this, paramIniFile, paramString);
-    this.iniFile = paramIniFile;
-    this.iniSect = paramString;
-  }
-  public void save() {
-    save(this.iniFile, this.iniSect);
-  }
-  public void save(IniFile paramIniFile, String paramString) {
-    CfgTools.save(true, this, paramIniFile, paramString);
-  }
-  public IniFile loadedSectFile() {
-    return this.iniFile;
-  }
-  public String loadedSectName() {
-    return this.iniSect;
-  }
+    public int apply()
+    {
+        return 0;
+    }
 
-  protected int clamp(int paramInt1, int paramInt2, int paramInt3) {
-    if (paramInt1 < paramInt2) paramInt1 = paramInt2;
-    if (paramInt1 >= paramInt2 + paramInt3) paramInt1 = paramInt2 + paramInt3 - 1;
-    return paramInt1;
-  }
-  public CfgIntValue(String paramString, int[] paramArrayOfInt, int paramInt1, int paramInt2, int paramInt3) {
-    this.name = paramString;
-    this.state = paramArrayOfInt;
-    this.first = paramInt1;
-    this.count = paramInt2;
-    int tmp33_31 = paramInt3; this.def = tmp33_31; this.state[0] = tmp33_31;
+    public void reset()
+    {
+    }
 
-    CfgTools.register(this);
-  }
+    public int applyStatus()
+    {
+        return 0;
+    }
+
+    public void applyExtends(int i)
+    {
+    }
+
+    public boolean isEnabledState(int i)
+    {
+        return i == clamp(i, firstState(), countStates());
+    }
+
+    public java.lang.String nameState(int i)
+    {
+        return "Unknown";
+    }
+
+    public java.lang.String name()
+    {
+        return name;
+    }
+
+    public boolean isPermanent()
+    {
+        return true;
+    }
+
+    public boolean isEnabled()
+    {
+        return true;
+    }
+
+    public void load(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        com.maddox.rts.CfgTools.load(this, inifile, s);
+        iniFile = inifile;
+        iniSect = s;
+    }
+
+    public void save()
+    {
+        save(iniFile, iniSect);
+    }
+
+    public void save(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        com.maddox.rts.CfgTools.save(true, this, inifile, s);
+    }
+
+    public com.maddox.rts.IniFile loadedSectFile()
+    {
+        return iniFile;
+    }
+
+    public java.lang.String loadedSectName()
+    {
+        return iniSect;
+    }
+
+    protected int clamp(int i, int j, int k)
+    {
+        if(i < j)
+            i = j;
+        if(i >= j + k)
+            i = (j + k) - 1;
+        return i;
+    }
+
+    public CfgIntValue(java.lang.String s, int ai[], int i, int j, int k)
+    {
+        name = s;
+        state = ai;
+        first = i;
+        count = j;
+        state[0] = def = k;
+        com.maddox.rts.CfgTools.register(this);
+    }
+
+    private java.lang.String name;
+    private int state[];
+    private int first;
+    private int count;
+    private int def;
+    protected com.maddox.rts.IniFile iniFile;
+    protected java.lang.String iniSect;
 }

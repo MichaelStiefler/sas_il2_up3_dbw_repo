@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   AircraftState.java
+
 package com.maddox.il2.fm;
 
 import com.maddox.JGP.Point3d;
@@ -80,3037 +85,3413 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
+// Referenced classes of package com.maddox.il2.fm:
+//            RealFlightModel, FlightModel, EnginesInterface, Motor, 
+//            Controls, Gear, Mass, Autopilotage, 
+//            Pitot
+
 public class AircraftState
 {
-  public static final boolean __DEBUG_SPREAD__ = false;
-  private static final float astateEffectCriticalSpeed = 10.0F;
-  private static final float astateCondensateCriticalAlt = 7000.0F;
-  private static final Loc astateCondensateDispVector = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-  public static final int _AS_RESERVED = 0;
-  public static final int _AS_ENGINE_STATE = 1;
-  public static final int _AS_ENGINE_SPECIFIC_DMG = 2;
-  public static final int _AS_ENGINE_EXPLODES = 3;
-  public static final int _AS_ENGINE_STARTS = 4;
-  public static final int _AS_ENGINE_RUNS = 5;
-  public static final int _AS_ENGINE_STOPS = 6;
-  public static final int _AS_ENGINE_DIES = 7;
-  public static final int _AS_ENGINE_SOOT_POWERS = 8;
-  public static final int _AS_ENGINE_READYNESS = 25;
-  public static final int _AS_ENGINE_STAGE = 26;
-  public static final int _AS_ENGINE_CYL_KNOCKOUT = 27;
-  public static final int _AS_ENGINE_MAG_KNOCKOUT = 28;
-  public static final int _AS_ENGINE_STUCK = 29;
-  public static final int _AS_TANK_STATE = 9;
-  public static final int _AS_TANK_EXPLODES = 10;
-  public static final int _AS_OIL_STATE = 11;
-  public static final int _AS_GLIDER_BOOSTER = 12;
-  public static final int _AS_GLIDER_BOOSTOFF = 13;
-  public static final int _AS_GLIDER_CUTCART = 14;
-  public static final int _AS_AIRSHOW_SMOKES_STATE = 15;
-  public static final int _AS_WINGTIP_SMOKES_STATE = 16;
-  public static final int _AS_PILOT_STATE = 17;
-  public static final int _AS_KILLPILOT = 18;
-  public static final int _AS_HEADSHOT = 19;
-  public static final int _AS_BAILOUT = 20;
-  public static final int _AS_CONTROLS_HURT = 21;
-  public static final int _AS_INTERNALS_HURT = 22;
-  public static final int _AS_COCKPIT_STATE_BYTE = 23;
-  public static final int _AS_JAM_BULLETS = 24;
-  public static final int _AS_NAVIGATION_LIGHTS_STATE = 30;
-  public static final int _AS_LANDING_LIGHT_STATE = 31;
-  public static final int _AS_TYPEDOCKABLE_REQ_ATTACHTODRONE = 32;
-  public static final int _AS_TYPEDOCKABLE_REQ_DETACHFROMDRONE = 33;
-  public static final int _AS_TYPEDOCKABLE_FORCE_ATTACHTODRONE = 34;
-  public static final int _AS_TYPEDOCKABLE_FORCE_DETACHFROMDRONE = 35;
-  public static final int _AS_FLATTOP_FORCESTRING = 36;
-  public static final int _AS_FMSFX = 37;
-  public static final int _AS_WINGFOLD = 38;
-  public static final int _AS_COCKPITDOOR = 39;
-  public static final int _AS_ARRESTOR = 40;
-  public static final int _AS_COUNT_CODES = 41;
-  public static final int _AS_BEACONS = 42;
-  public static final int _AS_GYROANGLE = 44;
-  public static final int _AS_SPREADANGLE = 45;
-  public static final int _AS_PILOT_WOUNDED = 46;
-  public static final int _AS_PILOT_BLEEDING = 47;
-  public static final int _AS_COCKPIT_GLASS = 1;
-  public static final int _AS_COCKPIT_ARMORGLASS = 2;
-  public static final int _AS_COCKPIT_LEFT1 = 4;
-  public static final int _AS_COCKPIT_LEFT2 = 8;
-  public static final int _AS_COCKPIT_RIGHT1 = 16;
-  public static final int _AS_COCKPIT_RIGHT2 = 32;
-  public static final int _AS_COCKPIT_INSTRUMENTS = 64;
-  public static final int _AS_COCKPIT_OIL = 128;
-  public static final int _ENGINE_SPECIFIC_BOOSTER = 0;
-  public static final int _ENGINE_SPECIFIC_THROTTLECTRL = 1;
-  public static final int _ENGINE_SPECIFIC_HEATER = 2;
-  public static final int _ENGINE_SPECIFIC_ANGLER = 3;
-  public static final int _ENGINE_SPECIFIC_ANGLERSPEEDS = 4;
-  public static final int _ENGINE_SPECIFIC_EXTINGUISHER = 5;
-  public static final int _ENGINE_SPECIFIC_PROPCTRL = 6;
-  public static final int _ENGINE_SPECIFIC_MIXCTRL = 7;
-  public static final int _CONTROLS_AILERONS = 0;
-  public static final int _CONTROLS_ELEVATORS = 1;
-  public static final int _CONTROLS_RUDDERS = 2;
-  public static final int _INTERNALS_HYDRO_OFFLINE = 0;
-  public static final int _INTERNALS_PNEUMO_OFFLINE = 1;
-  public static final int _INTERNALS_MW50_OFFLINE = 2;
-  public static final int _INTERNALS_GEAR_STUCK = 3;
-  public static final int _INTERNALS_KEEL_SHUTOFF = 4;
-  public static final int _INTERNALS_SHAFT_SHUTOFF = 5;
-  protected long bleedingTime;
-  public long[] astateBleedingTimes;
-  public long[] astateBleedingNext;
-  private boolean legsWounded;
-  private boolean armsWounded;
-  public int torpedoGyroAngle;
-  public int torpedoSpreadAngle;
-  private static final float gyroAngleLimit = 50.0F;
-  public static final int spreadAngleLimit = 30;
-  private int beacon;
-  private boolean bWantBeaconsNet;
-  public static final int MAX_NUMBER_OF_BEACONS = 32;
-  public boolean listenLorenzBlindLanding;
-  public boolean isAAFIAS;
-  public boolean listenYGBeacon;
-  public boolean listenNDBeacon;
-  public boolean listenRadioStation;
-  public Actor hayrakeCarrier;
-  public String hayrakeCode;
-  public static int hudLogBeaconId = HUD.makeIdLog();
-  public boolean externalStoresDropped;
-  private static final String[] astateOilStrings = { "3DO/Effects/Aircraft/BlackMediumSPD.eff", "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, null };
-
-  private static final String[] astateTankStrings = { null, null, null, "3DO/Effects/Aircraft/RedLeakTSPD.eff", null, null, "3DO/Effects/Aircraft/RedLeakTSPD.eff", null, null, "3DO/Effects/Aircraft/BlackMediumSPD.eff", "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, null, null, "3DO/Effects/Aircraft/RedLeakGND.eff", null, null, "3DO/Effects/Aircraft/RedLeakGND.eff", null, null, "3DO/Effects/Aircraft/BlackMediumGND.eff", null, null, "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, null, "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff", null };
-
-  private static final String[] astateEngineStrings = { null, null, null, "3DO/Effects/Aircraft/GraySmallSPD.eff", "3DO/Effects/Aircraft/GraySmallTSPD.eff", null, "3DO/Effects/Aircraft/BlackMediumSPD.eff", "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, null, null, "3DO/Effects/Aircraft/GraySmallGND.eff", null, null, "3DO/Effects/Aircraft/BlackMediumGND.eff", null, null, "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, null, "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff", null };
-
-  private static final String[] astateCondensateStrings = { null, "3DO/Effects/Aircraft/CondensateTSPD.eff" };
-
-  private static final String[] astateStallStrings = { null, "3DO/Effects/Aircraft/StallTSPD.eff" };
-
-  public static final String[] astateHUDPilotHits = { "Player", "Pilot", "CPilot", "NGunner", "TGunner", "WGunner", "VGunner", "RGunner", "EngMas", "BombMas", "RadMas", "ObsMas" };
-
-  private static boolean bCriticalStatePassed = false;
-  private boolean bIsAboveCriticalSpeed;
-  private boolean bIsAboveCondensateAlt;
-  private boolean[] bIsBeyondSootPower;
-  private boolean bIsOnInadequateAOA;
-  public boolean bShowSmokesOn;
-  public boolean bNavLightsOn;
-  public boolean bLandingLightOn;
-  public boolean bWingTipLExists;
-  public boolean bWingTipRExists;
-  private boolean bIsMaster;
-  public Actor actor;
-  public AircraftLH aircraft;
-  public byte[] astatePilotStates;
-  public byte[] astatePilotFunctions;
-  public int astatePlayerIndex;
-  public boolean bIsAboutToBailout;
-  public boolean bIsEnableToBailout;
-  public byte astateBailoutStep;
-  public int astateCockpitState;
-  public byte[] astateOilStates;
-  private Eff3DActor[][] astateOilEffects;
-  public byte[] astateTankStates;
-  private Eff3DActor[][] astateTankEffects;
-  public byte[] astateEngineStates;
-  private Eff3DActor[][] astateEngineEffects;
-  public byte[] astateSootStates;
-  public Eff3DActor[][] astateSootEffects;
-  private Eff3DActor[] astateCondensateEffects;
-  private Eff3DActor[] astateStallEffects;
-  private Eff3DActor[] astateAirShowEffects;
-  private Eff3DActor[] astateNavLightsEffects;
-  private LightPointActor[] astateNavLightsLights;
-  public Eff3DActor[] astateLandingLightEffects;
-  private LightPointActor[] astateLandingLightLights;
-  public String[] astateEffectChunks;
-  public static final int astateEffectsDispTanks = 0;
-  public static final int astateEffectsDispEngines = 4;
-  public static final int astateEffectsDispLights = 12;
-  public static final int astateEffectsDispLandingLights = 18;
-  public static final int astateEffectsDispOilfilters = 22;
-  public static boolean bCheckPlayerAircraft = true;
-  private Item[] itemsToMaster;
-  private Item[] itemsToMirrors;
-
-  public AircraftState()
-  {
-    this.bleedingTime = 0L;
-    this.astateBleedingTimes = new long[9];
-    this.astateBleedingNext = new long[9];
-    this.legsWounded = false;
-    this.armsWounded = false;
-
-    this.torpedoGyroAngle = 0;
-    this.torpedoSpreadAngle = 0;
-
-    this.beacon = 0;
-    this.bWantBeaconsNet = false;
-
-    this.listenLorenzBlindLanding = false;
-    this.isAAFIAS = false;
-    this.listenYGBeacon = false;
-    this.listenNDBeacon = false;
-    this.listenRadioStation = false;
-    this.hayrakeCarrier = null;
-    this.hayrakeCode = null;
-
-    this.externalStoresDropped = false;
-
-    this.bIsAboveCriticalSpeed = false;
-
-    this.bIsAboveCondensateAlt = false;
-
-    this.bIsBeyondSootPower = new boolean[] { false, false, false, false };
-
-    this.bIsOnInadequateAOA = false;
-    this.bShowSmokesOn = false;
-    this.bNavLightsOn = false;
-    this.bLandingLightOn = false;
-    this.bWingTipLExists = true;
-    this.bWingTipRExists = true;
-
-    this.actor = null;
-    this.aircraft = null;
-
-    this.astatePilotStates = new byte[9];
-    this.astatePilotFunctions = new byte[] { 1, 7, 7, 7, 7, 7, 7, 7, 7 };
-
-    this.astatePlayerIndex = 0;
-    this.bIsAboutToBailout = false;
-    this.bIsEnableToBailout = true;
-    this.astateBailoutStep = 0;
-    this.astateCockpitState = 0;
-
-    this.astateOilStates = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
-    this.astateOilEffects = new Eff3DActor[][] { { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null } };
-
-    this.astateTankStates = new byte[] { 0, 0, 0, 0 };
-    this.astateTankEffects = new Eff3DActor[][] { { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null } };
-
-    this.astateEngineStates = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
-    this.astateEngineEffects = new Eff3DActor[][] { { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null }, { null, null, null } };
-
-    this.astateSootStates = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
-    this.astateSootEffects = new Eff3DActor[][] { { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null }, { null, null } };
-
-    this.astateCondensateEffects = new Eff3DActor[] { null, null, null, null, null, null, null, null };
-
-    this.astateStallEffects = new Eff3DActor[] { null, null };
-
-    this.astateAirShowEffects = new Eff3DActor[] { null, null };
-
-    this.astateNavLightsEffects = new Eff3DActor[] { null, null, null, null, null, null };
-
-    this.astateNavLightsLights = new LightPointActor[] { null, null, null, null, null, null };
-
-    this.astateLandingLightEffects = new Eff3DActor[] { null, null, null, null };
-
-    this.astateLandingLightLights = new LightPointActor[] { null, null, null, null };
-
-    this.astateEffectChunks = new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null };
-
-    this.itemsToMaster = null;
-    this.itemsToMirrors = null;
-  }
-
-  public void set(Actor paramActor, boolean paramBoolean)
-  {
-    Loc localLoc1 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-    Loc localLoc2 = new Loc();
-
-    this.actor = paramActor;
-    if ((paramActor instanceof Aircraft))
-      this.aircraft = ((AircraftLH)paramActor);
-    else
-      throw new RuntimeException("Can not cast aircraft structure into a non-aircraft entity.");
-    this.bIsMaster = paramBoolean;
-
-    for (int i = 0; i < 4; i++)
-      try {
-        this.astateEffectChunks[(i + 0)] = this.actor.findHook("_Tank" + (i + 1) + "Burn").chunkName();
-        this.astateEffectChunks[(i + 0)] = this.astateEffectChunks[(i + 0)].substring(0, this.astateEffectChunks[(i + 0)].length() - 1);
-        Aircraft.debugprintln(this.aircraft, "AS: Tank " + i + " FX attached to '" + this.astateEffectChunks[(i + 0)] + "' substring.."); } catch (Exception localException1) {
-      } finally {
-      }
-    for (i = 0; i < this.aircraft.FM.EI.getNum(); i++)
-      try {
-        this.astateEffectChunks[(i + 4)] = this.actor.findHook("_Engine" + (i + 1) + "Smoke").chunkName();
-        this.astateEffectChunks[(i + 4)] = this.astateEffectChunks[(i + 4)].substring(0, this.astateEffectChunks[(i + 4)].length() - 1);
-        Aircraft.debugprintln(this.aircraft, "AS: Engine " + i + " FX attached to '" + this.astateEffectChunks[(i + 4)] + "' substring..");
-      }
-      catch (Exception localException2)
-      {
-      }
-      finally
-      {
-      }
-    Point3d localPoint3d;
-    for (i = 0; i < this.astateNavLightsEffects.length; i++)
-      try {
-        this.astateEffectChunks[(i + 12)] = this.actor.findHook("_NavLight" + i).chunkName();
-        this.astateEffectChunks[(i + 12)] = this.astateEffectChunks[(i + 12)].substring(0, this.astateEffectChunks[(i + 12)].length() - 1);
-        Aircraft.debugprintln(this.aircraft, "AS: Nav. Lamp #" + i + " attached to '" + this.astateEffectChunks[(i + 12)] + "' substring..");
-
-        HookNamed localHookNamed1 = new HookNamed(this.aircraft, "_NavLight" + i);
-        localLoc2.set(1.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-        localHookNamed1.computePos(this.actor, localLoc1, localLoc2);
-        localPoint3d = localLoc2.getPoint();
-        this.astateNavLightsLights[i] = new LightPointActor(new LightPoint(), localPoint3d);
-        if (i < 2)
-          this.astateNavLightsLights[i].light.setColor(1.0F, 0.1F, 0.1F);
-        else if (i < 4)
-          this.astateNavLightsLights[i].light.setColor(0.0F, 1.0F, 0.0F);
-        else {
-          this.astateNavLightsLights[i].light.setColor(0.7F, 0.7F, 0.7F);
-        }
-        this.astateNavLightsLights[i].light.setEmit(0.0F, 0.0F);
-        this.actor.draw.lightMap().put("_NavLight" + i, this.astateNavLightsLights[i]);
-      } catch (Exception localException3) {
-      } finally {
-      }
-    for (i = 0; i < 4; i++)
-      try {
-        this.astateEffectChunks[(i + 18)] = this.actor.findHook("_LandingLight0" + i).chunkName();
-        this.astateEffectChunks[(i + 18)] = this.astateEffectChunks[(i + 18)].substring(0, this.astateEffectChunks[(i + 18)].length() - 1);
-        Aircraft.debugprintln(this.aircraft, "AS: Landing Lamp #" + i + " attached to '" + this.astateEffectChunks[(i + 18)] + "' substring..");
-
-        HookNamed localHookNamed2 = new HookNamed(this.aircraft, "_LandingLight0" + i);
-        localLoc2.set(1.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-        localHookNamed2.computePos(this.actor, localLoc1, localLoc2);
-        localPoint3d = localLoc2.getPoint();
-        this.astateLandingLightLights[i] = new LightPointActor(new LightPoint(), localPoint3d);
-        this.astateLandingLightLights[i].light.setColor(0.4941177F, 0.9098039F, 0.9607843F);
-        this.astateLandingLightLights[i].light.setEmit(0.0F, 0.0F);
-        this.actor.draw.lightMap().put("_LandingLight0" + i, this.astateLandingLightLights[i]);
-      } catch (Exception localException4) {
-      } finally {
-      }
-    for (i = 0; i < this.aircraft.FM.EI.getNum(); i++)
-      try {
-        this.astateEffectChunks[(i + 22)] = this.actor.findHook("_Engine" + (i + 1) + "Oil").chunkName();
-        this.astateEffectChunks[(i + 22)] = this.astateEffectChunks[(i + 22)].substring(0, this.astateEffectChunks[(i + 22)].length() - 1);
-        Aircraft.debugprintln(this.aircraft, "AS: Oilfilter " + i + " FX attached to '" + this.astateEffectChunks[(i + 22)] + "' substring.."); } catch (Exception localException5) {
-      } finally {
-      }
-    for (i = 0; i < this.astateEffectChunks.length; i++) {
-      if (this.astateEffectChunks[i] != null) continue; this.astateEffectChunks[i] = "AChunkNameYouCanNeverFind";
-    }
-  }
-
-  public boolean isMaster()
-  {
-    return this.bIsMaster;
-  }
-
-  public void setOilState(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if ((paramInt2 < 0) || (paramInt2 > 1) || (this.astateOilStates[paramInt1] == paramInt2)) return;
-    if (this.bIsMaster) {
-      this.aircraft.setDamager(paramActor);
-      doSetOilState(paramInt1, paramInt2);
-      int i = 0;
-      for (int j = 0; j < this.aircraft.FM.EI.getNum(); j++) {
-        if (this.astateOilStates[j] == 1) {
-          i++;
-        }
-      }
-      if (i == this.aircraft.FM.EI.getNum()) {
-        setCockpitState(this.actor, this.astateCockpitState | 0x80);
-      }
-
-      netToMirrors(11, paramInt1, paramInt2);
-    }
-    else {
-      netToMaster(11, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  public void hitOil(Actor paramActor, int paramInt)
-  {
-    if (this.astateOilStates[paramInt] > 0) return;
-    if (this.astateOilStates[paramInt] < 1)
-      setOilState(paramActor, paramInt, this.astateOilStates[paramInt] + 1);
-  }
-
-  public void repairOil(int paramInt)
-  {
-    if (!this.bIsMaster) return;
-    if (this.astateOilStates[paramInt] > 0) setOilState(this.actor, paramInt, this.astateOilStates[paramInt] - 1);
-  }
-
-  private void doSetOilState(int paramInt1, int paramInt2)
-  {
-    if (this.astateOilStates[paramInt1] == paramInt2) return;
-
-    Aircraft.debugprintln(this.aircraft, "AS: Checking '" + this.astateEffectChunks[(paramInt1 + 22)] + "' visibility..");
-    boolean bool = this.aircraft.isChunkAnyDamageVisible(this.astateEffectChunks[(paramInt1 + 22)]);
-    Aircraft.debugprintln(this.aircraft, "AS: '" + this.astateEffectChunks[(paramInt1 + 22)] + "' is " + (bool ? "visible" : "invisible") + "..");
-    Aircraft.debugprintln(this.aircraft, "Stating OilFilter " + paramInt1 + " to state " + paramInt2 + (bool ? ".." : " rejected (missing part).."));
-    if (!bool) {
-      return;
-    }
-
-    Aircraft.debugprintln(this.aircraft, "Stating OilFilter " + paramInt1 + " to state " + paramInt2 + "..");
-    this.astateOilStates[paramInt1] = (byte)paramInt2;
-    int i = 0; if (!this.bIsAboveCriticalSpeed) i = 2;
-
-    if (this.astateOilEffects[paramInt1][0] != null) Eff3DActor.finish(this.astateOilEffects[paramInt1][0]);
-    this.astateOilEffects[paramInt1][0] = null;
-    if (this.astateOilEffects[paramInt1][1] != null) Eff3DActor.finish(this.astateOilEffects[paramInt1][1]);
-    this.astateOilEffects[paramInt1][1] = null;
-    switch (this.astateOilStates[paramInt1]) {
-    case 1:
-      String str = astateOilStrings[i];
-      if (str != null)
-        try {
-          this.astateOilEffects[paramInt1][0] = Eff3DActor.New(this.actor, this.actor.findHook("_Engine" + (paramInt1 + 1) + "Oil"), null, 1.0F, str, -1.0F);
-        } catch (Exception localException1) {
-        }
-      str = astateOilStrings[(i + 1)];
-      if (str != null)
-        try {
-          this.astateOilEffects[paramInt1][1] = Eff3DActor.New(this.actor, this.actor.findHook("_Engine" + (paramInt1 + 1) + "Oil"), null, 1.0F, str, -1.0F);
-        } catch (Exception localException2) {
-        }
-      if (World.Rnd().nextFloat() >= 0.25F) break; this.aircraft.FM.setReadyToReturn(true);
-    }
-  }
-
-  public void changeOilEffectBase(int paramInt, Actor paramActor)
-  {
-    for (int i = 0; i < 2; i++)
-      if (this.astateOilEffects[paramInt][i] != null)
-        this.astateOilEffects[paramInt][i].pos.changeBase(paramActor, null, true);
-  }
-
-  public void setTankState(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if ((paramInt2 < 0) || (paramInt2 > 6) || (this.astateTankStates[paramInt1] == paramInt2)) return;
-    if (this.bIsMaster) {
-      int i = this.astateTankStates[paramInt1];
-      if (!doSetTankState(paramActor, paramInt1, paramInt2)) return;
-      for (int j = i; j < paramInt2; j++) {
-        if (j % 2 == 0) this.aircraft.setDamager(paramActor);
-        doHitTank(paramActor, paramInt1);
-      }
-      if ((this.aircraft.FM.isPlayers()) && (paramActor != this.actor) && ((paramActor instanceof Aircraft)) && (((Aircraft)paramActor).isNetPlayer()) && (paramInt2 > 5) && (this.astateTankStates[0] < 5) && (this.astateTankStates[1] < 5) && (this.astateTankStates[2] < 5) && (this.astateTankStates[3] < 5) && 
-        (!this.aircraft.FM.isSentBuryNote())) {
-        Chat.sendLogRnd(3, "gore_lightfuel", (Aircraft)paramActor, this.aircraft);
-      }
-
-      netToMirrors(9, paramInt1, paramInt2);
-    }
-    else {
-      netToMaster(9, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  public void hitTank(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    if (this.astateTankStates[paramInt1] == 6) return;
-    int i = this.astateTankStates[paramInt1] + paramInt2;
-    if (i > 6) i = 6;
-    setTankState(paramActor, paramInt1, i);
-  }
-
-  public void repairTank(int paramInt)
-  {
-    if (!this.bIsMaster) return;
-    if (this.astateTankStates[paramInt] > 0) setTankState(this.actor, paramInt, this.astateTankStates[paramInt] - 1);
-  }
-
-  public boolean doSetTankState(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    boolean bool = this.aircraft.isChunkAnyDamageVisible(this.astateEffectChunks[(paramInt1 + 0)]);
-    Aircraft.debugprintln(this.aircraft, "Stating Tank " + paramInt1 + " to state " + paramInt2 + (bool ? ".." : " rejected (missing part).."));
-    if (!bool) {
-      return false;
-    }
-
-    if (World.getPlayerAircraft() == this.actor) {
-      if ((this.astateTankStates[paramInt1] == 0) && ((paramInt2 == 1) || (paramInt2 == 2))) HUD.log("FailedTank");
-      if ((this.astateTankStates[paramInt1] < 5) && (paramInt2 >= 5)) HUD.log("FailedTankOnFire");
-    }
-    this.astateTankStates[paramInt1] = (byte)paramInt2;
-
-    if ((this.astateTankStates[paramInt1] < 5) && (paramInt2 >= 5)) {
-      this.aircraft.FM.setTakenMortalDamage(true, paramActor);
-      this.aircraft.FM.setCapableOfACM(false);
-    }
-    if ((paramInt2 < 4) && (this.aircraft.FM.isCapableOfBMP())) {
-      this.aircraft.FM.setTakenMortalDamage(false, paramActor);
-    }
-
-    int j = 0; if (!this.bIsAboveCriticalSpeed) j = 21;
-    for (int i = 0; i < 3; i++) {
-      if (this.astateTankEffects[paramInt1][i] != null) Eff3DActor.finish(this.astateTankEffects[paramInt1][i]);
-      this.astateTankEffects[paramInt1][i] = null;
-      String str = astateTankStrings[(j + i + paramInt2 * 3)];
-      if (str != null) {
-        if (paramInt2 > 2) this.astateTankEffects[paramInt1][i] = Eff3DActor.New(this.actor, this.actor.findHook("_Tank" + (paramInt1 + 1) + "Burn"), null, 1.0F, str, -1.0F); else
-          this.astateTankEffects[paramInt1][i] = Eff3DActor.New(this.actor, this.actor.findHook("_Tank" + (paramInt1 + 1) + "Leak"), null, 1.0F, str, -1.0F);
-      }
-    }
-    this.aircraft.sfxSmokeState(2, paramInt1, paramInt2 > 4);
-    return true;
-  }
-
-  private void doHitTank(Actor paramActor, int paramInt)
-  {
-    if (((World.Rnd().nextInt(0, 99) < 75) || ((this.actor instanceof Scheme1))) && (this.astateTankStates[paramInt] == 6)) {
-      this.aircraft.FM.setReadyToDie(true);
-      this.aircraft.FM.setTakenMortalDamage(true, paramActor);
-      this.aircraft.FM.setCapableOfACM(false);
-      Voice.speakMayday(this.aircraft);
-      Aircraft.debugprintln(this.aircraft, "I'm on fire, going down!.");
-      Explosions.generateComicBulb(this.actor, "OnFire", 12.0F);
-      if ((World.Rnd().nextInt(0, 99) < 75) && (this.aircraft.FM.Skill > 1)) {
-        Aircraft.debugprintln(this.aircraft, "BAILING OUT - Tank " + paramInt + " is on fire!.");
-        hitDaSilk();
-      }
-    } else if (World.Rnd().nextInt(0, 99) < 12) {
-      this.aircraft.FM.setReadyToReturn(true);
-      Aircraft.debugprintln(this.aircraft, "Tank " + paramInt + " hit, RTB..");
-      Explosions.generateComicBulb(this.actor, "RTB", 12.0F);
-    }
-  }
-
-  public void changeTankEffectBase(int paramInt, Actor paramActor)
-  {
-    for (int i = 0; i < 3; i++) {
-      if (this.astateTankEffects[paramInt][i] != null) {
-        this.astateTankEffects[paramInt][i].pos.changeBase(paramActor, null, true);
-      }
-    }
-    this.aircraft.sfxSmokeState(2, paramInt, false);
-  }
-
-  public void explodeTank(Actor paramActor, int paramInt)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if (this.bIsMaster) {
-      if (!this.aircraft.isChunkAnyDamageVisible(this.astateEffectChunks[(paramInt + 0)])) return;
-
-      netToMirrors(10, paramInt, 0);
-      doExplodeTank(paramInt);
-    }
-    else {
-      netToMaster(10, paramInt, 0, paramActor);
-    }
-  }
-
-  private void doExplodeTank(int paramInt)
-  {
-    Aircraft.debugprintln(this.aircraft, "Tank " + paramInt + " explodes..");
-    Eff3DActor.New(this.actor, this.actor.findHook("_Tank" + (paramInt + 1) + "Burn"), null, 1.0F, "3DO/Effects/Fireworks/Tank_Burn.eff", -1.0F);
-
-    Eff3DActor.New(this.actor, this.actor.findHook("_Tank" + (paramInt + 1) + "Burn"), null, 1.0F, "3DO/Effects/Fireworks/Tank_SmokeBoiling.eff", -1.0F);
-
-    Eff3DActor.New(this.actor, this.actor.findHook("_Tank" + (paramInt + 1) + "Burn"), null, 1.0F, "3DO/Effects/Fireworks/Tank_Sparks.eff", -1.0F);
-
-    Eff3DActor.New(this.actor, this.actor.findHook("_Tank" + (paramInt + 1) + "Burn"), null, 1.0F, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1.0F);
-
-    this.aircraft.msgCollision(this.actor, this.astateEffectChunks[(paramInt + 0)] + "0", this.astateEffectChunks[(paramInt + 0)] + "0");
-    if (((this.actor instanceof Scheme1)) && (this.aircraft.isChunkAnyDamageVisible(this.astateEffectChunks[(paramInt + 0)])))
-      this.aircraft.msgCollision(this.actor, "CF_D0", "CF_D0");
-    Actor localActor;
-    if (this.aircraft.getDamager() != null)
-      localActor = this.aircraft.getDamager();
-    else {
-      localActor = this.actor;
-    }
-
-    HookNamed localHookNamed = new HookNamed((ActorMesh)this.actor, "_Tank" + (paramInt + 1) + "Burn");
-    Loc localLoc1 = new Loc();
-    Loc localLoc2 = new Loc();
-    this.actor.pos.getCurrent(localLoc1);
-    localHookNamed.computePos(this.actor, localLoc1, localLoc2);
-
-    if (World.getPlayerAircraft() == this.actor) HUD.log("FailedTankExplodes");
-  }
-
-  public void setEngineState(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if ((paramInt2 < 0) || (paramInt2 > 4) || (this.astateEngineStates[paramInt1] == paramInt2)) return;
-    if (this.bIsMaster) {
-      int i = this.astateEngineStates[paramInt1];
-      if (!doSetEngineState(paramActor, paramInt1, paramInt2)) return;
-      for (int j = i; j < paramInt2; j++) {
-        this.aircraft.setDamager(paramActor);
-        doHitEngine(paramActor, paramInt1);
-      }
-      if ((this.aircraft.FM.isPlayers()) && (paramActor != this.actor) && ((paramActor instanceof Aircraft)) && (((Aircraft)paramActor).isNetPlayer()) && (paramInt2 > 3) && (this.astateEngineStates[0] < 3) && (this.astateEngineStates[1] < 3) && (this.astateEngineStates[2] < 3) && (this.astateEngineStates[3] < 3) && 
-        (!this.aircraft.FM.isSentBuryNote())) {
-        Chat.sendLogRnd(3, "gore_lighteng", (Aircraft)paramActor, this.aircraft);
-      }
-      j = 0;
-      for (int k = 0; k < this.aircraft.FM.EI.getNum(); k++) {
-        if (this.astateEngineStates[k] <= 2) continue; j++;
-      }
-      if (j == this.aircraft.FM.EI.getNum()) {
-        setCockpitState(this.actor, this.astateCockpitState | 0x80);
-      }
-
-      netToMirrors(1, paramInt1, paramInt2);
-    }
-    else {
-      netToMaster(1, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  public void hitEngine(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    if (this.astateEngineStates[paramInt1] == 4) return;
-    int i = this.astateEngineStates[paramInt1] + paramInt2;
-    if (i > 4) i = 4;
-    setEngineState(paramActor, paramInt1, i);
-  }
-
-  public void repairEngine(int paramInt)
-  {
-    if (!this.bIsMaster) return;
-    if (this.astateEngineStates[paramInt] > 0) setEngineState(this.actor, paramInt, this.astateEngineStates[paramInt] - 1);
-  }
-
-  public boolean doSetEngineState(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    Aircraft.debugprintln(this.aircraft, "AS: Checking '" + this.astateEffectChunks[(paramInt1 + 4)] + "' visibility..");
-    boolean bool = this.aircraft.isChunkAnyDamageVisible(this.astateEffectChunks[(paramInt1 + 4)]);
-    Aircraft.debugprintln(this.aircraft, "AS: '" + this.astateEffectChunks[(paramInt1 + 4)] + "' is " + (bool ? "visible" : "invisible") + "..");
-    Aircraft.debugprintln(this.aircraft, "Stating Engine " + paramInt1 + " to state " + paramInt2 + (bool ? ".." : " rejected (missing part).."));
-    if (!bool) {
-      return false;
-    }
-
-    if ((this.astateEngineStates[paramInt1] < 4) && (paramInt2 >= 4)) {
-      if (World.getPlayerAircraft() == this.actor) {
-        HUD.log("FailedEngineOnFire");
-      }
-      this.aircraft.FM.setTakenMortalDamage(true, paramActor);
-      this.aircraft.FM.setCapableOfACM(false);
-      this.aircraft.FM.setCapableOfTaxiing(false);
-    }
-    this.astateEngineStates[paramInt1] = (byte)paramInt2;
-
-    if ((paramInt2 < 2) && (this.aircraft.FM.isCapableOfBMP())) {
-      this.aircraft.FM.setTakenMortalDamage(false, paramActor);
-    }
-
-    int j = 0; if (!this.bIsAboveCriticalSpeed) j = 15;
-    for (int i = 0; i < 3; i++) {
-      if (this.astateEngineEffects[paramInt1][i] != null) Eff3DActor.finish(this.astateEngineEffects[paramInt1][i]);
-      this.astateEngineEffects[paramInt1][i] = null;
-      String str = astateEngineStrings[(j + i + paramInt2 * 3)];
-      if (str != null) {
-        this.astateEngineEffects[paramInt1][i] = Eff3DActor.New(this.actor, this.actor.findHook("_Engine" + (paramInt1 + 1) + "Smoke"), null, 1.0F, str, -1.0F);
-      }
-    }
-    this.aircraft.sfxSmokeState(1, paramInt1, paramInt2 > 3);
-    return true;
-  }
-
-  private void doHitEngine(Actor paramActor, int paramInt)
-  {
-    if (World.Rnd().nextInt(0, 99) < 12) {
-      this.aircraft.FM.setReadyToReturn(true);
-      Aircraft.debugprintln(this.aircraft, "Engines out, RTB..");
-      Explosions.generateComicBulb(this.actor, "RTB", 12.0F);
-    }
-    if ((this.astateEngineStates[paramInt] >= 2) && (!(this.actor instanceof Scheme1)) && 
-      (World.Rnd().nextInt(0, 99) < 25)) {
-      this.aircraft.FM.setReadyToReturn(true);
-      Aircraft.debugprintln(this.aircraft, "One of the engines out, RTB..");
-    }
-
-    if (this.astateEngineStates[paramInt] == 4)
-      if ((this.actor instanceof Scheme1)) {
-        if (World.Rnd().nextBoolean()) {
-          Aircraft.debugprintln(this.aircraft, "BAILING OUT - Engine " + paramInt + " is on fire..");
-          this.aircraft.hitDaSilk();
-        }
-        this.aircraft.FM.setReadyToDie(true);
-        this.aircraft.FM.setTakenMortalDamage(true, paramActor);
-      }
-      else if (World.Rnd().nextInt(0, 99) < 50) {
-        this.aircraft.FM.setReadyToDie(true);
-        if (World.Rnd().nextInt(0, 99) < 25) this.aircraft.FM.setTakenMortalDamage(true, paramActor);
-        this.aircraft.FM.setCapableOfACM(false);
-
-        Aircraft.debugprintln(this.aircraft, "Engines on fire, ditching..");
-        Explosions.generateComicBulb(this.actor, "OnFire", 12.0F);
-      }
-  }
-
-  public void changeEngineEffectBase(int paramInt, Actor paramActor)
-  {
-    for (int i = 0; i < 3; i++) {
-      if (this.astateEngineEffects[paramInt][i] != null) {
-        this.astateEngineEffects[paramInt][i].pos.changeBase(paramActor, null, true);
-      }
-    }
-    this.aircraft.sfxSmokeState(1, paramInt, false);
-  }
-
-  public void explodeEngine(Actor paramActor, int paramInt)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if (this.bIsMaster) {
-      if (!this.aircraft.isChunkAnyDamageVisible(this.astateEffectChunks[(paramInt + 4)])) return;
-
-      netToMirrors(3, paramInt, 0);
-      doExplodeEngine(paramInt);
-    }
-    else {
-      netToMaster(3, paramInt, 0, paramActor);
-    }
-  }
-
-  private void doExplodeEngine(int paramInt)
-  {
-    Aircraft.debugprintln(this.aircraft, "Engine " + paramInt + " explodes..");
-    Eff3DActor.New(this.actor, this.actor.findHook("_Engine" + (paramInt + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Fireworks/Tank_Burn.eff", -1.0F);
-
-    Eff3DActor.New(this.actor, this.actor.findHook("_Engine" + (paramInt + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Fireworks/Tank_SmokeBoiling.eff", -1.0F);
-
-    Eff3DActor.New(this.actor, this.actor.findHook("_Engine" + (paramInt + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Fireworks/Tank_Sparks.eff", -1.0F);
-
-    Eff3DActor.New(this.actor, this.actor.findHook("_Engine" + (paramInt + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1.0F);
-
-    this.aircraft.msgCollision(this.aircraft, this.astateEffectChunks[(paramInt + 4)] + "0", this.astateEffectChunks[(paramInt + 4)] + "0");
-    Actor localActor;
-    if (this.aircraft.getDamager() != null)
-      localActor = this.aircraft.getDamager();
-    else {
-      localActor = this.actor;
-    }
-
-    HookNamed localHookNamed = new HookNamed((ActorMesh)this.actor, "_Engine" + (paramInt + 1) + "Smoke");
-    Loc localLoc1 = new Loc();
-    Loc localLoc2 = new Loc();
-    this.actor.pos.getCurrent(localLoc1);
-    localHookNamed.computePos(this.actor, localLoc1, localLoc2);
-
-    MsgExplosion.send(null, this.astateEffectChunks[(4 + paramInt)] + "0", localLoc2.getPoint(), localActor, 1.248F, 0.026F, 1, 75.0F);
-  }
-
-  public void setEngineStarts(int paramInt)
-  {
-    if (!this.bIsMaster) return;
-    doSetEngineStarts(paramInt);
-
-    netToMirrors(4, paramInt, 96);
-  }
-
-  public void setEngineRunning(int paramInt)
-  {
-    if (!this.bIsMaster) return;
-    doSetEngineRunning(paramInt);
-    netToMirrors(5, paramInt, 81);
-  }
-
-  public void setEngineStops(int paramInt)
-  {
-    if (!this.bIsMaster) return;
-    doSetEngineStops(paramInt);
-    netToMirrors(6, paramInt, 2);
-  }
-
-  public void setEngineDies(Actor paramActor, int paramInt)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if (this.bIsMaster) {
-      this.aircraft.setDamager(paramActor);
-      doSetEngineDies(paramInt);
-
-      netToMirrors(7, paramInt, 77);
-    }
-    else {
-      netToMaster(7, paramInt, 67, paramActor);
-    }
-  }
-
-  public void setEngineStuck(Actor paramActor, int paramInt)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if (this.bIsMaster) {
-      doSetEngineStuck(paramInt);
-      this.aircraft.setDamager(paramActor);
-
-      netToMirrors(29, paramInt, 77);
-    }
-    else {
-      netToMaster(29, paramInt, 67, paramActor);
-    }
-  }
-
-  public void setEngineSpecificDamage(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if (this.bIsMaster) {
-      this.aircraft.setDamager(paramActor);
-      doSetEngineSpecificDamage(paramInt1, paramInt2);
-
-      netToMirrors(2, paramInt1, paramInt2);
-    }
-    else {
-      netToMaster(2, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  public void setEngineReadyness(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    if (this.bIsMaster) {
-      this.aircraft.setDamager(paramActor);
-      doSetEngineReadyness(paramInt1, paramInt2);
-
-      netToMirrors(25, paramInt1, paramInt2);
-    }
-    else {
-      netToMaster(25, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  public void setEngineStage(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    if (this.bIsMaster) {
-      doSetEngineStage(paramInt1, paramInt2);
-
-      netToMirrors(26, paramInt1, paramInt2);
-    }
-    else {
-      netToMaster(26, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  public void setEngineCylinderKnockOut(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if (this.bIsMaster) {
-      this.aircraft.setDamager(paramActor);
-      doSetEngineCylinderKnockOut(paramInt1, paramInt2);
-
-      netToMirrors(27, paramInt1, paramInt2);
-    }
-    else {
-      netToMaster(27, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  public void setEngineMagnetoKnockOut(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    if (this.bIsMaster) {
-      this.aircraft.setDamager(paramActor);
-      doSetEngineMagnetoKnockOut(paramInt1, paramInt2);
-
-      netToMirrors(28, paramInt1, paramInt2);
-    }
-    else {
-      netToMaster(28, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  private void doSetEngineStarts(int paramInt)
-  {
-    this.aircraft.FM.EI.engines[paramInt].doSetEngineStarts();
-  }
-
-  private void doSetEngineRunning(int paramInt)
-  {
-    this.aircraft.FM.EI.engines[paramInt].doSetEngineRunning();
-  }
-
-  private void doSetEngineStops(int paramInt)
-  {
-    this.aircraft.FM.EI.engines[paramInt].doSetEngineStops();
-  }
-
-  private void doSetEngineDies(int paramInt)
-  {
-    this.aircraft.FM.EI.engines[paramInt].doSetEngineDies();
-  }
-
-  private void doSetEngineStuck(int paramInt)
-  {
-    this.aircraft.FM.EI.engines[paramInt].doSetEngineStuck();
-  }
-
-  private void doSetEngineSpecificDamage(int paramInt1, int paramInt2)
-  {
-    switch (paramInt2) {
-    case 0:
-      this.aircraft.FM.EI.engines[paramInt1].doSetKillCompressor();
-      break;
-    case 3:
-      this.aircraft.FM.EI.engines[paramInt1].doSetKillPropAngleDevice();
-      break;
-    case 4:
-      this.aircraft.FM.EI.engines[paramInt1].doSetKillPropAngleDeviceSpeeds();
-      break;
-    case 5:
-      this.aircraft.FM.EI.engines[paramInt1].doSetExtinguisherFire();
-      break;
-    case 2:
-      throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unimplemented feature (E.S.D./H.)");
-    case 1:
-      if (!this.aircraft.FM.EI.engines[paramInt1].isHasControlThrottle()) break;
-      this.aircraft.FM.EI.engines[paramInt1].doSetKillControlThrottle(); break;
-    case 6:
-      if (!this.aircraft.FM.EI.engines[paramInt1].isHasControlProp()) break;
-      this.aircraft.FM.EI.engines[paramInt1].doSetKillControlProp(); break;
-    case 7:
-      if (!this.aircraft.FM.EI.engines[paramInt1].isHasControlMix()) break;
-      this.aircraft.FM.EI.engines[paramInt1].doSetKillControlMix(); break;
-    default:
-      throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Corrupt data in (E.S.D./null)");
-    }
-  }
-
-  private void doSetEngineReadyness(int paramInt1, int paramInt2)
-  {
-    this.aircraft.FM.EI.engines[paramInt1].doSetReadyness(0.01F * paramInt2);
-  }
-
-  private void doSetEngineStage(int paramInt1, int paramInt2)
-  {
-    this.aircraft.FM.EI.engines[paramInt1].doSetStage(paramInt2);
-  }
-
-  private void doSetEngineCylinderKnockOut(int paramInt1, int paramInt2)
-  {
-    this.aircraft.FM.EI.engines[paramInt1].doSetCyliderKnockOut(paramInt2);
-  }
-
-  private void doSetEngineMagnetoKnockOut(int paramInt1, int paramInt2)
-  {
-    this.aircraft.FM.EI.engines[paramInt1].doSetMagnetoKnockOut(paramInt2);
-  }
-
-  public void doSetEngineExtinguisherVisuals(int paramInt)
-  {
-    Aircraft.debugprintln(this.aircraft, "AS: Checking '" + this.astateEffectChunks[(paramInt + 4)] + "' visibility..");
-    boolean bool = this.aircraft.isChunkAnyDamageVisible(this.astateEffectChunks[(paramInt + 4)]);
-    Aircraft.debugprintln(this.aircraft, "AS: '" + this.astateEffectChunks[(paramInt + 4)] + "' is " + (bool ? "visible" : "invisible") + "..");
-    Aircraft.debugprintln(this.aircraft, "Firing Extinguisher on Engine " + paramInt + (bool ? ".." : " rejected (missing part).."));
-    if (!bool) {
-      return;
-    }
-    Eff3DActor.New(this.actor, this.actor.findHook("_Engine" + (paramInt + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Aircraft/EngineExtinguisher1.eff", 3.0F);
-  }
-
-  public void setSootState(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if (this.astateSootStates[paramInt1] == paramInt2) return;
-    if (this.bIsMaster) {
-      if (!doSetSootState(paramInt1, paramInt2)) return;
-
-      netToMirrors(8, paramInt1, paramInt2);
-    }
-    else {
-      netToMaster(8, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  public boolean doSetSootState(int paramInt1, int paramInt2)
-  {
-    Aircraft.debugprintln(this.aircraft, "AS: Checking '" + this.astateEffectChunks[(paramInt1 + 4)] + "' visibility..");
-    boolean bool = this.aircraft.isChunkAnyDamageVisible(this.astateEffectChunks[(paramInt1 + 4)]);
-    Aircraft.debugprintln(this.aircraft, "AS: '" + this.astateEffectChunks[(paramInt1 + 4)] + "' is " + (bool ? "visible" : "invisible") + "..");
-    Aircraft.debugprintln(this.aircraft, "Stating Engine " + paramInt1 + " to state " + paramInt2 + (bool ? ".." : " rejected (missing part).."));
-    if (!bool) {
-      return false;
-    }
-
-    this.astateSootStates[paramInt1] = (byte)paramInt2;
-
-    this.aircraft.doSetSootState(paramInt1, paramInt2);
-    return true;
-  }
-
-  public void changeSootEffectBase(int paramInt, Actor paramActor)
-  {
-    for (int i = 0; i < 2; i++)
-      if (this.astateSootEffects[paramInt][i] != null)
-        this.astateSootEffects[paramInt][i].pos.changeBase(paramActor, null, true);
-  }
-
-  public void setCockpitState(Actor paramActor, int paramInt)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if (this.astateCockpitState == paramInt) return;
-
-    if (this.bIsMaster) {
-      this.aircraft.setDamager(paramActor);
-      doSetCockpitState(paramInt);
-
-      netToMirrors(23, 0, paramInt);
-    }
-    else
+    static class Item
     {
-      netToMaster(23, 0, paramInt, paramActor);
-    }
-  }
 
-  public void doSetCockpitState(int paramInt) {
-    if (this.astateCockpitState == paramInt) return;
-
-    this.astateCockpitState = paramInt;
-    this.aircraft.setCockpitState(paramInt);
-  }
-
-  public void setControlsDamage(Actor paramActor, int paramInt)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if (this.bIsMaster) {
-      this.aircraft.setDamager(paramActor);
-      if ((this.aircraft.FM.isPlayers()) && (paramActor != this.actor) && ((paramActor instanceof Aircraft)) && (((Aircraft)paramActor).isNetPlayer()) && (!this.aircraft.FM.isSentControlsOutNote()) && (!this.aircraft.FM.isSentBuryNote()))
-      {
-        Chat.sendLogRnd(3, "gore_hitctrls", (Aircraft)paramActor, this.aircraft);
-        this.aircraft.FM.setSentControlsOutNote(true);
-      }
-      doSetControlsDamage(paramInt, paramActor);
-    }
-    else
-    {
-      netToMaster(21, 0, paramInt, paramActor);
-    }
-  }
-
-  public void setInternalDamage(Actor paramActor, int paramInt)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if (this.bIsMaster) {
-      this.aircraft.setDamager(paramActor);
-      doSetInternalDamage(paramInt);
-
-      netToMirrors(22, 0, paramInt);
-    }
-    else {
-      netToMaster(22, 0, paramInt, paramActor);
-    }
-  }
-
-  public void setGliderBoostOn()
-  {
-    if (!this.bIsMaster) return;
-    netToMirrors(12, 5, 5);
-  }
-
-  public void setGliderBoostOff()
-  {
-    if (!this.bIsMaster) return;
-    netToMirrors(13, 7, 7);
-  }
-
-  public void setGliderCutCart()
-  {
-    if (!this.bIsMaster) return;
-    netToMirrors(14, 9, 9);
-  }
-
-  private void doSetControlsDamage(int paramInt, Actor paramActor)
-  {
-    switch (paramInt) {
-    case 0:
-      this.aircraft.FM.CT.resetControl(0);
-      if ((this.aircraft.FM.isPlayers()) && (this.aircraft.FM.CT.bHasAileronControl)) HUD.log("FailedAroneAU");
-      this.aircraft.FM.CT.bHasAileronControl = false;
-      this.aircraft.FM.setCapableOfACM(false);
-      break;
-    case 1:
-      this.aircraft.FM.CT.resetControl(1);
-      if ((this.aircraft.FM.isPlayers()) && (this.aircraft.FM.CT.bHasElevatorControl)) HUD.log("FailedVatorAU");
-      this.aircraft.FM.CT.bHasElevatorControl = false;
-      this.aircraft.FM.setCapableOfACM(false);
-      if (Math.abs(this.aircraft.FM.Vwld.z) <= 7.0D) break;
-      this.aircraft.FM.setCapableOfBMP(false, paramActor); break;
-    case 2:
-      this.aircraft.FM.CT.resetControl(2);
-      if ((this.aircraft.FM.isPlayers()) && (this.aircraft.FM.CT.bHasRudderControl)) HUD.log("FailedRudderAU");
-      this.aircraft.FM.CT.bHasRudderControl = false;
-      break;
-    default:
-      throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Corrupt data in (C.A.D./null)");
-    }
-  }
-
-  private void doSetInternalDamage(int paramInt)
-  {
-    switch (paramInt) {
-    case 0:
-      this.aircraft.FM.Gears.setHydroOperable(false);
-      break;
-    case 1:
-      this.aircraft.FM.CT.bHasFlapsControl = false;
-      break;
-    case 2:
-      this.aircraft.FM.M.nitro = 0.0F;
-      break;
-    case 3:
-      this.aircraft.FM.Gears.setHydroOperable(false);
-      this.aircraft.FM.Gears.setOperable(false);
-      break;
-    case 4:
-      if ((this.aircraft instanceof DO_335A0))
-        ((DO_335A0)this.aircraft).doKeelShutoff();
-      else if ((this.aircraft instanceof DO_335V13))
-        ((DO_335V13)this.aircraft).doKeelShutoff();
-      else {
-        throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (I.K.S.)");
-      }
-
-    case 5:
-      this.aircraft.FM.EI.engines[1].setPropReductorValue(0.007F);
-      break;
-    default:
-      throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Corrupt data in (I.D./null)");
-    }
-  }
-
-  private void doSetGliderBoostOn()
-  {
-    if ((this.actor instanceof Scheme0))
-      ((Scheme0)this.actor).doFireBoosters();
-    else if ((this.actor instanceof AR_234B2))
-      ((AR_234B2)this.actor).doFireBoosters();
-    else
-      throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (G.B./On not in Nul)");
-  }
-
-  private void doSetGliderBoostOff()
-  {
-    if ((this.actor instanceof Scheme0))
-      ((Scheme0)this.actor).doCutBoosters();
-    else if ((this.actor instanceof AR_234B2))
-      ((AR_234B2)this.actor).doCutBoosters();
-    else
-      throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (G.B./Off not in Nul)");
-  }
-
-  private void doSetGliderCutCart()
-  {
-    if ((this.actor instanceof Scheme0))
-      ((Scheme0)this.actor).doCutCart();
-    else
-      throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (G.C.C./Off not in Nul)");
-  }
-
-  private void doSetCondensateState(boolean paramBoolean)
-  {
-    for (int i = 0; i < this.aircraft.FM.EI.getNum(); i++) {
-      if (this.astateCondensateEffects[i] != null) Eff3DActor.finish(this.astateCondensateEffects[i]);
-      this.astateCondensateEffects[i] = null;
-      if (paramBoolean) {
-        String str = astateCondensateStrings[1];
-        if (str == null) continue;
-        try {
-          this.astateCondensateEffects[i] = Eff3DActor.New(this.actor, this.actor.findHook("_Engine" + (i + 1) + "Smoke"), astateCondensateDispVector, 1.0F, str, -1.0F);
-        } catch (Exception localException) {
-          Aircraft.debugprintln(this.aircraft, "Above condensate failed - probably a glider..");
-        }
-      }
-    }
-  }
-
-  public void setStallState(boolean paramBoolean)
-  {
-    if (this.bIsMaster) {
-      doSetStallState(paramBoolean);
-
-      netToMirrors(16, paramBoolean ? 1 : 0, paramBoolean ? 1 : 0);
-    }
-  }
-
-  private void doSetStallState(boolean paramBoolean)
-  {
-    for (int i = 0; i < 2; i++) {
-      if (this.astateStallEffects[i] == null) continue; Eff3DActor.finish(this.astateStallEffects[i]);
-    }
-    if (paramBoolean) {
-      String str = astateStallStrings[1];
-      if (str != null) {
-        if (this.bWingTipLExists) this.astateStallEffects[0] = Eff3DActor.New(this.actor, this.actor.findHook("_WingTipL"), null, 1.0F, str, -1.0F);
-        if (this.bWingTipRExists) this.astateStallEffects[1] = Eff3DActor.New(this.actor, this.actor.findHook("_WingTipR"), null, 1.0F, str, -1.0F);
-      }
-    }
-  }
-
-  public void setAirShowState(boolean paramBoolean)
-  {
-    if (this.bShowSmokesOn == paramBoolean) return;
-    if (this.bIsMaster) {
-      doSetAirShowState(paramBoolean);
-
-      netToMirrors(15, paramBoolean ? 1 : 0, paramBoolean ? 1 : 0);
-    }
-  }
-
-  private void doSetAirShowState(boolean paramBoolean)
-  {
-    this.bShowSmokesOn = paramBoolean;
-    for (int i = 0; i < 2; i++) {
-      if (this.astateAirShowEffects[i] == null) continue; Eff3DActor.finish(this.astateAirShowEffects[i]);
-    }
-    if (paramBoolean) {
-      if (this.bWingTipLExists) this.astateAirShowEffects[0] = Eff3DActor.New(this.actor, this.actor.findHook("_WingTipL"), null, 1.0F, "3DO/Effects/Aircraft/AirShowRedTSPD.eff", -1.0F);
-
-      if (this.bWingTipRExists) this.astateAirShowEffects[1] = Eff3DActor.New(this.actor, this.actor.findHook("_WingTipR"), null, 1.0F, "3DO/Effects/Aircraft/AirShowGreenTSPD.eff", -1.0F);
-    }
-  }
-
-  public void wantBeaconsNet(boolean paramBoolean)
-  {
-    if (paramBoolean == this.bWantBeaconsNet)
-      return;
-    this.bWantBeaconsNet = paramBoolean;
-    if (World.getPlayerAircraft() != this.actor)
-      return;
-    if (this.bWantBeaconsNet)
-      setBeacon(this.actor, this.beacon, 0, false);
-  }
-
-  public int getBeacon()
-  {
-    return this.beacon;
-  }
-
-  public void beaconPlus() {
-    if (Main.cur().mission.hasBeacons(this.actor.getArmy()))
-    {
-      int i = Main.cur().mission.getBeacons(this.actor.getArmy()).size();
-      if (this.beacon < i)
-        setBeacon(this.beacon + 1);
-      else
-        setBeacon(0);
-    }
-  }
-
-  public void beaconMinus() {
-    if (Main.cur().mission.hasBeacons(this.actor.getArmy()))
-    {
-      int i = Main.cur().mission.getBeacons(this.actor.getArmy()).size();
-      if (this.beacon >= 1)
-        setBeacon(this.beacon - 1);
-      else
-        setBeacon(i);
-    }
-  }
-
-  public void setBeacon(int paramInt) {
-    while (paramInt < 0)
-      paramInt += 32;
-    while (paramInt > 32)
-      paramInt -= 32;
-    if (paramInt == this.beacon)
-      return;
-    setBeacon(this.actor, paramInt, 0, false);
-  }
-
-  private void setBeacon(Actor paramActor, int paramInt1, int paramInt2, boolean paramBoolean)
-  {
-    doSetBeacon(paramActor, paramInt1, paramInt2);
-    if ((Mission.isSingle()) || (!this.bWantBeaconsNet))
-    {
-      return;
-    }
-    if (!Actor.isValid(paramActor)) {
-      return;
-    }
-
-    if (this.bIsMaster)
-    {
-      netToMirrors(42, paramInt1, paramInt2, paramActor);
-    }
-    else if (!paramBoolean)
-    {
-      netToMaster(42, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  private void doSetBeacon(Actor paramActor, int paramInt1, int paramInt2) {
-    if (this.actor != paramActor) {
-      return;
-    }
-    if (World.getPlayerAircraft() != this.actor) {
-      return;
-    }
-    if (paramInt1 > 0)
-    {
-      Actor localActor = (Actor)Main.cur().mission.getBeacons(this.actor.getArmy()).get(paramInt1 - 1);
-      boolean bool = Aircraft.hasPlaneZBReceiver(this.aircraft);
-
-      if ((!bool) && (((localActor instanceof TypeHasYGBeacon)) || ((localActor instanceof TypeHasHayRake))))
-      {
-        int i = paramInt1 - this.beacon;
-        this.beacon = paramInt1;
-        if (i > 0)
-          beaconPlus();
-        else
-          beaconMinus();
-        return;
-      }
-
-      String str1 = Beacon.getBeaconID(paramInt1 - 1);
-
-      if ((this.aircraft.getPilotsCount() == 1) || (this.aircraft.FM.EI.engines.length == 1)) {
-        Main3D.cur3D().ordersTree.setFrequency(null);
-      }
-      if ((localActor instanceof TypeHasYGBeacon))
-      {
-        Main3D.cur3D().ordersTree.setFrequency(OrdersTree.FREQ_FRIENDLY);
-
-        HUD.log(hudLogBeaconId, "BeaconYG", new Object[] { str1 });
-        startListeningYGBeacon();
-      }
-      else
-      {
-        Object localObject;
-        if ((localActor instanceof TypeHasHayRake))
+        void set(int i, int j, com.maddox.il2.engine.Actor actor1)
         {
-          Main3D.cur3D().ordersTree.setFrequency(OrdersTree.FREQ_FRIENDLY);
-
-          HUD.log(hudLogBeaconId, "BeaconYE", new Object[] { str1 });
-          localObject = Main.cur().mission.getHayrakeCodeOfCarrier(localActor);
-          startListeningHayrake(localActor, (String)localObject);
+            msgDestination = i;
+            msgContext = j;
+            initiator = actor1;
         }
-        else if ((localActor instanceof TypeHasLorenzBlindLanding))
+
+        boolean equals(int i, int j, com.maddox.il2.engine.Actor actor1)
         {
-          Main3D.cur3D().ordersTree.setFrequency(OrdersTree.FREQ_FRIENDLY);
-
-          HUD.log(hudLogBeaconId, "BeaconBA", new Object[] { str1 });
-          startListeningLorenzBlindLanding();
-          this.isAAFIAS = false;
-          if ((localActor instanceof TypeHasAAFIAS))
-            this.isAAFIAS = true;
+            return msgDestination == i && msgContext == j && initiator == actor1;
         }
-        else if ((localActor instanceof TypeHasRadioStation))
+
+        int msgDestination;
+        int msgContext;
+        com.maddox.il2.engine.Actor initiator;
+
+        Item()
         {
-          localObject = (TypeHasRadioStation)localActor;
-          str1 = ((TypeHasRadioStation)localObject).getStationID();
-          String str2 = Property.stringValue(localActor.getClass(), "i18nName", str1);
-          HUD.log(hudLogBeaconId, "BeaconRS", new Object[] { str2 });
-          startListeningRadioStation(str1);
         }
-        else
-        {
-          HUD.log(hudLogBeaconId, "BeaconND", new Object[] { str1 });
-          startListeningNDBeacon();
-        }
-      }
     }
-    else {
-      HUD.log(hudLogBeaconId, "BeaconNONE");
-      stopListeningBeacons();
-      Main3D.cur3D().ordersTree.setFrequency(OrdersTree.FREQ_FRIENDLY);
-    }
-    this.beacon = paramInt1;
-  }
 
-  public void startListeningYGBeacon()
-  {
-    stopListeningLorenzBlindLanding();
-    stopListeningHayrake();
-    this.listenYGBeacon = true;
-    this.listenNDBeacon = false;
-    this.listenRadioStation = false;
-    this.aircraft.playBeaconCarrier(false, 0.0F);
-    CmdMusic.setCurrentVolume(0.001F);
-  }
 
-  public void startListeningNDBeacon() {
-    stopListeningLorenzBlindLanding();
-    this.listenYGBeacon = false;
-    this.listenNDBeacon = true;
-    this.listenRadioStation = false;
-    stopListeningHayrake();
-    CmdMusic.setCurrentVolume(0.001F);
-  }
-
-  public void startListeningRadioStation(String paramString) {
-    stopListeningLorenzBlindLanding();
-    this.listenYGBeacon = false;
-    this.listenNDBeacon = false;
-    this.listenRadioStation = true;
-    stopListeningHayrake();
-    String str1 = paramString.replace(' ', '_');
-
-    int i = Mission.curYear();
-    int j = Mission.curMonth();
-    int k = Mission.curDay();
-
-    String str2 = "" + i;
-    String str3 = "";
-    String str4 = "";
-
-    if (j < 10)
-      str3 = "0" + j;
-    else {
-      str3 = "" + j;
-    }
-    if (k < 10)
-      str4 = "0" + k;
-    else {
-      str4 = "" + k;
-    }
-    String[] arrayOfString = { str2 + str3 + str4, str2 + str3 + "XX", str2 + "XX" + str4, str2 + "XXXX" };
-
-    for (int m = 0; m < arrayOfString.length; m++)
+    public AircraftState()
     {
-      File localFile = new File("./samples/Music/Radio/" + str1 + "/" + arrayOfString[m]);
-      if (!localFile.exists())
-        continue;
-      CmdMusic.setPath("Music/Radio/" + str1 + "/" + arrayOfString[m], true);
-      CmdMusic.play();
-      return;
+        bleedingTime = 0L;
+        astateBleedingTimes = new long[9];
+        astateBleedingNext = new long[9];
+        legsWounded = false;
+        armsWounded = false;
+        torpedoGyroAngle = 0;
+        torpedoSpreadAngle = 0;
+        beacon = 0;
+        bWantBeaconsNet = false;
+        listenLorenzBlindLanding = false;
+        isAAFIAS = false;
+        listenYGBeacon = false;
+        listenNDBeacon = false;
+        listenRadioStation = false;
+        hayrakeCarrier = null;
+        hayrakeCode = null;
+        externalStoresDropped = false;
+        bIsAboveCriticalSpeed = false;
+        bIsAboveCondensateAlt = false;
+        bIsOnInadequateAOA = false;
+        bShowSmokesOn = false;
+        bNavLightsOn = false;
+        bLandingLightOn = false;
+        bWingTipLExists = true;
+        bWingTipRExists = true;
+        actor = null;
+        aircraft = null;
+        astatePilotStates = new byte[9];
+        astatePlayerIndex = 0;
+        bIsAboutToBailout = false;
+        bIsEnableToBailout = true;
+        astateBailoutStep = 0;
+        astateCockpitState = 0;
+        itemsToMaster = null;
+        itemsToMirrors = null;
     }
 
-    CmdMusic.setPath("Music/Radio/" + str1, true);
-    CmdMusic.play();
-  }
-
-  public void stopListeningBeacons() {
-    stopListeningLorenzBlindLanding();
-    this.listenYGBeacon = false;
-    this.listenNDBeacon = false;
-    this.listenRadioStation = false;
-    stopListeningHayrake();
-    this.aircraft.stopMorseSounds();
-    CmdMusic.setCurrentVolume(0.001F);
-  }
-
-  public void startListeningHayrake(Actor paramActor, String paramString) {
-    stopListeningLorenzBlindLanding();
-    this.hayrakeCarrier = paramActor;
-    this.hayrakeCode = paramString;
-    this.listenYGBeacon = false;
-    this.listenNDBeacon = false;
-    this.listenRadioStation = false;
-    this.aircraft.stopMorseSounds();
-    CmdMusic.setCurrentVolume(0.001F);
-  }
-
-  public void stopListeningHayrake() {
-    this.hayrakeCarrier = null;
-    this.hayrakeCode = null;
-  }
-
-  public void startListeningLorenzBlindLanding() {
-    this.listenLorenzBlindLanding = true;
-    stopListeningHayrake();
-    this.listenYGBeacon = false;
-    this.listenNDBeacon = false;
-    this.listenRadioStation = false;
-    this.aircraft.stopMorseSounds();
-    CmdMusic.setCurrentVolume(0.001F);
-  }
-
-  public void stopListeningLorenzBlindLanding() {
-    this.listenLorenzBlindLanding = false;
-    this.isAAFIAS = false;
-    this.aircraft.stopMorseSounds();
-  }
-
-  public void preLoadRadioStation(Actor paramActor) {
-    TypeHasRadioStation localTypeHasRadioStation = (TypeHasRadioStation)paramActor;
-    String str = localTypeHasRadioStation.getStationID();
-    startListeningRadioStation(str);
-  }
-
-  public void setNavLightsState(boolean paramBoolean)
-  {
-    if (this.bNavLightsOn == paramBoolean) return;
-    if (this.bIsMaster) {
-      doSetNavLightsState(paramBoolean);
-
-      netToMirrors(30, paramBoolean ? 1 : 0, paramBoolean ? 1 : 0);
-    }
-  }
-
-  private void doSetNavLightsState(boolean paramBoolean)
-  {
-    for (int i = 0; i < this.astateNavLightsEffects.length; i++) {
-      if (this.astateNavLightsEffects[i] != null) {
-        Eff3DActor.finish(this.astateNavLightsEffects[i]);
-        this.astateNavLightsLights[i].light.setEmit(0.0F, 0.0F);
-      }
-      this.astateNavLightsEffects[i] = null;
-    }
-    if (paramBoolean) {
-      Loc localLoc1 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-      Loc localLoc2 = new Loc();
-      for (i = 0; i < this.astateNavLightsEffects.length; i++) {
-        Aircraft.debugprintln(this.aircraft, "AS: Checking '" + this.astateEffectChunks[(i + 12)] + "' visibility..");
-        boolean bool = this.aircraft.isChunkAnyDamageVisible(this.astateEffectChunks[(i + 12)]);
-        Aircraft.debugprintln(this.aircraft, "AS: '" + this.astateEffectChunks[(i + 12)] + "' is " + (bool ? "visible" : "invisible") + "..");
-        if (bool) {
-          this.bNavLightsOn = paramBoolean;
-          String str = "3DO/Effects/Fireworks/Flare" + (i > 1 ? "Green" : i > 3 ? "White" : "Red") + ".eff";
-          this.astateNavLightsEffects[i] = Eff3DActor.New(this.actor, this.actor.findHook("_NavLight" + i), null, 1.0F, str, -1.0F, false);
-          this.astateNavLightsLights[i].light.setEmit(0.35F, 8.0F);
-        }
-      }
-    } else {
-      this.bNavLightsOn = paramBoolean;
-    }
-  }
-
-  public void changeNavLightEffectBase(int paramInt, Actor paramActor)
-  {
-    if (this.astateNavLightsEffects[paramInt] != null) {
-      Eff3DActor.finish(this.astateNavLightsEffects[paramInt]);
-      this.astateNavLightsLights[paramInt].light.setEmit(0.0F, 0.0F);
-      this.astateNavLightsEffects[paramInt] = null;
-    }
-  }
-
-  public void setLandingLightState(boolean paramBoolean)
-  {
-    if (this.bLandingLightOn == paramBoolean) return;
-    if (this.bIsMaster) {
-      doSetLandingLightState(paramBoolean);
-      int i = 0;
-      for (int j = 0; j < this.astateLandingLightEffects.length; j++) {
-        if (this.astateLandingLightEffects[j] == null) {
-          i++;
-        }
-      }
-      if (i == this.astateLandingLightEffects.length) {
-        this.bLandingLightOn = false;
-        paramBoolean = false;
-      }
-
-      netToMirrors(31, paramBoolean ? 1 : 0, paramBoolean ? 1 : 0);
-    }
-  }
-
-  private void doSetLandingLightState(boolean paramBoolean)
-  {
-    this.bLandingLightOn = paramBoolean;
-    for (int i = 0; i < this.astateLandingLightEffects.length; i++) {
-      if (this.astateLandingLightEffects[i] != null) {
-        Eff3DActor.finish(this.astateLandingLightEffects[i]);
-        this.astateLandingLightLights[i].light.setEmit(0.0F, 0.0F);
-      }
-      this.astateLandingLightEffects[i] = null;
-    }
-    if (paramBoolean) {
-      Loc localLoc1 = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-      Loc localLoc2 = new Loc();
-      for (i = 0; i < this.astateLandingLightEffects.length; i++) {
-        Aircraft.debugprintln(this.aircraft, "AS: Checking '" + this.astateEffectChunks[(i + 18)] + "' visibility..");
-        boolean bool = this.aircraft.isChunkAnyDamageVisible(this.astateEffectChunks[(i + 18)]);
-        Aircraft.debugprintln(this.aircraft, "AS: '" + this.astateEffectChunks[(i + 18)] + "' is " + (bool ? "visible" : "invisible") + "..");
-        if (bool) {
-          String str = "3DO/Effects/Fireworks/FlareWhiteWide.eff";
-          this.astateLandingLightEffects[i] = Eff3DActor.New(this.actor, this.actor.findHook("_LandingLight0" + i), null, 1.0F, str, -1.0F);
-          this.astateLandingLightLights[i].light.setEmit(1.2F, 8.0F);
-        }
-      }
-    }
-  }
-
-  public void changeLandingLightEffectBase(int paramInt, Actor paramActor)
-  {
-    if (this.astateLandingLightEffects[paramInt] != null) {
-      Eff3DActor.finish(this.astateLandingLightEffects[paramInt]);
-      this.astateLandingLightLights[paramInt].light.setEmit(0.0F, 0.0F);
-      this.astateLandingLightEffects[paramInt] = null;
-      this.bLandingLightOn = false;
-    }
-  }
-
-  public void setPilotState(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    setPilotState(paramActor, paramInt1, paramInt2, true);
-  }
-  public void setPilotState(Actor paramActor, int paramInt1, int paramInt2, boolean paramBoolean) {
-    if (!Actor.isValid(paramActor)) return;
-    if (paramInt2 > 95) paramInt2 = 100;
-    if (paramInt2 < 0) paramInt2 = 0;
-    if (this.astatePilotStates[paramInt1] >= paramInt2) return;
-    if (this.bIsMaster) {
-      this.aircraft.setDamager(paramActor);
-      doSetPilotState(paramInt1, paramInt2, paramActor);
-      if ((paramBoolean) && (this.aircraft.FM.isPlayers()) && (paramInt1 == this.astatePlayerIndex) && (!World.isPlayerDead()) && (paramActor != this.actor) && ((paramActor instanceof Aircraft)) && (((Aircraft)paramActor).isNetPlayer()) && (paramInt2 == 100))
-      {
-        Chat.sendLogRnd(1, "gore_pk", (Aircraft)paramActor, this.aircraft);
-      }
-      if ((paramInt2 > 0) && (paramBoolean))
-      {
-        netToMirrors(17, paramInt1, paramInt2);
-      }
-
-    }
-    else if (paramBoolean) {
-      netToMaster(17, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  public void hitPilot(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    setPilotState(paramActor, paramInt1, this.astatePilotStates[paramInt1] + paramInt2);
-  }
-
-  public void setBleedingPilot(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    setBleedingPilot(paramActor, paramInt1, paramInt2, true);
-  }
-
-  public void setBleedingPilot(Actor paramActor, int paramInt1, int paramInt2, boolean paramBoolean) {
-    if (!Actor.isValid(paramActor))
-      return;
-    if (this.bIsMaster) {
-      doSetBleedingPilot(paramInt1, paramInt2, paramActor);
-      if (paramBoolean)
-      {
-        netToMirrors(47, paramInt1, paramInt2);
-      }
-
-    }
-    else if (paramBoolean) {
-      netToMaster(47, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  private void doSetBleedingPilot(int paramInt1, int paramInt2, Actor paramActor) {
-    if ((Mission.isSingle()) || ((this.aircraft.FM.isPlayers()) && (!Mission.isServer())) || ((Mission.isNet()) && (Mission.isServer()) && (!this.aircraft.isNetPlayer())))
+    public void set(com.maddox.il2.engine.Actor actor1, boolean flag)
     {
-      if (paramInt2 == 0) {
-        return;
-      }
-      long l1 = 120000 / paramInt2;
-      int i;
-      if (this.astateBleedingNext[paramInt1] == 0L) {
-        this.astateBleedingNext[paramInt1] = l1;
-        if ((World.getPlayerAircraft() == this.actor) && (Config.isUSE_RENDER()) && ((!this.bIsAboutToBailout) || (this.astateBailoutStep <= 11)) && (this.astatePilotStates[paramInt1] < 100))
-        {
-          i = (paramInt1 == this.astatePlayerIndex) && (!World.isPlayerDead()) ? 1 : 0;
-          if (paramInt2 < 10)
-            HUD.log(astateHUDPilotHits[this.astatePilotFunctions[paramInt1]] + "BLEED0");
-          else
-            HUD.log(astateHUDPilotHits[this.astatePilotFunctions[paramInt1]] + "BLEED1");
-        }
-      } else {
-        i = 120000 / (int)this.astateBleedingNext[paramInt1];
-        long l2 = 120000 / (i + paramInt2);
-        if (l2 < 100L) {
-          l2 = 100L;
-        }
-        this.astateBleedingNext[paramInt1] = l2;
-      }
-      setBleedingTime(paramInt1);
-    }
-  }
-
-  public boolean bleedingTest(int paramInt)
-  {
-    return Time.current() > this.astateBleedingTimes[paramInt];
-  }
-
-  public void setBleedingTime(int paramInt) {
-    this.astateBleedingTimes[paramInt] = (Time.current() + this.astateBleedingNext[paramInt]);
-  }
-
-  public void doSetWoundPilot(int paramInt) {
-    switch (paramInt)
-    {
-    case 1:
-      this.aircraft.FM.SensRoll *= 0.6F;
-      this.aircraft.FM.SensPitch *= 0.6F;
-      if ((!this.aircraft.FM.isPlayers()) || (!Config.isUSE_RENDER())) break;
-      HUD.log("PlayerArmHit"); break;
-    case 2:
-      this.aircraft.FM.SensYaw *= 0.2F;
-      if ((!this.aircraft.FM.isPlayers()) || (!Config.isUSE_RENDER())) break;
-      HUD.log("PlayerLegHit"); break;
-    }
-  }
-
-  public void setPilotWound(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    setPilotWound(paramActor, paramInt2, true);
-  }
-
-  public void setPilotWound(Actor paramActor, int paramInt, boolean paramBoolean) {
-    if (!Actor.isValid(paramActor))
-      return;
-    if (this.bIsMaster) {
-      doSetWoundPilot(paramInt);
-      if (paramBoolean)
-      {
-        netToMirrors(46, 0, paramInt);
-      }
-
-    }
-    else if (paramBoolean) {
-      netToMaster(46, 0, paramInt, paramActor);
-    }
-  }
-
-  public void woundedPilot(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    switch (paramInt1) {
-    case 1:
-      if ((World.Rnd().nextFloat() >= 0.18F) || (paramInt2 <= 4) || (this.armsWounded)) break;
-      setPilotWound(paramActor, paramInt1, true);
-      this.armsWounded = true; break;
-    case 2:
-      if ((paramInt2 <= 4) || (this.legsWounded)) break;
-      setPilotWound(paramActor, paramInt1, true);
-      this.legsWounded = true; break;
-    }
-  }
-
-  private void doSetPilotState(int paramInt1, int paramInt2, Actor paramActor)
-  {
-    if (paramInt2 > 95) paramInt2 = 100;
-
-    if ((World.getPlayerAircraft() == this.actor) && (Config.isUSE_RENDER()) && ((!this.bIsAboutToBailout) || (this.astateBailoutStep <= 11)))
-    {
-      i = (paramInt1 == this.astatePlayerIndex) && (!World.isPlayerDead()) ? 1 : 0;
-      if ((this.astatePilotStates[paramInt1] < 100) && (paramInt2 == 100)) {
-        HUD.log(astateHUDPilotHits[this.astatePilotFunctions[paramInt1]] + "HIT2");
-        if (i != 0) {
-          World.setPlayerDead();
-          if (Mission.isNet()) {
-            Chat.sendLog(0, "gore_killed", (NetUser)NetEnv.host(), (NetUser)NetEnv.host());
-          }
-          if ((Main3D.cur3D().cockpits != null) && (!World.isPlayerGunner())) {
-            int j = Main3D.cur3D().cockpits.length;
-            for (int k = 0; k < j; k++) {
-              Cockpit localCockpit = Main3D.cur3D().cockpits[k];
-              if ((!Actor.isValid(localCockpit)) || 
-                (localCockpit.astatePilotIndx() == paramInt1) || 
-                (isPilotDead(localCockpit.astatePilotIndx())) || 
-                (Mission.isNet()) || 
-                (!AircraftHotKeys.isCockpitRealMode(k))) continue;
-              AircraftHotKeys.setCockpitRealMode(k, false);
-            }
-          }
-        }
-      } else if ((this.astatePilotStates[paramInt1] < 66) && (paramInt2 > 66)) {
-        HUD.log(astateHUDPilotHits[this.astatePilotFunctions[paramInt1]] + "HIT1");
-      } else if ((this.astatePilotStates[paramInt1] < 25) && (paramInt2 > 25)) {
-        HUD.log(astateHUDPilotHits[this.astatePilotFunctions[paramInt1]] + "HIT0");
-      }
-
-    }
-
-    int i = this.astatePilotStates[paramInt1];
-    this.astatePilotStates[paramInt1] = (byte)paramInt2;
-    if ((this.bIsAboutToBailout) && (this.astateBailoutStep > paramInt1 + 11)) {
-      this.aircraft.doWoundPilot(paramInt1, 0.0F);
-      return;
-    }
-    if (paramInt2 > 99) {
-      this.aircraft.doWoundPilot(paramInt1, 0.0F);
-      if (World.cur().isHighGore()) this.aircraft.doMurderPilot(paramInt1);
-      if (paramInt1 == 0) {
-        if (!this.bIsAboutToBailout) Explosions.generateComicBulb(this.actor, "PK", 9.0F);
-        FlightModel localFlightModel = this.aircraft.FM;
-        if ((localFlightModel instanceof Maneuver)) {
-          ((Maneuver)localFlightModel).set_maneuver(44);
-          ((Maneuver)localFlightModel).set_task(2);
-          localFlightModel.setCapableOfTaxiing(false);
-        }
-      }
-      if ((paramInt1 > 0) && 
-        (!this.bIsAboutToBailout)) Explosions.generateComicBulb(this.actor, "GunnerDown", 9.0F);
-
-      EventLog.onPilotKilled(this.aircraft, paramInt1, paramActor == this.aircraft ? null : paramActor);
-    } else if ((i < 66) && (paramInt2 > 66)) {
-      EventLog.onPilotHeavilyWounded(this.aircraft, paramInt1);
-    } else if ((i < 25) && (paramInt2 > 25)) {
-      EventLog.onPilotWounded(this.aircraft, paramInt1);
-    }
-    if ((paramInt2 <= 99) && (paramInt1 > 0) && (World.cur().diffCur.RealisticPilotVulnerability))
-    {
-      this.aircraft.doWoundPilot(paramInt1, getPilotHealth(paramInt1));
-    }
-  }
-
-  private void doRemoveBodyFromPlane(int paramInt)
-  {
-    this.aircraft.doRemoveBodyFromPlane(paramInt);
-  }
-
-  public float getPilotHealth(int paramInt)
-  {
-    if ((paramInt < 0) || (paramInt > this.aircraft.FM.crew - 1)) return 0.0F;
-    return 1.0F - this.astatePilotStates[paramInt] * 0.01F;
-  }
-
-  public boolean isPilotDead(int paramInt)
-  {
-    if ((paramInt < 0) || (paramInt > this.aircraft.FM.crew - 1)) return true;
-    return this.astatePilotStates[paramInt] == 100;
-  }
-
-  public boolean isPilotParatrooper(int paramInt)
-  {
-    if ((paramInt < 0) || (paramInt > this.aircraft.FM.crew - 1)) return true;
-    return (this.astatePilotStates[paramInt] == 100) && (this.astateBailoutStep > 11 + paramInt);
-  }
-
-  public void setJamBullets(int paramInt1, int paramInt2)
-  {
-    if ((this.aircraft.FM.CT.Weapons[paramInt1] == null) || (this.aircraft.FM.CT.Weapons[paramInt1].length <= paramInt2) || (this.aircraft.FM.CT.Weapons[paramInt1][paramInt2] == null))
-    {
-      return;
-    }
-    if (this.bIsMaster) {
-      doSetJamBullets(paramInt1, paramInt2);
-
-      netToMirrors(24, paramInt1, paramInt2);
-    }
-    else {
-      netToMaster(24, paramInt1, paramInt2);
-    }
-  }
-
-  private void doSetJamBullets(int paramInt1, int paramInt2)
-  {
-    if ((this.aircraft.FM.CT.Weapons != null) && (this.aircraft.FM.CT.Weapons[paramInt1] != null) && (this.aircraft.FM.CT.Weapons[paramInt1][paramInt2] != null) && (this.aircraft.FM.CT.Weapons[paramInt1][paramInt2].haveBullets()))
-    {
-      if ((this.actor == World.getPlayerAircraft()) && (this.aircraft.FM.CT.Weapons[paramInt1][paramInt2].haveBullets())) {
-        if (this.aircraft.FM.CT.Weapons[paramInt1][paramInt2].bulletMassa() < 0.095F)
-          HUD.log(paramInt1 > 9 ? "FailedTMGun" : "FailedMGun");
-        else
-          HUD.log("FailedCannon");
-      }
-      this.aircraft.FM.CT.Weapons[paramInt1][paramInt2].loadBullets(0);
-    }
-  }
-
-  public boolean hitDaSilk()
-  {
-    if (!this.bIsMaster)
-      return false;
-    if (this.bIsAboutToBailout)
-      return false;
-    if ((bCheckPlayerAircraft) && (this.actor == World.getPlayerAircraft()))
-      return false;
-    if (!this.bIsEnableToBailout) {
-      return false;
-    }
-    this.bIsAboutToBailout = true;
-    FlightModel localFlightModel = this.aircraft.FM;
-    Aircraft.debugprintln(this.aircraft, "I've had it, bailing out..");
-    Explosions.generateComicBulb(this.actor, "Bailing", 5.0F);
-    if ((localFlightModel instanceof Maneuver)) {
-      ((Maneuver)localFlightModel).set_maneuver(44);
-      ((Maneuver)localFlightModel).set_task(2);
-      localFlightModel.setTakenMortalDamage(true, null);
-    }
-    return true;
-  }
-
-  public void setFlatTopString(Actor paramActor, int paramInt)
-  {
-    if (this.bIsMaster)
-    {
-      netToMirrors(36, paramInt, paramInt, paramActor);
-    }
-  }
-
-  private void doSetFlatTopString(Actor paramActor, int paramInt)
-  {
-    if ((Actor.isValid(paramActor)) && ((paramActor instanceof BigshipGeneric)) && (((BigshipGeneric)paramActor).getAirport() != null))
-    {
-      BigshipGeneric localBigshipGeneric = (BigshipGeneric)paramActor;
-      if ((paramInt >= 0) && (paramInt < 255))
-        localBigshipGeneric.forceTowAircraft(this.aircraft, paramInt);
-      else
-        localBigshipGeneric.requestDetowAircraft(this.aircraft);
-    }
-  }
-
-  public void setFMSFX(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    if (this.bIsMaster) {
-      doSetFMSFX(paramInt1, paramInt2);
-    }
-    else
-    {
-      netToMaster(37, paramInt1, paramInt2, paramActor);
-    }
-  }
-
-  private void doSetFMSFX(int paramInt1, int paramInt2)
-  {
-    this.aircraft.FM.doRequestFMSFX(paramInt1, paramInt2);
-  }
-
-  public void setWingFold(Actor paramActor, int paramInt)
-  {
-    if (!Actor.isValid(paramActor)) {
-      return;
-    }
-    if (paramActor != this.aircraft) {
-      return;
-    }
-    if (!this.aircraft.FM.CT.bHasWingControl) {
-      return;
-    }
-    if (this.aircraft.FM.CT.wingControl == paramInt) {
-      return;
-    }
-    if (!this.bIsMaster) {
-      return;
-    }
-    doSetWingFold(paramInt);
-
-    netToMirrors(38, paramInt, paramInt);
-  }
-
-  private void doSetWingFold(int paramInt)
-  {
-    this.aircraft.FM.CT.wingControl = paramInt;
-  }
-
-  public void setCockpitDoor(Actor paramActor, int paramInt)
-  {
-    if (!Actor.isValid(paramActor)) {
-      return;
-    }
-    if (paramActor != this.aircraft) {
-      return;
-    }
-    if (!this.aircraft.FM.CT.bHasCockpitDoorControl) {
-      return;
-    }
-    if (this.aircraft.FM.CT.cockpitDoorControl == paramInt) {
-      return;
-    }
-    if (!this.bIsMaster) {
-      return;
-    }
-    doSetCockpitDoor(paramInt);
-
-    netToMirrors(39, paramInt, paramInt);
-  }
-
-  private void doSetCockpitDoor(int paramInt)
-  {
-    this.aircraft.FM.CT.cockpitDoorControl = paramInt;
-    if ((paramInt == 0) && 
-      ((Main.cur() instanceof Main3D)) && (this.aircraft == World.getPlayerAircraft()) && (HookPilot.current != null))
-    {
-      HookPilot.current.doUp(false);
-    }
-  }
-
-  public void setArrestor(Actor paramActor, int paramInt)
-  {
-    if (!Actor.isValid(paramActor)) {
-      return;
-    }
-    if (paramActor != this.aircraft) {
-      return;
-    }
-    if (!this.aircraft.FM.CT.bHasArrestorControl) {
-      return;
-    }
-    if (this.aircraft.FM.CT.arrestorControl == paramInt) {
-      return;
-    }
-    if (!this.bIsMaster) {
-      return;
-    }
-    doSetArrestor(paramInt);
-
-    netToMirrors(40, paramInt, paramInt);
-  }
-
-  private void doSetArrestor(int paramInt)
-  {
-    this.aircraft.FM.CT.arrestorControl = paramInt;
-  }
-
-  public void update(float paramFloat)
-  {
-    int i;
-    if (World.cur().diffCur.RealisticPilotVulnerability) {
-      for (i = 0; i < this.aircraft.FM.crew; i++) {
-        if ((this.astateBleedingNext[i] > 0L) && (bleedingTest(i))) {
-          hitPilot(this.actor, i, 1);
-          if (this.astatePilotStates[i] > 96) {
-            this.astateBleedingNext[i] = 0L;
-          }
-          setBleedingTime(i);
-        }
-
-        if (this.astatePilotStates[0] > 60) {
-          this.aircraft.FM.setCapableOfBMP(false, this.actor);
-        }
-
-      }
-
-    }
-
-    bCriticalStatePassed = this.bIsAboveCriticalSpeed != this.aircraft.getSpeed(null) > 10.0D;
-
-    if (bCriticalStatePassed) {
-      this.bIsAboveCriticalSpeed = (this.aircraft.FM.getSpeed() > 10.0F);
-      for (i = 0; i < 4; i++) doSetTankState(null, i, this.astateTankStates[i]);
-      for (i = 0; i < this.aircraft.FM.EI.getNum(); i++) doSetEngineState(null, i, this.astateEngineStates[i]);
-      for (i = 0; i < this.aircraft.FM.EI.getNum(); i++) doSetOilState(i, this.astateOilStates[i]);
-    }
-
-    bCriticalStatePassed = this.bIsAboveCondensateAlt != this.aircraft.FM.getAltitude() > 7000.0F;
-
-    if (bCriticalStatePassed) {
-      this.bIsAboveCondensateAlt = (this.aircraft.FM.getAltitude() > 7000.0F);
-      doSetCondensateState(this.bIsAboveCondensateAlt);
-    }
-
-    bCriticalStatePassed = this.bIsOnInadequateAOA != ((this.aircraft.FM.getSpeed() > 17.0F) && (this.aircraft.FM.getAOA() > 15.0F - this.aircraft.FM.getAltitude() * 0.001F));
-
-    if (bCriticalStatePassed) {
-      this.bIsOnInadequateAOA = ((this.aircraft.FM.getSpeed() > 17.0F) && (this.aircraft.FM.getAOA() > 15.0F - this.aircraft.FM.getAltitude() * 0.001F));
-      setStallState(this.bIsOnInadequateAOA);
-    }
-
-    if (this.bIsMaster)
-    {
-      float f = 0.0F;
-      for (i = 0; i < 4; i++) f += this.astateTankStates[i] * this.astateTankStates[i];
-
-      this.aircraft.FM.M.requestFuel(f * 0.12F * paramFloat);
-
-      for (i = 0; i < 4; i++) {
-        switch (this.astateTankStates[i]) { case 1:
-          if (World.Rnd().nextFloat(0.0F, 1.0F) >= 0.0125F) break;
-          repairTank(i);
-          Aircraft.debugprintln(this.aircraft, "Tank " + i + " protector clothes the hole - leak stops..");
-        case 2:
-          if (this.aircraft.FM.M.fuel <= 0.0F) {
-            repairTank(i);
-            Aircraft.debugprintln(this.aircraft, "Tank " + i + " runs out of fuel - leak stops.."); } break;
-        case 4:
-          if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.00333F) {
-            hitTank(this.aircraft, i, 1);
-            Aircraft.debugprintln(this.aircraft, "Tank " + i + " catches fire.."); } break;
-        case 5:
-          if ((this.aircraft.FM.getSpeed() > 111.0F) && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.2F)) {
-            repairTank(i);
-            Aircraft.debugprintln(this.aircraft, "Tank " + i + " cuts fire..");
-          }
-          if (World.Rnd().nextFloat() < 0.0048F) {
-            Aircraft.debugprintln(this.aircraft, "Tank " + i + " fires up to the next stage..");
-            hitTank(this.aircraft, i, 1);
-          }
-          if ((!(this.actor instanceof Scheme1)) || 
-            (this.astateTankEffects[i][0] == null) || (Math.abs(this.astateTankEffects[i][0].pos.getRelPoint().y) >= 1.899999976158142D) || (this.astateTankEffects[i][0].pos.getRelPoint().x <= -2.599999904632568D))
-          {
-            continue;
-          }
-          if (this.astatePilotStates[0] < 96) {
-            hitPilot(this.actor, 0, 5);
-            if (this.astatePilotStates[0] >= 96) {
-              hitPilot(this.actor, 0, 101 - this.astatePilotStates[0]);
-              if ((this.aircraft.FM.isPlayers()) && (Mission.isNet()) && (!this.aircraft.FM.isSentBuryNote()))
-                Chat.sendLogRnd(3, "gore_burnedcpt", this.aircraft, null); 
-            }
-          }break;
-        case 6:
-          if ((this.aircraft.FM.getSpeed() > 140.0F) && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.05F)) {
-            repairTank(i);
-            Aircraft.debugprintln(this.aircraft, "Tank " + i + " cuts fire..");
-          }
-          if (World.Rnd().nextFloat() < 0.02F) {
-            Aircraft.debugprintln(this.aircraft, "Tank " + i + " EXPLODES!.");
-            explodeTank(this.aircraft, i);
-          }
-          if ((!(this.actor instanceof Scheme1)) || 
-            (this.astateTankEffects[i][0] == null) || (Math.abs(this.astateTankEffects[i][0].pos.getRelPoint().y) >= 1.899999976158142D) || (this.astateTankEffects[i][0].pos.getRelPoint().x <= -2.599999904632568D))
-          {
-            continue;
-          }
-          if (this.astatePilotStates[0] < 96) {
-            hitPilot(this.actor, 0, 7);
-            if (this.astatePilotStates[0] >= 96) {
-              hitPilot(this.actor, 0, 101 - this.astatePilotStates[0]);
-              if ((this.aircraft.FM.isPlayers()) && (Mission.isNet()) && (!this.aircraft.FM.isSentBuryNote())) {
-                Chat.sendLogRnd(3, "gore_burnedcpt", this.aircraft, null);
-              }
-            }
-          }
-        case 3:
-        }
-
-      }
-
-      for (i = 0; i < this.aircraft.FM.EI.getNum(); i++) {
-        if (this.astateEngineStates[i] > 1)
-        {
-          this.aircraft.FM.EI.engines[i].setReadyness(this.actor, this.aircraft.FM.EI.engines[i].getReadyness() - this.astateEngineStates[i] * 0.00025F * paramFloat);
-          if ((this.aircraft.FM.EI.engines[i].getReadyness() < 0.2F) && 
-            (this.aircraft.FM.EI.engines[i].getReadyness() != 0.0F)) {
-            this.aircraft.FM.EI.engines[i].setEngineDies(this.actor);
-          }
-        }
-
-        switch (this.astateEngineStates[i]) { case 3:
-          if (World.Rnd().nextFloat(0.0F, 1.0F) >= 0.01F) break;
-          hitEngine(this.aircraft, i, 1);
-          Aircraft.debugprintln(this.aircraft, "Engine " + i + " catches fire.."); break;
-        case 4:
-          if ((this.aircraft.FM.getSpeed() > 111.0F) && (World.Rnd().nextFloat(0.0F, 1.0F) < 0.15F)) {
-            repairEngine(i);
-            Aircraft.debugprintln(this.aircraft, "Engine " + i + " cuts fire..");
-          }
-          if (((this.actor instanceof Scheme1)) && (World.Rnd().nextFloat() < 0.06F)) {
-            Aircraft.debugprintln(this.aircraft, "Engine 0 detonates and explodes, fatal damage level forced..");
-            this.aircraft.msgCollision(this.actor, "CF_D0", "CF_D0");
-          }
-          if ((!(this.actor instanceof Scheme1)) || 
-            (this.astatePilotStates[0] >= 96)) break;
-          hitPilot(this.actor, 0, 4);
-          if (this.astatePilotStates[0] < 96) break;
-          hitPilot(this.actor, 0, 101 - this.astatePilotStates[0]);
-          if ((!this.aircraft.FM.isPlayers()) || (!Mission.isNet()) || (this.aircraft.FM.isSentBuryNote())) break;
-          Chat.sendLogRnd(3, "gore_burnedcpt", this.aircraft, null);
-        }
-
-        if (this.astateOilStates[i] > 0) {
-          this.aircraft.FM.EI.engines[i].setReadyness(this.aircraft, this.aircraft.FM.EI.engines[i].getReadyness() - 0.001875F * paramFloat);
-        }
-
-      }
-
-      if ((World.Rnd().nextFloat() < 0.25F) && (this.aircraft.FM.CT.saveWeaponControl[3] == 0) && (
-        (!(this.actor instanceof TypeBomber)) || (this.aircraft.FM.isReadyToReturn()) || ((this.aircraft.FM.isPlayers()) && ((this.aircraft.FM instanceof RealFlightModel)) && (((RealFlightModel)this.aircraft.FM).isRealMode())))) {
-        this.aircraft.FM.CT.BayDoorControl = 0.0F;
-      }
-
-      bailout();
-    }
-    else if ((World.Rnd().nextFloat() < 0.125F) && (this.aircraft.FM.CT.saveWeaponControl[3] == 0) && (
-      (!(this.actor instanceof TypeBomber)) || (this.aircraft.FM.AP.way.curr().Action != 3))) {
-      this.aircraft.FM.CT.BayDoorControl = 0.0F;
-    }
-  }
-
-  private void bailout()
-  {
-    if (this.bIsAboutToBailout)
-      if ((this.astateBailoutStep >= 0) && (this.astateBailoutStep < 2)) {
-        if ((this.aircraft.FM.CT.cockpitDoorControl > 0.5F) && (this.aircraft.FM.CT.getCockpitDoor() > 0.5F)) {
-          this.astateBailoutStep = 11;
-          doRemoveBlisters();
-        } else {
-          this.astateBailoutStep = 2;
-        }
-      } else if ((this.astateBailoutStep >= 2) && (this.astateBailoutStep <= 3)) {
-        switch (this.astateBailoutStep) {
-        case 2:
-          if (this.aircraft.FM.CT.cockpitDoorControl >= 0.5F) break;
-          doRemoveBlister1(); break;
-        case 3:
-          doRemoveBlisters();
-        }
-
-        if (this.bIsMaster)
-          netToMirrors(20, this.astateBailoutStep, 1);
-        this.astateBailoutStep = (byte)(this.astateBailoutStep + 1);
-        if ((this.astateBailoutStep == 3) && ((this.actor instanceof P_39))) this.astateBailoutStep = (byte)(this.astateBailoutStep + 1);
-        if (this.astateBailoutStep == 4) this.astateBailoutStep = 11; 
-      }
-      else if ((this.astateBailoutStep >= 11) && (this.astateBailoutStep <= 19)) {
-        float f1 = this.aircraft.FM.getSpeed();
-        float f2 = (float)this.aircraft.FM.Loc.z;
-        float f3 = 140.0F;
-        if (((this.aircraft instanceof HE_162)) || ((this.aircraft instanceof GO_229)) || ((this.aircraft instanceof ME_262HGII)) || ((this.aircraft instanceof DO_335)))
-        {
-          f3 = 9999.9004F;
-        }
-        if (((Pitot.Indicator(f2, f1) < f3) && (this.aircraft.FM.getOverload() < 2.0F)) || (!this.bIsMaster))
-        {
-          int i = this.astateBailoutStep;
-          if (this.bIsMaster)
-            netToMirrors(20, this.astateBailoutStep, 1);
-          this.astateBailoutStep = (byte)(this.astateBailoutStep + 1);
-          if (i == 11) {
-            this.aircraft.FM.setTakenMortalDamage(true, null);
-            if (((this.aircraft.FM instanceof Maneuver)) && (((Maneuver)this.aircraft.FM).get_maneuver() != 44)) { World.cur(); if (this.actor != World.getPlayerAircraft())
-              {
-                ((Maneuver)this.aircraft.FM).set_maneuver(44);
-              } }
-          }
-          if (this.astatePilotStates[(i - 11)] < 99) {
-            doRemoveBodyFromPlane(i - 10);
-            if (i == 11) {
-              if ((this.aircraft instanceof HE_162)) {
-                ((HE_162)this.aircraft).doEjectCatapult();
-                this.astateBailoutStep = 51;
-                this.aircraft.FM.setTakenMortalDamage(true, null);
-                this.aircraft.FM.CT.WeaponControl[0] = false;
-                this.aircraft.FM.CT.WeaponControl[1] = false;
-                this.astateBailoutStep = -1;
-                return;
-              }
-              if ((this.aircraft instanceof GO_229)) {
-                ((GO_229)this.aircraft).doEjectCatapult();
-                this.astateBailoutStep = 51;
-                this.aircraft.FM.setTakenMortalDamage(true, null);
-                this.aircraft.FM.CT.WeaponControl[0] = false;
-                this.aircraft.FM.CT.WeaponControl[1] = false;
-                this.astateBailoutStep = -1;
-                return;
-              }
-              if ((this.aircraft instanceof DO_335)) {
-                ((DO_335)this.aircraft).doEjectCatapult();
-                this.astateBailoutStep = 51;
-                this.aircraft.FM.setTakenMortalDamage(true, null);
-                this.aircraft.FM.CT.WeaponControl[0] = false;
-                this.aircraft.FM.CT.WeaponControl[1] = false;
-                this.astateBailoutStep = -1;
-                return;
-              }
-              if ((this.aircraft instanceof ME_262HGII)) {
-                ((ME_262HGII)this.aircraft).doEjectCatapult();
-                this.astateBailoutStep = 51;
-                this.aircraft.FM.setTakenMortalDamage(true, null);
-                this.aircraft.FM.CT.WeaponControl[0] = false;
-                this.aircraft.FM.CT.WeaponControl[1] = false;
-                this.astateBailoutStep = -1;
-                return;
-              }
-            }
-            setPilotState(this.aircraft, i - 11, 100, false);
-            if ((!this.actor.isNet()) || (this.actor.isNetMaster())) {
-              try {
-                Hook localHook = this.actor.findHook("_ExternalBail0" + (i - 10));
-                if (localHook != null) {
-                  Loc localLoc = new Loc(0.0D, 0.0D, 0.0D, World.Rnd().nextFloat(-45.0F, 45.0F), 0.0F, 0.0F);
-                  localHook.computePos(this.actor, this.actor.pos.getAbs(), localLoc);
-                  Paratrooper localParatrooper = new Paratrooper(this.actor, this.actor.getArmy(), i - 11, localLoc, this.aircraft.FM.Vwld);
-                  this.aircraft.FM.setTakenMortalDamage(true, null);
-                  if (i == 11) {
-                    this.aircraft.FM.CT.WeaponControl[0] = false;
-                    this.aircraft.FM.CT.WeaponControl[1] = false;
-                  }
-                  if ((i > 10) && (i <= 19))
-                    EventLog.onBailedOut(this.aircraft, i - 11); 
-                }
-              } catch (Exception localException) {
-              } finally {
-              }
-              if ((this.astateBailoutStep == 19) && (this.actor == World.getPlayerAircraft()) && (!World.isPlayerGunner()) && (this.aircraft.FM.brakeShoe))
-              {
-                MsgDestroy.Post(Time.current() + 1000L, this.aircraft);
-              }
-            }
-          }
-        }
-      }
-  }
-
-  private final void doRemoveBlister1()
-  {
-    if ((this.aircraft.hierMesh().chunkFindCheck("Blister1_D0") != -1) && (getPilotHealth(0) > 0.0F))
-    {
-      if ((this.aircraft instanceof JU_88NEW))
-      {
-        float f = this.aircraft.FM.getAltitude() - Landscape.HQ_Air((float)this.aircraft.FM.Loc.x, (float)this.aircraft.FM.Loc.y);
-        if (f < 0.3F)
-        {
-          this.aircraft.blisterRemoved(1);
-          return;
-        }
-      }
-
-      this.aircraft.hierMesh().hideSubTrees("Blister1_D0");
-      Wreckage localWreckage = new Wreckage((ActorHMesh)this.actor, this.aircraft.hierMesh().chunkFind("Blister1_D0"));
-      localWreckage.collide(false);
-      Vector3d localVector3d = new Vector3d();
-      localVector3d.set(this.aircraft.FM.Vwld); localWreckage.setSpeed(localVector3d);
-      this.aircraft.blisterRemoved(1);
-    }
-  }
-
-  private final void doRemoveBlisters() {
-    for (int i = 2; i < 10; i++)
-      if ((this.aircraft.hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1) && (getPilotHealth(i - 1) > 0.0F)) {
-        this.aircraft.hierMesh().hideSubTrees("Blister" + i + "_D0");
-        Wreckage localWreckage = new Wreckage((ActorHMesh)this.actor, this.aircraft.hierMesh().chunkFind("Blister" + i + "_D0"));
-        localWreckage.collide(false);
-        Vector3d localVector3d = new Vector3d();
-        localVector3d.set(this.aircraft.FM.Vwld); localWreckage.setSpeed(localVector3d);
-        this.aircraft.blisterRemoved(i);
-      }
-  }
-
-  public void netUpdate(boolean paramBoolean1, boolean paramBoolean2, NetMsgInput paramNetMsgInput)
-    throws IOException
-  {
-    int i;
-    int j;
-    int k;
-    Actor localActor;
-    NetObj localNetObj;
-    if (paramBoolean2) {
-      if (paramBoolean1)
-      {
-        i = paramNetMsgInput.readUnsignedByte();
-        j = paramNetMsgInput.readUnsignedByte();
-        k = paramNetMsgInput.readUnsignedByte();
-        localActor = null;
-        if (paramNetMsgInput.available() > 0) {
-          localNetObj = paramNetMsgInput.readNetObj();
-          if (localNetObj != null)
-            localActor = (Actor)localNetObj.superObj();
-        }
-        switch (i) {
-        case 1:
-          setEngineState(localActor, j, k);
-          break;
-        case 2:
-          setEngineSpecificDamage(localActor, j, k);
-          break;
-        case 3:
-          explodeEngine(localActor, j);
-          break;
-        case 4:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (E.S.)");
-        case 5:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (E.R.)");
-        case 6:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (E.E.)");
-        case 7:
-          setEngineDies(localActor, j);
-          break;
-        case 29:
-          setEngineStuck(localActor, j);
-          break;
-        case 27:
-          setEngineCylinderKnockOut(localActor, j, k);
-          break;
-        case 28:
-          setEngineMagnetoKnockOut(localActor, j, k);
-          break;
-        case 8:
-          setSootState(localActor, j, k);
-          break;
-        case 25:
-          setEngineReadyness(localActor, j, k);
-          break;
-        case 26:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (EN.ST.)");
-        case 9:
-          setTankState(localActor, j, k);
-          break;
-        case 10:
-          explodeTank(localActor, j);
-          break;
-        case 11:
-          setOilState(localActor, j, k);
-          break;
-        case 12:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (G.B./On)");
-        case 13:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (G.B./Off)");
-        case 14:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (G.C.C./Off)");
-        case 15:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (A.S.S.)");
-        case 30:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (NV.LT.ST.)");
-        case 31:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (LA.LT.ST.)");
-        case 16:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (W.T.S.)");
-        case 17:
-          setPilotState(localActor, j, k);
-          break;
-        case 46:
-          setPilotWound(localActor, j, k);
-          break;
-        case 47:
-          setBleedingPilot(localActor, j, k);
-          break;
-        case 18:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unimplemented feature (K.P.)");
-        case 19:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unimplemented feature (H.S.)");
-        case 20:
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unexpected command (B.O.)");
-        case 21:
-          setControlsDamage(localActor, k);
-          break;
-        case 22:
-          setInternalDamage(localActor, k);
-          break;
-        case 23:
-          setCockpitState(localActor, k);
-          break;
-        case 24:
-          setJamBullets(j, k);
-          break;
-        case 34:
-          ((TypeDockable)this.aircraft).typeDockableRequestAttach(localActor, j, true);
-          break;
-        case 35:
-          ((TypeDockable)this.aircraft).typeDockableRequestDetach(localActor, j, true);
-          break;
-        case 32:
-          ((TypeDockable)this.aircraft).typeDockableRequestAttach(localActor, j, k > 0);
-          break;
-        case 33:
-          ((TypeDockable)this.aircraft).typeDockableRequestDetach(localActor, j, k > 0);
-          break;
-        case 37:
-          setFMSFX(localActor, j, k);
-          break;
-        case 42:
-          setBeacon(localActor, j, k, true);
-          break;
-        case 44:
-          setGyroAngle(localActor, j, k, true);
-          break;
-        case 45:
-          setSpreadAngle(localActor, j, k, true);
-        case 36:
-        case 38:
-        case 39:
-        case 40:
-        case 41:
-        case 43:
-        }
-      } else {
-        this.aircraft.net.postTo(this.aircraft.net.masterChannel(), new NetMsgGuaranted(paramNetMsgInput, paramNetMsgInput.available() > 3 ? 1 : 0));
-      }
-    }
-    else {
-      if (this.aircraft.net.isMirrored())
-      {
-        this.aircraft.net.post(new NetMsgGuaranted(paramNetMsgInput, paramNetMsgInput.available() > 3 ? 1 : 0));
-      }
-
-      i = paramNetMsgInput.readUnsignedByte();
-      j = paramNetMsgInput.readUnsignedByte();
-      k = paramNetMsgInput.readUnsignedByte();
-      localActor = null;
-      if (paramNetMsgInput.available() > 0) {
-        localNetObj = paramNetMsgInput.readNetObj();
-        if (localNetObj != null)
-          localActor = (Actor)localNetObj.superObj();
-      }
-      switch (i) {
-      case 1:
-        doSetEngineState(localActor, j, k);
-        break;
-      case 2:
-        doSetEngineSpecificDamage(j, k);
-        break;
-      case 3:
-        doExplodeEngine(j);
-        break;
-      case 4:
-        doSetEngineStarts(j);
-        break;
-      case 5:
-        doSetEngineRunning(j);
-        break;
-      case 6:
-        doSetEngineStops(j);
-        break;
-      case 7:
-        doSetEngineDies(j);
-        break;
-      case 29:
-        doSetEngineStuck(j);
-        break;
-      case 27:
-        doSetEngineCylinderKnockOut(j, k);
-        break;
-      case 28:
-        doSetEngineMagnetoKnockOut(j, k);
-        break;
-      case 8:
-        doSetSootState(j, k);
-        break;
-      case 25:
-        doSetEngineReadyness(j, k);
-        break;
-      case 26:
-        doSetEngineStage(j, k);
-        break;
-      case 9:
-        doSetTankState(localActor, j, k);
-        break;
-      case 10:
-        doExplodeTank(j);
-        break;
-      case 11:
-        doSetOilState(j, k);
-        break;
-      case 12:
-        if (k == 5)
-          doSetGliderBoostOn();
-        else {
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Corrupt data in signal (G.S.B./On)");
-        }
-      case 13:
-        if (k == 7)
-          doSetGliderBoostOff();
-        else {
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Corrupt data in signal (G.S.B./Off)");
-        }
-      case 14:
-        if (k == 9)
-          doSetGliderCutCart();
-        else {
-          throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Corrupt data in signal (G.C.C./Off)");
-        }
-
-      case 15:
-        doSetAirShowState(k == 1);
-        break;
-      case 30:
-        doSetNavLightsState(k == 1);
-        break;
-      case 31:
-        doSetLandingLightState(k == 1);
-        break;
-      case 16:
-        doSetStallState(k == 1);
-        break;
-      case 17:
-        doSetPilotState(j, k, localActor);
-        break;
-      case 46:
-        doSetWoundPilot(k);
-        break;
-      case 47:
-        doSetBleedingPilot(j, k, localActor);
-        break;
-      case 18:
-        throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unimplemented signal (K.P.)");
-      case 19:
-        throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Unimplemented signal (H.S.)");
-      case 20:
-        this.bIsAboutToBailout = true;
-        this.astateBailoutStep = (byte)j;
-        bailout();
-        break;
-      case 21:
-        throw new RuntimeException("(" + this.aircraft.typedName() + ") A.S.: Uniexpected signal (C.A.D.)");
-      case 22:
-        doSetInternalDamage(k);
-        break;
-      case 23:
-        doSetCockpitState(k);
-        break;
-      case 24:
-        doSetJamBullets(j, k);
-        break;
-      case 34:
-        ((TypeDockable)this.aircraft).typeDockableDoAttachToDrone(localActor, j);
-        break;
-      case 35:
-        ((TypeDockable)this.aircraft).typeDockableDoDetachFromDrone(j);
-        break;
-      case 32:
-        break;
-      case 33:
-        break;
-      case 36:
-        doSetFlatTopString(localActor, k);
-        break;
-      case 37:
-        doSetFMSFX(j, k);
-        break;
-      case 38:
-        doSetWingFold(k);
-        break;
-      case 39:
-        doSetCockpitDoor(k);
-        break;
-      case 40:
-        doSetArrestor(k);
-        break;
-      case 42:
-        doSetBeacon(localActor, j, k);
-        break;
-      case 44:
-        doSetGyroAngle(localActor, j, k);
-        break;
-      case 45:
-        doSetSpreadAngle(localActor, j, k);
-      case 41:
-      case 43:
-      }
-    }
-  }
-
-  public void netReplicate(NetMsgGuaranted paramNetMsgGuaranted)
-    throws IOException
-  {
-    int j;
-    if ((this.aircraft instanceof FW_190A8MSTL))
-      j = 1;
-    else {
-      j = this.aircraft.FM.EI.getNum();
-    }
-    for (int i = 0; i < j; i++) {
-      this.aircraft.FM.EI.engines[i].replicateToNet(paramNetMsgGuaranted);
-      paramNetMsgGuaranted.writeByte(this.astateEngineStates[i]);
-    }
-
-    for (i = 0; i < 4; i++) {
-      paramNetMsgGuaranted.writeByte(this.astateTankStates[i]);
-    }
-
-    for (i = 0; i < j; i++) {
-      paramNetMsgGuaranted.writeByte(this.astateOilStates[i]);
-    }
-
-    paramNetMsgGuaranted.writeByte((this.bShowSmokesOn ? 1 : 0) | (this.bNavLightsOn ? 2 : 0) | (this.bLandingLightOn ? 4 : 0));
-
-    paramNetMsgGuaranted.writeByte(this.astateCockpitState);
-
-    paramNetMsgGuaranted.writeByte(this.astateBailoutStep);
-
-    if ((this.aircraft instanceof TypeBomber)) {
-      ((TypeBomber)this.aircraft).typeBomberReplicateToNet(paramNetMsgGuaranted);
-    }
-    if ((this.aircraft instanceof TypeDockable)) {
-      ((TypeDockable)this.aircraft).typeDockableReplicateToNet(paramNetMsgGuaranted);
-    }
-
-    if (this.aircraft.FM.CT.bHasWingControl) {
-      paramNetMsgGuaranted.writeByte((int)this.aircraft.FM.CT.wingControl);
-      paramNetMsgGuaranted.writeByte((int)(this.aircraft.FM.CT.getWing() * 255.0F));
-    }
-
-    if (this.aircraft.FM.CT.bHasCockpitDoorControl) {
-      paramNetMsgGuaranted.writeByte((int)this.aircraft.FM.CT.cockpitDoorControl);
-    }
-
-    paramNetMsgGuaranted.writeByte(this.bIsEnableToBailout ? 1 : 0);
-
-    if (this.aircraft.FM.CT.bHasArrestorControl) {
-      paramNetMsgGuaranted.writeByte((int)this.aircraft.FM.CT.arrestorControl);
-      paramNetMsgGuaranted.writeByte((int)(this.aircraft.FM.CT.getArrestor() * 255.0F));
-    }
-
-    for (i = 0; i < j; i++) {
-      paramNetMsgGuaranted.writeByte(this.astateSootStates[i]);
-    }
-
-    if (this.bWantBeaconsNet)
-    {
-      paramNetMsgGuaranted.writeByte(this.beacon);
-    }
-
-    if ((this.aircraft instanceof TypeHasToKG))
-    {
-      paramNetMsgGuaranted.writeByte(this.torpedoGyroAngle);
-      paramNetMsgGuaranted.writeByte(this.torpedoSpreadAngle);
-    }
-
-    paramNetMsgGuaranted.writeShort(this.aircraft.armingSeed);
-
-    setArmingSeeds(this.aircraft.armingSeed);
-
-    if (this.aircraft.isNetPlayer()) {
-      int k = (int)Math.sqrt(World.cur().userCoverMashineGun - 100.0F) / 6;
-      k += 6 * ((int)Math.sqrt(World.cur().userCoverCannon - 100.0F) / 6);
-      k += 36 * ((int)Math.sqrt(World.cur().userCoverRocket - 100.0F) / 6);
-
-      paramNetMsgGuaranted.writeByte(k);
-    }
-
-    if (this.externalStoresDropped)
-    {
-      paramNetMsgGuaranted.writeByte(1);
-    }
-    else
-    {
-      paramNetMsgGuaranted.writeByte(0);
-    }
-  }
-
-  public void netFirstUpdate(NetMsgInput paramNetMsgInput)
-    throws IOException
-  {
-    int k;
-    if ((this.aircraft instanceof FW_190A8MSTL))
-      k = 1;
-    else {
-      k = this.aircraft.FM.EI.getNum();
-    }
-    for (int i = 0; i < k; i++) {
-      this.aircraft.FM.EI.engines[i].replicateFromNet(paramNetMsgInput);
-      j = paramNetMsgInput.readUnsignedByte();
-      doSetEngineState(null, i, j);
-    }
-
-    for (i = 0; i < 4; i++) {
-      j = paramNetMsgInput.readUnsignedByte();
-      doSetTankState(null, i, j);
-    }
-
-    for (i = 0; i < k; i++) {
-      j = paramNetMsgInput.readUnsignedByte();
-      doSetOilState(i, j);
-    }
-
-    int j = paramNetMsgInput.readUnsignedByte();
-    doSetAirShowState((j & 0x1) != 0);
-    doSetNavLightsState((j & 0x2) != 0);
-    doSetLandingLightState((j & 0x4) != 0);
-
-    j = paramNetMsgInput.readUnsignedByte();
-    doSetCockpitState(j);
-
-    j = paramNetMsgInput.readUnsignedByte();
-    if (j != 0) {
-      this.bIsAboutToBailout = true;
-      this.astateBailoutStep = (byte)j;
-      for (i = 1; i <= Math.min(this.astateBailoutStep, 3); i++) {
-        if (this.aircraft.hierMesh().chunkFindCheck("Blister" + (i - 1) + "_D0") != -1) {
-          this.aircraft.hierMesh().hideSubTrees("Blister" + (i - 1) + "_D0");
-        }
-      }
-      if ((this.astateBailoutStep >= 11) && (this.astateBailoutStep <= 20)) {
-        int m = this.astateBailoutStep;
-        if (this.astateBailoutStep == 20) m = 19;
-        m -= 11;
-        for (i = 0; i <= m; i++) {
-          doRemoveBodyFromPlane(i + 1);
-        }
-      }
-    }
-
-    if ((this.aircraft instanceof TypeBomber)) {
-      ((TypeBomber)this.aircraft).typeBomberReplicateFromNet(paramNetMsgInput);
-    }
-    if ((this.aircraft instanceof TypeDockable)) {
-      ((TypeDockable)this.aircraft).typeDockableReplicateFromNet(paramNetMsgInput);
-    }
-
-    if (paramNetMsgInput.available() == 0) {
-      return;
-    }
-
-    if (this.aircraft.FM.CT.bHasWingControl) {
-      this.aircraft.FM.CT.wingControl = paramNetMsgInput.readUnsignedByte();
-      this.aircraft.FM.CT.forceWing(paramNetMsgInput.readUnsignedByte() / 255.0F);
-      this.aircraft.wingfold_ = this.aircraft.FM.CT.getWing();
-    }
-    if (paramNetMsgInput.available() == 0) {
-      return;
-    }
-    if (this.aircraft.FM.CT.bHasCockpitDoorControl) {
-      this.aircraft.FM.CT.cockpitDoorControl = paramNetMsgInput.readUnsignedByte();
-      this.aircraft.FM.CT.forceCockpitDoor(this.aircraft.FM.CT.cockpitDoorControl);
-    }
-    if (paramNetMsgInput.available() == 0)
-      return;
-    this.bIsEnableToBailout = (paramNetMsgInput.readUnsignedByte() == 1);
-    if (paramNetMsgInput.available() == 0) {
-      return;
-    }
-    if (this.aircraft.FM.CT.bHasArrestorControl) {
-      this.aircraft.FM.CT.arrestorControl = paramNetMsgInput.readUnsignedByte();
-      this.aircraft.FM.CT.forceArrestor(paramNetMsgInput.readUnsignedByte() / 255.0F);
-      this.aircraft.arrestor_ = this.aircraft.FM.CT.getArrestor();
-    }
-    if (paramNetMsgInput.available() == 0) {
-      return;
-    }
-    for (i = 0; i < k; i++) {
-      j = paramNetMsgInput.readUnsignedByte();
-      doSetSootState(i, j);
-    }
-    if (paramNetMsgInput.available() == 0) {
-      return;
-    }
-
-    if (this.bWantBeaconsNet)
-    {
-      this.beacon = paramNetMsgInput.readUnsignedByte();
-    }
-
-    if ((this.aircraft instanceof TypeHasToKG))
-    {
-      this.torpedoGyroAngle = paramNetMsgInput.readUnsignedByte();
-      this.torpedoSpreadAngle = paramNetMsgInput.readUnsignedByte();
-    }
-
-    this.aircraft.armingSeed = paramNetMsgInput.readUnsignedShort();
-
-    setArmingSeeds(this.aircraft.armingSeed);
-
-    if (this.aircraft.isNetPlayer()) {
-      int n = paramNetMsgInput.readUnsignedByte();
-
-      int i1 = n % 6;
-      float f = Property.floatValue(this.aircraft.getClass(), "LOSElevation", 0.75F);
-
-      updConvDist(i1, 0, f);
-      n = (n - i1) / 6;
-      i1 = n % 6;
-
-      updConvDist(i1, 1, f);
-      n = (n - i1) / 6;
-
-      updConvDist(n, 2, f);
-    }
-
-    j = paramNetMsgInput.readUnsignedByte();
-    if ((!this.externalStoresDropped) && (j > 0))
-    {
-      this.externalStoresDropped = true;
-      this.aircraft.dropExternalStores(false);
-    }
-  }
-
-  void updConvDist(int paramInt1, int paramInt2, float paramFloat)
-  {
-    float f = paramInt1 * paramInt1 * 36.0F + 100.0F;
-    try
-    {
-      if (this.aircraft.FM.CT.Weapons[paramInt2] != null)
-      {
+        com.maddox.il2.engine.Loc loc;
+        com.maddox.il2.engine.Loc loc1;
         int i;
-        if (paramInt2 == 2) {
-          for (i = 0; i < this.aircraft.FM.CT.Weapons[paramInt2].length; i++)
-            if ((this.aircraft.FM.CT.Weapons[paramInt2][i] instanceof RocketGun))
-              ((RocketGun)(RocketGun)this.aircraft.FM.CT.Weapons[paramInt2][i]).setConvDistance(f, paramFloat);
-        }
+        loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        loc1 = new Loc();
+        actor = actor1;
+        if(actor1 instanceof com.maddox.il2.objects.air.Aircraft)
+            aircraft = (com.maddox.il2.objects.air.AircraftLH)actor1;
         else
-          for (i = 0; i < this.aircraft.FM.CT.Weapons[paramInt2].length; i++)
-            if ((this.aircraft.FM.CT.Weapons[paramInt2][i] instanceof MGunAircraftGeneric))
-              ((MGunAircraftGeneric)(MGunAircraftGeneric)this.aircraft.FM.CT.Weapons[paramInt2][i]).setConvDistance(f, paramFloat); 
-      }
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  void setArmingSeeds(int paramInt)
-  {
-    this.aircraft.armingRnd = new RangeRandom(this.aircraft.armingSeed);
-    try
-    {
-      if (this.aircraft.FM.CT.Weapons[2] != null)
-        for (int i = 0; i < this.aircraft.FM.CT.Weapons[2].length; i++)
+            throw new RuntimeException("Can not cast aircraft structure into a non-aircraft entity.");
+        bIsMaster = flag;
+        i = 0;
+_L3:
+        if(i >= 4) goto _L2; else goto _L1
+_L1:
+        try
         {
-          if ((this.aircraft.FM.CT.Weapons[2][i] instanceof RocketGun))
-            ((RocketGun)this.aircraft.FM.CT.Weapons[2][i]).setSpreadRnd(this.aircraft.armingRnd.nextInt());
+            astateEffectChunks[i + 0] = actor.findHook("_Tank" + (i + 1) + "Burn").chunkName();
+            astateEffectChunks[i + 0] = astateEffectChunks[i + 0].substring(0, astateEffectChunks[i + 0].length() - 1);
+            com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: Tank " + i + " FX attached to '" + astateEffectChunks[i + 0] + "' substring..");
         }
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void netToMaster(int paramInt1, int paramInt2, int paramInt3)
-  {
-    netToMaster(paramInt1, paramInt2, paramInt3, null);
-  }
-
-  public void netToMaster(int paramInt1, int paramInt2, int paramInt3, Actor paramActor) {
-    if (!this.bIsMaster) {
-      if (!this.aircraft.netNewAState_isEnable(true))
-        return;
-      if (this.itemsToMaster == null)
-        this.itemsToMaster = new Item[41];
-      if (sendedMsg(this.itemsToMaster, paramInt1, paramInt2, paramInt3, paramActor))
-        return;
-      try
-      {
-        NetMsgGuaranted localNetMsgGuaranted = this.aircraft.netNewAStateMsg(true);
-        if (localNetMsgGuaranted != null) {
-          localNetMsgGuaranted.writeByte((byte)paramInt1);
-          localNetMsgGuaranted.writeByte((byte)paramInt2);
-          localNetMsgGuaranted.writeByte((byte)paramInt3);
-          ActorNet localActorNet = null;
-          if (Actor.isValid(paramActor))
-            localActorNet = paramActor.net;
-          if (localActorNet != null)
-            localNetMsgGuaranted.writeNetObj(localActorNet);
-          this.aircraft.netSendAStateMsg(true, localNetMsgGuaranted);
-          return;
+        catch(java.lang.Exception exception) { }
+        continue; /* Loop/switch isn't completed */
+        java.lang.Exception exception5;
+        exception5;
+        throw exception5;
+        i++;
+          goto _L3
+_L2:
+        i = 0;
+_L6:
+        if(i >= aircraft.FM.EI.getNum()) goto _L5; else goto _L4
+_L4:
+        try
+        {
+            astateEffectChunks[i + 4] = actor.findHook("_Engine" + (i + 1) + "Smoke").chunkName();
+            astateEffectChunks[i + 4] = astateEffectChunks[i + 4].substring(0, astateEffectChunks[i + 4].length() - 1);
+            com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: Engine " + i + " FX attached to '" + astateEffectChunks[i + 4] + "' substring..");
         }
-      } catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-    }
-  }
+        catch(java.lang.Exception exception1) { }
+        continue; /* Loop/switch isn't completed */
+        java.lang.Exception exception6;
+        exception6;
+        throw exception6;
+        i++;
+          goto _L6
+_L5:
+        i = 0;
+_L9:
+        if(i >= astateNavLightsEffects.length) goto _L8; else goto _L7
+_L7:
+        try
+        {
+            astateEffectChunks[i + 12] = actor.findHook("_NavLight" + i).chunkName();
+            astateEffectChunks[i + 12] = astateEffectChunks[i + 12].substring(0, astateEffectChunks[i + 12].length() - 1);
+            com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: Nav. Lamp #" + i + " attached to '" + astateEffectChunks[i + 12] + "' substring..");
+            com.maddox.il2.engine.HookNamed hooknamed = new HookNamed(aircraft, "_NavLight" + i);
+            loc1.set(1.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+            hooknamed.computePos(actor, loc, loc1);
+            com.maddox.JGP.Point3d point3d = loc1.getPoint();
+            astateNavLightsLights[i] = new LightPointActor(new LightPoint(), point3d);
+            if(i < 2)
+                astateNavLightsLights[i].light.setColor(1.0F, 0.1F, 0.1F);
+            else
+            if(i < 4)
+                astateNavLightsLights[i].light.setColor(0.0F, 1.0F, 0.0F);
+            else
+                astateNavLightsLights[i].light.setColor(0.7F, 0.7F, 0.7F);
+            astateNavLightsLights[i].light.setEmit(0.0F, 0.0F);
+            actor.draw.lightMap().put("_NavLight" + i, astateNavLightsLights[i]);
+        }
+        catch(java.lang.Exception exception2) { }
+        continue; /* Loop/switch isn't completed */
+        java.lang.Exception exception7;
+        exception7;
+        throw exception7;
+        i++;
+          goto _L9
+_L8:
+        i = 0;
+_L12:
+        if(i >= 4) goto _L11; else goto _L10
+_L10:
+        try
+        {
+            astateEffectChunks[i + 18] = actor.findHook("_LandingLight0" + i).chunkName();
+            astateEffectChunks[i + 18] = astateEffectChunks[i + 18].substring(0, astateEffectChunks[i + 18].length() - 1);
+            com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: Landing Lamp #" + i + " attached to '" + astateEffectChunks[i + 18] + "' substring..");
+            com.maddox.il2.engine.HookNamed hooknamed1 = new HookNamed(aircraft, "_LandingLight0" + i);
+            loc1.set(1.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+            hooknamed1.computePos(actor, loc, loc1);
+            com.maddox.JGP.Point3d point3d1 = loc1.getPoint();
+            astateLandingLightLights[i] = new LightPointActor(new LightPoint(), point3d1);
+            astateLandingLightLights[i].light.setColor(0.4941176F, 0.9098039F, 0.9607843F);
+            astateLandingLightLights[i].light.setEmit(0.0F, 0.0F);
+            actor.draw.lightMap().put("_LandingLight0" + i, astateLandingLightLights[i]);
+        }
+        catch(java.lang.Exception exception3) { }
+        continue; /* Loop/switch isn't completed */
+        java.lang.Exception exception8;
+        exception8;
+        throw exception8;
+        i++;
+          goto _L12
+_L11:
+        i = 0;
+_L15:
+        if(i >= aircraft.FM.EI.getNum()) goto _L14; else goto _L13
+_L13:
+        try
+        {
+            astateEffectChunks[i + 22] = actor.findHook("_Engine" + (i + 1) + "Oil").chunkName();
+            astateEffectChunks[i + 22] = astateEffectChunks[i + 22].substring(0, astateEffectChunks[i + 22].length() - 1);
+            com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: Oilfilter " + i + " FX attached to '" + astateEffectChunks[i + 22] + "' substring..");
+        }
+        catch(java.lang.Exception exception4) { }
+        continue; /* Loop/switch isn't completed */
+        java.lang.Exception exception9;
+        exception9;
+        throw exception9;
+        i++;
+          goto _L15
+_L14:
+        for(int j = 0; j < astateEffectChunks.length; j++)
+            if(astateEffectChunks[j] == null)
+                astateEffectChunks[j] = "AChunkNameYouCanNeverFind";
 
-  private void netToMirrors(int paramInt1, int paramInt2, int paramInt3)
-  {
-    netToMirrors(paramInt1, paramInt2, paramInt3, null);
-  }
-
-  public void netToMirrors(int paramInt1, int paramInt2, int paramInt3, Actor paramActor) {
-    if (!this.aircraft.netNewAState_isEnable(false))
-      return;
-    if (this.itemsToMirrors == null)
-      this.itemsToMirrors = new Item[41];
-    if (sendedMsg(this.itemsToMirrors, paramInt1, paramInt2, paramInt3, paramActor))
-      return;
-    try {
-      NetMsgGuaranted localNetMsgGuaranted = this.aircraft.netNewAStateMsg(false);
-      if (localNetMsgGuaranted != null)
-      {
-        localNetMsgGuaranted.writeByte((byte)paramInt1);
-        localNetMsgGuaranted.writeByte((byte)paramInt2);
-        localNetMsgGuaranted.writeByte((byte)paramInt3);
-        ActorNet localActorNet = null;
-        if (Actor.isValid(paramActor))
-          localActorNet = paramActor.net;
-        if (localActorNet != null)
-          localNetMsgGuaranted.writeNetObj(localActorNet);
-        this.aircraft.netSendAStateMsg(false, localNetMsgGuaranted);
         return;
-      }
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
     }
-  }
 
-  private boolean sendedMsg(Item[] paramArrayOfItem, int paramInt1, int paramInt2, int paramInt3, Actor paramActor)
-  {
-    if ((paramInt1 < 0) || (paramInt1 >= paramArrayOfItem.length))
-      return false;
-    Item localItem = paramArrayOfItem[paramInt1];
-    if (localItem == null) {
-      localItem = new Item();
-      localItem.set(paramInt2, paramInt3, paramActor);
-      paramArrayOfItem[paramInt1] = localItem;
-      return false;
-    }
-    if (localItem.equals(paramInt2, paramInt3, paramActor))
-      return true;
-    localItem.set(paramInt2, paramInt3, paramActor);
-    return false;
-  }
-
-  private int cvt(float paramFloat1, float paramFloat2, float paramFloat3, int paramInt1, int paramInt2)
-  {
-    paramFloat1 = Math.min(Math.max(paramFloat1, paramFloat2), paramFloat3);
-    return (int)(paramInt1 + (paramInt2 - paramInt1) * (paramFloat1 - paramFloat2) / (paramFloat3 - paramFloat2));
-  }
-
-  private float cvt(int paramInt1, int paramInt2, int paramInt3, float paramFloat1, float paramFloat2) {
-    paramInt1 = Math.min(Math.max(paramInt1, paramInt2), paramInt3);
-    return paramFloat1 + (paramFloat2 - paramFloat1) * (paramInt1 - paramInt2) / (paramInt3 - paramInt2);
-  }
-
-  public float getGyroAngle()
-  {
-    if (this.torpedoGyroAngle == 0)
+    public boolean isMaster()
     {
-      return 0.0F;
+        return bIsMaster;
     }
-    return cvt(this.torpedoGyroAngle, 1, 65535, -50.0F, 50.0F);
-  }
 
-  public void setGyroAngle(float paramFloat)
-  {
-    int i = 0;
-    if (paramFloat != 0.0F)
+    public void setOilState(com.maddox.il2.engine.Actor actor1, int i, int j)
     {
-      i = cvt(paramFloat, -50.0F, 50.0F, 1, 65535);
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(j < 0 || j > 1 || astateOilStates[i] == j)
+            return;
+        if(bIsMaster)
+        {
+            aircraft.setDamager(actor1);
+            doSetOilState(i, j);
+            int k = 0;
+            for(int l = 0; l < aircraft.FM.EI.getNum(); l++)
+                if(astateOilStates[l] == 1)
+                    k++;
+
+            if(k == aircraft.FM.EI.getNum())
+                setCockpitState(actor, astateCockpitState | 0x80);
+            netToMirrors(11, i, j);
+        } else
+        {
+            netToMaster(11, i, j, actor1);
+        }
     }
-    this.torpedoGyroAngle = i;
-  }
 
-  public void replicateGyroAngleToNet()
-  {
-    int i = cvt(getGyroAngle(), -50.0F, 50.0F, 1, 65535);
-    int j = i & 0xFF00;
-    j >>= 8;
-    int k = i & 0xFF;
-    setGyroAngle(this.actor, j, k, false);
-  }
-
-  private void setGyroAngle(Actor paramActor, int paramInt1, int paramInt2, boolean paramBoolean)
-  {
-    if (!Actor.isValid(paramActor))
-      return;
-    if (paramBoolean) {
-      doSetGyroAngle(paramActor, paramInt1, paramInt2);
-    }
-    if (this.bIsMaster)
-      netToMirrors(44, paramInt1, paramInt2);
-    else
-      netToMaster(44, paramInt1, paramInt2, paramActor);
-  }
-
-  private void doSetGyroAngle(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    this.torpedoGyroAngle = (paramInt1 << 8 | paramInt2);
-  }
-
-  public int getSpreadAngle()
-  {
-    return this.torpedoSpreadAngle;
-  }
-
-  public void setSpreadAngle(int paramInt)
-  {
-    this.torpedoSpreadAngle = paramInt;
-    if (this.torpedoSpreadAngle < 0)
-      this.torpedoSpreadAngle = 0;
-    if (this.torpedoSpreadAngle > 30)
-      this.torpedoSpreadAngle = 30;
-  }
-
-  public void replicateSpreadAngleToNet()
-  {
-    setSpreadAngle(this.actor, getSpreadAngle(), 0, false);
-  }
-
-  private void setSpreadAngle(Actor paramActor, int paramInt1, int paramInt2, boolean paramBoolean)
-  {
-    if (!Actor.isValid(paramActor))
-      return;
-    if (paramBoolean) {
-      doSetSpreadAngle(paramActor, paramInt1, 0);
-    }
-    if (this.bIsMaster)
-      netToMirrors(45, paramInt1, 0);
-    else
-      netToMaster(45, paramInt1, 0, paramActor);
-  }
-
-  private void doSetSpreadAngle(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    setSpreadAngle(paramInt1);
-  }
-
-  static class Item
-  {
-    int msgDestination;
-    int msgContext;
-    Actor initiator;
-
-    void set(int paramInt1, int paramInt2, Actor paramActor)
+    public void hitOil(com.maddox.il2.engine.Actor actor1, int i)
     {
-      this.msgDestination = paramInt1;
-      this.msgContext = paramInt2;
-      this.initiator = paramActor;
+        if(astateOilStates[i] > 0)
+            return;
+        if(astateOilStates[i] < 1)
+            setOilState(actor1, i, astateOilStates[i] + 1);
     }
-    boolean equals(int paramInt1, int paramInt2, Actor paramActor) {
-      return (this.msgDestination == paramInt1) && (this.msgContext == paramInt2) && (this.initiator == paramActor);
+
+    public void repairOil(int i)
+    {
+        if(!bIsMaster)
+            return;
+        if(astateOilStates[i] > 0)
+            setOilState(actor, i, astateOilStates[i] - 1);
     }
-  }
+
+    private void doSetOilState(int i, int j)
+    {
+        if(astateOilStates[i] == j)
+            return;
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[i + 22] + "' visibility..");
+        boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 22]);
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[i + 22] + "' is " + (flag ? "visible" : "invisible") + "..");
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Stating OilFilter " + i + " to state " + j + (flag ? ".." : " rejected (missing part).."));
+        if(!flag)
+            return;
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Stating OilFilter " + i + " to state " + j + "..");
+        astateOilStates[i] = (byte)j;
+        byte byte0 = 0;
+        if(!bIsAboveCriticalSpeed)
+            byte0 = 2;
+        if(astateOilEffects[i][0] != null)
+            com.maddox.il2.engine.Eff3DActor.finish(astateOilEffects[i][0]);
+        astateOilEffects[i][0] = null;
+        if(astateOilEffects[i][1] != null)
+            com.maddox.il2.engine.Eff3DActor.finish(astateOilEffects[i][1]);
+        astateOilEffects[i][1] = null;
+        switch(astateOilStates[i])
+        {
+        case 1: // '\001'
+            java.lang.String s = astateOilStrings[byte0];
+            if(s != null)
+                try
+                {
+                    astateOilEffects[i][0] = com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Oil"), null, 1.0F, s, -1F);
+                }
+                catch(java.lang.Exception exception) { }
+            s = astateOilStrings[byte0 + 1];
+            if(s != null)
+                try
+                {
+                    astateOilEffects[i][1] = com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Oil"), null, 1.0F, s, -1F);
+                }
+                catch(java.lang.Exception exception1) { }
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.25F)
+                aircraft.FM.setReadyToReturn(true);
+            break;
+        }
+    }
+
+    public void changeOilEffectBase(int i, com.maddox.il2.engine.Actor actor1)
+    {
+        for(int j = 0; j < 2; j++)
+            if(astateOilEffects[i][j] != null)
+                astateOilEffects[i][j].pos.changeBase(actor1, null, true);
+
+    }
+
+    public void setTankState(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(j < 0 || j > 6 || astateTankStates[i] == j)
+            return;
+        if(bIsMaster)
+        {
+            byte byte0 = astateTankStates[i];
+            if(!doSetTankState(actor1, i, j))
+                return;
+            for(int k = byte0; k < j; k++)
+            {
+                if(k % 2 == 0)
+                    aircraft.setDamager(actor1);
+                doHitTank(actor1, i);
+            }
+
+            if(aircraft.FM.isPlayers() && actor1 != actor && (actor1 instanceof com.maddox.il2.objects.air.Aircraft) && ((com.maddox.il2.objects.air.Aircraft)actor1).isNetPlayer() && j > 5 && astateTankStates[0] < 5 && astateTankStates[1] < 5 && astateTankStates[2] < 5 && astateTankStates[3] < 5 && !aircraft.FM.isSentBuryNote())
+                com.maddox.il2.net.Chat.sendLogRnd(3, "gore_lightfuel", (com.maddox.il2.objects.air.Aircraft)actor1, aircraft);
+            netToMirrors(9, i, j);
+        } else
+        {
+            netToMaster(9, i, j, actor1);
+        }
+    }
+
+    public void hitTank(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        if(astateTankStates[i] == 6)
+            return;
+        int k = astateTankStates[i] + j;
+        if(k > 6)
+            k = 6;
+        setTankState(actor1, i, k);
+    }
+
+    public void repairTank(int i)
+    {
+        if(!bIsMaster)
+            return;
+        if(astateTankStates[i] > 0)
+            setTankState(actor, i, astateTankStates[i] - 1);
+    }
+
+    public boolean doSetTankState(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 0]);
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Stating Tank " + i + " to state " + j + (flag ? ".." : " rejected (missing part).."));
+        if(!flag)
+            return false;
+        if(com.maddox.il2.ai.World.getPlayerAircraft() == actor)
+        {
+            if(astateTankStates[i] == 0 && (j == 1 || j == 2))
+                com.maddox.il2.game.HUD.log("FailedTank");
+            if(astateTankStates[i] < 5 && j >= 5)
+                com.maddox.il2.game.HUD.log("FailedTankOnFire");
+        }
+        astateTankStates[i] = (byte)j;
+        if(astateTankStates[i] < 5 && j >= 5)
+        {
+            aircraft.FM.setTakenMortalDamage(true, actor1);
+            aircraft.FM.setCapableOfACM(false);
+        }
+        if(j < 4 && aircraft.FM.isCapableOfBMP())
+            aircraft.FM.setTakenMortalDamage(false, actor1);
+        byte byte0 = 0;
+        if(!bIsAboveCriticalSpeed)
+            byte0 = 21;
+        for(int k = 0; k < 3; k++)
+        {
+            if(astateTankEffects[i][k] != null)
+                com.maddox.il2.engine.Eff3DActor.finish(astateTankEffects[i][k]);
+            astateTankEffects[i][k] = null;
+            java.lang.String s = astateTankStrings[byte0 + k + j * 3];
+            if(s == null)
+                continue;
+            if(j > 2)
+                astateTankEffects[i][k] = com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Tank" + (i + 1) + "Burn"), null, 1.0F, s, -1F);
+            else
+                astateTankEffects[i][k] = com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Tank" + (i + 1) + "Leak"), null, 1.0F, s, -1F);
+        }
+
+        aircraft.sfxSmokeState(2, i, j > 4);
+        return true;
+    }
+
+    private void doHitTank(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if((com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 75 || (actor instanceof com.maddox.il2.objects.air.Scheme1)) && astateTankStates[i] == 6)
+        {
+            aircraft.FM.setReadyToDie(true);
+            aircraft.FM.setTakenMortalDamage(true, actor1);
+            aircraft.FM.setCapableOfACM(false);
+            com.maddox.il2.objects.sounds.Voice.speakMayday(aircraft);
+            com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "I'm on fire, going down!.");
+            com.maddox.il2.objects.effects.Explosions.generateComicBulb(actor, "OnFire", 12F);
+            if(com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 75 && aircraft.FM.Skill > 1)
+            {
+                com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "BAILING OUT - Tank " + i + " is on fire!.");
+                hitDaSilk();
+            }
+        } else
+        if(com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 12)
+        {
+            aircraft.FM.setReadyToReturn(true);
+            com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Tank " + i + " hit, RTB..");
+            com.maddox.il2.objects.effects.Explosions.generateComicBulb(actor, "RTB", 12F);
+        }
+    }
+
+    public void changeTankEffectBase(int i, com.maddox.il2.engine.Actor actor1)
+    {
+        for(int j = 0; j < 3; j++)
+            if(astateTankEffects[i][j] != null)
+                astateTankEffects[i][j].pos.changeBase(actor1, null, true);
+
+        aircraft.sfxSmokeState(2, i, false);
+    }
+
+    public void explodeTank(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(bIsMaster)
+        {
+            if(!aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 0]))
+                return;
+            netToMirrors(10, i, 0);
+            doExplodeTank(i);
+        } else
+        {
+            netToMaster(10, i, 0, actor1);
+        }
+    }
+
+    private void doExplodeTank(int i)
+    {
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Tank " + i + " explodes..");
+        com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Tank" + (i + 1) + "Burn"), null, 1.0F, "3DO/Effects/Fireworks/Tank_Burn.eff", -1F);
+        com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Tank" + (i + 1) + "Burn"), null, 1.0F, "3DO/Effects/Fireworks/Tank_SmokeBoiling.eff", -1F);
+        com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Tank" + (i + 1) + "Burn"), null, 1.0F, "3DO/Effects/Fireworks/Tank_Sparks.eff", -1F);
+        com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Tank" + (i + 1) + "Burn"), null, 1.0F, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1F);
+        aircraft.msgCollision(actor, astateEffectChunks[i + 0] + "0", astateEffectChunks[i + 0] + "0");
+        if((actor instanceof com.maddox.il2.objects.air.Scheme1) && aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 0]))
+            aircraft.msgCollision(actor, "CF_D0", "CF_D0");
+        com.maddox.il2.engine.Actor actor1;
+        if(aircraft.getDamager() != null)
+            actor1 = aircraft.getDamager();
+        else
+            actor1 = actor;
+        com.maddox.il2.engine.HookNamed hooknamed = new HookNamed((com.maddox.il2.engine.ActorMesh)actor, "_Tank" + (i + 1) + "Burn");
+        com.maddox.il2.engine.Loc loc = new Loc();
+        com.maddox.il2.engine.Loc loc1 = new Loc();
+        actor.pos.getCurrent(loc);
+        hooknamed.computePos(actor, loc, loc1);
+        if(com.maddox.il2.ai.World.getPlayerAircraft() == actor)
+            com.maddox.il2.game.HUD.log("FailedTankExplodes");
+    }
+
+    public void setEngineState(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(j < 0 || j > 4 || astateEngineStates[i] == j)
+            return;
+        if(bIsMaster)
+        {
+            byte byte0 = astateEngineStates[i];
+            if(!doSetEngineState(actor1, i, j))
+                return;
+            for(int k = byte0; k < j; k++)
+            {
+                aircraft.setDamager(actor1);
+                doHitEngine(actor1, i);
+            }
+
+            if(aircraft.FM.isPlayers() && actor1 != actor && (actor1 instanceof com.maddox.il2.objects.air.Aircraft) && ((com.maddox.il2.objects.air.Aircraft)actor1).isNetPlayer() && j > 3 && astateEngineStates[0] < 3 && astateEngineStates[1] < 3 && astateEngineStates[2] < 3 && astateEngineStates[3] < 3 && !aircraft.FM.isSentBuryNote())
+                com.maddox.il2.net.Chat.sendLogRnd(3, "gore_lighteng", (com.maddox.il2.objects.air.Aircraft)actor1, aircraft);
+            int l = 0;
+            for(int i1 = 0; i1 < aircraft.FM.EI.getNum(); i1++)
+                if(astateEngineStates[i1] > 2)
+                    l++;
+
+            if(l == aircraft.FM.EI.getNum())
+                setCockpitState(actor, astateCockpitState | 0x80);
+            netToMirrors(1, i, j);
+        } else
+        {
+            netToMaster(1, i, j, actor1);
+        }
+    }
+
+    public void hitEngine(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        if(astateEngineStates[i] == 4)
+            return;
+        int k = astateEngineStates[i] + j;
+        if(k > 4)
+            k = 4;
+        setEngineState(actor1, i, k);
+    }
+
+    public void repairEngine(int i)
+    {
+        if(!bIsMaster)
+            return;
+        if(astateEngineStates[i] > 0)
+            setEngineState(actor, i, astateEngineStates[i] - 1);
+    }
+
+    public boolean doSetEngineState(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[i + 4] + "' visibility..");
+        boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 4]);
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[i + 4] + "' is " + (flag ? "visible" : "invisible") + "..");
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Stating Engine " + i + " to state " + j + (flag ? ".." : " rejected (missing part).."));
+        if(!flag)
+            return false;
+        if(astateEngineStates[i] < 4 && j >= 4)
+        {
+            if(com.maddox.il2.ai.World.getPlayerAircraft() == actor)
+                com.maddox.il2.game.HUD.log("FailedEngineOnFire");
+            aircraft.FM.setTakenMortalDamage(true, actor1);
+            aircraft.FM.setCapableOfACM(false);
+            aircraft.FM.setCapableOfTaxiing(false);
+        }
+        astateEngineStates[i] = (byte)j;
+        if(j < 2 && aircraft.FM.isCapableOfBMP())
+            aircraft.FM.setTakenMortalDamage(false, actor1);
+        byte byte0 = 0;
+        if(!bIsAboveCriticalSpeed)
+            byte0 = 15;
+        for(int k = 0; k < 3; k++)
+        {
+            if(astateEngineEffects[i][k] != null)
+                com.maddox.il2.engine.Eff3DActor.finish(astateEngineEffects[i][k]);
+            astateEngineEffects[i][k] = null;
+            java.lang.String s = astateEngineStrings[byte0 + k + j * 3];
+            if(s != null)
+                astateEngineEffects[i][k] = com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Smoke"), null, 1.0F, s, -1F);
+        }
+
+        aircraft.sfxSmokeState(1, i, j > 3);
+        return true;
+    }
+
+    private void doHitEngine(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 12)
+        {
+            aircraft.FM.setReadyToReturn(true);
+            com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Engines out, RTB..");
+            com.maddox.il2.objects.effects.Explosions.generateComicBulb(actor, "RTB", 12F);
+        }
+        if(astateEngineStates[i] >= 2 && !(actor instanceof com.maddox.il2.objects.air.Scheme1) && com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 25)
+        {
+            aircraft.FM.setReadyToReturn(true);
+            com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "One of the engines out, RTB..");
+        }
+        if(astateEngineStates[i] == 4)
+            if(actor instanceof com.maddox.il2.objects.air.Scheme1)
+            {
+                if(com.maddox.il2.ai.World.Rnd().nextBoolean())
+                {
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "BAILING OUT - Engine " + i + " is on fire..");
+                    aircraft.hitDaSilk();
+                }
+                aircraft.FM.setReadyToDie(true);
+                aircraft.FM.setTakenMortalDamage(true, actor1);
+            } else
+            if(com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 50)
+            {
+                aircraft.FM.setReadyToDie(true);
+                if(com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 25)
+                    aircraft.FM.setTakenMortalDamage(true, actor1);
+                aircraft.FM.setCapableOfACM(false);
+                com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Engines on fire, ditching..");
+                com.maddox.il2.objects.effects.Explosions.generateComicBulb(actor, "OnFire", 12F);
+            }
+    }
+
+    public void changeEngineEffectBase(int i, com.maddox.il2.engine.Actor actor1)
+    {
+        for(int j = 0; j < 3; j++)
+            if(astateEngineEffects[i][j] != null)
+                astateEngineEffects[i][j].pos.changeBase(actor1, null, true);
+
+        aircraft.sfxSmokeState(1, i, false);
+    }
+
+    public void explodeEngine(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(bIsMaster)
+        {
+            if(!aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 4]))
+                return;
+            netToMirrors(3, i, 0);
+            doExplodeEngine(i);
+        } else
+        {
+            netToMaster(3, i, 0, actor1);
+        }
+    }
+
+    private void doExplodeEngine(int i)
+    {
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Engine " + i + " explodes..");
+        com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Fireworks/Tank_Burn.eff", -1F);
+        com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Fireworks/Tank_SmokeBoiling.eff", -1F);
+        com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Fireworks/Tank_Sparks.eff", -1F);
+        com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1F);
+        aircraft.msgCollision(aircraft, astateEffectChunks[i + 4] + "0", astateEffectChunks[i + 4] + "0");
+        com.maddox.il2.engine.Actor actor1;
+        if(aircraft.getDamager() != null)
+            actor1 = aircraft.getDamager();
+        else
+            actor1 = actor;
+        com.maddox.il2.engine.HookNamed hooknamed = new HookNamed((com.maddox.il2.engine.ActorMesh)actor, "_Engine" + (i + 1) + "Smoke");
+        com.maddox.il2.engine.Loc loc = new Loc();
+        com.maddox.il2.engine.Loc loc1 = new Loc();
+        actor.pos.getCurrent(loc);
+        hooknamed.computePos(actor, loc, loc1);
+        com.maddox.il2.ai.MsgExplosion.send(null, astateEffectChunks[4 + i] + "0", loc1.getPoint(), actor1, 1.248F, 0.026F, 1, 75F);
+    }
+
+    public void setEngineStarts(int i)
+    {
+        if(!bIsMaster)
+        {
+            return;
+        } else
+        {
+            doSetEngineStarts(i);
+            netToMirrors(4, i, 96);
+            return;
+        }
+    }
+
+    public void setEngineRunning(int i)
+    {
+        if(!bIsMaster)
+        {
+            return;
+        } else
+        {
+            doSetEngineRunning(i);
+            netToMirrors(5, i, 81);
+            return;
+        }
+    }
+
+    public void setEngineStops(int i)
+    {
+        if(!bIsMaster)
+        {
+            return;
+        } else
+        {
+            doSetEngineStops(i);
+            netToMirrors(6, i, 2);
+            return;
+        }
+    }
+
+    public void setEngineDies(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(bIsMaster)
+        {
+            aircraft.setDamager(actor1);
+            doSetEngineDies(i);
+            netToMirrors(7, i, 77);
+        } else
+        {
+            netToMaster(7, i, 67, actor1);
+        }
+    }
+
+    public void setEngineStuck(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(bIsMaster)
+        {
+            doSetEngineStuck(i);
+            aircraft.setDamager(actor1);
+            netToMirrors(29, i, 77);
+        } else
+        {
+            netToMaster(29, i, 67, actor1);
+        }
+    }
+
+    public void setEngineSpecificDamage(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(bIsMaster)
+        {
+            aircraft.setDamager(actor1);
+            doSetEngineSpecificDamage(i, j);
+            netToMirrors(2, i, j);
+        } else
+        {
+            netToMaster(2, i, j, actor1);
+        }
+    }
+
+    public void setEngineReadyness(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        if(bIsMaster)
+        {
+            aircraft.setDamager(actor1);
+            doSetEngineReadyness(i, j);
+            netToMirrors(25, i, j);
+        } else
+        {
+            netToMaster(25, i, j, actor1);
+        }
+    }
+
+    public void setEngineStage(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        if(bIsMaster)
+        {
+            doSetEngineStage(i, j);
+            netToMirrors(26, i, j);
+        } else
+        {
+            netToMaster(26, i, j, actor1);
+        }
+    }
+
+    public void setEngineCylinderKnockOut(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(bIsMaster)
+        {
+            aircraft.setDamager(actor1);
+            doSetEngineCylinderKnockOut(i, j);
+            netToMirrors(27, i, j);
+        } else
+        {
+            netToMaster(27, i, j, actor1);
+        }
+    }
+
+    public void setEngineMagnetoKnockOut(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        if(bIsMaster)
+        {
+            aircraft.setDamager(actor1);
+            doSetEngineMagnetoKnockOut(i, j);
+            netToMirrors(28, i, j);
+        } else
+        {
+            netToMaster(28, i, j, actor1);
+        }
+    }
+
+    private void doSetEngineStarts(int i)
+    {
+        aircraft.FM.EI.engines[i].doSetEngineStarts();
+    }
+
+    private void doSetEngineRunning(int i)
+    {
+        aircraft.FM.EI.engines[i].doSetEngineRunning();
+    }
+
+    private void doSetEngineStops(int i)
+    {
+        aircraft.FM.EI.engines[i].doSetEngineStops();
+    }
+
+    private void doSetEngineDies(int i)
+    {
+        aircraft.FM.EI.engines[i].doSetEngineDies();
+    }
+
+    private void doSetEngineStuck(int i)
+    {
+        aircraft.FM.EI.engines[i].doSetEngineStuck();
+    }
+
+    private void doSetEngineSpecificDamage(int i, int j)
+    {
+        switch(j)
+        {
+        case 0: // '\0'
+            aircraft.FM.EI.engines[i].doSetKillCompressor();
+            break;
+
+        case 3: // '\003'
+            aircraft.FM.EI.engines[i].doSetKillPropAngleDevice();
+            break;
+
+        case 4: // '\004'
+            aircraft.FM.EI.engines[i].doSetKillPropAngleDeviceSpeeds();
+            break;
+
+        case 5: // '\005'
+            aircraft.FM.EI.engines[i].doSetExtinguisherFire();
+            break;
+
+        case 2: // '\002'
+            throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unimplemented feature (E.S.D./H.)");
+
+        case 1: // '\001'
+            if(aircraft.FM.EI.engines[i].isHasControlThrottle())
+                aircraft.FM.EI.engines[i].doSetKillControlThrottle();
+            break;
+
+        case 6: // '\006'
+            if(aircraft.FM.EI.engines[i].isHasControlProp())
+                aircraft.FM.EI.engines[i].doSetKillControlProp();
+            break;
+
+        case 7: // '\007'
+            if(aircraft.FM.EI.engines[i].isHasControlMix())
+                aircraft.FM.EI.engines[i].doSetKillControlMix();
+            break;
+
+        default:
+            throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Corrupt data in (E.S.D./null)");
+        }
+    }
+
+    private void doSetEngineReadyness(int i, int j)
+    {
+        aircraft.FM.EI.engines[i].doSetReadyness(0.01F * (float)j);
+    }
+
+    private void doSetEngineStage(int i, int j)
+    {
+        aircraft.FM.EI.engines[i].doSetStage(j);
+    }
+
+    private void doSetEngineCylinderKnockOut(int i, int j)
+    {
+        aircraft.FM.EI.engines[i].doSetCyliderKnockOut(j);
+    }
+
+    private void doSetEngineMagnetoKnockOut(int i, int j)
+    {
+        aircraft.FM.EI.engines[i].doSetMagnetoKnockOut(j);
+    }
+
+    public void doSetEngineExtinguisherVisuals(int i)
+    {
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[i + 4] + "' visibility..");
+        boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 4]);
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[i + 4] + "' is " + (flag ? "visible" : "invisible") + "..");
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Firing Extinguisher on Engine " + i + (flag ? ".." : " rejected (missing part).."));
+        if(!flag)
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Smoke"), null, 1.0F, "3DO/Effects/Aircraft/EngineExtinguisher1.eff", 3F);
+            return;
+        }
+    }
+
+    public void setSootState(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(astateSootStates[i] == j)
+            return;
+        if(bIsMaster)
+        {
+            if(!doSetSootState(i, j))
+                return;
+            netToMirrors(8, i, j);
+        } else
+        {
+            netToMaster(8, i, j, actor1);
+        }
+    }
+
+    public boolean doSetSootState(int i, int j)
+    {
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[i + 4] + "' visibility..");
+        boolean flag = aircraft.isChunkAnyDamageVisible(astateEffectChunks[i + 4]);
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[i + 4] + "' is " + (flag ? "visible" : "invisible") + "..");
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Stating Engine " + i + " to state " + j + (flag ? ".." : " rejected (missing part).."));
+        if(!flag)
+        {
+            return false;
+        } else
+        {
+            astateSootStates[i] = (byte)j;
+            aircraft.doSetSootState(i, j);
+            return true;
+        }
+    }
+
+    public void changeSootEffectBase(int i, com.maddox.il2.engine.Actor actor1)
+    {
+        for(int j = 0; j < 2; j++)
+            if(astateSootEffects[i][j] != null)
+                astateSootEffects[i][j].pos.changeBase(actor1, null, true);
+
+    }
+
+    public void setCockpitState(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(astateCockpitState == i)
+            return;
+        if(bIsMaster)
+        {
+            aircraft.setDamager(actor1);
+            doSetCockpitState(i);
+            netToMirrors(23, 0, i);
+        } else
+        {
+            netToMaster(23, 0, i, actor1);
+        }
+    }
+
+    public void doSetCockpitState(int i)
+    {
+        if(astateCockpitState == i)
+        {
+            return;
+        } else
+        {
+            astateCockpitState = i;
+            aircraft.setCockpitState(i);
+            return;
+        }
+    }
+
+    public void setControlsDamage(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(bIsMaster)
+        {
+            aircraft.setDamager(actor1);
+            if(aircraft.FM.isPlayers() && actor1 != actor && (actor1 instanceof com.maddox.il2.objects.air.Aircraft) && ((com.maddox.il2.objects.air.Aircraft)actor1).isNetPlayer() && !aircraft.FM.isSentControlsOutNote() && !aircraft.FM.isSentBuryNote())
+            {
+                com.maddox.il2.net.Chat.sendLogRnd(3, "gore_hitctrls", (com.maddox.il2.objects.air.Aircraft)actor1, aircraft);
+                aircraft.FM.setSentControlsOutNote(true);
+            }
+            doSetControlsDamage(i, actor1);
+        } else
+        {
+            netToMaster(21, 0, i, actor1);
+        }
+    }
+
+    public void setInternalDamage(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(bIsMaster)
+        {
+            aircraft.setDamager(actor1);
+            doSetInternalDamage(i);
+            netToMirrors(22, 0, i);
+        } else
+        {
+            netToMaster(22, 0, i, actor1);
+        }
+    }
+
+    public void setGliderBoostOn()
+    {
+        if(!bIsMaster)
+        {
+            return;
+        } else
+        {
+            netToMirrors(12, 5, 5);
+            return;
+        }
+    }
+
+    public void setGliderBoostOff()
+    {
+        if(!bIsMaster)
+        {
+            return;
+        } else
+        {
+            netToMirrors(13, 7, 7);
+            return;
+        }
+    }
+
+    public void setGliderCutCart()
+    {
+        if(!bIsMaster)
+        {
+            return;
+        } else
+        {
+            netToMirrors(14, 9, 9);
+            return;
+        }
+    }
+
+    private void doSetControlsDamage(int i, com.maddox.il2.engine.Actor actor1)
+    {
+        switch(i)
+        {
+        case 0: // '\0'
+            aircraft.FM.CT.resetControl(0);
+            if(aircraft.FM.isPlayers() && aircraft.FM.CT.bHasAileronControl)
+                com.maddox.il2.game.HUD.log("FailedAroneAU");
+            aircraft.FM.CT.bHasAileronControl = false;
+            aircraft.FM.setCapableOfACM(false);
+            break;
+
+        case 1: // '\001'
+            aircraft.FM.CT.resetControl(1);
+            if(aircraft.FM.isPlayers() && aircraft.FM.CT.bHasElevatorControl)
+                com.maddox.il2.game.HUD.log("FailedVatorAU");
+            aircraft.FM.CT.bHasElevatorControl = false;
+            aircraft.FM.setCapableOfACM(false);
+            if(java.lang.Math.abs(aircraft.FM.Vwld.z) > 7D)
+                aircraft.FM.setCapableOfBMP(false, actor1);
+            break;
+
+        case 2: // '\002'
+            aircraft.FM.CT.resetControl(2);
+            if(aircraft.FM.isPlayers() && aircraft.FM.CT.bHasRudderControl)
+                com.maddox.il2.game.HUD.log("FailedRudderAU");
+            aircraft.FM.CT.bHasRudderControl = false;
+            break;
+
+        default:
+            throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Corrupt data in (C.A.D./null)");
+        }
+    }
+
+    private void doSetInternalDamage(int i)
+    {
+        switch(i)
+        {
+        case 0: // '\0'
+            aircraft.FM.Gears.setHydroOperable(false);
+            break;
+
+        case 1: // '\001'
+            aircraft.FM.CT.bHasFlapsControl = false;
+            break;
+
+        case 2: // '\002'
+            aircraft.FM.M.nitro = 0.0F;
+            break;
+
+        case 3: // '\003'
+            aircraft.FM.Gears.setHydroOperable(false);
+            aircraft.FM.Gears.setOperable(false);
+            break;
+
+        case 4: // '\004'
+            if(aircraft instanceof com.maddox.il2.objects.air.DO_335A0)
+            {
+                ((com.maddox.il2.objects.air.DO_335A0)aircraft).doKeelShutoff();
+                break;
+            }
+            if(aircraft instanceof com.maddox.il2.objects.air.DO_335V13)
+                ((com.maddox.il2.objects.air.DO_335V13)aircraft).doKeelShutoff();
+            else
+                throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (I.K.S.)");
+            break;
+
+        case 5: // '\005'
+            aircraft.FM.EI.engines[1].setPropReductorValue(0.007F);
+            break;
+
+        default:
+            throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Corrupt data in (I.D./null)");
+        }
+    }
+
+    private void doSetGliderBoostOn()
+    {
+        if(actor instanceof com.maddox.il2.objects.air.Scheme0)
+            ((com.maddox.il2.objects.air.Scheme0)actor).doFireBoosters();
+        else
+        if(actor instanceof com.maddox.il2.objects.air.AR_234B2)
+            ((com.maddox.il2.objects.air.AR_234B2)actor).doFireBoosters();
+        else
+            throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (G.B./On not in Nul)");
+    }
+
+    private void doSetGliderBoostOff()
+    {
+        if(actor instanceof com.maddox.il2.objects.air.Scheme0)
+            ((com.maddox.il2.objects.air.Scheme0)actor).doCutBoosters();
+        else
+        if(actor instanceof com.maddox.il2.objects.air.AR_234B2)
+            ((com.maddox.il2.objects.air.AR_234B2)actor).doCutBoosters();
+        else
+            throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (G.B./Off not in Nul)");
+    }
+
+    private void doSetGliderCutCart()
+    {
+        if(actor instanceof com.maddox.il2.objects.air.Scheme0)
+            ((com.maddox.il2.objects.air.Scheme0)actor).doCutCart();
+        else
+            throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (G.C.C./Off not in Nul)");
+    }
+
+    private void doSetCondensateState(boolean flag)
+    {
+        for(int i = 0; i < aircraft.FM.EI.getNum(); i++)
+        {
+            if(astateCondensateEffects[i] != null)
+                com.maddox.il2.engine.Eff3DActor.finish(astateCondensateEffects[i]);
+            astateCondensateEffects[i] = null;
+            if(!flag)
+                continue;
+            java.lang.String s = astateCondensateStrings[1];
+            if(s == null)
+                continue;
+            try
+            {
+                astateCondensateEffects[i] = com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_Engine" + (i + 1) + "Smoke"), astateCondensateDispVector, 1.0F, s, -1F);
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Above condensate failed - probably a glider..");
+            }
+        }
+
+    }
+
+    public void setStallState(boolean flag)
+    {
+        if(bIsMaster)
+        {
+            doSetStallState(flag);
+            netToMirrors(16, flag ? 1 : 0, flag ? 1 : 0);
+        }
+    }
+
+    private void doSetStallState(boolean flag)
+    {
+        for(int i = 0; i < 2; i++)
+            if(astateStallEffects[i] != null)
+                com.maddox.il2.engine.Eff3DActor.finish(astateStallEffects[i]);
+
+        if(flag)
+        {
+            java.lang.String s = astateStallStrings[1];
+            if(s != null)
+            {
+                if(bWingTipLExists)
+                    astateStallEffects[0] = com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_WingTipL"), null, 1.0F, s, -1F);
+                if(bWingTipRExists)
+                    astateStallEffects[1] = com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_WingTipR"), null, 1.0F, s, -1F);
+            }
+        }
+    }
+
+    public void setAirShowState(boolean flag)
+    {
+        if(bShowSmokesOn == flag)
+            return;
+        if(bIsMaster)
+        {
+            doSetAirShowState(flag);
+            netToMirrors(15, flag ? 1 : 0, flag ? 1 : 0);
+        }
+    }
+
+    private void doSetAirShowState(boolean flag)
+    {
+        bShowSmokesOn = flag;
+        for(int i = 0; i < 2; i++)
+            if(astateAirShowEffects[i] != null)
+                com.maddox.il2.engine.Eff3DActor.finish(astateAirShowEffects[i]);
+
+        if(flag)
+        {
+            if(bWingTipLExists)
+                astateAirShowEffects[0] = com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_WingTipL"), null, 1.0F, "3DO/Effects/Aircraft/AirShowRedTSPD.eff", -1F);
+            if(bWingTipRExists)
+                astateAirShowEffects[1] = com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_WingTipR"), null, 1.0F, "3DO/Effects/Aircraft/AirShowGreenTSPD.eff", -1F);
+        }
+    }
+
+    public void wantBeaconsNet(boolean flag)
+    {
+        if(flag == bWantBeaconsNet)
+            return;
+        bWantBeaconsNet = flag;
+        if(com.maddox.il2.ai.World.getPlayerAircraft() != actor)
+            return;
+        if(bWantBeaconsNet)
+            setBeacon(actor, beacon, 0, false);
+    }
+
+    public int getBeacon()
+    {
+        return beacon;
+    }
+
+    public void beaconPlus()
+    {
+        if(com.maddox.il2.game.Main.cur().mission.hasBeacons(actor.getArmy()))
+        {
+            int i = com.maddox.il2.game.Main.cur().mission.getBeacons(actor.getArmy()).size();
+            if(beacon < i)
+                setBeacon(beacon + 1);
+            else
+                setBeacon(0);
+        }
+    }
+
+    public void beaconMinus()
+    {
+        if(com.maddox.il2.game.Main.cur().mission.hasBeacons(actor.getArmy()))
+        {
+            int i = com.maddox.il2.game.Main.cur().mission.getBeacons(actor.getArmy()).size();
+            if(beacon >= 1)
+                setBeacon(beacon - 1);
+            else
+                setBeacon(i);
+        }
+    }
+
+    public void setBeacon(int i)
+    {
+        for(; i < 0; i += 32);
+        for(; i > 32; i -= 32);
+        if(i == beacon)
+        {
+            return;
+        } else
+        {
+            setBeacon(actor, i, 0, false);
+            return;
+        }
+    }
+
+    private void setBeacon(com.maddox.il2.engine.Actor actor1, int i, int j, boolean flag)
+    {
+        doSetBeacon(actor1, i, j);
+        if(com.maddox.il2.game.Mission.isSingle() || !bWantBeaconsNet)
+            return;
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(bIsMaster)
+            netToMirrors(42, i, j, actor1);
+        else
+        if(!flag)
+            netToMaster(42, i, j, actor1);
+    }
+
+    private void doSetBeacon(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        if(actor != actor1)
+            return;
+        if(com.maddox.il2.ai.World.getPlayerAircraft() != actor)
+            return;
+        if(i > 0)
+        {
+            com.maddox.il2.engine.Actor actor2 = (com.maddox.il2.engine.Actor)com.maddox.il2.game.Main.cur().mission.getBeacons(actor.getArmy()).get(i - 1);
+            boolean flag = com.maddox.il2.objects.air.Aircraft.hasPlaneZBReceiver(aircraft);
+            if(!flag && ((actor2 instanceof com.maddox.il2.objects.vehicles.radios.TypeHasYGBeacon) || (actor2 instanceof com.maddox.il2.objects.vehicles.radios.TypeHasHayRake)))
+            {
+                int k = i - beacon;
+                beacon = i;
+                if(k > 0)
+                    beaconPlus();
+                else
+                    beaconMinus();
+                return;
+            }
+            java.lang.String s = com.maddox.il2.objects.vehicles.radios.Beacon.getBeaconID(i - 1);
+            if(aircraft.getPilotsCount() == 1 || aircraft.FM.EI.engines.length == 1)
+                com.maddox.il2.game.Main3D.cur3D().ordersTree.setFrequency(null);
+            if(actor2 instanceof com.maddox.il2.objects.vehicles.radios.TypeHasYGBeacon)
+            {
+                com.maddox.il2.game.Main3D.cur3D().ordersTree.setFrequency(com.maddox.il2.game.order.OrdersTree.FREQ_FRIENDLY);
+                com.maddox.il2.game.HUD.log(hudLogBeaconId, "BeaconYG", new java.lang.Object[] {
+                    s
+                });
+                startListeningYGBeacon();
+            } else
+            if(actor2 instanceof com.maddox.il2.objects.vehicles.radios.TypeHasHayRake)
+            {
+                com.maddox.il2.game.Main3D.cur3D().ordersTree.setFrequency(com.maddox.il2.game.order.OrdersTree.FREQ_FRIENDLY);
+                com.maddox.il2.game.HUD.log(hudLogBeaconId, "BeaconYE", new java.lang.Object[] {
+                    s
+                });
+                java.lang.String s1 = com.maddox.il2.game.Main.cur().mission.getHayrakeCodeOfCarrier(actor2);
+                startListeningHayrake(actor2, s1);
+            } else
+            if(actor2 instanceof com.maddox.il2.objects.vehicles.radios.TypeHasLorenzBlindLanding)
+            {
+                com.maddox.il2.game.Main3D.cur3D().ordersTree.setFrequency(com.maddox.il2.game.order.OrdersTree.FREQ_FRIENDLY);
+                com.maddox.il2.game.HUD.log(hudLogBeaconId, "BeaconBA", new java.lang.Object[] {
+                    s
+                });
+                startListeningLorenzBlindLanding();
+                isAAFIAS = false;
+                if(actor2 instanceof com.maddox.il2.objects.vehicles.radios.TypeHasAAFIAS)
+                    isAAFIAS = true;
+            } else
+            if(actor2 instanceof com.maddox.il2.objects.vehicles.radios.TypeHasRadioStation)
+            {
+                com.maddox.il2.objects.vehicles.radios.TypeHasRadioStation typehasradiostation = (com.maddox.il2.objects.vehicles.radios.TypeHasRadioStation)actor2;
+                s = typehasradiostation.getStationID();
+                java.lang.String s2 = com.maddox.rts.Property.stringValue(actor2.getClass(), "i18nName", s);
+                com.maddox.il2.game.HUD.log(hudLogBeaconId, "BeaconRS", new java.lang.Object[] {
+                    s2
+                });
+                startListeningRadioStation(s);
+            } else
+            {
+                com.maddox.il2.game.HUD.log(hudLogBeaconId, "BeaconND", new java.lang.Object[] {
+                    s
+                });
+                startListeningNDBeacon();
+            }
+        } else
+        {
+            com.maddox.il2.game.HUD.log(hudLogBeaconId, "BeaconNONE");
+            stopListeningBeacons();
+            com.maddox.il2.game.Main3D.cur3D().ordersTree.setFrequency(com.maddox.il2.game.order.OrdersTree.FREQ_FRIENDLY);
+        }
+        beacon = i;
+    }
+
+    public void startListeningYGBeacon()
+    {
+        stopListeningLorenzBlindLanding();
+        stopListeningHayrake();
+        listenYGBeacon = true;
+        listenNDBeacon = false;
+        listenRadioStation = false;
+        aircraft.playBeaconCarrier(false, 0.0F);
+        com.maddox.sound.CmdMusic.setCurrentVolume(0.0F);
+    }
+
+    public void startListeningNDBeacon()
+    {
+        stopListeningLorenzBlindLanding();
+        listenYGBeacon = false;
+        listenNDBeacon = true;
+        listenRadioStation = false;
+        stopListeningHayrake();
+        com.maddox.sound.CmdMusic.setCurrentVolume(0.0F);
+    }
+
+    public void startListeningRadioStation(java.lang.String s)
+    {
+        stopListeningLorenzBlindLanding();
+        listenYGBeacon = false;
+        listenNDBeacon = false;
+        listenRadioStation = true;
+        stopListeningHayrake();
+        java.lang.String s1 = s.replace(' ', '_');
+        int i = com.maddox.il2.game.Mission.curYear();
+        int j = com.maddox.il2.game.Mission.curMonth();
+        int k = com.maddox.il2.game.Mission.curDay();
+        java.lang.String s2 = "" + i;
+        java.lang.String s3 = "";
+        java.lang.String s4 = "";
+        if(j < 10)
+            s3 = "0" + j;
+        else
+            s3 = "" + j;
+        if(k < 10)
+            s4 = "0" + k;
+        else
+            s4 = "" + k;
+        java.lang.String as[] = {
+            s2 + s3 + s4, s2 + s3 + "XX", s2 + "XX" + s4, s2 + "XXXX"
+        };
+        for(int l = 0; l < as.length; l++)
+        {
+            java.io.File file = new File("./samples/Music/Radio/" + s1 + "/" + as[l]);
+            if(file.exists())
+            {
+                com.maddox.sound.CmdMusic.setPath("Music/Radio/" + s1 + "/" + as[l], true);
+                com.maddox.sound.CmdMusic.play();
+                return;
+            }
+        }
+
+        com.maddox.sound.CmdMusic.setPath("Music/Radio/" + s1, true);
+        com.maddox.sound.CmdMusic.play();
+    }
+
+    public void stopListeningBeacons()
+    {
+        stopListeningLorenzBlindLanding();
+        listenYGBeacon = false;
+        listenNDBeacon = false;
+        listenRadioStation = false;
+        stopListeningHayrake();
+        aircraft.stopMorseSounds();
+        com.maddox.sound.CmdMusic.setCurrentVolume(0.0F);
+    }
+
+    public void startListeningHayrake(com.maddox.il2.engine.Actor actor1, java.lang.String s)
+    {
+        stopListeningLorenzBlindLanding();
+        hayrakeCarrier = actor1;
+        hayrakeCode = s;
+        listenYGBeacon = false;
+        listenNDBeacon = false;
+        listenRadioStation = false;
+        aircraft.stopMorseSounds();
+        com.maddox.sound.CmdMusic.setCurrentVolume(0.0F);
+    }
+
+    public void stopListeningHayrake()
+    {
+        hayrakeCarrier = null;
+        hayrakeCode = null;
+    }
+
+    public void startListeningLorenzBlindLanding()
+    {
+        listenLorenzBlindLanding = true;
+        stopListeningHayrake();
+        listenYGBeacon = false;
+        listenNDBeacon = false;
+        listenRadioStation = false;
+        aircraft.stopMorseSounds();
+        com.maddox.sound.CmdMusic.setCurrentVolume(0.0F);
+    }
+
+    public void stopListeningLorenzBlindLanding()
+    {
+        listenLorenzBlindLanding = false;
+        isAAFIAS = false;
+        aircraft.stopMorseSounds();
+    }
+
+    public void preLoadRadioStation(com.maddox.il2.engine.Actor actor1)
+    {
+        com.maddox.il2.objects.vehicles.radios.TypeHasRadioStation typehasradiostation = (com.maddox.il2.objects.vehicles.radios.TypeHasRadioStation)actor1;
+        java.lang.String s = typehasradiostation.getStationID();
+        startListeningRadioStation(s);
+    }
+
+    public void setNavLightsState(boolean flag)
+    {
+        if(bNavLightsOn == flag)
+            return;
+        if(bIsMaster)
+        {
+            doSetNavLightsState(flag);
+            netToMirrors(30, flag ? 1 : 0, flag ? 1 : 0);
+        }
+    }
+
+    private void doSetNavLightsState(boolean flag)
+    {
+        for(int i = 0; i < astateNavLightsEffects.length; i++)
+        {
+            if(astateNavLightsEffects[i] != null)
+            {
+                com.maddox.il2.engine.Eff3DActor.finish(astateNavLightsEffects[i]);
+                astateNavLightsLights[i].light.setEmit(0.0F, 0.0F);
+            }
+            astateNavLightsEffects[i] = null;
+        }
+
+        if(flag)
+        {
+            com.maddox.il2.engine.Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+            com.maddox.il2.engine.Loc loc1 = new Loc();
+            for(int j = 0; j < astateNavLightsEffects.length; j++)
+            {
+                com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[j + 12] + "' visibility..");
+                boolean flag1 = aircraft.isChunkAnyDamageVisible(astateEffectChunks[j + 12]);
+                com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[j + 12] + "' is " + (flag1 ? "visible" : "invisible") + "..");
+                if(flag1)
+                {
+                    bNavLightsOn = flag;
+                    java.lang.String s = "3DO/Effects/Fireworks/Flare" + (j <= 1 ? "Red" : j <= 3 ? "Green" : "White") + ".eff";
+                    astateNavLightsEffects[j] = com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_NavLight" + j), null, 1.0F, s, -1F, false);
+                    astateNavLightsLights[j].light.setEmit(0.35F, 8F);
+                }
+            }
+
+        } else
+        {
+            bNavLightsOn = flag;
+        }
+    }
+
+    public void changeNavLightEffectBase(int i, com.maddox.il2.engine.Actor actor1)
+    {
+        if(astateNavLightsEffects[i] != null)
+        {
+            com.maddox.il2.engine.Eff3DActor.finish(astateNavLightsEffects[i]);
+            astateNavLightsLights[i].light.setEmit(0.0F, 0.0F);
+            astateNavLightsEffects[i] = null;
+        }
+    }
+
+    public void setLandingLightState(boolean flag)
+    {
+        if(bLandingLightOn == flag)
+            return;
+        if(bIsMaster)
+        {
+            doSetLandingLightState(flag);
+            int i = 0;
+            for(int j = 0; j < astateLandingLightEffects.length; j++)
+                if(astateLandingLightEffects[j] == null)
+                    i++;
+
+            if(i == astateLandingLightEffects.length)
+            {
+                bLandingLightOn = false;
+                flag = false;
+            }
+            netToMirrors(31, flag ? 1 : 0, flag ? 1 : 0);
+        }
+    }
+
+    private void doSetLandingLightState(boolean flag)
+    {
+        bLandingLightOn = flag;
+        for(int i = 0; i < astateLandingLightEffects.length; i++)
+        {
+            if(astateLandingLightEffects[i] != null)
+            {
+                com.maddox.il2.engine.Eff3DActor.finish(astateLandingLightEffects[i]);
+                astateLandingLightLights[i].light.setEmit(0.0F, 0.0F);
+            }
+            astateLandingLightEffects[i] = null;
+        }
+
+        if(flag)
+        {
+            com.maddox.il2.engine.Loc loc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+            com.maddox.il2.engine.Loc loc1 = new Loc();
+            for(int j = 0; j < astateLandingLightEffects.length; j++)
+            {
+                com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: Checking '" + astateEffectChunks[j + 18] + "' visibility..");
+                boolean flag1 = aircraft.isChunkAnyDamageVisible(astateEffectChunks[j + 18]);
+                com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "AS: '" + astateEffectChunks[j + 18] + "' is " + (flag1 ? "visible" : "invisible") + "..");
+                if(flag1)
+                {
+                    java.lang.String s = "3DO/Effects/Fireworks/FlareWhiteWide.eff";
+                    astateLandingLightEffects[j] = com.maddox.il2.engine.Eff3DActor.New(actor, actor.findHook("_LandingLight0" + j), null, 1.0F, s, -1F);
+                    astateLandingLightLights[j].light.setEmit(1.2F, 8F);
+                }
+            }
+
+        }
+    }
+
+    public void changeLandingLightEffectBase(int i, com.maddox.il2.engine.Actor actor1)
+    {
+        if(astateLandingLightEffects[i] != null)
+        {
+            com.maddox.il2.engine.Eff3DActor.finish(astateLandingLightEffects[i]);
+            astateLandingLightLights[i].light.setEmit(0.0F, 0.0F);
+            astateLandingLightEffects[i] = null;
+            bLandingLightOn = false;
+        }
+    }
+
+    public void setPilotState(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        setPilotState(actor1, i, j, true);
+    }
+
+    public void setPilotState(com.maddox.il2.engine.Actor actor1, int i, int j, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(j > 95)
+            j = 100;
+        if(j < 0)
+            j = 0;
+        if(astatePilotStates[i] >= j)
+            return;
+        if(bIsMaster)
+        {
+            aircraft.setDamager(actor1);
+            doSetPilotState(i, j, actor1);
+            if(flag && aircraft.FM.isPlayers() && i == astatePlayerIndex && !com.maddox.il2.ai.World.isPlayerDead() && actor1 != actor && (actor1 instanceof com.maddox.il2.objects.air.Aircraft) && ((com.maddox.il2.objects.air.Aircraft)actor1).isNetPlayer() && j == 100)
+                com.maddox.il2.net.Chat.sendLogRnd(1, "gore_pk", (com.maddox.il2.objects.air.Aircraft)actor1, aircraft);
+            if(j > 0 && flag)
+                netToMirrors(17, i, j);
+        } else
+        if(flag)
+            netToMaster(17, i, j, actor1);
+    }
+
+    public void hitPilot(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        setPilotState(actor1, i, astatePilotStates[i] + j);
+    }
+
+    public void setBleedingPilot(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        setBleedingPilot(actor1, i, j, true);
+    }
+
+    public void setBleedingPilot(com.maddox.il2.engine.Actor actor1, int i, int j, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(bIsMaster)
+        {
+            doSetBleedingPilot(i, j, actor1);
+            if(flag)
+                netToMirrors(47, i, j);
+        } else
+        if(flag)
+            netToMaster(47, i, j, actor1);
+    }
+
+    private void doSetBleedingPilot(int i, int j, com.maddox.il2.engine.Actor actor1)
+    {
+        if(com.maddox.il2.game.Mission.isSingle() || aircraft.FM.isPlayers() && !com.maddox.il2.game.Mission.isServer() || com.maddox.il2.game.Mission.isNet() && com.maddox.il2.game.Mission.isServer() && !aircraft.isNetPlayer())
+        {
+            long l = 0x1d4c0 / j;
+            if(astateBleedingNext[i] == 0L)
+            {
+                astateBleedingNext[i] = l;
+                if(com.maddox.il2.ai.World.getPlayerAircraft() == actor && com.maddox.il2.engine.Config.isUSE_RENDER() && (!bIsAboutToBailout || astateBailoutStep <= 11) && astatePilotStates[i] < 100)
+                {
+                    boolean flag = i == astatePlayerIndex && !com.maddox.il2.ai.World.isPlayerDead();
+                    if(j > 10)
+                        com.maddox.il2.game.HUD.log(flag ? "PlayerBLEED0" : astateHUDPilotHits[astatePilotFunctions[i]] + "BLEED0");
+                    else
+                        com.maddox.il2.game.HUD.log(flag ? "PlayerBLEED1" : astateHUDPilotHits[astatePilotFunctions[i]] + "BLEED1");
+                }
+            } else
+            {
+                int k = 30000 / (int)astateBleedingNext[i];
+                long l1 = 30000 / (k + j);
+                if(l1 < 100L)
+                    l1 = 100L;
+                astateBleedingNext[i] = l1;
+            }
+            setBleedingTime(i);
+        }
+    }
+
+    public boolean bleedingTest(int i)
+    {
+        return com.maddox.rts.Time.current() > astateBleedingTimes[i];
+    }
+
+    public void setBleedingTime(int i)
+    {
+        astateBleedingTimes[i] = com.maddox.rts.Time.current() + astateBleedingNext[i];
+    }
+
+    public void doSetWoundPilot(int i)
+    {
+        switch(i)
+        {
+        default:
+            break;
+
+        case 1: // '\001'
+            aircraft.FM.SensRoll *= 0.6F;
+            aircraft.FM.SensPitch *= 0.6F;
+            if(aircraft.FM.isPlayers() && com.maddox.il2.engine.Config.isUSE_RENDER())
+                com.maddox.il2.game.HUD.log("PlayerArmHit");
+            break;
+
+        case 2: // '\002'
+            aircraft.FM.SensYaw *= 0.2F;
+            if(aircraft.FM.isPlayers() && com.maddox.il2.engine.Config.isUSE_RENDER())
+                com.maddox.il2.game.HUD.log("PlayerLegHit");
+            break;
+        }
+    }
+
+    public void setPilotWound(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        setPilotWound(actor1, j, true);
+    }
+
+    public void setPilotWound(com.maddox.il2.engine.Actor actor1, int i, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(bIsMaster)
+        {
+            doSetWoundPilot(i);
+            if(flag)
+                netToMirrors(46, 0, i);
+        } else
+        if(flag)
+            netToMaster(46, 0, i, actor1);
+    }
+
+    public void woundedPilot(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        switch(i)
+        {
+        default:
+            break;
+
+        case 1: // '\001'
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.18F && j > 4 && !armsWounded)
+            {
+                setPilotWound(actor1, i, true);
+                armsWounded = true;
+            }
+            break;
+
+        case 2: // '\002'
+            if(j > 4 && !legsWounded)
+            {
+                setPilotWound(actor1, i, true);
+                legsWounded = true;
+            }
+            break;
+        }
+    }
+
+    private void doSetPilotState(int i, int j, com.maddox.il2.engine.Actor actor1)
+    {
+        if(j > 95)
+            j = 100;
+        if(com.maddox.il2.ai.World.getPlayerAircraft() == actor && com.maddox.il2.engine.Config.isUSE_RENDER() && (!bIsAboutToBailout || astateBailoutStep <= 11))
+        {
+            boolean flag = i == astatePlayerIndex && !com.maddox.il2.ai.World.isPlayerDead();
+            if(astatePilotStates[i] < 100 && j == 100)
+            {
+                com.maddox.il2.game.HUD.log(flag ? "PlayerHIT2" : astateHUDPilotHits[astatePilotFunctions[i]] + "HIT2");
+                if(flag)
+                {
+                    com.maddox.il2.ai.World.setPlayerDead();
+                    if(com.maddox.il2.game.Mission.isNet())
+                        com.maddox.il2.net.Chat.sendLog(0, "gore_killed", (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host(), (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host());
+                    if(com.maddox.il2.game.Main3D.cur3D().cockpits != null && !com.maddox.il2.ai.World.isPlayerGunner())
+                    {
+                        int k = com.maddox.il2.game.Main3D.cur3D().cockpits.length;
+                        for(int l = 0; l < k; l++)
+                        {
+                            com.maddox.il2.objects.air.Cockpit cockpit = com.maddox.il2.game.Main3D.cur3D().cockpits[l];
+                            if(com.maddox.il2.engine.Actor.isValid(cockpit) && cockpit.astatePilotIndx() != i && !isPilotDead(cockpit.astatePilotIndx()) && !com.maddox.il2.game.Mission.isNet() && com.maddox.il2.game.AircraftHotKeys.isCockpitRealMode(l))
+                                com.maddox.il2.game.AircraftHotKeys.setCockpitRealMode(l, false);
+                        }
+
+                    }
+                }
+            } else
+            if(astatePilotStates[i] < 66 && j > 66)
+                com.maddox.il2.game.HUD.log(flag ? "PlayerHIT1" : astateHUDPilotHits[astatePilotFunctions[i]] + "HIT1");
+            else
+            if(astatePilotStates[i] < 25 && j > 25)
+                com.maddox.il2.game.HUD.log(flag ? "PlayerHIT0" : astateHUDPilotHits[astatePilotFunctions[i]] + "HIT0");
+        }
+        byte byte0 = astatePilotStates[i];
+        astatePilotStates[i] = (byte)j;
+        if(bIsAboutToBailout && astateBailoutStep > i + 11)
+        {
+            aircraft.doWoundPilot(i, 0.0F);
+            return;
+        }
+        if(j > 99)
+        {
+            aircraft.doWoundPilot(i, 0.0F);
+            if(com.maddox.il2.ai.World.cur().isHighGore())
+                aircraft.doMurderPilot(i);
+            if(i == 0)
+            {
+                if(!bIsAboutToBailout)
+                    com.maddox.il2.objects.effects.Explosions.generateComicBulb(actor, "PK", 9F);
+                com.maddox.il2.fm.FlightModel flightmodel = aircraft.FM;
+                if(flightmodel instanceof com.maddox.il2.ai.air.Maneuver)
+                {
+                    ((com.maddox.il2.ai.air.Maneuver)flightmodel).set_maneuver(44);
+                    ((com.maddox.il2.ai.air.Maneuver)flightmodel).set_task(2);
+                    flightmodel.setCapableOfTaxiing(false);
+                }
+            }
+            if(i > 0 && !bIsAboutToBailout)
+                com.maddox.il2.objects.effects.Explosions.generateComicBulb(actor, "GunnerDown", 9F);
+            com.maddox.il2.ai.EventLog.onPilotKilled(aircraft, i, actor1 != aircraft ? actor1 : null);
+        } else
+        if(byte0 < 66 && j > 66)
+            com.maddox.il2.ai.EventLog.onPilotHeavilyWounded(aircraft, i);
+        else
+        if(byte0 < 25 && j > 25)
+            com.maddox.il2.ai.EventLog.onPilotWounded(aircraft, i);
+        if(j <= 99 && i > 0 && com.maddox.il2.ai.World.cur().diffCur.RealisticPilotVulnerability)
+            aircraft.doWoundPilot(i, getPilotHealth(i));
+    }
+
+    private void doRemoveBodyFromPlane(int i)
+    {
+        aircraft.doRemoveBodyFromPlane(i);
+    }
+
+    public float getPilotHealth(int i)
+    {
+        if(i < 0 || i > aircraft.FM.crew - 1)
+            return 0.0F;
+        else
+            return 1.0F - (float)astatePilotStates[i] * 0.01F;
+    }
+
+    public boolean isPilotDead(int i)
+    {
+        if(i < 0 || i > aircraft.FM.crew - 1)
+            return true;
+        else
+            return astatePilotStates[i] == 100;
+    }
+
+    public boolean isPilotParatrooper(int i)
+    {
+        if(i < 0 || i > aircraft.FM.crew - 1)
+            return true;
+        else
+            return astatePilotStates[i] == 100 && astateBailoutStep > 11 + i;
+    }
+
+    public void setJamBullets(int i, int j)
+    {
+        if(aircraft.FM.CT.Weapons[i] == null || aircraft.FM.CT.Weapons[i].length <= j || aircraft.FM.CT.Weapons[i][j] == null)
+            return;
+        if(bIsMaster)
+        {
+            doSetJamBullets(i, j);
+            netToMirrors(24, i, j);
+        } else
+        {
+            netToMaster(24, i, j);
+        }
+    }
+
+    private void doSetJamBullets(int i, int j)
+    {
+        if(aircraft.FM.CT.Weapons != null && aircraft.FM.CT.Weapons[i] != null && aircraft.FM.CT.Weapons[i][j] != null && aircraft.FM.CT.Weapons[i][j].haveBullets())
+        {
+            if(actor == com.maddox.il2.ai.World.getPlayerAircraft() && aircraft.FM.CT.Weapons[i][j].haveBullets())
+                if(aircraft.FM.CT.Weapons[i][j].bulletMassa() < 0.095F)
+                    com.maddox.il2.game.HUD.log(i <= 9 ? "FailedMGun" : "FailedTMGun");
+                else
+                    com.maddox.il2.game.HUD.log("FailedCannon");
+            aircraft.FM.CT.Weapons[i][j].loadBullets(0);
+        }
+    }
+
+    public boolean hitDaSilk()
+    {
+        if(!bIsMaster)
+            return false;
+        if(bIsAboutToBailout)
+            return false;
+        if(bCheckPlayerAircraft && actor == com.maddox.il2.ai.World.getPlayerAircraft())
+            return false;
+        if(!bIsEnableToBailout)
+            return false;
+        bIsAboutToBailout = true;
+        com.maddox.il2.fm.FlightModel flightmodel = aircraft.FM;
+        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "I've had it, bailing out..");
+        com.maddox.il2.objects.effects.Explosions.generateComicBulb(actor, "Bailing", 5F);
+        if(flightmodel instanceof com.maddox.il2.ai.air.Maneuver)
+        {
+            ((com.maddox.il2.ai.air.Maneuver)flightmodel).set_maneuver(44);
+            ((com.maddox.il2.ai.air.Maneuver)flightmodel).set_task(2);
+            flightmodel.setTakenMortalDamage(true, null);
+        }
+        return true;
+    }
+
+    public void setFlatTopString(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(bIsMaster)
+            netToMirrors(36, i, i, actor1);
+    }
+
+    private void doSetFlatTopString(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(com.maddox.il2.engine.Actor.isValid(actor1) && (actor1 instanceof com.maddox.il2.objects.ships.BigshipGeneric) && ((com.maddox.il2.objects.ships.BigshipGeneric)actor1).getAirport() != null)
+        {
+            com.maddox.il2.objects.ships.BigshipGeneric bigshipgeneric = (com.maddox.il2.objects.ships.BigshipGeneric)actor1;
+            if(i >= 0 && i < 255)
+                bigshipgeneric.forceTowAircraft(aircraft, i);
+            else
+                bigshipgeneric.requestDetowAircraft(aircraft);
+        }
+    }
+
+    public void setFMSFX(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(bIsMaster)
+            doSetFMSFX(i, j);
+        else
+            netToMaster(37, i, j, actor1);
+    }
+
+    private void doSetFMSFX(int i, int j)
+    {
+        aircraft.FM.doRequestFMSFX(i, j);
+    }
+
+    public void setWingFold(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(actor1 != aircraft)
+            return;
+        if(!aircraft.FM.CT.bHasWingControl)
+            return;
+        if(aircraft.FM.CT.wingControl == (float)i)
+            return;
+        if(!bIsMaster)
+        {
+            return;
+        } else
+        {
+            doSetWingFold(i);
+            netToMirrors(38, i, i);
+            return;
+        }
+    }
+
+    private void doSetWingFold(int i)
+    {
+        aircraft.FM.CT.wingControl = i;
+    }
+
+    public void setCockpitDoor(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(actor1 != aircraft)
+            return;
+        if(!aircraft.FM.CT.bHasCockpitDoorControl)
+            return;
+        if(aircraft.FM.CT.cockpitDoorControl == (float)i)
+            return;
+        if(!bIsMaster)
+        {
+            return;
+        } else
+        {
+            doSetCockpitDoor(i);
+            netToMirrors(39, i, i);
+            return;
+        }
+    }
+
+    private void doSetCockpitDoor(int i)
+    {
+        aircraft.FM.CT.cockpitDoorControl = i;
+        if(i == 0 && (com.maddox.il2.game.Main.cur() instanceof com.maddox.il2.game.Main3D) && aircraft == com.maddox.il2.ai.World.getPlayerAircraft() && com.maddox.il2.engine.hotkey.HookPilot.current != null)
+            com.maddox.il2.engine.hotkey.HookPilot.current.doUp(false);
+    }
+
+    public void setArrestor(com.maddox.il2.engine.Actor actor1, int i)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(actor1 != aircraft)
+            return;
+        if(!aircraft.FM.CT.bHasArrestorControl)
+            return;
+        if(aircraft.FM.CT.arrestorControl == (float)i)
+            return;
+        if(!bIsMaster)
+        {
+            return;
+        } else
+        {
+            doSetArrestor(i);
+            netToMirrors(40, i, i);
+            return;
+        }
+    }
+
+    private void doSetArrestor(int i)
+    {
+        aircraft.FM.CT.arrestorControl = i;
+    }
+
+    public void update(float f)
+    {
+        if(com.maddox.il2.ai.World.cur().diffCur.RealisticPilotVulnerability)
+        {
+            for(int i = 0; i < aircraft.FM.crew; i++)
+            {
+                if(astateBleedingNext[i] > 0L && bleedingTest(i))
+                {
+                    hitPilot(actor, i, 1);
+                    if(astatePilotStates[i] > 96)
+                        astateBleedingNext[i] = 0L;
+                    setBleedingTime(i);
+                }
+                if(astatePilotStates[0] > 60)
+                    aircraft.FM.setCapableOfBMP(false, actor);
+            }
+
+        }
+        bCriticalStatePassed = bIsAboveCriticalSpeed != (aircraft.getSpeed(null) > 10D);
+        if(bCriticalStatePassed)
+        {
+            bIsAboveCriticalSpeed = aircraft.FM.getSpeed() > 10F;
+            for(int j = 0; j < 4; j++)
+                doSetTankState(null, j, astateTankStates[j]);
+
+            for(int k = 0; k < aircraft.FM.EI.getNum(); k++)
+                doSetEngineState(null, k, astateEngineStates[k]);
+
+            for(int l = 0; l < aircraft.FM.EI.getNum(); l++)
+                doSetOilState(l, astateOilStates[l]);
+
+        }
+        bCriticalStatePassed = bIsAboveCondensateAlt != (aircraft.FM.getAltitude() > 7000F);
+        if(bCriticalStatePassed)
+        {
+            bIsAboveCondensateAlt = aircraft.FM.getAltitude() > 7000F;
+            doSetCondensateState(bIsAboveCondensateAlt);
+        }
+        bCriticalStatePassed = bIsOnInadequateAOA != (aircraft.FM.getSpeed() > 17F && aircraft.FM.getAOA() > 15F - aircraft.FM.getAltitude() * 0.001F);
+        if(bCriticalStatePassed)
+        {
+            bIsOnInadequateAOA = aircraft.FM.getSpeed() > 17F && aircraft.FM.getAOA() > 15F - aircraft.FM.getAltitude() * 0.001F;
+            setStallState(bIsOnInadequateAOA);
+        }
+        if(bIsMaster)
+        {
+            float f1 = 0.0F;
+            for(int i1 = 0; i1 < 4; i1++)
+                f1 += astateTankStates[i1] * astateTankStates[i1];
+
+            aircraft.FM.M.requestFuel(f1 * 0.12F * f);
+            for(int j1 = 0; j1 < 4; j1++)
+                switch(astateTankStates[j1])
+                {
+                case 3: // '\003'
+                default:
+                    break;
+
+                case 1: // '\001'
+                    if(com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.0125F)
+                    {
+                        repairTank(j1);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Tank " + j1 + " protector clothes the hole - leak stops..");
+                    }
+                    // fall through
+
+                case 2: // '\002'
+                    if(aircraft.FM.M.fuel <= 0.0F)
+                    {
+                        repairTank(j1);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Tank " + j1 + " runs out of fuel - leak stops..");
+                    }
+                    break;
+
+                case 4: // '\004'
+                    if(com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.00333F)
+                    {
+                        hitTank(aircraft, j1, 1);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Tank " + j1 + " catches fire..");
+                    }
+                    break;
+
+                case 5: // '\005'
+                    if(aircraft.FM.getSpeed() > 111F && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.2F)
+                    {
+                        repairTank(j1);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Tank " + j1 + " cuts fire..");
+                    }
+                    if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.0048F)
+                    {
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Tank " + j1 + " fires up to the next stage..");
+                        hitTank(aircraft, j1, 1);
+                    }
+                    if(!(actor instanceof com.maddox.il2.objects.air.Scheme1) || astateTankEffects[j1][0] == null || java.lang.Math.abs(astateTankEffects[j1][0].pos.getRelPoint().y) >= 1.8999999761581421D || astateTankEffects[j1][0].pos.getRelPoint().x <= -2.5999999046325684D || astatePilotStates[0] >= 96)
+                        break;
+                    hitPilot(actor, 0, 5);
+                    if(astatePilotStates[0] < 96)
+                        break;
+                    hitPilot(actor, 0, 101 - astatePilotStates[0]);
+                    if(aircraft.FM.isPlayers() && com.maddox.il2.game.Mission.isNet() && !aircraft.FM.isSentBuryNote())
+                        com.maddox.il2.net.Chat.sendLogRnd(3, "gore_burnedcpt", aircraft, null);
+                    break;
+
+                case 6: // '\006'
+                    if(aircraft.FM.getSpeed() > 140F && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.05F)
+                    {
+                        repairTank(j1);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Tank " + j1 + " cuts fire..");
+                    }
+                    if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.02F)
+                    {
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Tank " + j1 + " EXPLODES!.");
+                        explodeTank(aircraft, j1);
+                    }
+                    if(!(actor instanceof com.maddox.il2.objects.air.Scheme1) || astateTankEffects[j1][0] == null || java.lang.Math.abs(astateTankEffects[j1][0].pos.getRelPoint().y) >= 1.8999999761581421D || astateTankEffects[j1][0].pos.getRelPoint().x <= -2.5999999046325684D || astatePilotStates[0] >= 96)
+                        break;
+                    hitPilot(actor, 0, 7);
+                    if(astatePilotStates[0] < 96)
+                        break;
+                    hitPilot(actor, 0, 101 - astatePilotStates[0]);
+                    if(aircraft.FM.isPlayers() && com.maddox.il2.game.Mission.isNet() && !aircraft.FM.isSentBuryNote())
+                        com.maddox.il2.net.Chat.sendLogRnd(3, "gore_burnedcpt", aircraft, null);
+                    break;
+                }
+
+            for(int k1 = 0; k1 < aircraft.FM.EI.getNum(); k1++)
+            {
+                if(astateEngineStates[k1] > 1)
+                {
+                    aircraft.FM.EI.engines[k1].setReadyness(actor, aircraft.FM.EI.engines[k1].getReadyness() - (float)astateEngineStates[k1] * 0.00025F * f);
+                    if(aircraft.FM.EI.engines[k1].getReadyness() < 0.2F && aircraft.FM.EI.engines[k1].getReadyness() != 0.0F)
+                        aircraft.FM.EI.engines[k1].setEngineDies(actor);
+                }
+                switch(astateEngineStates[k1])
+                {
+                case 3: // '\003'
+                    if(com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.01F)
+                    {
+                        hitEngine(aircraft, k1, 1);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Engine " + k1 + " catches fire..");
+                    }
+                    break;
+
+                case 4: // '\004'
+                    if(aircraft.FM.getSpeed() > 111F && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.15F)
+                    {
+                        repairEngine(k1);
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Engine " + k1 + " cuts fire..");
+                    }
+                    if((actor instanceof com.maddox.il2.objects.air.Scheme1) && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.06F)
+                    {
+                        com.maddox.il2.objects.air.Aircraft.debugprintln(aircraft, "Engine 0 detonates and explodes, fatal damage level forced..");
+                        aircraft.msgCollision(actor, "CF_D0", "CF_D0");
+                    }
+                    if((actor instanceof com.maddox.il2.objects.air.Scheme1) && astatePilotStates[0] < 96)
+                    {
+                        hitPilot(actor, 0, 4);
+                        if(astatePilotStates[0] >= 96)
+                        {
+                            hitPilot(actor, 0, 101 - astatePilotStates[0]);
+                            if(aircraft.FM.isPlayers() && com.maddox.il2.game.Mission.isNet() && !aircraft.FM.isSentBuryNote())
+                                com.maddox.il2.net.Chat.sendLogRnd(3, "gore_burnedcpt", aircraft, null);
+                        }
+                    }
+                    break;
+                }
+                if(astateOilStates[k1] > 0)
+                    aircraft.FM.EI.engines[k1].setReadyness(aircraft, aircraft.FM.EI.engines[k1].getReadyness() - 0.001875F * f);
+            }
+
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.25F && !aircraft.FM.CT.saveWeaponControl[3] && (!(actor instanceof com.maddox.il2.objects.air.TypeBomber) || aircraft.FM.isReadyToReturn() || aircraft.FM.isPlayers() && (aircraft.FM instanceof com.maddox.il2.fm.RealFlightModel) && ((com.maddox.il2.fm.RealFlightModel)aircraft.FM).isRealMode()))
+                aircraft.FM.CT.BayDoorControl = 0.0F;
+            bailout();
+        } else
+        if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.125F && !aircraft.FM.CT.saveWeaponControl[3] && (!(actor instanceof com.maddox.il2.objects.air.TypeBomber) || aircraft.FM.AP.way.curr().Action != 3))
+            aircraft.FM.CT.BayDoorControl = 0.0F;
+    }
+
+    private void bailout()
+    {
+        byte byte0;
+        if(!bIsAboutToBailout)
+            break MISSING_BLOCK_LABEL_1107;
+        if(astateBailoutStep >= 0 && astateBailoutStep < 2)
+        {
+            if(aircraft.FM.CT.cockpitDoorControl > 0.5F && aircraft.FM.CT.getCockpitDoor() > 0.5F)
+            {
+                astateBailoutStep = 11;
+                doRemoveBlisters();
+            } else
+            {
+                astateBailoutStep = 2;
+            }
+            break MISSING_BLOCK_LABEL_1107;
+        }
+        if(astateBailoutStep >= 2 && astateBailoutStep <= 3)
+        {
+            switch(astateBailoutStep)
+            {
+            case 2: // '\002'
+                if(aircraft.FM.CT.cockpitDoorControl < 0.5F)
+                    doRemoveBlister1();
+                break;
+
+            case 3: // '\003'
+                doRemoveBlisters();
+                break;
+            }
+            if(bIsMaster)
+                netToMirrors(20, astateBailoutStep, 1);
+            astateBailoutStep++;
+            if(astateBailoutStep == 3 && (actor instanceof com.maddox.il2.objects.air.P_39))
+                astateBailoutStep++;
+            if(astateBailoutStep == 4)
+                astateBailoutStep = 11;
+            break MISSING_BLOCK_LABEL_1107;
+        }
+        if(astateBailoutStep < 11 || astateBailoutStep > 19)
+            break MISSING_BLOCK_LABEL_1107;
+        float f = aircraft.FM.getSpeed();
+        float f1 = (float)aircraft.FM.Loc.z;
+        float f2 = 140F;
+        if((aircraft instanceof com.maddox.il2.objects.air.HE_162) || (aircraft instanceof com.maddox.il2.objects.air.GO_229) || (aircraft instanceof com.maddox.il2.objects.air.ME_262HGII) || (aircraft instanceof com.maddox.il2.objects.air.DO_335))
+            f2 = 9999.9F;
+        if((com.maddox.il2.fm.Pitot.Indicator(f1, f) >= f2 || aircraft.FM.getOverload() >= 2.0F) && bIsMaster)
+            break MISSING_BLOCK_LABEL_1107;
+        byte0 = astateBailoutStep;
+        if(bIsMaster)
+            netToMirrors(20, astateBailoutStep, 1);
+        astateBailoutStep++;
+        if(byte0 == 11)
+        {
+            aircraft.FM.setTakenMortalDamage(true, null);
+            if((aircraft.FM instanceof com.maddox.il2.ai.air.Maneuver) && ((com.maddox.il2.ai.air.Maneuver)aircraft.FM).get_maneuver() != 44)
+            {
+                com.maddox.il2.ai.World.cur();
+                if(actor != com.maddox.il2.ai.World.getPlayerAircraft())
+                    ((com.maddox.il2.ai.air.Maneuver)aircraft.FM).set_maneuver(44);
+            }
+        }
+        if(astatePilotStates[byte0 - 11] >= 99)
+            break MISSING_BLOCK_LABEL_1107;
+        doRemoveBodyFromPlane(byte0 - 10);
+        if(byte0 == 11)
+        {
+            if(aircraft instanceof com.maddox.il2.objects.air.HE_162)
+            {
+                ((com.maddox.il2.objects.air.HE_162)aircraft).doEjectCatapult();
+                astateBailoutStep = 51;
+                aircraft.FM.setTakenMortalDamage(true, null);
+                aircraft.FM.CT.WeaponControl[0] = false;
+                aircraft.FM.CT.WeaponControl[1] = false;
+                astateBailoutStep = -1;
+                return;
+            }
+            if(aircraft instanceof com.maddox.il2.objects.air.GO_229)
+            {
+                ((com.maddox.il2.objects.air.GO_229)aircraft).doEjectCatapult();
+                astateBailoutStep = 51;
+                aircraft.FM.setTakenMortalDamage(true, null);
+                aircraft.FM.CT.WeaponControl[0] = false;
+                aircraft.FM.CT.WeaponControl[1] = false;
+                astateBailoutStep = -1;
+                return;
+            }
+            if(aircraft instanceof com.maddox.il2.objects.air.DO_335)
+            {
+                ((com.maddox.il2.objects.air.DO_335)aircraft).doEjectCatapult();
+                astateBailoutStep = 51;
+                aircraft.FM.setTakenMortalDamage(true, null);
+                aircraft.FM.CT.WeaponControl[0] = false;
+                aircraft.FM.CT.WeaponControl[1] = false;
+                astateBailoutStep = -1;
+                return;
+            }
+            if(aircraft instanceof com.maddox.il2.objects.air.ME_262HGII)
+            {
+                ((com.maddox.il2.objects.air.ME_262HGII)aircraft).doEjectCatapult();
+                astateBailoutStep = 51;
+                aircraft.FM.setTakenMortalDamage(true, null);
+                aircraft.FM.CT.WeaponControl[0] = false;
+                aircraft.FM.CT.WeaponControl[1] = false;
+                astateBailoutStep = -1;
+                return;
+            }
+        }
+        setPilotState(aircraft, byte0 - 11, 100, false);
+        if(actor.isNet() && !actor.isNetMaster())
+            break MISSING_BLOCK_LABEL_1107;
+        try
+        {
+            com.maddox.il2.engine.Hook hook = actor.findHook("_ExternalBail0" + (byte0 - 10));
+            if(hook != null)
+            {
+                com.maddox.il2.engine.Loc loc = new Loc(0.0D, 0.0D, 0.0D, com.maddox.il2.ai.World.Rnd().nextFloat(-45F, 45F), 0.0F, 0.0F);
+                hook.computePos(actor, actor.pos.getAbs(), loc);
+                com.maddox.il2.objects.air.Paratrooper paratrooper = new Paratrooper(actor, actor.getArmy(), byte0 - 11, loc, aircraft.FM.Vwld);
+                aircraft.FM.setTakenMortalDamage(true, null);
+                if(byte0 == 11)
+                {
+                    aircraft.FM.CT.WeaponControl[0] = false;
+                    aircraft.FM.CT.WeaponControl[1] = false;
+                }
+                if(byte0 > 10 && byte0 <= 19)
+                    com.maddox.il2.ai.EventLog.onBailedOut(aircraft, byte0 - 11);
+            }
+        }
+        catch(java.lang.Exception exception) { }
+        break MISSING_BLOCK_LABEL_1055;
+        java.lang.Exception exception1;
+        exception1;
+        throw exception1;
+        if(astateBailoutStep == 19 && actor == com.maddox.il2.ai.World.getPlayerAircraft() && !com.maddox.il2.ai.World.isPlayerGunner() && aircraft.FM.brakeShoe)
+            com.maddox.rts.MsgDestroy.Post(com.maddox.rts.Time.current() + 1000L, aircraft);
+    }
+
+    private final void doRemoveBlister1()
+    {
+        if(aircraft.hierMesh().chunkFindCheck("Blister1_D0") != -1 && getPilotHealth(0) > 0.0F)
+        {
+            if(aircraft instanceof com.maddox.il2.objects.air.JU_88NEW)
+            {
+                float f = aircraft.FM.getAltitude() - com.maddox.il2.engine.Landscape.HQ_Air((float)aircraft.FM.Loc.x, (float)aircraft.FM.Loc.y);
+                if(f < 0.3F)
+                {
+                    aircraft.blisterRemoved(1);
+                    return;
+                }
+            }
+            aircraft.hierMesh().hideSubTrees("Blister1_D0");
+            com.maddox.il2.objects.Wreckage wreckage = new Wreckage((com.maddox.il2.engine.ActorHMesh)actor, aircraft.hierMesh().chunkFind("Blister1_D0"));
+            wreckage.collide(false);
+            com.maddox.JGP.Vector3d vector3d = new Vector3d();
+            vector3d.set(aircraft.FM.Vwld);
+            wreckage.setSpeed(vector3d);
+            aircraft.blisterRemoved(1);
+        }
+    }
+
+    private final void doRemoveBlisters()
+    {
+        for(int i = 2; i < 10; i++)
+            if(aircraft.hierMesh().chunkFindCheck("Blister" + i + "_D0") != -1 && getPilotHealth(i - 1) > 0.0F)
+            {
+                aircraft.hierMesh().hideSubTrees("Blister" + i + "_D0");
+                com.maddox.il2.objects.Wreckage wreckage = new Wreckage((com.maddox.il2.engine.ActorHMesh)actor, aircraft.hierMesh().chunkFind("Blister" + i + "_D0"));
+                wreckage.collide(false);
+                com.maddox.JGP.Vector3d vector3d = new Vector3d();
+                vector3d.set(aircraft.FM.Vwld);
+                wreckage.setSpeed(vector3d);
+                aircraft.blisterRemoved(i);
+            }
+
+    }
+
+    public void netUpdate(boolean flag, boolean flag1, com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        if(flag1)
+        {
+            if(flag)
+            {
+                int i = netmsginput.readUnsignedByte();
+                int k = netmsginput.readUnsignedByte();
+                int i1 = netmsginput.readUnsignedByte();
+                com.maddox.il2.engine.Actor actor1 = null;
+                if(netmsginput.available() > 0)
+                {
+                    com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                    if(netobj != null)
+                        actor1 = (com.maddox.il2.engine.Actor)netobj.superObj();
+                }
+                switch(i)
+                {
+                case 1: // '\001'
+                    setEngineState(actor1, k, i1);
+                    break;
+
+                case 2: // '\002'
+                    setEngineSpecificDamage(actor1, k, i1);
+                    break;
+
+                case 3: // '\003'
+                    explodeEngine(actor1, k);
+                    break;
+
+                case 4: // '\004'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (E.S.)");
+
+                case 5: // '\005'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (E.R.)");
+
+                case 6: // '\006'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (E.E.)");
+
+                case 7: // '\007'
+                    setEngineDies(actor1, k);
+                    break;
+
+                case 29: // '\035'
+                    setEngineStuck(actor1, k);
+                    break;
+
+                case 27: // '\033'
+                    setEngineCylinderKnockOut(actor1, k, i1);
+                    break;
+
+                case 28: // '\034'
+                    setEngineMagnetoKnockOut(actor1, k, i1);
+                    break;
+
+                case 8: // '\b'
+                    setSootState(actor1, k, i1);
+                    break;
+
+                case 25: // '\031'
+                    setEngineReadyness(actor1, k, i1);
+                    break;
+
+                case 26: // '\032'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (EN.ST.)");
+
+                case 9: // '\t'
+                    setTankState(actor1, k, i1);
+                    break;
+
+                case 10: // '\n'
+                    explodeTank(actor1, k);
+                    break;
+
+                case 11: // '\013'
+                    setOilState(actor1, k, i1);
+                    break;
+
+                case 12: // '\f'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (G.B./On)");
+
+                case 13: // '\r'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (G.B./Off)");
+
+                case 14: // '\016'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (G.C.C./Off)");
+
+                case 15: // '\017'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (A.S.S.)");
+
+                case 30: // '\036'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (NV.LT.ST.)");
+
+                case 31: // '\037'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (LA.LT.ST.)");
+
+                case 16: // '\020'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (W.T.S.)");
+
+                case 17: // '\021'
+                    setPilotState(actor1, k, i1);
+                    break;
+
+                case 46: // '.'
+                    setPilotWound(actor1, k, i1);
+                    break;
+
+                case 47: // '/'
+                    setBleedingPilot(actor1, k, i1);
+                    break;
+
+                case 18: // '\022'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unimplemented feature (K.P.)");
+
+                case 19: // '\023'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unimplemented feature (H.S.)");
+
+                case 20: // '\024'
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unexpected command (B.O.)");
+
+                case 21: // '\025'
+                    setControlsDamage(actor1, i1);
+                    break;
+
+                case 22: // '\026'
+                    setInternalDamage(actor1, i1);
+                    break;
+
+                case 23: // '\027'
+                    setCockpitState(actor1, i1);
+                    break;
+
+                case 24: // '\030'
+                    setJamBullets(k, i1);
+                    break;
+
+                case 34: // '"'
+                    ((com.maddox.il2.objects.air.TypeDockable)aircraft).typeDockableRequestAttach(actor1, k, true);
+                    break;
+
+                case 35: // '#'
+                    ((com.maddox.il2.objects.air.TypeDockable)aircraft).typeDockableRequestDetach(actor1, k, true);
+                    break;
+
+                case 32: // ' '
+                    ((com.maddox.il2.objects.air.TypeDockable)aircraft).typeDockableRequestAttach(actor1, k, i1 > 0);
+                    break;
+
+                case 33: // '!'
+                    ((com.maddox.il2.objects.air.TypeDockable)aircraft).typeDockableRequestDetach(actor1, k, i1 > 0);
+                    break;
+
+                case 37: // '%'
+                    setFMSFX(actor1, k, i1);
+                    break;
+
+                case 42: // '*'
+                    setBeacon(actor1, k, i1, true);
+                    break;
+
+                case 44: // ','
+                    setGyroAngle(actor1, k, i1, true);
+                    break;
+
+                case 45: // '-'
+                    setSpreadAngle(actor1, k, i1, true);
+                    break;
+                }
+            } else
+            {
+                aircraft.net.postTo(aircraft.net.masterChannel(), new NetMsgGuaranted(netmsginput, netmsginput.available() <= 3 ? 0 : 1));
+            }
+        } else
+        {
+            if(aircraft.net.isMirrored())
+                aircraft.net.post(new NetMsgGuaranted(netmsginput, netmsginput.available() <= 3 ? 0 : 1));
+            int j = netmsginput.readUnsignedByte();
+            int l = netmsginput.readUnsignedByte();
+            int j1 = netmsginput.readUnsignedByte();
+            com.maddox.il2.engine.Actor actor2 = null;
+            if(netmsginput.available() > 0)
+            {
+                com.maddox.rts.NetObj netobj1 = netmsginput.readNetObj();
+                if(netobj1 != null)
+                    actor2 = (com.maddox.il2.engine.Actor)netobj1.superObj();
+            }
+            switch(j)
+            {
+            case 32: // ' '
+            case 33: // '!'
+            case 41: // ')'
+            case 43: // '+'
+            default:
+                break;
+
+            case 1: // '\001'
+                doSetEngineState(actor2, l, j1);
+                break;
+
+            case 2: // '\002'
+                doSetEngineSpecificDamage(l, j1);
+                break;
+
+            case 3: // '\003'
+                doExplodeEngine(l);
+                break;
+
+            case 4: // '\004'
+                doSetEngineStarts(l);
+                break;
+
+            case 5: // '\005'
+                doSetEngineRunning(l);
+                break;
+
+            case 6: // '\006'
+                doSetEngineStops(l);
+                break;
+
+            case 7: // '\007'
+                doSetEngineDies(l);
+                break;
+
+            case 29: // '\035'
+                doSetEngineStuck(l);
+                break;
+
+            case 27: // '\033'
+                doSetEngineCylinderKnockOut(l, j1);
+                break;
+
+            case 28: // '\034'
+                doSetEngineMagnetoKnockOut(l, j1);
+                break;
+
+            case 8: // '\b'
+                doSetSootState(l, j1);
+                break;
+
+            case 25: // '\031'
+                doSetEngineReadyness(l, j1);
+                break;
+
+            case 26: // '\032'
+                doSetEngineStage(l, j1);
+                break;
+
+            case 9: // '\t'
+                doSetTankState(actor2, l, j1);
+                break;
+
+            case 10: // '\n'
+                doExplodeTank(l);
+                break;
+
+            case 11: // '\013'
+                doSetOilState(l, j1);
+                break;
+
+            case 12: // '\f'
+                if(j1 == 5)
+                    doSetGliderBoostOn();
+                else
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Corrupt data in signal (G.S.B./On)");
+                break;
+
+            case 13: // '\r'
+                if(j1 == 7)
+                    doSetGliderBoostOff();
+                else
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Corrupt data in signal (G.S.B./Off)");
+                break;
+
+            case 14: // '\016'
+                if(j1 == 9)
+                    doSetGliderCutCart();
+                else
+                    throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Corrupt data in signal (G.C.C./Off)");
+                break;
+
+            case 15: // '\017'
+                doSetAirShowState(j1 == 1);
+                break;
+
+            case 30: // '\036'
+                doSetNavLightsState(j1 == 1);
+                break;
+
+            case 31: // '\037'
+                doSetLandingLightState(j1 == 1);
+                break;
+
+            case 16: // '\020'
+                doSetStallState(j1 == 1);
+                break;
+
+            case 17: // '\021'
+                doSetPilotState(l, j1, actor2);
+                break;
+
+            case 46: // '.'
+                doSetWoundPilot(j1);
+                break;
+
+            case 47: // '/'
+                doSetBleedingPilot(l, j1, actor2);
+                break;
+
+            case 18: // '\022'
+                throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unimplemented signal (K.P.)");
+
+            case 19: // '\023'
+                throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Unimplemented signal (H.S.)");
+
+            case 20: // '\024'
+                bIsAboutToBailout = true;
+                astateBailoutStep = (byte)l;
+                bailout();
+                break;
+
+            case 21: // '\025'
+                throw new RuntimeException("(" + aircraft.typedName() + ") A.S.: Uniexpected signal (C.A.D.)");
+
+            case 22: // '\026'
+                doSetInternalDamage(j1);
+                break;
+
+            case 23: // '\027'
+                doSetCockpitState(j1);
+                break;
+
+            case 24: // '\030'
+                doSetJamBullets(l, j1);
+                break;
+
+            case 34: // '"'
+                ((com.maddox.il2.objects.air.TypeDockable)aircraft).typeDockableDoAttachToDrone(actor2, l);
+                break;
+
+            case 35: // '#'
+                ((com.maddox.il2.objects.air.TypeDockable)aircraft).typeDockableDoDetachFromDrone(l);
+                break;
+
+            case 36: // '$'
+                doSetFlatTopString(actor2, j1);
+                break;
+
+            case 37: // '%'
+                doSetFMSFX(l, j1);
+                break;
+
+            case 38: // '&'
+                doSetWingFold(j1);
+                break;
+
+            case 39: // '\''
+                doSetCockpitDoor(j1);
+                break;
+
+            case 40: // '('
+                doSetArrestor(j1);
+                break;
+
+            case 42: // '*'
+                doSetBeacon(actor2, l, j1);
+                break;
+
+            case 44: // ','
+                doSetGyroAngle(actor2, l, j1);
+                break;
+
+            case 45: // '-'
+                doSetSpreadAngle(actor2, l, j1);
+                break;
+            }
+        }
+    }
+
+    public void netReplicate(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+        int i1;
+        if(aircraft instanceof com.maddox.il2.objects.air.FW_190A8MSTL)
+            i1 = 1;
+        else
+            i1 = aircraft.FM.EI.getNum();
+        for(int i = 0; i < i1; i++)
+        {
+            aircraft.FM.EI.engines[i].replicateToNet(netmsgguaranted);
+            netmsgguaranted.writeByte(astateEngineStates[i]);
+        }
+
+        for(int j = 0; j < 4; j++)
+            netmsgguaranted.writeByte(astateTankStates[j]);
+
+        for(int k = 0; k < i1; k++)
+            netmsgguaranted.writeByte(astateOilStates[k]);
+
+        netmsgguaranted.writeByte((bShowSmokesOn ? 1 : 0) | (bNavLightsOn ? 2 : 0) | (bLandingLightOn ? 4 : 0));
+        netmsgguaranted.writeByte(astateCockpitState);
+        netmsgguaranted.writeByte(astateBailoutStep);
+        if(aircraft instanceof com.maddox.il2.objects.air.TypeBomber)
+            ((com.maddox.il2.objects.air.TypeBomber)aircraft).typeBomberReplicateToNet(netmsgguaranted);
+        if(aircraft instanceof com.maddox.il2.objects.air.TypeDockable)
+            ((com.maddox.il2.objects.air.TypeDockable)aircraft).typeDockableReplicateToNet(netmsgguaranted);
+        if(aircraft.FM.CT.bHasWingControl)
+        {
+            netmsgguaranted.writeByte((int)aircraft.FM.CT.wingControl);
+            netmsgguaranted.writeByte((int)(aircraft.FM.CT.getWing() * 255F));
+        }
+        if(aircraft.FM.CT.bHasCockpitDoorControl)
+            netmsgguaranted.writeByte((int)aircraft.FM.CT.cockpitDoorControl);
+        netmsgguaranted.writeByte(bIsEnableToBailout ? 1 : 0);
+        if(aircraft.FM.CT.bHasArrestorControl)
+        {
+            netmsgguaranted.writeByte((int)aircraft.FM.CT.arrestorControl);
+            netmsgguaranted.writeByte((int)(aircraft.FM.CT.getArrestor() * 255F));
+        }
+        for(int l = 0; l < i1; l++)
+            netmsgguaranted.writeByte(astateSootStates[l]);
+
+        if(bWantBeaconsNet)
+            netmsgguaranted.writeByte(beacon);
+        if(aircraft instanceof com.maddox.il2.objects.air.TypeHasToKG)
+        {
+            netmsgguaranted.writeByte(torpedoGyroAngle);
+            netmsgguaranted.writeByte(torpedoSpreadAngle);
+        }
+        netmsgguaranted.writeShort(aircraft.armingSeed);
+        setArmingSeeds(aircraft.armingSeed);
+        if(aircraft.isNetPlayer())
+        {
+            int j1 = (int)java.lang.Math.sqrt(com.maddox.il2.ai.World.cur().userCoverMashineGun - 100F) / 6;
+            j1 += 6 * ((int)java.lang.Math.sqrt(com.maddox.il2.ai.World.cur().userCoverCannon - 100F) / 6);
+            j1 += 36 * ((int)java.lang.Math.sqrt(com.maddox.il2.ai.World.cur().userCoverRocket - 100F) / 6);
+            netmsgguaranted.writeByte(j1);
+        }
+        if(externalStoresDropped)
+            netmsgguaranted.writeByte(1);
+        else
+            netmsgguaranted.writeByte(0);
+    }
+
+    public void netFirstUpdate(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        int k2;
+        if(aircraft instanceof com.maddox.il2.objects.air.FW_190A8MSTL)
+            k2 = 1;
+        else
+            k2 = aircraft.FM.EI.getNum();
+        for(int i = 0; i < k2; i++)
+        {
+            aircraft.FM.EI.engines[i].replicateFromNet(netmsginput);
+            int k1 = netmsginput.readUnsignedByte();
+            doSetEngineState(null, i, k1);
+        }
+
+        for(int j = 0; j < 4; j++)
+        {
+            int l1 = netmsginput.readUnsignedByte();
+            doSetTankState(null, j, l1);
+        }
+
+        for(int k = 0; k < k2; k++)
+        {
+            int i2 = netmsginput.readUnsignedByte();
+            doSetOilState(k, i2);
+        }
+
+        int j2 = netmsginput.readUnsignedByte();
+        doSetAirShowState((j2 & 1) != 0);
+        doSetNavLightsState((j2 & 2) != 0);
+        doSetLandingLightState((j2 & 4) != 0);
+        j2 = netmsginput.readUnsignedByte();
+        doSetCockpitState(j2);
+        j2 = netmsginput.readUnsignedByte();
+        if(j2 != 0)
+        {
+            bIsAboutToBailout = true;
+            astateBailoutStep = (byte)j2;
+            for(int l = 1; l <= java.lang.Math.min(astateBailoutStep, 3); l++)
+                if(aircraft.hierMesh().chunkFindCheck("Blister" + (l - 1) + "_D0") != -1)
+                    aircraft.hierMesh().hideSubTrees("Blister" + (l - 1) + "_D0");
+
+            if(astateBailoutStep >= 11 && astateBailoutStep <= 20)
+            {
+                int l2 = astateBailoutStep;
+                if(astateBailoutStep == 20)
+                    l2 = 19;
+                l2 -= 11;
+                for(int i1 = 0; i1 <= l2; i1++)
+                    doRemoveBodyFromPlane(i1 + 1);
+
+            }
+        }
+        if(aircraft instanceof com.maddox.il2.objects.air.TypeBomber)
+            ((com.maddox.il2.objects.air.TypeBomber)aircraft).typeBomberReplicateFromNet(netmsginput);
+        if(aircraft instanceof com.maddox.il2.objects.air.TypeDockable)
+            ((com.maddox.il2.objects.air.TypeDockable)aircraft).typeDockableReplicateFromNet(netmsginput);
+        if(netmsginput.available() == 0)
+            return;
+        if(aircraft.FM.CT.bHasWingControl)
+        {
+            aircraft.FM.CT.wingControl = netmsginput.readUnsignedByte();
+            aircraft.FM.CT.forceWing((float)netmsginput.readUnsignedByte() / 255F);
+            aircraft.wingfold_ = aircraft.FM.CT.getWing();
+        }
+        if(netmsginput.available() == 0)
+            return;
+        if(aircraft.FM.CT.bHasCockpitDoorControl)
+        {
+            aircraft.FM.CT.cockpitDoorControl = netmsginput.readUnsignedByte();
+            aircraft.FM.CT.forceCockpitDoor(aircraft.FM.CT.cockpitDoorControl);
+        }
+        if(netmsginput.available() == 0)
+            return;
+        bIsEnableToBailout = netmsginput.readUnsignedByte() == 1;
+        if(netmsginput.available() == 0)
+            return;
+        if(aircraft.FM.CT.bHasArrestorControl)
+        {
+            aircraft.FM.CT.arrestorControl = netmsginput.readUnsignedByte();
+            aircraft.FM.CT.forceArrestor((float)netmsginput.readUnsignedByte() / 255F);
+            aircraft.arrestor_ = aircraft.FM.CT.getArrestor();
+        }
+        if(netmsginput.available() == 0)
+            return;
+        for(int j1 = 0; j1 < k2; j1++)
+        {
+            j2 = netmsginput.readUnsignedByte();
+            doSetSootState(j1, j2);
+        }
+
+        if(bWantBeaconsNet)
+            beacon = netmsginput.readUnsignedByte();
+        if(aircraft instanceof com.maddox.il2.objects.air.TypeHasToKG)
+        {
+            torpedoGyroAngle = netmsginput.readUnsignedByte();
+            torpedoSpreadAngle = netmsginput.readUnsignedByte();
+        }
+        aircraft.armingSeed = netmsginput.readUnsignedShort();
+        setArmingSeeds(aircraft.armingSeed);
+        if(aircraft.isNetPlayer())
+        {
+            int i3 = netmsginput.readUnsignedByte();
+            int j3 = i3 % 6;
+            float f = com.maddox.rts.Property.floatValue(aircraft.getClass(), "LOSElevation", 0.75F);
+            updConvDist(j3, 0, f);
+            i3 = (i3 - j3) / 6;
+            j3 = i3 % 6;
+            updConvDist(j3, 1, f);
+            i3 = (i3 - j3) / 6;
+            updConvDist(i3, 2, f);
+        }
+        j2 = netmsginput.readUnsignedByte();
+        if(!externalStoresDropped && j2 > 0)
+        {
+            externalStoresDropped = true;
+            aircraft.dropExternalStores(false);
+        }
+    }
+
+    void updConvDist(int i, int j, float f)
+    {
+        float f1 = (float)i * (float)i * 36F + 100F;
+        try
+        {
+            if(aircraft.FM.CT.Weapons[j] != null)
+                if(j == 2)
+                {
+                    for(int k = 0; k < aircraft.FM.CT.Weapons[j].length; k++)
+                        ((com.maddox.il2.objects.weapons.RocketGun)(com.maddox.il2.objects.weapons.RocketGun)aircraft.FM.CT.Weapons[j][k]).setConvDistance(f1, f);
+
+                } else
+                {
+                    for(int l = 0; l < aircraft.FM.CT.Weapons[j].length; l++)
+                        ((com.maddox.il2.objects.weapons.MGunAircraftGeneric)(com.maddox.il2.objects.weapons.MGunAircraftGeneric)aircraft.FM.CT.Weapons[j][l]).setConvDistance(f1, f);
+
+                }
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    void setArmingSeeds(int i)
+    {
+        aircraft.armingRnd = new RangeRandom(aircraft.armingSeed);
+        try
+        {
+            if(aircraft.FM.CT.Weapons[2] != null)
+            {
+                for(int j = 0; j < aircraft.FM.CT.Weapons[2].length; j++)
+                    ((com.maddox.il2.objects.weapons.RocketGun)aircraft.FM.CT.Weapons[2][j]).setSpreadRnd(aircraft.armingRnd.nextInt());
+
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void netToMaster(int i, int j, int k)
+    {
+        netToMaster(i, j, k, null);
+    }
+
+    public void netToMaster(int i, int j, int k, com.maddox.il2.engine.Actor actor1)
+    {
+        if(!bIsMaster)
+        {
+            if(!aircraft.netNewAState_isEnable(true))
+                return;
+            if(itemsToMaster == null)
+                itemsToMaster = new com.maddox.il2.fm.Item[41];
+            if(sendedMsg(itemsToMaster, i, j, k, actor1))
+                return;
+            try
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted = aircraft.netNewAStateMsg(true);
+                if(netmsgguaranted != null)
+                {
+                    netmsgguaranted.writeByte((byte)i);
+                    netmsgguaranted.writeByte((byte)j);
+                    netmsgguaranted.writeByte((byte)k);
+                    com.maddox.il2.engine.ActorNet actornet = null;
+                    if(com.maddox.il2.engine.Actor.isValid(actor1))
+                        actornet = actor1.net;
+                    if(actornet != null)
+                        netmsgguaranted.writeNetObj(actornet);
+                    aircraft.netSendAStateMsg(true, netmsgguaranted);
+                    return;
+                }
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+        }
+    }
+
+    private void netToMirrors(int i, int j, int k)
+    {
+        netToMirrors(i, j, k, null);
+    }
+
+    public void netToMirrors(int i, int j, int k, com.maddox.il2.engine.Actor actor1)
+    {
+        if(!aircraft.netNewAState_isEnable(false))
+            return;
+        if(itemsToMirrors == null)
+            itemsToMirrors = new com.maddox.il2.fm.Item[41];
+        if(sendedMsg(itemsToMirrors, i, j, k, actor1))
+            return;
+        try
+        {
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted = aircraft.netNewAStateMsg(false);
+            if(netmsgguaranted != null)
+            {
+                netmsgguaranted.writeByte((byte)i);
+                netmsgguaranted.writeByte((byte)j);
+                netmsgguaranted.writeByte((byte)k);
+                com.maddox.il2.engine.ActorNet actornet = null;
+                if(com.maddox.il2.engine.Actor.isValid(actor1))
+                    actornet = actor1.net;
+                if(actornet != null)
+                    netmsgguaranted.writeNetObj(actornet);
+                aircraft.netSendAStateMsg(false, netmsgguaranted);
+                return;
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private boolean sendedMsg(com.maddox.il2.fm.Item aitem[], int i, int j, int k, com.maddox.il2.engine.Actor actor1)
+    {
+        if(i < 0 || i >= aitem.length)
+            return false;
+        com.maddox.il2.fm.Item item = aitem[i];
+        if(item == null)
+        {
+            item = new Item();
+            item.set(j, k, actor1);
+            aitem[i] = item;
+            return false;
+        }
+        if(item.equals(j, k, actor1))
+        {
+            return true;
+        } else
+        {
+            item.set(j, k, actor1);
+            return false;
+        }
+    }
+
+    private int cvt(float f, float f1, float f2, int i, int j)
+    {
+        f = java.lang.Math.min(java.lang.Math.max(f, f1), f2);
+        return (int)((float)i + ((float)(j - i) * (f - f1)) / (f2 - f1));
+    }
+
+    private float cvt(int i, int j, int k, float f, float f1)
+    {
+        i = java.lang.Math.min(java.lang.Math.max(i, j), k);
+        return f + ((f1 - f) * (float)(i - j)) / (float)(k - j);
+    }
+
+    public float getGyroAngle()
+    {
+        if(torpedoGyroAngle == 0)
+            return 0.0F;
+        else
+            return cvt(torpedoGyroAngle, 1, 65535, -50F, 50F);
+    }
+
+    public void setGyroAngle(float f)
+    {
+        int i = 0;
+        if(f != 0.0F)
+            i = cvt(f, -50F, 50F, 1, 65535);
+        torpedoGyroAngle = i;
+    }
+
+    public void replicateGyroAngleToNet()
+    {
+        int i = cvt(getGyroAngle(), -50F, 50F, 1, 65535);
+        int j = i & 0xff00;
+        j >>= 8;
+        int k = i & 0xff;
+        setGyroAngle(actor, j, k, false);
+    }
+
+    private void setGyroAngle(com.maddox.il2.engine.Actor actor1, int i, int j, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(flag)
+            doSetGyroAngle(actor1, i, j);
+        if(bIsMaster)
+            netToMirrors(44, i, j);
+        else
+            netToMaster(44, i, j, actor1);
+    }
+
+    private void doSetGyroAngle(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        torpedoGyroAngle = i << 8 | j;
+    }
+
+    public int getSpreadAngle()
+    {
+        return torpedoSpreadAngle;
+    }
+
+    public void setSpreadAngle(int i)
+    {
+        torpedoSpreadAngle = i;
+        if(torpedoSpreadAngle < 0)
+            torpedoSpreadAngle = 0;
+        if(torpedoSpreadAngle > 30)
+            torpedoSpreadAngle = 30;
+    }
+
+    public void replicateSpreadAngleToNet()
+    {
+        setSpreadAngle(actor, getSpreadAngle(), 0, false);
+    }
+
+    private void setSpreadAngle(com.maddox.il2.engine.Actor actor1, int i, int j, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(flag)
+            doSetSpreadAngle(actor1, i, 0);
+        if(bIsMaster)
+            netToMirrors(45, i, 0);
+        else
+            netToMaster(45, i, 0, actor1);
+    }
+
+    private void doSetSpreadAngle(com.maddox.il2.engine.Actor actor1, int i, int j)
+    {
+        setSpreadAngle(i);
+    }
+
+    public static final boolean __DEBUG_SPREAD__ = false;
+    private static final float astateEffectCriticalSpeed = 10F;
+    private static final float astateCondensateCriticalAlt = 7000F;
+    private static final com.maddox.il2.engine.Loc astateCondensateDispVector = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+    public static final int _AS_RESERVED = 0;
+    public static final int _AS_ENGINE_STATE = 1;
+    public static final int _AS_ENGINE_SPECIFIC_DMG = 2;
+    public static final int _AS_ENGINE_EXPLODES = 3;
+    public static final int _AS_ENGINE_STARTS = 4;
+    public static final int _AS_ENGINE_RUNS = 5;
+    public static final int _AS_ENGINE_STOPS = 6;
+    public static final int _AS_ENGINE_DIES = 7;
+    public static final int _AS_ENGINE_SOOT_POWERS = 8;
+    public static final int _AS_ENGINE_READYNESS = 25;
+    public static final int _AS_ENGINE_STAGE = 26;
+    public static final int _AS_ENGINE_CYL_KNOCKOUT = 27;
+    public static final int _AS_ENGINE_MAG_KNOCKOUT = 28;
+    public static final int _AS_ENGINE_STUCK = 29;
+    public static final int _AS_TANK_STATE = 9;
+    public static final int _AS_TANK_EXPLODES = 10;
+    public static final int _AS_OIL_STATE = 11;
+    public static final int _AS_GLIDER_BOOSTER = 12;
+    public static final int _AS_GLIDER_BOOSTOFF = 13;
+    public static final int _AS_GLIDER_CUTCART = 14;
+    public static final int _AS_AIRSHOW_SMOKES_STATE = 15;
+    public static final int _AS_WINGTIP_SMOKES_STATE = 16;
+    public static final int _AS_PILOT_STATE = 17;
+    public static final int _AS_KILLPILOT = 18;
+    public static final int _AS_HEADSHOT = 19;
+    public static final int _AS_BAILOUT = 20;
+    public static final int _AS_CONTROLS_HURT = 21;
+    public static final int _AS_INTERNALS_HURT = 22;
+    public static final int _AS_COCKPIT_STATE_BYTE = 23;
+    public static final int _AS_JAM_BULLETS = 24;
+    public static final int _AS_NAVIGATION_LIGHTS_STATE = 30;
+    public static final int _AS_LANDING_LIGHT_STATE = 31;
+    public static final int _AS_TYPEDOCKABLE_REQ_ATTACHTODRONE = 32;
+    public static final int _AS_TYPEDOCKABLE_REQ_DETACHFROMDRONE = 33;
+    public static final int _AS_TYPEDOCKABLE_FORCE_ATTACHTODRONE = 34;
+    public static final int _AS_TYPEDOCKABLE_FORCE_DETACHFROMDRONE = 35;
+    public static final int _AS_FLATTOP_FORCESTRING = 36;
+    public static final int _AS_FMSFX = 37;
+    public static final int _AS_WINGFOLD = 38;
+    public static final int _AS_COCKPITDOOR = 39;
+    public static final int _AS_ARRESTOR = 40;
+    public static final int _AS_COUNT_CODES = 41;
+    public static final int _AS_BEACONS = 42;
+    public static final int _AS_GYROANGLE = 44;
+    public static final int _AS_SPREADANGLE = 45;
+    public static final int _AS_PILOT_WOUNDED = 46;
+    public static final int _AS_PILOT_BLEEDING = 47;
+    public static final int _AS_COCKPIT_GLASS = 1;
+    public static final int _AS_COCKPIT_ARMORGLASS = 2;
+    public static final int _AS_COCKPIT_LEFT1 = 4;
+    public static final int _AS_COCKPIT_LEFT2 = 8;
+    public static final int _AS_COCKPIT_RIGHT1 = 16;
+    public static final int _AS_COCKPIT_RIGHT2 = 32;
+    public static final int _AS_COCKPIT_INSTRUMENTS = 64;
+    public static final int _AS_COCKPIT_OIL = 128;
+    public static final int _ENGINE_SPECIFIC_BOOSTER = 0;
+    public static final int _ENGINE_SPECIFIC_THROTTLECTRL = 1;
+    public static final int _ENGINE_SPECIFIC_HEATER = 2;
+    public static final int _ENGINE_SPECIFIC_ANGLER = 3;
+    public static final int _ENGINE_SPECIFIC_ANGLERSPEEDS = 4;
+    public static final int _ENGINE_SPECIFIC_EXTINGUISHER = 5;
+    public static final int _ENGINE_SPECIFIC_PROPCTRL = 6;
+    public static final int _ENGINE_SPECIFIC_MIXCTRL = 7;
+    public static final int _CONTROLS_AILERONS = 0;
+    public static final int _CONTROLS_ELEVATORS = 1;
+    public static final int _CONTROLS_RUDDERS = 2;
+    public static final int _INTERNALS_HYDRO_OFFLINE = 0;
+    public static final int _INTERNALS_PNEUMO_OFFLINE = 1;
+    public static final int _INTERNALS_MW50_OFFLINE = 2;
+    public static final int _INTERNALS_GEAR_STUCK = 3;
+    public static final int _INTERNALS_KEEL_SHUTOFF = 4;
+    public static final int _INTERNALS_SHAFT_SHUTOFF = 5;
+    protected long bleedingTime;
+    public long astateBleedingTimes[];
+    public long astateBleedingNext[];
+    private boolean legsWounded;
+    private boolean armsWounded;
+    public int torpedoGyroAngle;
+    public int torpedoSpreadAngle;
+    private static final float gyroAngleLimit = 50F;
+    public static final int spreadAngleLimit = 30;
+    private int beacon;
+    private boolean bWantBeaconsNet;
+    public static final int MAX_NUMBER_OF_BEACONS = 32;
+    public boolean listenLorenzBlindLanding;
+    public boolean isAAFIAS;
+    public boolean listenYGBeacon;
+    public boolean listenNDBeacon;
+    public boolean listenRadioStation;
+    public com.maddox.il2.engine.Actor hayrakeCarrier;
+    public java.lang.String hayrakeCode;
+    public static int hudLogBeaconId = com.maddox.il2.game.HUD.makeIdLog();
+    public boolean externalStoresDropped;
+    private static final java.lang.String astateOilStrings[] = {
+        "3DO/Effects/Aircraft/BlackMediumSPD.eff", "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, null
+    };
+    private static final java.lang.String astateTankStrings[] = {
+        null, null, null, "3DO/Effects/Aircraft/RedLeakTSPD.eff", null, null, "3DO/Effects/Aircraft/RedLeakTSPD.eff", null, null, "3DO/Effects/Aircraft/BlackMediumSPD.eff", 
+        "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff", 
+        "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, null, null, "3DO/Effects/Aircraft/RedLeakGND.eff", null, null, "3DO/Effects/Aircraft/RedLeakGND.eff", null, null, 
+        "3DO/Effects/Aircraft/BlackMediumGND.eff", null, null, "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, null, "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, "3DO/Effects/Aircraft/FireGND.eff", 
+        "3DO/Effects/Aircraft/BlackHeavyGND.eff", null
+    };
+    private static final java.lang.String astateEngineStrings[] = {
+        null, null, null, "3DO/Effects/Aircraft/GraySmallSPD.eff", "3DO/Effects/Aircraft/GraySmallTSPD.eff", null, "3DO/Effects/Aircraft/BlackMediumSPD.eff", "3DO/Effects/Aircraft/BlackMediumTSPD.eff", null, "3DO/Effects/Aircraft/BlackHeavySPD.eff", 
+        "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, "3DO/Effects/Aircraft/FireSPD.eff", "3DO/Effects/Aircraft/BlackHeavySPD.eff", "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", null, null, null, "3DO/Effects/Aircraft/GraySmallGND.eff", null, 
+        null, "3DO/Effects/Aircraft/BlackMediumGND.eff", null, null, "3DO/Effects/Aircraft/BlackHeavyGND.eff", null, null, "3DO/Effects/Aircraft/FireGND.eff", "3DO/Effects/Aircraft/BlackHeavyGND.eff", null
+    };
+    private static final java.lang.String astateCondensateStrings[] = {
+        null, "3DO/Effects/Aircraft/CondensateTSPD.eff"
+    };
+    private static final java.lang.String astateStallStrings[] = {
+        null, "3DO/Effects/Aircraft/StallTSPD.eff"
+    };
+    public static final java.lang.String astateHUDPilotHits[] = {
+        "Player", "Pilot", "CPilot", "NGunner", "TGunner", "WGunner", "VGunner", "RGunner", "EngMas", "BombMas", 
+        "RadMas", "ObsMas"
+    };
+    private static boolean bCriticalStatePassed = false;
+    private boolean bIsAboveCriticalSpeed;
+    private boolean bIsAboveCondensateAlt;
+    private boolean bIsBeyondSootPower[] = {
+        false, false, false, false
+    };
+    private boolean bIsOnInadequateAOA;
+    public boolean bShowSmokesOn;
+    public boolean bNavLightsOn;
+    public boolean bLandingLightOn;
+    public boolean bWingTipLExists;
+    public boolean bWingTipRExists;
+    private boolean bIsMaster;
+    public com.maddox.il2.engine.Actor actor;
+    public com.maddox.il2.objects.air.AircraftLH aircraft;
+    public byte astatePilotStates[];
+    public byte astatePilotFunctions[] = {
+        1, 7, 7, 7, 7, 7, 7, 7, 7
+    };
+    public int astatePlayerIndex;
+    public boolean bIsAboutToBailout;
+    public boolean bIsEnableToBailout;
+    public byte astateBailoutStep;
+    public int astateCockpitState;
+    public byte astateOilStates[] = {
+        0, 0, 0, 0, 0, 0, 0, 0
+    };
+    private com.maddox.il2.engine.Eff3DActor astateOilEffects[][] = {
+        {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }
+    };
+    public byte astateTankStates[] = {
+        0, 0, 0, 0
+    };
+    private com.maddox.il2.engine.Eff3DActor astateTankEffects[][] = {
+        {
+            null, null, null
+        }, {
+            null, null, null
+        }, {
+            null, null, null
+        }, {
+            null, null, null
+        }
+    };
+    public byte astateEngineStates[] = {
+        0, 0, 0, 0, 0, 0, 0, 0
+    };
+    private com.maddox.il2.engine.Eff3DActor astateEngineEffects[][] = {
+        {
+            null, null, null
+        }, {
+            null, null, null
+        }, {
+            null, null, null
+        }, {
+            null, null, null
+        }, {
+            null, null, null
+        }, {
+            null, null, null
+        }, {
+            null, null, null
+        }, {
+            null, null, null
+        }
+    };
+    public byte astateSootStates[] = {
+        0, 0, 0, 0, 0, 0, 0, 0
+    };
+    public com.maddox.il2.engine.Eff3DActor astateSootEffects[][] = {
+        {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }, {
+            null, null
+        }
+    };
+    private com.maddox.il2.engine.Eff3DActor astateCondensateEffects[] = {
+        null, null, null, null, null, null, null, null
+    };
+    private com.maddox.il2.engine.Eff3DActor astateStallEffects[] = {
+        null, null
+    };
+    private com.maddox.il2.engine.Eff3DActor astateAirShowEffects[] = {
+        null, null
+    };
+    private com.maddox.il2.engine.Eff3DActor astateNavLightsEffects[] = {
+        null, null, null, null, null, null
+    };
+    private com.maddox.il2.engine.LightPointActor astateNavLightsLights[] = {
+        null, null, null, null, null, null
+    };
+    public com.maddox.il2.engine.Eff3DActor astateLandingLightEffects[] = {
+        null, null, null, null
+    };
+    private com.maddox.il2.engine.LightPointActor astateLandingLightLights[] = {
+        null, null, null, null
+    };
+    public java.lang.String astateEffectChunks[] = {
+        null, null, null, null, null, null, null, null, null, null, 
+        null, null, null, null, null, null, null, null, null, null, 
+        null, null, null, null, null, null, null, null, null, null
+    };
+    public static final int astateEffectsDispTanks = 0;
+    public static final int astateEffectsDispEngines = 4;
+    public static final int astateEffectsDispLights = 12;
+    public static final int astateEffectsDispLandingLights = 18;
+    public static final int astateEffectsDispOilfilters = 22;
+    public static boolean bCheckPlayerAircraft = true;
+    private com.maddox.il2.fm.Item itemsToMaster[];
+    private com.maddox.il2.fm.Item itemsToMirrors[];
+
 }

@@ -1,34 +1,45 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ReverbFX.java
+
 package com.maddox.sound;
 
 import com.maddox.rts.SectFile;
 
-public class ReverbFX extends BaseObject
+// Referenced classes of package com.maddox.sound:
+//            BaseObject, Reverb
+
+public class ReverbFX extends com.maddox.sound.BaseObject
 {
-  Reverb owner;
-  float roomMin = 0.0F;
-  float bound = 1000.0F;
 
-  public ReverbFX(Reverb paramReverb)
-  {
-    this.owner = paramReverb;
-  }
+    public ReverbFX(com.maddox.sound.Reverb reverb)
+    {
+        roomMin = 0.0F;
+        bound = 1000F;
+        owner = reverb;
+    }
 
-  public void load(SectFile paramSectFile)
-  {
-    String str = "hcontrol." + this.owner.getEngineName();
-    this.roomMin = paramSectFile.get(str, "min", 0.0F);
-    this.bound = paramSectFile.get(str, "bound", 1000.0F);
-  }
+    public void load(com.maddox.rts.SectFile sectfile)
+    {
+        java.lang.String s = "hcontrol." + owner.getEngineName();
+        roomMin = sectfile.get(s, "min", 0.0F);
+        bound = sectfile.get(s, "bound", 1000F);
+    }
 
-  public void save(SectFile paramSectFile)
-  {
-  }
+    public void save(com.maddox.rts.SectFile sectfile)
+    {
+    }
 
-  public void tick(float paramFloat)
-  {
-    if (paramFloat < this.bound)
-      this.owner.set(100, this.roomMin + (1.0F - this.roomMin) * (this.bound - paramFloat) / this.bound);
-    else
-      this.owner.set(100, this.roomMin);
-  }
+    public void tick(float f)
+    {
+        if(f < bound)
+            owner.set(100, roomMin + ((1.0F - roomMin) * (bound - f)) / bound);
+        else
+            owner.set(100, roomMin);
+    }
+
+    com.maddox.sound.Reverb owner;
+    float roomMin;
+    float bound;
 }

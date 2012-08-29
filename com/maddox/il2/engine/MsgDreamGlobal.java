@@ -1,42 +1,60 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MsgDreamGlobal.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.rts.Message;
 
-public class MsgDreamGlobal extends Message
+// Referenced classes of package com.maddox.il2.engine:
+//            MsgDreamGlobalListener, Actor
+
+public class MsgDreamGlobal extends com.maddox.rts.Message
 {
-  private boolean _bWakeup;
-  private int[] _xIndx;
-  private int[] _yIndx;
-  private int _count;
-  private int updateTicks;
-  private int updateTickCounter;
 
-  protected void sendTick(Actor paramActor, int paramInt1, int paramInt2)
-  {
-    this.updateTicks = paramInt1;
-    this.updateTickCounter = paramInt2;
-    send(paramActor);
-    this.updateTicks = 0;
-  }
-
-  protected void send(Actor paramActor, boolean paramBoolean, int paramInt, int[] paramArrayOfInt1, int[] paramArrayOfInt2) {
-    this._bWakeup = paramBoolean;
-    this._count = paramInt;
-    this._xIndx = paramArrayOfInt1;
-    this._yIndx = paramArrayOfInt2;
-    send(paramActor);
-    this._count = 0;
-  }
-
-  public boolean invokeListener(Object paramObject) {
-    if ((paramObject instanceof MsgDreamGlobalListener)) {
-      if (this.updateTicks != 0)
-        ((MsgDreamGlobalListener)paramObject).msgDreamGlobalTick(this.updateTicks, this.updateTickCounter);
-      else if (this._count != 0) {
-        ((MsgDreamGlobalListener)paramObject).msgDreamGlobal(this._bWakeup, this._count, this._xIndx, this._yIndx);
-      }
-      return true;
+    protected MsgDreamGlobal()
+    {
     }
-    return false;
-  }
+
+    protected void sendTick(com.maddox.il2.engine.Actor actor, int i, int j)
+    {
+        updateTicks = i;
+        updateTickCounter = j;
+        send(actor);
+        updateTicks = 0;
+    }
+
+    protected void send(com.maddox.il2.engine.Actor actor, boolean flag, int i, int ai[], int ai1[])
+    {
+        _bWakeup = flag;
+        _count = i;
+        _xIndx = ai;
+        _yIndx = ai1;
+        send(actor);
+        _count = 0;
+    }
+
+    public boolean invokeListener(java.lang.Object obj)
+    {
+        if(obj instanceof com.maddox.il2.engine.MsgDreamGlobalListener)
+        {
+            if(updateTicks != 0)
+                ((com.maddox.il2.engine.MsgDreamGlobalListener)obj).msgDreamGlobalTick(updateTicks, updateTickCounter);
+            else
+            if(_count != 0)
+                ((com.maddox.il2.engine.MsgDreamGlobalListener)obj).msgDreamGlobal(_bWakeup, _count, _xIndx, _yIndx);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    private boolean _bWakeup;
+    private int _xIndx[];
+    private int _yIndx[];
+    private int _count;
+    private int updateTicks;
+    private int updateTickCounter;
 }

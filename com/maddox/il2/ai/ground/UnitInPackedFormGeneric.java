@@ -1,20 +1,37 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   UnitInPackedFormGeneric.java
+
 package com.maddox.il2.ai.ground;
+
 
 public class UnitInPackedFormGeneric
 {
-  private int codeName;
-  private int codeType;
-  private int state;
 
-  public int CodeName()
-  {
-    return this.codeName; } 
-  public int CodeType() { return this.codeType; } 
-  public int State() { return this.state; }
+    public int CodeName()
+    {
+        return codeName;
+    }
 
-  public UnitInPackedFormGeneric(int paramInt1, int paramInt2, int paramInt3) {
-    this.codeName = paramInt1;
-    this.codeType = paramInt2;
-    this.state = paramInt3;
-  }
+    public int CodeType()
+    {
+        return codeType;
+    }
+
+    public int State()
+    {
+        return state;
+    }
+
+    public UnitInPackedFormGeneric(int i, int j, int k)
+    {
+        codeName = i;
+        codeType = j;
+        state = k;
+    }
+
+    private int codeName;
+    private int codeType;
+    private int state;
 }

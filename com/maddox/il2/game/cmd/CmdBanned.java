@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdBanned.java
+
 package com.maddox.il2.game.cmd;
 
 import com.maddox.il2.game.Main;
@@ -11,171 +16,194 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdBanned extends Cmd
+public class CmdBanned extends com.maddox.rts.Cmd
 {
-  public static final String NAME = "NAME";
-  public static final String PATTERN = "PATTERN";
-  public static final String IP = "IP";
-  public static final String ADD = "ADD";
-  public static final String REM = "REM";
-  public static final String LOAD = "LOAD";
-  public static final String SAVE = "SAVE";
-  public static final String CLEAR = "CLEAR";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    if (Main.cur().netServerParams == null)
-      return null;
-    int i = (paramMap.containsKey("NAME")) || (paramMap.containsKey("PATTERN")) || (paramMap.containsKey("IP")) ? 1 : 0;
-
-    NetBanned localNetBanned = ((Connect)NetEnv.cur().connect).banned;
-    int j = 1;
-
-    if (paramMap.containsKey("CLEAR")) {
-      j = 0;
-      if (i != 0) {
-        if (paramMap.containsKey("NAME")) localNetBanned.name.clear();
-        if (paramMap.containsKey("PATTERN")) localNetBanned.patt.clear();
-        if (paramMap.containsKey("IP")) localNetBanned.ip.clear(); 
-      }
-      else {
-        localNetBanned.name.clear();
-        localNetBanned.patt.clear();
-        localNetBanned.ip.clear();
-      }
-    }
-
-    if (paramMap.containsKey("LOAD")) {
-      j = 0;
-      String str1 = NetBanned.fileName;
-      if (nargs(paramMap, "LOAD") > 0)
-        str1 = arg(paramMap, "LOAD", 0);
-      localNetBanned.load(str1);
-    }
-    int k;
-    int n;
-    String str3;
-    if ((paramMap.containsKey("ADD")) && (i != 0)) {
-      if (paramMap.containsKey("NAME")) {
-        j = 0;
-        k = nargs(paramMap, "NAME");
-        for (n = 0; n < k; n++) {
-          str3 = arg(paramMap, "NAME", n);
-          if (!localNetBanned.name.contains(str3))
-            localNetBanned.name.add(str3);
-        }
-      }
-      if (paramMap.containsKey("PATTERN")) {
-        j = 0;
-        k = nargs(paramMap, "PATTERN");
-        for (n = 0; n < k; n++) {
-          str3 = arg(paramMap, "PATTERN", n);
-          if (!localNetBanned.patt.contains(str3))
-            localNetBanned.patt.add(str3);
-        }
-      }
-      if (paramMap.containsKey("IP")) {
-        j = 0;
-        k = nargs(paramMap, "IP");
-        for (n = 0; n < k; n++) {
-          str3 = arg(paramMap, "IP", n);
-          int[][] arrayOfInt1 = localNetBanned.ipItem(str3);
-          if (arrayOfInt1 != null) {
-            if (localNetBanned.findIpItem(arrayOfInt1) == -1)
-              localNetBanned.ip.add(arrayOfInt1);
-          }
-          else ERR_HARD("Unknown format: " + str3);
-        }
-      }
-
-    }
-
-    if ((paramMap.containsKey("REM")) && (i != 0))
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
     {
-      int i1;
-      if (paramMap.containsKey("NAME")) {
-        j = 0;
-        k = nargs(paramMap, "NAME");
-        for (n = 0; n < k; n++) {
-          str3 = arg(paramMap, "NAME", n);
-          i1 = localNetBanned.name.indexOf(str3);
-          if (i1 >= 0)
-            localNetBanned.name.remove(i1);
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return null;
+        boolean flag = map.containsKey("NAME") || map.containsKey("PATTERN") || map.containsKey("IP");
+        com.maddox.il2.net.NetBanned netbanned = ((com.maddox.il2.net.Connect)com.maddox.rts.NetEnv.cur().connect).banned;
+        boolean flag1 = true;
+        if(map.containsKey("CLEAR"))
+        {
+            flag1 = false;
+            if(flag)
+            {
+                if(map.containsKey("NAME"))
+                    netbanned.name.clear();
+                if(map.containsKey("PATTERN"))
+                    netbanned.patt.clear();
+                if(map.containsKey("IP"))
+                    netbanned.ip.clear();
+            } else
+            {
+                netbanned.name.clear();
+                netbanned.patt.clear();
+                netbanned.ip.clear();
+            }
         }
-      }
-      if (paramMap.containsKey("PATTERN")) {
-        j = 0;
-        k = nargs(paramMap, "PATTERN");
-        for (n = 0; n < k; n++) {
-          str3 = arg(paramMap, "PATTERN", n);
-          i1 = localNetBanned.patt.indexOf(str3);
-          if (i1 >= 0)
-            localNetBanned.patt.remove(i1);
+        if(map.containsKey("LOAD"))
+        {
+            flag1 = false;
+            com.maddox.il2.net.NetBanned _tmp = netbanned;
+            java.lang.String s = com.maddox.il2.net.NetBanned.fileName;
+            if(com.maddox.il2.game.cmd.CmdBanned.nargs(map, "LOAD") > 0)
+                s = com.maddox.il2.game.cmd.CmdBanned.arg(map, "LOAD", 0);
+            netbanned.load(s);
         }
-      }
-      if (paramMap.containsKey("IP")) {
-        j = 0;
-        k = nargs(paramMap, "IP");
-        for (n = 0; n < k; n++) {
-          str3 = arg(paramMap, "IP", n);
-          int[][] arrayOfInt2 = localNetBanned.ipItem(str3);
-          if (arrayOfInt2 != null) {
-            int i2 = localNetBanned.findIpItem(arrayOfInt2);
-            if (i2 != -1)
-              localNetBanned.ip.remove(i2);
-          } else {
-            ERR_HARD("Unknown format: " + str3);
-          }
+        if(map.containsKey("ADD") && flag)
+        {
+            if(map.containsKey("NAME"))
+            {
+                flag1 = false;
+                int i = com.maddox.il2.game.cmd.CmdBanned.nargs(map, "NAME");
+                for(int j2 = 0; j2 < i; j2++)
+                {
+                    java.lang.String s2 = com.maddox.il2.game.cmd.CmdBanned.arg(map, "NAME", j2);
+                    if(!netbanned.name.contains(s2))
+                        netbanned.name.add(s2);
+                }
+
+            }
+            if(map.containsKey("PATTERN"))
+            {
+                flag1 = false;
+                int j = com.maddox.il2.game.cmd.CmdBanned.nargs(map, "PATTERN");
+                for(int k2 = 0; k2 < j; k2++)
+                {
+                    java.lang.String s3 = com.maddox.il2.game.cmd.CmdBanned.arg(map, "PATTERN", k2);
+                    if(!netbanned.patt.contains(s3))
+                        netbanned.patt.add(s3);
+                }
+
+            }
+            if(map.containsKey("IP"))
+            {
+                flag1 = false;
+                int k = com.maddox.il2.game.cmd.CmdBanned.nargs(map, "IP");
+                for(int l2 = 0; l2 < k; l2++)
+                {
+                    java.lang.String s4 = com.maddox.il2.game.cmd.CmdBanned.arg(map, "IP", l2);
+                    int ai[][] = netbanned.ipItem(s4);
+                    if(ai != null)
+                    {
+                        if(netbanned.findIpItem(ai) == -1)
+                            netbanned.ip.add(ai);
+                    } else
+                    {
+                        ERR_HARD("Unknown format: " + s4);
+                    }
+                }
+
+            }
         }
-      }
+        if(map.containsKey("REM") && flag)
+        {
+            if(map.containsKey("NAME"))
+            {
+                flag1 = false;
+                int l = com.maddox.il2.game.cmd.CmdBanned.nargs(map, "NAME");
+                for(int i3 = 0; i3 < l; i3++)
+                {
+                    java.lang.String s5 = com.maddox.il2.game.cmd.CmdBanned.arg(map, "NAME", i3);
+                    int l3 = netbanned.name.indexOf(s5);
+                    if(l3 >= 0)
+                        netbanned.name.remove(l3);
+                }
+
+            }
+            if(map.containsKey("PATTERN"))
+            {
+                flag1 = false;
+                int i1 = com.maddox.il2.game.cmd.CmdBanned.nargs(map, "PATTERN");
+                for(int j3 = 0; j3 < i1; j3++)
+                {
+                    java.lang.String s6 = com.maddox.il2.game.cmd.CmdBanned.arg(map, "PATTERN", j3);
+                    int i4 = netbanned.patt.indexOf(s6);
+                    if(i4 >= 0)
+                        netbanned.patt.remove(i4);
+                }
+
+            }
+            if(map.containsKey("IP"))
+            {
+                flag1 = false;
+                int j1 = com.maddox.il2.game.cmd.CmdBanned.nargs(map, "IP");
+                for(int k3 = 0; k3 < j1; k3++)
+                {
+                    java.lang.String s7 = com.maddox.il2.game.cmd.CmdBanned.arg(map, "IP", k3);
+                    int ai1[][] = netbanned.ipItem(s7);
+                    if(ai1 != null)
+                    {
+                        int j4 = netbanned.findIpItem(ai1);
+                        if(j4 != -1)
+                            netbanned.ip.remove(j4);
+                    } else
+                    {
+                        ERR_HARD("Unknown format: " + s7);
+                    }
+                }
+
+            }
+        }
+        if(map.containsKey("SAVE"))
+        {
+            flag1 = false;
+            com.maddox.il2.net.NetBanned _tmp1 = netbanned;
+            java.lang.String s1 = com.maddox.il2.net.NetBanned.fileName;
+            if(com.maddox.il2.game.cmd.CmdBanned.nargs(map, "SAVE") > 0)
+                s1 = com.maddox.il2.game.cmd.CmdBanned.arg(map, "SAVE", 0);
+            netbanned.save(s1);
+        }
+        if(flag1)
+        {
+            if((map.containsKey("NAME") || !flag) && netbanned.name.size() > 0)
+            {
+                INFO_HARD("Name:");
+                for(int k1 = 0; k1 < netbanned.name.size(); k1++)
+                    INFO_HARD("  " + (java.lang.String)netbanned.name.get(k1));
+
+            }
+            if((map.containsKey("PATTERN") || !flag) && netbanned.patt.size() > 0)
+            {
+                INFO_HARD("Pattern:");
+                for(int l1 = 0; l1 < netbanned.patt.size(); l1++)
+                    INFO_HARD("  " + (java.lang.String)netbanned.patt.get(l1));
+
+            }
+            if((map.containsKey("IP") || !flag) && netbanned.ip.size() > 0)
+            {
+                INFO_HARD("IP:");
+                for(int i2 = 0; i2 < netbanned.ip.size(); i2++)
+                    INFO_HARD("  " + netbanned.ipItem(i2));
+
+            }
+        }
+        return com.maddox.rts.CmdEnv.RETURN_OK;
     }
 
-    if (paramMap.containsKey("SAVE")) {
-      j = 0;
-      String str2 = NetBanned.fileName;
-      if (nargs(paramMap, "SAVE") > 0)
-        str2 = arg(paramMap, "SAVE", 0);
-      localNetBanned.save(str2);
-    }
-    if (j != 0)
+    public CmdBanned()
     {
-      int m;
-      if (((paramMap.containsKey("NAME")) || (i == 0)) && 
-        (localNetBanned.name.size() > 0)) {
-        INFO_HARD("Name:");
-        for (m = 0; m < localNetBanned.name.size(); m++) {
-          INFO_HARD("  " + (String)localNetBanned.name.get(m));
-        }
-      }
-      if (((paramMap.containsKey("PATTERN")) || (i == 0)) && 
-        (localNetBanned.patt.size() > 0)) {
-        INFO_HARD("Pattern:");
-        for (m = 0; m < localNetBanned.patt.size(); m++) {
-          INFO_HARD("  " + (String)localNetBanned.patt.get(m));
-        }
-      }
-      if (((paramMap.containsKey("IP")) || (i == 0)) && 
-        (localNetBanned.ip.size() > 0)) {
-        INFO_HARD("IP:");
-        for (m = 0; m < localNetBanned.ip.size(); m++) {
-          INFO_HARD("  " + localNetBanned.ipItem(m));
-        }
-      }
+        param.put("NAME", null);
+        param.put("PATTERN", null);
+        param.put("IP", null);
+        param.put("ADD", null);
+        param.put("REM", null);
+        param.put("LOAD", null);
+        param.put("SAVE", null);
+        param.put("CLEAR", null);
+        _properties.put("NAME", "banned");
+        _levelAccess = 1;
     }
 
-    return CmdEnv.RETURN_OK;
-  }
-
-  public CmdBanned() {
-    this.param.put("NAME", null);
-    this.param.put("PATTERN", null);
-    this.param.put("IP", null);
-    this.param.put("ADD", null);
-    this.param.put("REM", null);
-    this.param.put("LOAD", null);
-    this.param.put("SAVE", null);
-    this.param.put("CLEAR", null);
-    this._properties.put("NAME", "banned");
-    this._levelAccess = 1;
-  }
+    public static final java.lang.String NAME = "NAME";
+    public static final java.lang.String PATTERN = "PATTERN";
+    public static final java.lang.String IP = "IP";
+    public static final java.lang.String ADD = "ADD";
+    public static final java.lang.String REM = "REM";
+    public static final java.lang.String LOAD = "LOAD";
+    public static final java.lang.String SAVE = "SAVE";
+    public static final java.lang.String CLEAR = "CLEAR";
 }

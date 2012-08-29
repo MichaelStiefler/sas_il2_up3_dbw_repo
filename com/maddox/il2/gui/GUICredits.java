@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUICredits.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GBevel;
@@ -5,7 +10,6 @@ import com.maddox.gwindow.GCanvas;
 import com.maddox.gwindow.GColor;
 import com.maddox.gwindow.GFont;
 import com.maddox.gwindow.GRegion;
-import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowDialogClient;
 import com.maddox.gwindow.GWindowLookAndFeel;
@@ -17,158 +21,181 @@ import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.I18N;
 import com.maddox.il2.game.Main;
 
-public class GUICredits extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUILookAndFeel, 
+//            GUIButton, GUIDialogClient
+
+public class GUICredits extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GUIButton bExit;
-  public ScrollDescript wScrollDescription;
-  public Descript wDescript;
-  String text = "credits";
-  GFont fontCredits;
-
-  public void _enter()
-  {
-    this.text = I18N.credits("credits");
-    this.client.showWindow();
-  }
-  public void _leave() {
-    this.client.hideWindow();
-  }
-
-  public GUICredits(GWindowRoot paramGWindowRoot)
-  {
-    super(16);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("credits.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.fontCredits = GFont.New("courb10");
-    this.dialogClient.create(this.wScrollDescription = new ScrollDescript());
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-    this.bExit = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-    }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-
-      if (paramGWindow == GUICredits.this.bExit) {
-        Main.stateStack().pop();
-        return true;
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
-    }
-
-    public void render() {
-      super.render();
-
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-      draw(x1024(96.0F), y1024(648.0F), x1024(264.0F), y1024(48.0F), 0, GUICredits.this.i18n("credits.Back"));
-      setCanvasColorWHITE();
-      draw(x1024(336.0F), y1024(640.0F), x1024(656.0F), y1024(32.0F), 0, I18N.credits("copyright1"));
-      draw(x1024(336.0F), y1024(672.0F), x1024(656.0F), y1024(32.0F), 0, I18N.credits("copyright2"));
-    }
-
-    public void setPosSize()
-    {
-      set1024PosSize(0.0F, 32.0F, 1024.0F, 736.0F);
-      GUICredits.this.bExit.setPosC(x1024(56.0F), y1024(672.0F));
-      GUICredits.this.wScrollDescription.setPosSize(x1024(32.0F), y1024(32.0F), x1024(960.0F), y1024(576.0F));
-    }
-  }
-
-  public class Descript extends GWindowDialogClient
-  {
-    public Descript()
-    {
-    }
-
-    public void render()
-    {
-      if (GUICredits.this.text != null) {
-        GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-        GFont localGFont = this.root.C.font;
-        this.root.C.font = GUICredits.this.fontCredits;
-        setCanvasColorBLACK();
-        this.root.C.clip.y += localGBevel.T.dy;
-        this.root.C.clip.dy -= localGBevel.T.dy + localGBevel.B.dy;
-        drawLines(localGBevel.L.dx + 2.0F, localGBevel.T.dy + 2.0F, GUICredits.this.text, 0, GUICredits.this.text.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F, this.root.C.font.height);
-
-        this.root.C.font = localGFont;
-      }
-    }
-
-    public void computeSize() {
-      if (GUICredits.this.text != null) {
-        GFont localGFont = this.root.C.font;
-        this.root.C.font = GUICredits.this.fontCredits;
-        this.win.dx = this.parentWindow.win.dx;
-        GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-        int i = computeLines(GUICredits.this.text, 0, GUICredits.this.text.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
-        this.win.dy = (this.root.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
-        if (this.win.dy > this.parentWindow.win.dy) {
-          this.win.dx = (this.parentWindow.win.dx - lookAndFeel().getVScrollBarW());
-          i = computeLines(GUICredits.this.text, 0, GUICredits.this.text.length(), this.win.dx - localGBevel.L.dx - localGBevel.R.dx - 4.0F);
-          this.win.dy = (this.root.C.font.height * i + localGBevel.T.dy + localGBevel.B.dy + 4.0F);
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bExit)
+            {
+                com.maddox.il2.game.Main.stateStack().pop();
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
         }
-        this.root.C.font = localGFont;
-      } else {
-        this.win.dx = this.parentWindow.win.dx;
-        this.win.dy = this.parentWindow.win.dy;
-      }
-    }
-  }
 
-  public class ScrollDescript extends GWindowScrollingDialogClient
-  {
-    public ScrollDescript()
+        public void render()
+        {
+            super.render();
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(96F), y1024(648F), x1024(264F), y1024(48F), 0, i18n("credits.Back"));
+            setCanvasColorWHITE();
+            draw(x1024(336F), y1024(640F), x1024(656F), y1024(32F), 0, com.maddox.il2.game.I18N.credits("copyright1"));
+            draw(x1024(336F), y1024(672F), x1024(656F), y1024(32F), 0, com.maddox.il2.game.I18N.credits("copyright2"));
+        }
+
+        public void setPosSize()
+        {
+            set1024PosSize(0.0F, 32F, 1024F, 736F);
+            bExit.setPosC(x1024(56F), y1024(672F));
+            wScrollDescription.setPosSize(x1024(32F), y1024(32F), x1024(960F), y1024(576F));
+        }
+
+        public DialogClient()
+        {
+        }
+    }
+
+    public class Descript extends com.maddox.gwindow.GWindowDialogClient
     {
+
+        public void render()
+        {
+            if(text != null)
+            {
+                com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+                com.maddox.gwindow.GFont gfont = root.C.font;
+                root.C.font = fontCredits;
+                setCanvasColorBLACK();
+                root.C.clip.y += gbevel.T.dy;
+                root.C.clip.dy -= gbevel.T.dy + gbevel.B.dy;
+                drawLines(gbevel.L.dx + 2.0F, gbevel.T.dy + 2.0F, text, 0, text.length(), win.dx - gbevel.L.dx - gbevel.R.dx - 4F, root.C.font.height);
+                root.C.font = gfont;
+            }
+        }
+
+        public void computeSize()
+        {
+            if(text != null)
+            {
+                com.maddox.gwindow.GFont gfont = root.C.font;
+                root.C.font = fontCredits;
+                win.dx = parentWindow.win.dx;
+                com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+                int i = computeLines(text, 0, text.length(), win.dx - gbevel.L.dx - gbevel.R.dx - 4F);
+                win.dy = root.C.font.height * (float)i + gbevel.T.dy + gbevel.B.dy + 4F;
+                if(win.dy > parentWindow.win.dy)
+                {
+                    win.dx = parentWindow.win.dx - lookAndFeel().getVScrollBarW();
+                    int j = computeLines(text, 0, text.length(), win.dx - gbevel.L.dx - gbevel.R.dx - 4F);
+                    win.dy = root.C.font.height * (float)j + gbevel.T.dy + gbevel.B.dy + 4F;
+                }
+                root.C.font = gfont;
+            } else
+            {
+                win.dx = parentWindow.win.dx;
+                win.dy = parentWindow.win.dy;
+            }
+        }
+
+        public Descript()
+        {
+        }
     }
 
-    public void created()
+    public class ScrollDescript extends com.maddox.gwindow.GWindowScrollingDialogClient
     {
-      this.fixed = (GUICredits.this.wDescript = (GUICredits.Descript)create(new GUICredits.Descript(GUICredits.this)));
-      this.fixed.bNotify = true;
-      this.bNotify = true;
-    }
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-      if (super.notify(paramGWindow, paramInt1, paramInt2))
-        return true;
-      notify(paramInt1, paramInt2);
-      return false;
-    }
-    public void resized() {
-      if (GUICredits.this.wDescript != null) {
-        GUICredits.this.wDescript.computeSize();
-      }
-      super.resized();
-      if (this.vScroll.isVisible()) {
-        GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-        this.vScroll.setPos(this.win.dx - lookAndFeel().getVScrollBarW() - localGBevel.R.dx, localGBevel.T.dy);
-        this.vScroll.setSize(lookAndFeel().getVScrollBarW(), this.win.dy - localGBevel.T.dy - localGBevel.B.dy);
-      }
+
+        public void created()
+        {
+            fixed = wDescript = (com.maddox.il2.gui.Descript)create(new Descript());
+            fixed.bNotify = true;
+            bNotify = true;
+        }
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(super.notify(gwindow, i, j))
+            {
+                return true;
+            } else
+            {
+                notify(i, j);
+                return false;
+            }
+        }
+
+        public void resized()
+        {
+            if(wDescript != null)
+                wDescript.computeSize();
+            super.resized();
+            if(vScroll.isVisible())
+            {
+                com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+                vScroll.setPos(win.dx - lookAndFeel().getVScrollBarW() - gbevel.R.dx, gbevel.T.dy);
+                vScroll.setSize(lookAndFeel().getVScrollBarW(), win.dy - gbevel.T.dy - gbevel.B.dy);
+            }
+        }
+
+        public void render()
+        {
+            setCanvasColorWHITE();
+            com.maddox.gwindow.GBevel gbevel = ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).bevelComboDown;
+            lookAndFeel().drawBevel(this, 0.0F, 0.0F, win.dx, win.dy, gbevel, ((com.maddox.il2.gui.GUILookAndFeel)lookAndFeel()).basicelements, true);
+        }
+
+        public ScrollDescript()
+        {
+        }
     }
 
-    public void render() {
-      setCanvasColorWHITE();
-      GBevel localGBevel = ((GUILookAndFeel)lookAndFeel()).bevelComboDown;
-      lookAndFeel().drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, localGBevel, ((GUILookAndFeel)lookAndFeel()).basicelements, true);
+
+    public void _enter()
+    {
+        text = com.maddox.il2.game.I18N.credits("credits");
+        client.showWindow();
     }
-  }
+
+    public void _leave()
+    {
+        client.hideWindow();
+    }
+
+    public GUICredits(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(16);
+        text = "credits";
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("credits.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        fontCredits = com.maddox.gwindow.GFont.New("courb10");
+        dialogClient.create(wScrollDescription = new ScrollDescript());
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bExit = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        client.hideWindow();
+    }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.GUIButton bExit;
+    public com.maddox.il2.gui.ScrollDescript wScrollDescription;
+    public com.maddox.il2.gui.Descript wDescript;
+    java.lang.String text;
+    com.maddox.gwindow.GFont fontCredits;
 }

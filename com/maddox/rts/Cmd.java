@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Cmd.java
+
 package com.maddox.rts;
 
 import java.io.PrintStream;
@@ -6,199 +11,226 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+// Referenced classes of package com.maddox.rts:
+//            CmdEnv
+
 public class Cmd
 {
-  public static boolean INFO_HARD = true;
-  public static boolean INFO_SOFT = true;
-  public static boolean ERR_HARD = true;
-  public static boolean ERR_SOFT = true;
-  public static final String PROP_NAME = "NAME";
-  public static final String PROP_HELP = "HELP";
-  public static final String PROP_PARAMS = "PARAMS";
-  public static final String TEMP = "_$$$$$";
-  public static final String PREVPREV = "_$$2";
-  public static final String PREV = "_$$1";
-  public static final String CURRENT = "_$$0";
-  public static final String ARGS = "_$$";
-  protected HashMap _properties;
-  protected TreeMap param;
-  protected int _levelAccess;
 
-  public Object exec(CmdEnv paramCmdEnv, String paramString)
-  {
-    return null;
-  }
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap) {
-    return null;
-  }
-
-  public static boolean exist(Map paramMap, String paramString)
-  {
-    return paramMap.containsKey(paramString);
-  }
-
-  public static int nargs(Map paramMap, String paramString)
-  {
-    if (paramMap.containsKey(paramString)) {
-      List localList = (List)paramMap.get(paramString);
-      if (localList != null)
-        return localList.size();
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.lang.String s)
+    {
+        return null;
     }
-    return 0;
-  }
 
-  public static String arg(Map paramMap, String paramString, int paramInt)
-  {
-    if (paramMap.containsKey(paramString)) {
-      List localList = (List)paramMap.get(paramString);
-      if ((localList != null) && 
-        (paramInt >= 0) && (paramInt < localList.size()))
-        return (String)localList.get(paramInt);
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        return null;
     }
-    return null;
-  }
 
-  public static int arg(Map paramMap, String paramString, int paramInt1, int paramInt2)
-  {
-    String str = arg(paramMap, paramString, paramInt1);
-    if (str == null)
-      return paramInt2;
-    try {
-      return Integer.parseInt(str); } catch (Exception localException) {
+    public static boolean exist(java.util.Map map, java.lang.String s)
+    {
+        return map.containsKey(s);
     }
-    return paramInt2;
-  }
 
-  public static int arg(Map paramMap, String paramString, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
-  {
-    int i = arg(paramMap, paramString, paramInt1, paramInt2);
-    if (i < paramInt3) i = paramInt3;
-    if (i > paramInt4) i = paramInt4;
-    return i;
-  }
-
-  public static long arg(Map paramMap, String paramString, int paramInt, long paramLong)
-  {
-    String str = arg(paramMap, paramString, paramInt);
-    if (str == null)
-      return paramLong;
-    try {
-      return Long.parseLong(str); } catch (Exception localException) {
-    }
-    return paramLong;
-  }
-
-  public static long arg(Map paramMap, String paramString, int paramInt, long paramLong1, long paramLong2, long paramLong3)
-  {
-    long l = arg(paramMap, paramString, paramInt, paramLong1);
-    if (l < paramLong2) l = paramLong2;
-    if (l > paramLong3) l = paramLong3;
-    return l;
-  }
-
-  public static float arg(Map paramMap, String paramString, int paramInt, float paramFloat)
-  {
-    String str = arg(paramMap, paramString, paramInt);
-    if (str == null)
-      return paramFloat;
-    try {
-      return Float.parseFloat(str); } catch (Exception localException) {
-    }
-    return paramFloat;
-  }
-
-  public static float arg(Map paramMap, String paramString, int paramInt, float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    float f = arg(paramMap, paramString, paramInt, paramFloat1);
-    if (f < paramFloat2) f = paramFloat2;
-    if (f > paramFloat3) f = paramFloat3;
-    return f;
-  }
-
-  public static double arg(Map paramMap, String paramString, int paramInt, double paramDouble)
-  {
-    String str = arg(paramMap, paramString, paramInt);
-    if (str == null)
-      return paramDouble;
-    try {
-      return Double.parseDouble(str); } catch (Exception localException) {
-    }
-    return paramDouble;
-  }
-
-  public static double arg(Map paramMap, String paramString, int paramInt, double paramDouble1, double paramDouble2, double paramDouble3)
-  {
-    double d = arg(paramMap, paramString, paramInt, paramDouble1);
-    if (d < paramDouble2) d = paramDouble2;
-    if (d > paramDouble3) d = paramDouble3;
-    return d;
-  }
-
-  public static String args(Map paramMap, String paramString)
-  {
-    if (paramMap.containsKey(paramString)) {
-      List localList = (List)paramMap.get(paramString);
-      if ((localList != null) && (localList.size() > 0)) {
-        StringBuffer localStringBuffer = new StringBuffer();
-        for (int i = 0; i < localList.size(); i++) {
-          if (i != 0) localStringBuffer.append(' ');
-          localStringBuffer.append((String)localList.get(i));
+    public static int nargs(java.util.Map map, java.lang.String s)
+    {
+        if(map.containsKey(s))
+        {
+            java.util.List list = (java.util.List)map.get(s);
+            if(list != null)
+                return list.size();
         }
-        return localStringBuffer.toString();
-      }
+        return 0;
     }
-    return null;
-  }
 
-  protected void ERR_HARD(String paramString)
-  {
-    if (ERR_HARD) {
-      String str = (String)this._properties.get("NAME");
-      System.err.println("ERROR " + (str != null ? str + ": " + paramString : paramString));
+    public static java.lang.String arg(java.util.Map map, java.lang.String s, int i)
+    {
+        if(map.containsKey(s))
+        {
+            java.util.List list = (java.util.List)map.get(s);
+            if(list != null && i >= 0 && i < list.size())
+                return (java.lang.String)list.get(i);
+        }
+        return null;
     }
-  }
 
-  protected void ERR_SOFT(String paramString)
-  {
-    if (ERR_SOFT) {
-      String str = (String)this._properties.get("NAME");
-      System.err.println(str != null ? str + ": " + paramString : paramString);
+    public static int arg(java.util.Map map, java.lang.String s, int i, int j)
+    {
+        java.lang.String s1;
+        s1 = com.maddox.rts.Cmd.arg(map, s, i);
+        if(s1 == null)
+            return j;
+        return java.lang.Integer.parseInt(s1);
+        java.lang.Exception exception;
+        exception;
+        return j;
     }
-  }
 
-  protected void INFO_HARD(String paramString)
-  {
-    if (INFO_HARD)
-      System.out.println(paramString);
-  }
+    public static int arg(java.util.Map map, java.lang.String s, int i, int j, int k, int l)
+    {
+        int i1 = com.maddox.rts.Cmd.arg(map, s, i, j);
+        if(i1 < k)
+            i1 = k;
+        if(i1 > l)
+            i1 = l;
+        return i1;
+    }
 
-  protected void INFO_SOFT(String paramString)
-  {
-    if (INFO_SOFT)
-      System.out.println(paramString);
-  }
+    public static long arg(java.util.Map map, java.lang.String s, int i, long l)
+    {
+        java.lang.String s1;
+        s1 = com.maddox.rts.Cmd.arg(map, s, i);
+        if(s1 == null)
+            return l;
+        return java.lang.Long.parseLong(s1);
+        java.lang.Exception exception;
+        exception;
+        return l;
+    }
 
-  public boolean isRawFormat()
-  {
-    return false;
-  }
+    public static long arg(java.util.Map map, java.lang.String s, int i, long l, long l1, long l2)
+    {
+        long l3 = com.maddox.rts.Cmd.arg(map, s, i, l);
+        if(l3 < l1)
+            l3 = l1;
+        if(l3 > l2)
+            l3 = l2;
+        return l3;
+    }
 
-  public Map properties()
-  {
-    return this._properties;
-  }
+    public static float arg(java.util.Map map, java.lang.String s, int i, float f)
+    {
+        java.lang.String s1;
+        s1 = com.maddox.rts.Cmd.arg(map, s, i);
+        if(s1 == null)
+            return f;
+        return java.lang.Float.parseFloat(s1);
+        java.lang.Exception exception;
+        exception;
+        return f;
+    }
 
-  public int levelAccess()
-  {
-    return this._levelAccess;
-  }
+    public static float arg(java.util.Map map, java.lang.String s, int i, float f, float f1, float f2)
+    {
+        float f3 = com.maddox.rts.Cmd.arg(map, s, i, f);
+        if(f3 < f1)
+            f3 = f1;
+        if(f3 > f2)
+            f3 = f2;
+        return f3;
+    }
 
-  public Cmd()
-  {
-    this._properties = new HashMap();
-    this.param = new TreeMap();
-    this.param.put("_$$", null);
-    this._properties.put("PARAMS", this.param);
-    this._levelAccess = 0;
-  }
+    public static double arg(java.util.Map map, java.lang.String s, int i, double d)
+    {
+        java.lang.String s1;
+        s1 = com.maddox.rts.Cmd.arg(map, s, i);
+        if(s1 == null)
+            return d;
+        return java.lang.Double.parseDouble(s1);
+        java.lang.Exception exception;
+        exception;
+        return d;
+    }
+
+    public static double arg(java.util.Map map, java.lang.String s, int i, double d, double d1, double d2)
+    {
+        double d3 = com.maddox.rts.Cmd.arg(map, s, i, d);
+        if(d3 < d1)
+            d3 = d1;
+        if(d3 > d2)
+            d3 = d2;
+        return d3;
+    }
+
+    public static java.lang.String args(java.util.Map map, java.lang.String s)
+    {
+        if(map.containsKey(s))
+        {
+            java.util.List list = (java.util.List)map.get(s);
+            if(list != null && list.size() > 0)
+            {
+                java.lang.StringBuffer stringbuffer = new StringBuffer();
+                for(int i = 0; i < list.size(); i++)
+                {
+                    if(i != 0)
+                        stringbuffer.append(' ');
+                    stringbuffer.append((java.lang.String)list.get(i));
+                }
+
+                return stringbuffer.toString();
+            }
+        }
+        return null;
+    }
+
+    protected void ERR_HARD(java.lang.String s)
+    {
+        if(ERR_HARD)
+        {
+            java.lang.String s1 = (java.lang.String)_properties.get("NAME");
+            java.lang.System.err.println("ERROR " + (s1 == null ? s : s1 + ": " + s));
+        }
+    }
+
+    protected void ERR_SOFT(java.lang.String s)
+    {
+        if(ERR_SOFT)
+        {
+            java.lang.String s1 = (java.lang.String)_properties.get("NAME");
+            java.lang.System.err.println(s1 == null ? s : s1 + ": " + s);
+        }
+    }
+
+    protected void INFO_HARD(java.lang.String s)
+    {
+        if(INFO_HARD)
+            java.lang.System.out.println(s);
+    }
+
+    protected void INFO_SOFT(java.lang.String s)
+    {
+        if(INFO_SOFT)
+            java.lang.System.out.println(s);
+    }
+
+    public boolean isRawFormat()
+    {
+        return false;
+    }
+
+    public java.util.Map properties()
+    {
+        return _properties;
+    }
+
+    public int levelAccess()
+    {
+        return _levelAccess;
+    }
+
+    public Cmd()
+    {
+        _properties = new HashMap();
+        param = new TreeMap();
+        param.put("_$$", null);
+        _properties.put("PARAMS", param);
+        _levelAccess = 0;
+    }
+
+    public static boolean INFO_HARD = true;
+    public static boolean INFO_SOFT = true;
+    public static boolean ERR_HARD = true;
+    public static boolean ERR_SOFT = true;
+    public static final java.lang.String PROP_NAME = "NAME";
+    public static final java.lang.String PROP_HELP = "HELP";
+    public static final java.lang.String PROP_PARAMS = "PARAMS";
+    public static final java.lang.String TEMP = "_$$$$$";
+    public static final java.lang.String PREVPREV = "_$$2";
+    public static final java.lang.String PREV = "_$$1";
+    public static final java.lang.String CURRENT = "_$$0";
+    public static final java.lang.String ARGS = "_$$";
+    protected java.util.HashMap _properties;
+    protected java.util.TreeMap param;
+    protected int _levelAccess;
+
 }

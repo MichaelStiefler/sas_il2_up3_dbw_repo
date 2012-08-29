@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PlaneGeneric.java
+
 package com.maddox.il2.objects.vehicles.planes;
 
 import com.maddox.JGP.Geom;
@@ -43,7 +48,6 @@ import com.maddox.rts.NetChannelInStream;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.NetObj;
 import com.maddox.rts.ObjIO;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
@@ -53,692 +57,662 @@ import com.maddox.util.TableFunction2;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public abstract class PlaneGeneric extends ActorHMesh
-  implements MsgExplosionListener, MsgShotListener, Prey, Obstacle, ActorAlign
+public abstract class PlaneGeneric extends com.maddox.il2.engine.ActorHMesh
+    implements com.maddox.il2.ai.MsgExplosionListener, com.maddox.il2.ai.MsgShotListener, com.maddox.il2.ai.ground.Prey, com.maddox.il2.ai.ground.Obstacle, com.maddox.il2.objects.ActorAlign
 {
-  private PlaneProperties prop = null;
-
-  public String country = null;
-
-  private int dying = 0;
-  static final int DYING_NONE = 0;
-  static final int DYING_DEAD = 1;
-  private static PlaneProperties constr_arg1 = null;
-  private static ActorSpawnArg constr_arg2 = null;
-
-  private static Point3d p = new Point3d();
-  private static Orient o = new Orient();
-  private static Vector3f n = new Vector3f();
-  private static Vector3d tmpv = new Vector3d();
-
-  private static int[] pnti = new int[3];
-  private static Matrix4d M4 = new Matrix4d();
-
-  public static final double Rnd(double paramDouble1, double paramDouble2)
-  {
-    return World.Rnd().nextDouble(paramDouble1, paramDouble2);
-  }
-  public static final float Rnd(float paramFloat1, float paramFloat2) {
-    return World.Rnd().nextFloat(paramFloat1, paramFloat2);
-  }
-  private boolean RndB(float paramFloat) {
-    return World.Rnd().nextFloat(0.0F, 1.0F) < paramFloat;
-  }
-
-  private static final long SecsToTicks(float paramFloat) {
-    long l = ()(0.5D + paramFloat / Time.tickLenFs());
-    return l < 1L ? 1L : l;
-  }
-
-  public boolean isStaticPos()
-  {
-    return true;
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    paramShot.bodyMaterial = 2;
-
-    if (this.dying != 0) {
-      return;
-    }
-
-    if (paramShot.power <= 0.0F) {
-      return;
-    }
-
-    if ((isNetMirror()) && (paramShot.isMirage())) {
-      return;
-    }
-
-    if (paramShot.powerType == 1) {
-      if (RndB(0.15F)) {
-        return;
-      }
-
-      Die(paramShot.initiator, 0, true);
-      return;
-    }
-
-    float f1 = this.prop.PANZER * Rnd(0.93F, 1.07F);
-
-    float f2 = this.prop.fnShotPanzer.Value(paramShot.power, f1);
-
-    if ((f2 < 1000.0F) && ((f2 <= 1.0F) || (RndB(1.0F / f2))))
-      Die(paramShot.initiator, 0, true);
-  }
-
-  public void msgExplosion(Explosion paramExplosion)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if ((isNetMirror()) && (paramExplosion.isMirage())) {
-      return;
-    }
-
-    if (paramExplosion.power <= 0.0F) {
-      return;
-    }
-
-    if (paramExplosion.powerType == 1) {
-      if (TankGeneric.splintersKill(paramExplosion, this.prop.fnShotPanzer, Rnd(0.0F, 1.0F), Rnd(0.0F, 1.0F), this, 0.6F, 0.0F, this.prop.PANZER, this.prop.PANZER, this.prop.PANZER, this.prop.PANZER, this.prop.PANZER, this.prop.PANZER))
-      {
-        Die(paramExplosion.initiator, 0, true);
-      }
-      return;
-    }
-
-    if ((paramExplosion.powerType == 2) && (paramExplosion.chunkName != null)) {
-      Die(paramExplosion.initiator, 0, true);
-      return;
-    }
-    float f1;
-    if (paramExplosion.chunkName != null)
-      f1 = 0.5F * paramExplosion.power;
-    else {
-      f1 = paramExplosion.receivedTNTpower(this);
-    }
-    f1 *= Rnd(0.95F, 1.05F);
-
-    float f2 = this.prop.PANZER;
-
-    float f3 = this.prop.fnExplodePanzer.Value(f1, f2);
-
-    if ((f3 < 1000.0F) && ((f3 <= 1.0F) || (RndB(1.0F / f3))))
-      Die(paramExplosion.initiator, 0, true);
-  }
-
-  private void ShowExplode(float paramFloat)
-  {
-    if (paramFloat > 0.0F) {
-      paramFloat = Rnd(paramFloat, paramFloat * 1.6F);
-    }
-    Explosions.runByName(this.prop.explodeName, this, "", "", paramFloat);
-  }
-
-  private void Die(Actor paramActor, short paramShort, boolean paramBoolean)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if (paramShort <= 0) {
-      if (isNetMirror()) {
-        send_DeathRequest(paramActor);
-        return;
-      }
-
-      paramShort = 1;
-    }
-
-    this.dying = 1;
-    World.onActorDied(this, paramActor);
-
-    activateMesh(false);
-    Align(false, true);
-    if (paramBoolean) {
-      ShowExplode(17.0F);
-    }
-
-    if (paramBoolean)
-      send_DeathCommand(paramActor);
-  }
-
-  public void destroy()
-  {
-    if (isDestroyed())
-      return;
-    super.destroy();
-  }
-
-  public Object getSwitchListener(Message paramMessage) {
-    return this;
-  }
-
-  protected PlaneGeneric()
-  {
-    this(constr_arg1, constr_arg2);
-  }
-
-  private PlaneGeneric(PlaneProperties paramPlaneProperties, ActorSpawnArg paramActorSpawnArg)
-  {
-    this.prop = paramPlaneProperties;
-
-    paramActorSpawnArg.setStationary(this);
-
-    this.country = paramActorSpawnArg.country;
-    try
+    public static class SPAWN
+        implements com.maddox.il2.engine.ActorSpawn
     {
-      activateMesh(true);
-    } catch (RuntimeException localRuntimeException) {
-      super.destroy();
-      throw localRuntimeException;
-    }
 
-    collide(true);
-    drawing(true);
-
-    createNetObject(paramActorSpawnArg.netChannel, paramActorSpawnArg.netIdRemote);
-
-    if ((this.prop.height == 0.0F) && (this.prop.pitch == 0.0F)) {
-      pnti[0] = hierMesh().hookFind("_ClipLGear");
-      pnti[1] = hierMesh().hookFind("_ClipRGear");
-      pnti[2] = hierMesh().hookFind("_ClipCGear");
-      String str = Property.stringValue(this.prop.clazz, "FlightModel", null);
-      SectFile localSectFile = FlightModelMain.sectFile(str);
-      if ((pnti[0] >= 0) && (pnti[1] >= 0) && (pnti[2] >= 0) && (localSectFile.get("Gear", "FromIni", 0) == 0))
-      {
-        hierMesh().hookMatrix(pnti[2], M4);
-        double d1 = M4.m03;
-        double d2 = M4.m23;
-        hierMesh().hookMatrix(pnti[0], M4);
-        double d3 = M4.m03;
-        double d4 = M4.m23;
-        hierMesh().hookMatrix(pnti[1], M4);
-        d3 = (d3 + M4.m03) * 0.5D;
-        d4 = (d4 + M4.m23) * 0.5D;
-
-        double d5 = d3 - d1;
-        double d6 = d4 - d2;
-        this.prop.pitch = (-Geom.RAD2DEG((float)Math.atan2(d6, d5)));
-        if (d5 < 0.0D) this.prop.pitch += 180.0F;
-        Line2f localLine2f = new Line2f();
-        localLine2f.set(new Point2f((float)d3, (float)d4), new Point2f((float)d1, (float)d2));
-        this.prop.height = localLine2f.distance(new Point2f(0.0F, 0.0F));
-      } else {
-        this.prop.height = localSectFile.get("Gear", "H", -0.5F);
-        this.prop.pitch = localSectFile.get("Gear", "Pitch", -0.5F);
-      }
-    }
-
-    Align(true, false);
-  }
-
-  public void activateMesh(boolean paramBoolean)
-  {
-    if (paramBoolean) {
-      localObject1 = Regiment.findFirst(this.country, getArmy());
-      localObject2 = Aircraft.getPropertyMesh(this.prop.clazz, ((Regiment)localObject1).country());
-      setMesh((String)localObject2);
-      Aircraft.prepareMeshCamouflage((String)localObject2, hierMesh());
-      PaintScheme localPaintScheme = Aircraft.getPropertyPaintScheme(this.prop.clazz, ((Regiment)localObject1).country());
-      localPaintScheme.prepareNum(this.prop.clazz, hierMesh(), (Regiment)localObject1, (int)(Math.random() * 3.0D), (int)(Math.random() * 3.0D), (int)(Math.random() * 98.0D + 1.0D));
-    }
-
-    Object localObject1 = Aircraft.partNames();
-    Object localObject2 = hierMesh();
-    for (int i = 1; (i < 10) && 
-      (((HierMesh)localObject2).chunkFindCheck("Pilot" + i + "_D0") >= 0); i++)
-    {
-      ((HierMesh)localObject2).chunkVisible("Pilot" + i + "_D0", false);
-      if (((HierMesh)localObject2).chunkFindCheck("Head" + i + "_D0") >= 0) {
-        ((HierMesh)localObject2).chunkVisible("Head" + i + "_D0", false);
-      }
-      if (((HierMesh)localObject2).chunkFindCheck("HMask" + i + "_D0") >= 0) {
-        ((HierMesh)localObject2).chunkVisible("HMask" + i + "_D0", false);
-      }
-      if (((HierMesh)localObject2).chunkFindCheck("Pilot" + i + "a_D0") >= 0) {
-        ((HierMesh)localObject2).chunkVisible("Pilot" + i + "a_D0", false);
-      }
-      if (((HierMesh)localObject2).chunkFindCheck("Head" + i + "a_D0") >= 0) {
-        ((HierMesh)localObject2).chunkVisible("Head" + i + "a_D0", false);
-      }
-      if (((HierMesh)localObject2).chunkFindCheck("Pilot" + i + "_FAK") >= 0) {
-        ((HierMesh)localObject2).chunkVisible("Pilot" + i + "_FAK", false);
-      }
-      if (((HierMesh)localObject2).chunkFindCheck("Pilot" + i + "_FAL") >= 0) {
-        ((HierMesh)localObject2).chunkVisible("Pilot" + i + "_FAL", false);
-      }
-      if (((HierMesh)localObject2).chunkFindCheck("Head" + i + "_FAK") >= 0) {
-        ((HierMesh)localObject2).chunkVisible("Head" + i + "_FAK", false);
-      }
-      if (((HierMesh)localObject2).chunkFindCheck("Head" + i + "_FAL") >= 0) {
-        ((HierMesh)localObject2).chunkVisible("Head" + i + "_FAL", false);
-      }
-
-    }
-
-    if (!paramBoolean) {
-      for (i = 0; i < localObject1.length; i++) {
-        if (((HierMesh)localObject2).chunkFindCheck(localObject1[i] + "_D0") >= 0) {
-          ((HierMesh)localObject2).chunkVisible(localObject1[i] + "_D0", false);
-          for (int j = 3; j >= 0; j--) {
-            if (((HierMesh)localObject2).chunkFindCheck(localObject1[i] + "_D" + j) >= 0) {
-              ((HierMesh)localObject2).chunkVisible(localObject1[i] + "_D" + j, true);
-              break;
+        private static float getF(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, float f, float f1)
+        {
+            float f2 = sectfile.get(s, s1, -9865.345F);
+            if(f2 == -9865.345F || f2 < f || f2 > f1)
+            {
+                if(f2 == -9865.345F)
+                    java.lang.System.out.println("Plane: Parameter [" + s + "]:<" + s1 + "> " + "not found");
+                else
+                    java.lang.System.out.println("Plane: Value of [" + s + "]:<" + s1 + "> (" + f2 + ")" + " is out of range (" + f + ";" + f1 + ")");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return f2;
             }
-          }
-        }
-      }
-
-    }
-
-    Aircraft.forceGear(this.prop.clazz, hierMesh(), 1.0F);
-
-    if (!paramBoolean)
-    {
-      mesh().makeAllMaterialsDarker(0.32F, 0.45F);
-    }
-  }
-
-  private void Align(boolean paramBoolean1, boolean paramBoolean2)
-  {
-    this.pos.getAbs(p, o);
-    p.z = (Engine.land().HQ(p.x, p.y) + this.prop.height);
-    if (!paramBoolean1) {
-      o.increment(0.0F, -this.prop.pitch, 0.0F);
-    }
-    Engine.land().N(p.x, p.y, n);
-    o.orient(n);
-    o.increment(0.0F, this.prop.pitch, 0.0F);
-
-    if (paramBoolean2)
-    {
-      long l = ()(p.x % 2.3D * 221.0D + p.y % 3.4D * 211.0D * 211.0D);
-      RangeRandom localRangeRandom = new RangeRandom(l);
-
-      p.z -= localRangeRandom.nextFloat(0.1F, 0.4F);
-
-      float f1 = localRangeRandom.nextFloat(-2.0F, 2.0F);
-      float f2 = (localRangeRandom.nextBoolean() ? 1.0F : -1.0F) * localRangeRandom.nextFloat(7.0F, 18.0F);
-      o.increment(f1, 0.0F, f2);
-    }
-
-    this.pos.setAbs(p, o);
-  }
-
-  public void align()
-  {
-    Align(false, false);
-  }
-
-  public int HitbyMask()
-  {
-    return this.prop.HITBY_MASK;
-  }
-
-  public int chooseBulletType(BulletProperties[] paramArrayOfBulletProperties)
-  {
-    if (this.dying != 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties.length == 1) {
-      return 0;
-    }
-
-    if (paramArrayOfBulletProperties.length <= 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties[0].power <= 0.0F)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].power <= 0.0F)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].cumulativePower > 0.0F)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].cumulativePower > 0.0F)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 1)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].powerType == 1)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 2)
-    {
-      return 1;
-    }
-
-    return 0;
-  }
-
-  public int chooseShotpoint(BulletProperties paramBulletProperties) {
-    if (this.dying != 0) {
-      return -1;
-    }
-    return 0;
-  }
-
-  public boolean getShotpointOffset(int paramInt, Point3d paramPoint3d) {
-    if (this.dying != 0) {
-      return false;
-    }
-
-    if (paramInt != 0) {
-      return false;
-    }
-
-    if (paramPoint3d != null) {
-      paramPoint3d.set(0.0D, 0.0D, 0.0D);
-    }
-    return true;
-  }
-
-  public boolean unmovableInFuture()
-  {
-    return true;
-  }
-
-  public void collisionDeath()
-  {
-    if (isNet()) {
-      return;
-    }
-
-    ShowExplode(-1.0F);
-
-    destroy();
-  }
-
-  public float futurePosition(float paramFloat, Point3d paramPoint3d)
-  {
-    this.pos.getAbs(paramPoint3d);
-    return paramFloat <= 0.0F ? 0.0F : paramFloat;
-  }
-
-  private void send_DeathCommand(Actor paramActor)
-  {
-    if (!isNetMaster()) {
-      return;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(68);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void send_DeathRequest(Actor paramActor)
-  {
-    if (!isNetMirror()) {
-      return;
-    }
-
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
-      return;
-    try
-    {
-      NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
-      localNetMsgFiltered.writeByte(68);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
-      localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  public void createNetObject(NetChannel paramNetChannel, int paramInt)
-  {
-    if (paramNetChannel == null)
-    {
-      this.net = new Master(this);
-    }
-    else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
-  }
-
-  public void netFirstUpdate(NetChannel paramNetChannel)
-    throws IOException
-  {
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    localNetMsgGuaranted.writeByte(73);
-    if (this.dying == 0)
-      localNetMsgGuaranted.writeShort(0);
-    else {
-      localNetMsgGuaranted.writeShort(1);
-    }
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-  }
-
-  public static class SPAWN implements ActorSpawn {
-    public Class cls;
-    public PlaneGeneric.PlaneProperties proper;
-
-    private static float getF(SectFile paramSectFile, String paramString1, String paramString2, float paramFloat1, float paramFloat2) {
-      float f = paramSectFile.get(paramString1, paramString2, -9865.3447F);
-      if ((f == -9865.3447F) || (f < paramFloat1) || (f > paramFloat2)) {
-        if (f == -9865.3447F) {
-          System.out.println("Plane: Parameter [" + paramString1 + "]:<" + paramString2 + "> " + "not found");
-        }
-        else {
-          System.out.println("Plane: Value of [" + paramString1 + "]:<" + paramString2 + "> (" + f + ")" + " is out of range (" + paramFloat1 + ";" + paramFloat2 + ")");
         }
 
-        throw new RuntimeException("Can't set property");
-      }
-      return f;
-    }
-
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2) {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        System.out.print("Plane: Parameter [" + paramString1 + "]:<" + paramString2 + "> ");
-        System.out.println(str == null ? "not found" : "is empty");
-        throw new RuntimeException("Can't set property");
-      }
-      return str;
-    }
-
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2, String paramString3) {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        return paramString3;
-      }
-      return str;
-    }
-
-    private static PlaneGeneric.PlaneProperties LoadPlaneProperties(SectFile paramSectFile, String paramString, Class paramClass)
-    {
-      PlaneGeneric.PlaneProperties localPlaneProperties = new PlaneGeneric.PlaneProperties();
-
-      localPlaneProperties.fnShotPanzer = TableFunctions.GetFunc2("PlaneShotPanzer");
-      localPlaneProperties.fnExplodePanzer = TableFunctions.GetFunc2("PlaneExplodePanzer");
-
-      String str1 = getS(paramSectFile, paramString, "Class");
-      localPlaneProperties.clazz = null;
-      try {
-        localPlaneProperties.clazz = ObjIO.classForName(str1);
-      } catch (Exception localException) {
-        System.out.println("*** Plane: class '" + str1 + "' not found");
-        return null;
-      }
-
-      Property.set(paramClass, "airClass", localPlaneProperties.clazz);
-
-      String str2 = Property.stringValue(localPlaneProperties.clazz, "keyName", null);
-      if (str2 == null) Property.set(paramClass, "i18nName", "Plane"); else {
-        Property.set(paramClass, "i18nName", I18N.plane(str2));
-      }
-
-      localPlaneProperties.explodeName = getS(paramSectFile, paramString, "Explode", "Aircraft");
-
-      localPlaneProperties.PANZER = getF(paramSectFile, paramString, "PanzerBodyFront", 1.0E-004F, 50.0F);
-      localPlaneProperties.HITBY_MASK = (localPlaneProperties.PANZER > 0.015F ? -2 : -1);
-
-      Property.set(paramClass, "iconName", "icons/" + getS(paramSectFile, paramString, "Icon") + ".mat");
-
-      return localPlaneProperties;
-    }
-
-    public SPAWN(Class paramClass)
-    {
-      try
-      {
-        String str1 = paramClass.getName();
-        int i = str1.lastIndexOf('.');
-        int j = str1.lastIndexOf('$');
-        if (i < j) {
-          i = j;
-        }
-        String str2 = str1.substring(i + 1);
-        this.proper = LoadPlaneProperties(Statics.getTechnicsFile(), str2, paramClass);
-      }
-      catch (Exception localException)
-      {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("Problem in spawn: " + paramClass.getName());
-      }
-
-      this.cls = paramClass;
-      Spawn.add(this.cls, this);
-    }
-
-    public Actor actorSpawn(ActorSpawnArg paramActorSpawnArg)
-    {
-      PlaneGeneric localPlaneGeneric = null;
-      try
-      {
-        PlaneGeneric.access$202(this.proper);
-        PlaneGeneric.access$302(paramActorSpawnArg);
-        localPlaneGeneric = (PlaneGeneric)this.cls.newInstance();
-        PlaneGeneric.access$202(null);
-        PlaneGeneric.access$302(null);
-      } catch (Exception localException) {
-        PlaneGeneric.access$202(null);
-        PlaneGeneric.access$302(null);
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("SPAWN: Can't create stationary Plane object [class:" + this.cls.getName() + "]");
-
-        return null;
-      }
-      return localPlaneGeneric;
-    }
-  }
-
-  class Mirror extends ActorNet
-  {
-    NetMsgFiltered out = new NetMsgFiltered();
-
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted())
-      {
-        Object localObject;
-        switch (paramNetMsgInput.readByte()) {
-        case 73:
-          if (isMirrored()) {
-            localObject = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post((NetMsgGuaranted)localObject);
-          }
-          int i = paramNetMsgInput.readShort();
-          if (i > 0)
-          {
-            if (PlaneGeneric.this.dying != 1) {
-              PlaneGeneric.this.Die(null, 1, false);
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1)
+        {
+            java.lang.String s2 = sectfile.get(s, s1);
+            if(s2 == null || s2.length() <= 0)
+            {
+                java.lang.System.out.print("Plane: Parameter [" + s + "]:<" + s1 + "> ");
+                java.lang.System.out.println(s2 != null ? "is empty" : "not found");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return s2;
             }
-          }
-          return true;
-        case 68:
-          if (isMirrored()) {
-            localObject = new NetMsgGuaranted(paramNetMsgInput, 1);
-            post((NetMsgGuaranted)localObject);
-          }
-          if (PlaneGeneric.this.dying != 1) {
-            localObject = paramNetMsgInput.readNetObj();
-            Actor localActor = localObject == null ? null : ((ActorNet)localObject).actor();
-            PlaneGeneric.this.Die(localActor, 1, true);
-          }
-          return true;
         }
-        return false;
-      }
 
-      switch (paramNetMsgInput.readByte()) {
-      case 68:
-        this.out.unLockAndSet(paramNetMsgInput, 1);
-        this.out.setIncludeTime(false);
-        postRealTo(Message.currentRealTime(), masterChannel(), this.out);
-        return true;
-      }
-      return true;
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, java.lang.String s2)
+        {
+            java.lang.String s3 = sectfile.get(s, s1);
+            if(s3 == null || s3.length() <= 0)
+                return s2;
+            else
+                return s3;
+        }
+
+        private static com.maddox.il2.objects.vehicles.planes.PlaneProperties LoadPlaneProperties(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.Class class1)
+        {
+            com.maddox.il2.objects.vehicles.planes.PlaneProperties planeproperties = new PlaneProperties();
+            planeproperties.fnShotPanzer = com.maddox.il2.ai.TableFunctions.GetFunc2("PlaneShotPanzer");
+            planeproperties.fnExplodePanzer = com.maddox.il2.ai.TableFunctions.GetFunc2("PlaneExplodePanzer");
+            java.lang.String s1 = com.maddox.il2.objects.vehicles.planes.SPAWN.getS(sectfile, s, "Class");
+            planeproperties.clazz = null;
+            try
+            {
+                planeproperties.clazz = com.maddox.rts.ObjIO.classForName(s1);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println("*** Plane: class '" + s1 + "' not found");
+                return null;
+            }
+            com.maddox.rts.Property.set(class1, "airClass", planeproperties.clazz);
+            java.lang.String s2 = com.maddox.rts.Property.stringValue(planeproperties.clazz, "keyName", null);
+            if(s2 == null)
+                com.maddox.rts.Property.set(class1, "i18nName", "Plane");
+            else
+                com.maddox.rts.Property.set(class1, "i18nName", com.maddox.il2.game.I18N.plane(s2));
+            planeproperties.explodeName = com.maddox.il2.objects.vehicles.planes.SPAWN.getS(sectfile, s, "Explode", "Aircraft");
+            planeproperties.PANZER = com.maddox.il2.objects.vehicles.planes.SPAWN.getF(sectfile, s, "PanzerBodyFront", 0.0001F, 50F);
+            planeproperties.HITBY_MASK = planeproperties.PANZER <= 0.015F ? -1 : -2;
+            com.maddox.rts.Property.set(class1, "iconName", "icons/" + com.maddox.il2.objects.vehicles.planes.SPAWN.getS(sectfile, s, "Icon") + ".mat");
+            return planeproperties;
+        }
+
+        public com.maddox.il2.engine.Actor actorSpawn(com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+        {
+            com.maddox.il2.objects.vehicles.planes.PlaneGeneric planegeneric = null;
+            try
+            {
+                com.maddox.il2.objects.vehicles.planes.PlaneGeneric.constr_arg1 = proper;
+                com.maddox.il2.objects.vehicles.planes.PlaneGeneric.constr_arg2 = actorspawnarg;
+                planegeneric = (com.maddox.il2.objects.vehicles.planes.PlaneGeneric)cls.newInstance();
+                com.maddox.il2.objects.vehicles.planes.PlaneGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.vehicles.planes.PlaneGeneric.constr_arg2 = null;
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.objects.vehicles.planes.PlaneGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.vehicles.planes.PlaneGeneric.constr_arg2 = null;
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("SPAWN: Can't create stationary Plane object [class:" + cls.getName() + "]");
+                return null;
+            }
+            return planegeneric;
+        }
+
+        public java.lang.Class cls;
+        public com.maddox.il2.objects.vehicles.planes.PlaneProperties proper;
+
+        public SPAWN(java.lang.Class class1)
+        {
+            try
+            {
+                java.lang.String s = class1.getName();
+                int i = s.lastIndexOf('.');
+                int j = s.lastIndexOf('$');
+                if(i < j)
+                    i = j;
+                java.lang.String s1 = s.substring(i + 1);
+                proper = com.maddox.il2.objects.vehicles.planes.SPAWN.LoadPlaneProperties(com.maddox.il2.objects.Statics.getTechnicsFile(), s1, class1);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("Problem in spawn: " + class1.getName());
+            }
+            cls = class1;
+            com.maddox.rts.Spawn.add(cls, this);
+        }
     }
 
-    public Mirror(Actor paramNetChannel, NetChannel paramInt, int arg4) {
-      super(paramInt, i);
-    }
-  }
-
-  class Master extends ActorNet
-  {
-    public Master(Actor arg2)
+    class Mirror extends com.maddox.il2.engine.ActorNet
     {
-      super();
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+            {
+                switch(netmsginput.readByte())
+                {
+                case 73: // 'I'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted);
+                    }
+                    short word0 = netmsginput.readShort();
+                    if(word0 > 0 && dying != 1)
+                        Die(null, (short)1, false);
+                    return true;
+
+                case 68: // 'D'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted1 = new NetMsgGuaranted(netmsginput, 1);
+                        post(netmsgguaranted1);
+                    }
+                    if(dying != 1)
+                    {
+                        com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                        com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                        Die(actor, (short)1, true);
+                    }
+                    return true;
+                }
+                return false;
+            }
+            switch(netmsginput.readByte())
+            {
+            case 68: // 'D'
+                out.unLockAndSet(netmsginput, 1);
+                out.setIncludeTime(false);
+                postRealTo(com.maddox.rts.Message.currentRealTime(), masterChannel(), out);
+                return true;
+            }
+            return true;
+        }
+
+        com.maddox.rts.NetMsgFiltered out;
+
+        public Mirror(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(actor, netchannel, i);
+            out = new NetMsgFiltered();
+        }
     }
 
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted()) {
-        return true;
-      }
-      if (paramNetMsgInput.readByte() != 68)
-        return false;
-      if (PlaneGeneric.this.dying == 1) {
-        return true;
-      }
-      NetObj localNetObj = paramNetMsgInput.readNetObj();
-      Actor localActor = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-      PlaneGeneric.this.Die(localActor, 0, true);
-      return true;
+    class Master extends com.maddox.il2.engine.ActorNet
+    {
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+                return true;
+            if(netmsginput.readByte() != 68)
+                return false;
+            if(dying == 1)
+            {
+                return true;
+            } else
+            {
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                Die(actor, (short)0, true);
+                return true;
+            }
+        }
+
+        public Master(com.maddox.il2.engine.Actor actor)
+        {
+            super(actor);
+        }
     }
-  }
 
-  public static class PlaneProperties
-  {
-    public Class clazz = null;
+    public static class PlaneProperties
+    {
 
-    public float height = 0.0F;
-    public float pitch = 0.0F;
+        public java.lang.Class clazz;
+        public float height;
+        public float pitch;
+        public com.maddox.util.TableFunction2 fnShotPanzer;
+        public com.maddox.util.TableFunction2 fnExplodePanzer;
+        public float PANZER;
+        public int HITBY_MASK;
+        public java.lang.String explodeName;
 
-    public TableFunction2 fnShotPanzer = null;
-    public TableFunction2 fnExplodePanzer = null;
+        public PlaneProperties()
+        {
+            clazz = null;
+            height = 0.0F;
+            pitch = 0.0F;
+            fnShotPanzer = null;
+            fnExplodePanzer = null;
+            PANZER = 0.001F;
+            HITBY_MASK = -2;
+            explodeName = null;
+        }
+    }
 
-    public float PANZER = 0.001F;
 
-    public int HITBY_MASK = -2;
+    public static final double Rnd(double d, double d1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextDouble(d, d1);
+    }
 
-    public String explodeName = null;
-  }
+    public static final float Rnd(float f, float f1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(f, f1);
+    }
+
+    private boolean RndB(float f)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < f;
+    }
+
+    private static final long SecsToTicks(float f)
+    {
+        long l = (long)(0.5D + (double)(f / com.maddox.rts.Time.tickLenFs()));
+        return l >= 1L ? l : 1L;
+    }
+
+    public boolean isStaticPos()
+    {
+        return true;
+    }
+
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        shot.bodyMaterial = 2;
+        if(dying != 0)
+            return;
+        if(shot.power <= 0.0F)
+            return;
+        if(isNetMirror() && shot.isMirage())
+            return;
+        if(shot.powerType == 1)
+            if(RndB(0.15F))
+            {
+                return;
+            } else
+            {
+                Die(shot.initiator, (short)0, true);
+                return;
+            }
+        float f = prop.PANZER * com.maddox.il2.objects.vehicles.planes.PlaneGeneric.Rnd(0.93F, 1.07F);
+        float f1 = prop.fnShotPanzer.Value(shot.power, f);
+        if(f1 < 1000F && (f1 <= 1.0F || RndB(1.0F / f1)))
+            Die(shot.initiator, (short)0, true);
+    }
+
+    public void msgExplosion(com.maddox.il2.ai.Explosion explosion)
+    {
+        if(dying != 0)
+            return;
+        if(isNetMirror() && explosion.isMirage())
+            return;
+        if(explosion.power <= 0.0F)
+            return;
+        com.maddox.il2.ai.Explosion _tmp = explosion;
+        if(explosion.powerType == 1)
+        {
+            if(com.maddox.il2.objects.vehicles.tanks.TankGeneric.splintersKill(explosion, prop.fnShotPanzer, com.maddox.il2.objects.vehicles.planes.PlaneGeneric.Rnd(0.0F, 1.0F), com.maddox.il2.objects.vehicles.planes.PlaneGeneric.Rnd(0.0F, 1.0F), this, 0.6F, 0.0F, prop.PANZER, prop.PANZER, prop.PANZER, prop.PANZER, prop.PANZER, prop.PANZER))
+                Die(explosion.initiator, (short)0, true);
+            return;
+        }
+        com.maddox.il2.ai.Explosion _tmp1 = explosion;
+        if(explosion.powerType == 2 && explosion.chunkName != null)
+        {
+            Die(explosion.initiator, (short)0, true);
+            return;
+        }
+        float f;
+        if(explosion.chunkName != null)
+            f = 0.5F * explosion.power;
+        else
+            f = explosion.receivedTNTpower(this);
+        f *= com.maddox.il2.objects.vehicles.planes.PlaneGeneric.Rnd(0.95F, 1.05F);
+        float f1 = prop.PANZER;
+        float f2 = prop.fnExplodePanzer.Value(f, f1);
+        if(f2 < 1000F && (f2 <= 1.0F || RndB(1.0F / f2)))
+            Die(explosion.initiator, (short)0, true);
+    }
+
+    private void ShowExplode(float f)
+    {
+        if(f > 0.0F)
+            f = com.maddox.il2.objects.vehicles.planes.PlaneGeneric.Rnd(f, f * 1.6F);
+        com.maddox.il2.objects.effects.Explosions.runByName(prop.explodeName, this, "", "", f);
+    }
+
+    private void Die(com.maddox.il2.engine.Actor actor, short word0, boolean flag)
+    {
+        if(dying != 0)
+            return;
+        if(word0 <= 0)
+        {
+            if(isNetMirror())
+            {
+                send_DeathRequest(actor);
+                return;
+            }
+            word0 = 1;
+        }
+        dying = 1;
+        com.maddox.il2.ai.World.onActorDied(this, actor);
+        activateMesh(false);
+        Align(false, true);
+        if(flag)
+            ShowExplode(17F);
+        if(flag)
+            send_DeathCommand(actor);
+    }
+
+    public void destroy()
+    {
+        if(isDestroyed())
+        {
+            return;
+        } else
+        {
+            super.destroy();
+            return;
+        }
+    }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    protected PlaneGeneric()
+    {
+        this(constr_arg1, constr_arg2);
+    }
+
+    private PlaneGeneric(com.maddox.il2.objects.vehicles.planes.PlaneProperties planeproperties, com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+    {
+        prop = null;
+        country = null;
+        dying = 0;
+        prop = planeproperties;
+        actorspawnarg.setStationary(this);
+        country = actorspawnarg.country;
+        try
+        {
+            activateMesh(true);
+        }
+        catch(java.lang.RuntimeException runtimeexception)
+        {
+            super.destroy();
+            throw runtimeexception;
+        }
+        collide(true);
+        drawing(true);
+        createNetObject(actorspawnarg.netChannel, actorspawnarg.netIdRemote);
+        if(prop.height == 0.0F && prop.pitch == 0.0F)
+        {
+            pnti[0] = hierMesh().hookFind("_ClipLGear");
+            pnti[1] = hierMesh().hookFind("_ClipRGear");
+            pnti[2] = hierMesh().hookFind("_ClipCGear");
+            java.lang.String s = com.maddox.rts.Property.stringValue(prop.clazz, "FlightModel", null);
+            com.maddox.rts.SectFile sectfile = com.maddox.il2.fm.FlightModelMain.sectFile(s);
+            if(pnti[0] >= 0 && pnti[1] >= 0 && pnti[2] >= 0 && sectfile.get("Gear", "FromIni", 0) == 0)
+            {
+                hierMesh().hookMatrix(pnti[2], M4);
+                double d = M4.m03;
+                double d1 = M4.m23;
+                hierMesh().hookMatrix(pnti[0], M4);
+                double d2 = M4.m03;
+                double d3 = M4.m23;
+                hierMesh().hookMatrix(pnti[1], M4);
+                d2 = (d2 + M4.m03) * 0.5D;
+                d3 = (d3 + M4.m23) * 0.5D;
+                double d4 = d2 - d;
+                double d5 = d3 - d1;
+                prop.pitch = -com.maddox.JGP.Geom.RAD2DEG((float)java.lang.Math.atan2(d5, d4));
+                if(d4 < 0.0D)
+                    prop.pitch += 180F;
+                com.maddox.JGP.Line2f line2f = new Line2f();
+                line2f.set(new Point2f((float)d2, (float)d3), new Point2f((float)d, (float)d1));
+                prop.height = line2f.distance(new Point2f(0.0F, 0.0F));
+            } else
+            {
+                prop.height = sectfile.get("Gear", "H", -0.5F);
+                prop.pitch = sectfile.get("Gear", "Pitch", -0.5F);
+            }
+        }
+        Align(true, false);
+    }
+
+    public void activateMesh(boolean flag)
+    {
+        if(flag)
+        {
+            com.maddox.il2.ai.Regiment regiment = com.maddox.il2.ai.Regiment.findFirst(country, getArmy());
+            java.lang.String s = com.maddox.il2.objects.air.Aircraft.getPropertyMesh(prop.clazz, regiment.country());
+            setMesh(s);
+            com.maddox.il2.objects.air.Aircraft.prepareMeshCamouflage(s, hierMesh());
+            com.maddox.il2.objects.air.PaintScheme paintscheme = com.maddox.il2.objects.air.Aircraft.getPropertyPaintScheme(prop.clazz, regiment.country());
+            paintscheme.prepareNum(prop.clazz, hierMesh(), regiment, (int)(java.lang.Math.random() * 3D), (int)(java.lang.Math.random() * 3D), (int)(java.lang.Math.random() * 98D + 1.0D));
+        }
+        java.lang.String as[] = com.maddox.il2.objects.air.Aircraft.partNames();
+        com.maddox.il2.engine.HierMesh hiermesh = hierMesh();
+        for(int i = 1; i < 10 && hiermesh.chunkFindCheck("Pilot" + i + "_D0") >= 0; i++)
+        {
+            hiermesh.chunkVisible("Pilot" + i + "_D0", false);
+            if(hiermesh.chunkFindCheck("Head" + i + "_D0") >= 0)
+                hiermesh.chunkVisible("Head" + i + "_D0", false);
+            if(hiermesh.chunkFindCheck("HMask" + i + "_D0") >= 0)
+                hiermesh.chunkVisible("HMask" + i + "_D0", false);
+            if(hiermesh.chunkFindCheck("Pilot" + i + "a_D0") >= 0)
+                hiermesh.chunkVisible("Pilot" + i + "a_D0", false);
+            if(hiermesh.chunkFindCheck("Head" + i + "a_D0") >= 0)
+                hiermesh.chunkVisible("Head" + i + "a_D0", false);
+            if(hiermesh.chunkFindCheck("Pilot" + i + "_FAK") >= 0)
+                hiermesh.chunkVisible("Pilot" + i + "_FAK", false);
+            if(hiermesh.chunkFindCheck("Pilot" + i + "_FAL") >= 0)
+                hiermesh.chunkVisible("Pilot" + i + "_FAL", false);
+            if(hiermesh.chunkFindCheck("Head" + i + "_FAK") >= 0)
+                hiermesh.chunkVisible("Head" + i + "_FAK", false);
+            if(hiermesh.chunkFindCheck("Head" + i + "_FAL") >= 0)
+                hiermesh.chunkVisible("Head" + i + "_FAL", false);
+        }
+
+        if(!flag)
+        {
+label0:
+            for(int j = 0; j < as.length; j++)
+            {
+                if(hiermesh.chunkFindCheck(as[j] + "_D0") < 0)
+                    continue;
+                hiermesh.chunkVisible(as[j] + "_D0", false);
+                int k = 3;
+                do
+                {
+                    if(k < 0)
+                        continue label0;
+                    if(hiermesh.chunkFindCheck(as[j] + "_D" + k) >= 0)
+                    {
+                        hiermesh.chunkVisible(as[j] + "_D" + k, true);
+                        continue label0;
+                    }
+                    k--;
+                } while(true);
+            }
+
+        }
+        com.maddox.il2.objects.air.Aircraft.forceGear(prop.clazz, hierMesh(), 1.0F);
+        if(!flag)
+            mesh().makeAllMaterialsDarker(0.32F, 0.45F);
+    }
+
+    private void Align(boolean flag, boolean flag1)
+    {
+        pos.getAbs(p, o);
+        p.z = com.maddox.il2.engine.Engine.land().HQ(p.x, p.y) + (double)prop.height;
+        if(!flag)
+            o.increment(0.0F, -prop.pitch, 0.0F);
+        com.maddox.il2.engine.Engine.land().N(p.x, p.y, n);
+        o.orient(n);
+        o.increment(0.0F, prop.pitch, 0.0F);
+        if(flag1)
+        {
+            long l = (long)((p.x % 2.2999999999999998D) * 221D + (p.y % 3.3999999999999999D) * 211D * 211D);
+            com.maddox.il2.ai.RangeRandom rangerandom = new RangeRandom(l);
+            p.z -= rangerandom.nextFloat(0.1F, 0.4F);
+            float f = rangerandom.nextFloat(-2F, 2.0F);
+            float f1 = (rangerandom.nextBoolean() ? 1.0F : -1F) * rangerandom.nextFloat(7F, 18F);
+            o.increment(f, 0.0F, f1);
+        }
+        pos.setAbs(p, o);
+    }
+
+    public void align()
+    {
+        Align(false, false);
+    }
+
+    public int HitbyMask()
+    {
+        return prop.HITBY_MASK;
+    }
+
+    public int chooseBulletType(com.maddox.il2.engine.BulletProperties abulletproperties[])
+    {
+        if(dying != 0)
+            return -1;
+        if(abulletproperties.length == 1)
+            return 0;
+        if(abulletproperties.length <= 0)
+            return -1;
+        if(abulletproperties[0].power <= 0.0F)
+            return 0;
+        if(abulletproperties[1].power <= 0.0F)
+            return 1;
+        if(abulletproperties[0].cumulativePower > 0.0F)
+            return 0;
+        if(abulletproperties[1].cumulativePower > 0.0F)
+            return 1;
+        if(abulletproperties[0].powerType == 1)
+            return 0;
+        if(abulletproperties[1].powerType == 1)
+            return 1;
+        return abulletproperties[0].powerType != 2 ? 0 : 1;
+    }
+
+    public int chooseShotpoint(com.maddox.il2.engine.BulletProperties bulletproperties)
+    {
+        return dying == 0 ? 0 : -1;
+    }
+
+    public boolean getShotpointOffset(int i, com.maddox.JGP.Point3d point3d)
+    {
+        if(dying != 0)
+            return false;
+        if(i != 0)
+            return false;
+        if(point3d != null)
+            point3d.set(0.0D, 0.0D, 0.0D);
+        return true;
+    }
+
+    public boolean unmovableInFuture()
+    {
+        return true;
+    }
+
+    public void collisionDeath()
+    {
+        if(isNet())
+        {
+            return;
+        } else
+        {
+            ShowExplode(-1F);
+            destroy();
+            return;
+        }
+    }
+
+    public float futurePosition(float f, com.maddox.JGP.Point3d point3d)
+    {
+        pos.getAbs(point3d);
+        return f > 0.0F ? f : 0.0F;
+    }
+
+    private void send_DeathCommand(com.maddox.il2.engine.Actor actor)
+    {
+        if(!isNetMaster())
+            return;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(68);
+            netmsgguaranted.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void send_DeathRequest(com.maddox.il2.engine.Actor actor)
+    {
+        if(!isNetMirror())
+            return;
+        if(net.masterChannel() instanceof com.maddox.rts.NetChannelInStream)
+            return;
+        try
+        {
+            com.maddox.rts.NetMsgFiltered netmsgfiltered = new NetMsgFiltered();
+            netmsgfiltered.writeByte(68);
+            netmsgfiltered.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            netmsgfiltered.setIncludeTime(false);
+            net.postTo(com.maddox.rts.Time.current(), net.masterChannel(), netmsgfiltered);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    public void createNetObject(com.maddox.rts.NetChannel netchannel, int i)
+    {
+        if(netchannel == null)
+            net = new Master(this);
+        else
+            net = new Mirror(this, netchannel, i);
+    }
+
+    public void netFirstUpdate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
+    {
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        netmsgguaranted.writeByte(73);
+        if(dying == 0)
+            netmsgguaranted.writeShort(0);
+        else
+            netmsgguaranted.writeShort(1);
+        net.postTo(netchannel, netmsgguaranted);
+    }
+
+    private com.maddox.il2.objects.vehicles.planes.PlaneProperties prop;
+    public java.lang.String country;
+    private int dying;
+    static final int DYING_NONE = 0;
+    static final int DYING_DEAD = 1;
+    private static com.maddox.il2.objects.vehicles.planes.PlaneProperties constr_arg1 = null;
+    private static com.maddox.il2.engine.ActorSpawnArg constr_arg2 = null;
+    private static com.maddox.JGP.Point3d p = new Point3d();
+    private static com.maddox.il2.engine.Orient o = new Orient();
+    private static com.maddox.JGP.Vector3f n = new Vector3f();
+    private static com.maddox.JGP.Vector3d tmpv = new Vector3d();
+    private static int pnti[] = new int[3];
+    private static com.maddox.JGP.Matrix4d M4 = new Matrix4d();
+
+
+
+
+
 }

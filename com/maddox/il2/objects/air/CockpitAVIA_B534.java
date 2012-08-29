@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CockpitAVIA_B534.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
@@ -9,1095 +14,991 @@ import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.InterpolateRef;
 import com.maddox.il2.engine.LandConf;
 import com.maddox.il2.engine.Landscape;
-import com.maddox.il2.engine.Mat;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.EnginesInterface;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Gear;
 import com.maddox.il2.fm.Mass;
 import com.maddox.il2.fm.Motor;
 import com.maddox.il2.fm.Pitot;
 import com.maddox.rts.Time;
+import com.maddox.sound.Acoustics;
 import com.maddox.sound.ReverbFXRoom;
 
-public class CockpitAVIA_B534 extends CockpitPilot
+// Referenced classes of package com.maddox.il2.objects.air:
+//            CockpitPilot, AVIA_B534, Aircraft
+
+public class CockpitAVIA_B534 extends com.maddox.il2.objects.air.CockpitPilot
 {
-  private Variables setOld = new Variables(null);
-  private Variables setNew = new Variables(null);
-  private Variables setTmp;
-  private Vector3f w = new Vector3f();
-  private boolean bNeedSetUp = true;
-  private float pictAiler = 0.0F;
-  private float pictElev = 0.0F;
-  private float pictSupc = 0.0F;
-  private float pictManifold;
-  private float tailWheelLock = 1.0F;
-  private AVIA_B534 ac = null;
-  private float rpmGeneratedPressure = 0.0F;
-  private float oilPressure = 0.0F;
-  private float hIncrement = 0.009600001F;
-  private float vIncrement = 0.0F;
-  private float hIncrementSize = 0.0024F;
-  private float vIncrementSize = 0.0005F;
-  private int previousCycle = 0;
-  private int cycleCount = 5;
-  private boolean turningCycle = false;
-  private int cycleMultiplier = -1;
-  private boolean gunLOK = true;
-  private boolean gunROK = true;
-
-  private static double compassZ = -0.2D;
-  private double segLen1;
-  private double segLen2;
-  private double compassLimit;
-  private static double compassLimitAngle = 25.0D;
-  private Vector3d[] compassSpeed;
-  int compassFirst = 0;
-  private Vector3d accel;
-  private Vector3d compassNorth;
-  private Vector3d compassSouth;
-  private double compassAcc;
-  private double compassSc;
-
-  public CockpitAVIA_B534()
-  {
-    super("3DO/Cockpit/AviaB-534/hier.him", "bf109");
-    this.ac = ((AVIA_B534)aircraft());
-    this.ac.registerPit(this);
-
-    this.cockpitNightMats = new String[] { "Compass", "gauge1", "gauge2", "gauge3", "gauge4", "gauge5", "DM_gauge1", "DM_gauge2" };
-
-    setNightMats(false);
-    interpPut(new Interpolater(), null, Time.current(), null);
-
-    if (this.acoustics != null)
-      this.acoustics.globFX = new ReverbFXRoom(0.45F);
-  }
-
-  private void initCompass()
-  {
-    this.accel = new Vector3d();
-    this.compassSpeed = new Vector3d[4];
-    this.compassSpeed[0] = new Vector3d(0.0D, 0.0D, 0.0D);
-    this.compassSpeed[1] = new Vector3d(0.0D, 0.0D, 0.0D);
-    this.compassSpeed[2] = new Vector3d(0.0D, 0.0D, 0.0D);
-    this.compassSpeed[3] = new Vector3d(0.0D, 0.0D, 0.0D);
-
-    float[] arrayOfFloat1 = { 87.0F, 77.5F, 65.300003F, 41.5F, -0.3F, -43.5F, -62.900002F, -64.0F, -66.300003F, -75.800003F };
-
-    float[] arrayOfFloat2 = { 55.799999F, 51.5F, 47.0F, 40.099998F, 33.799999F, 33.700001F, 32.700001F, 35.099998F, 46.599998F, 61.0F };
-
-    float f1 = cvt(Engine.land().config.declin, -90.0F, 90.0F, 9.0F, 0.0F);
-
-    float f2 = floatindex(f1, arrayOfFloat1);
-    this.compassNorth = new Vector3d(0.0D, Math.cos(0.01745277777777778D * f2), -Math.sin(0.01745277777777778D * f2));
-    this.compassSouth = new Vector3d(0.0D, -Math.cos(0.01745277777777778D * f2), Math.sin(0.01745277777777778D * f2));
-    float f3 = floatindex(f1, arrayOfFloat2);
-
-    this.compassNorth.scale(f3 / 600.0F * Time.tickLenFs());
-    this.compassSouth.scale(f3 / 600.0F * Time.tickLenFs());
-
-    this.segLen1 = (2.0D * Math.sqrt(1.0D - compassZ * compassZ));
-    this.segLen2 = (this.segLen1 / Math.sqrt(2.0D));
-    this.compassLimit = (-1.0D * Math.sin(0.0174532888888889D * compassLimitAngle));
-    this.compassLimit *= this.compassLimit;
-
-    this.compassAcc = (4.66666666D * Time.tickLenFs());
-    this.compassSc = (0.101936799D / Time.tickLenFs() / Time.tickLenFs());
-  }
-
-  private void updateCompass()
-  {
-    if (this.compassFirst == 0)
+    private class Variables
     {
-      initCompass();
-      this.fm.getLoc(this.setOld.planeLoc);
-    }
 
-    this.fm.getLoc(this.setNew.planeLoc);
-
-    this.setNew.planeMove.set(this.setNew.planeLoc);
-    this.setNew.planeMove.sub(this.setOld.planeLoc);
-
-    this.accel.set(this.setNew.planeMove);
-    this.accel.sub(this.setOld.planeMove);
-
-    this.accel.scale(this.compassSc);
-
-    this.accel.x = (-this.accel.x);
-    this.accel.y = (-this.accel.y);
-    this.accel.z = (-this.accel.z - 1.0D);
-    this.accel.scale(this.compassAcc);
-
-    if (this.accel.length() > -compassZ * 0.7D) {
-      this.accel.scale(-compassZ * 0.7D / this.accel.length());
-    }
-
-    for (int i = 0; i < 4; i++)
-    {
-      this.compassSpeed[i].set(this.setOld.compassPoint[i]);
-      this.compassSpeed[i].sub(this.setNew.compassPoint[i]);
-    }
-
-    for (i = 0; i < 4; i++)
-    {
-      double d1 = this.compassSpeed[i].length();
-      d1 = 0.985D / (1.0D + d1 * d1 * 15.0D);
-
-      this.compassSpeed[i].scale(d1);
-    }
-
-    Vector3d localVector3d1 = new Vector3d();
-    localVector3d1.set(this.setOld.compassPoint[0]);
-    localVector3d1.add(this.setOld.compassPoint[1]);
-    localVector3d1.add(this.setOld.compassPoint[2]);
-    localVector3d1.add(this.setOld.compassPoint[3]);
-    localVector3d1.normalize();
-
-    for (int j = 0; j < 4; j++) {
-      Vector3d localVector3d3 = new Vector3d();
-      double d2 = localVector3d1.dot(this.compassSpeed[j]);
-      localVector3d3.set(localVector3d1);
-      d2 *= 0.28D;
-
-      localVector3d3.scale(-d2);
-
-      this.compassSpeed[j].add(localVector3d3);
-    }
-
-    for (j = 0; j < 4; j++)
-      this.compassSpeed[j].add(this.accel);
-    this.compassSpeed[0].add(this.compassNorth);
-    this.compassSpeed[2].add(this.compassSouth);
-
-    for (j = 0; j < 4; j++) {
-      this.setNew.compassPoint[j].set(this.setOld.compassPoint[j]);
-      this.setNew.compassPoint[j].add(this.compassSpeed[j]);
-    }
-
-    localVector3d1.set(this.setNew.compassPoint[0]);
-    localVector3d1.add(this.setNew.compassPoint[1]);
-    localVector3d1.add(this.setNew.compassPoint[2]);
-    localVector3d1.add(this.setNew.compassPoint[3]);
-    localVector3d1.scale(0.25D);
-    Vector3d localVector3d2 = new Vector3d(localVector3d1);
-    localVector3d2.normalize();
-    localVector3d2.scale(-compassZ);
-    localVector3d2.sub(localVector3d1);
-
-    for (int k = 0; k < 4; k++) {
-      this.setNew.compassPoint[k].add(localVector3d2);
-    }
-
-    for (k = 0; k < 4; k++)
-      this.setNew.compassPoint[k].normalize();
-    for (k = 0; k < 2; k++)
-    {
-      compassDist(this.setNew.compassPoint[0], this.setNew.compassPoint[2], this.segLen1);
-      compassDist(this.setNew.compassPoint[1], this.setNew.compassPoint[3], this.segLen1);
-
-      compassDist(this.setNew.compassPoint[0], this.setNew.compassPoint[1], this.segLen2);
-      compassDist(this.setNew.compassPoint[2], this.setNew.compassPoint[3], this.segLen2);
-      compassDist(this.setNew.compassPoint[1], this.setNew.compassPoint[2], this.segLen2);
-      compassDist(this.setNew.compassPoint[3], this.setNew.compassPoint[0], this.segLen2);
-
-      for (m = 0; m < 4; m++) {
-        this.setNew.compassPoint[m].normalize();
-      }
-      compassDist(this.setNew.compassPoint[3], this.setNew.compassPoint[0], this.segLen2);
-      compassDist(this.setNew.compassPoint[1], this.setNew.compassPoint[2], this.segLen2);
-      compassDist(this.setNew.compassPoint[2], this.setNew.compassPoint[3], this.segLen2);
-      compassDist(this.setNew.compassPoint[0], this.setNew.compassPoint[1], this.segLen2);
-
-      compassDist(this.setNew.compassPoint[1], this.setNew.compassPoint[3], this.segLen1);
-      compassDist(this.setNew.compassPoint[0], this.setNew.compassPoint[2], this.segLen1);
-      for (m = 0; m < 4; m++) {
-        this.setNew.compassPoint[m].normalize();
-      }
-
-    }
-
-    Orientation localOrientation = new Orientation();
-    this.fm.getOrient(localOrientation);
-    for (int m = 0; m < 4; m++) {
-      this.setNew.cP[m].set(this.setNew.compassPoint[m]);
-      localOrientation.transformInv(this.setNew.cP[m]);
-    }
-
-    Vector3d localVector3d4 = new Vector3d();
-    localVector3d4.set(this.setNew.cP[0]);
-    localVector3d4.add(this.setNew.cP[1]);
-    localVector3d4.add(this.setNew.cP[2]);
-    localVector3d4.add(this.setNew.cP[3]);
-    localVector3d4.scale(0.25D);
-    Vector3d localVector3d5 = new Vector3d();
-    localVector3d5.set(localVector3d4);
-    localVector3d5.normalize();
-
-    float f = (float)(localVector3d5.x * localVector3d5.x + localVector3d5.y * localVector3d5.y);
-    if ((f > this.compassLimit) || (localVector3d4.z > 0.0D))
-    {
-      for (int n = 0; n < 4; n++)
-      {
-        this.setNew.cP[n].set(this.setOld.cP[n]);
-        this.setNew.compassPoint[n].set(this.setOld.cP[n]);
-
-        localOrientation.transform(this.setNew.compassPoint[n]);
-      }
-
-      localVector3d4.set(this.setNew.cP[0]);
-      localVector3d4.add(this.setNew.cP[1]);
-      localVector3d4.add(this.setNew.cP[2]);
-      localVector3d4.add(this.setNew.cP[3]);
-      localVector3d4.scale(0.25D);
-    }
-
-    localVector3d5.set(this.setNew.cP[0]);
-    localVector3d5.sub(localVector3d4);
-
-    double d3 = -Math.atan2(localVector3d4.y, -localVector3d4.z);
-    vectorRot2(localVector3d4, d3);
-    vectorRot2(localVector3d5, d3);
-
-    double d4 = Math.atan2(localVector3d4.x, -localVector3d4.z);
-
-    vectorRot1(localVector3d5, -d4);
-
-    double d5 = Math.atan2(localVector3d5.y, localVector3d5.x);
-
-    this.mesh.chunkSetAngles("NeedCompass_A", -(float)(d3 * 180.0D / 3.1415926D), -(float)(d4 * 180.0D / 3.1415926D), 0.0F);
-
-    this.mesh.chunkSetAngles("NeedCompass_B", 0.0F, (float)(90.0D - d5 * 180.0D / 3.1415926D), 0.0F);
-
-    this.compassFirst += 1;
-  }
-
-  private void vectorRot1(Vector3d paramVector3d, double paramDouble)
-  {
-    double d1 = Math.sin(paramDouble);
-    double d2 = Math.cos(paramDouble);
-    double d3 = paramVector3d.x * d2 - paramVector3d.z * d1;
-    paramVector3d.z = (paramVector3d.x * d1 + paramVector3d.z * d2);
-    paramVector3d.x = d3;
-  }
-
-  private void vectorRot2(Vector3d paramVector3d, double paramDouble) {
-    double d1 = Math.sin(paramDouble);
-    double d2 = Math.cos(paramDouble);
-    double d3 = paramVector3d.y * d2 - paramVector3d.z * d1;
-    paramVector3d.z = (paramVector3d.y * d1 + paramVector3d.z * d2);
-    paramVector3d.y = d3;
-  }
-
-  private void compassDist(Vector3d paramVector3d1, Vector3d paramVector3d2, double paramDouble)
-  {
-    Vector3d localVector3d = new Vector3d();
-    localVector3d.set(paramVector3d1);
-    localVector3d.sub(paramVector3d2);
-    double d = localVector3d.length();
-
-    if (d < 1.0E-006D)
-      d = 1.0E-006D;
-    d = (paramDouble - d) / d / 2.0D;
-
-    localVector3d.scale(d);
-    paramVector3d1.add(localVector3d);
-    paramVector3d2.sub(localVector3d);
-  }
-
-  public void reflectWorldToInstruments(float paramFloat)
-  {
-    float f1 = 0.0F;
-
-    if (this.bNeedSetUp)
-    {
-      reflectPlaneMats();
-      this.bNeedSetUp = false;
-    }
-
-    if (((AVIA_B534)aircraft()).bChangedPit)
-    {
-      reflectPlaneToModel();
-      ((AVIA_B534)aircraft()).bChangedPit = false;
-    }
-
-    this.mesh.chunkSetAngles("NeedManPress", 0.0F, this.pictManifold = 0.85F * this.pictManifold + 0.15F * cvt(this.fm.EI.engines[0].getManifoldPressure() * 760.0F, 260.0F, 1200.0F, 33.299999F, 360.0F), 0.0F);
-
-    f1 = -15.0F * (this.pictAiler = 0.85F * this.pictAiler + 0.15F * this.fm.CT.AileronControl);
-
-    float f2 = 14.0F * (this.pictElev = 0.85F * this.pictElev + 0.2F * this.fm.CT.ElevatorControl);
-
-    this.mesh.chunkSetAngles("StickB", 0.0F, -f1, f2);
-
-    f1 = this.fm.CT.getRudder();
-
-    this.mesh.chunkSetAngles("Pedal_L", 0.0F, 18.0F * f1, 0.0F);
-    this.mesh.chunkSetAngles("Pedal_R", 0.0F, 18.0F * f1, 0.0F);
-
-    this.mesh.chunkSetAngles("TQHandle", 0.0F, 0.0F, 75.0F * interp(this.setNew.throttle, this.setOld.throttle, paramFloat));
-
-    this.mesh.chunkSetAngles("MixLvr", 0.0F, 0.0F, 65.0F * interp(this.setNew.mix, this.setOld.mix, paramFloat));
-
-    this.mesh.chunkSetAngles("CowlFlapLvr", 0.0F, -70.0F * interp(this.setNew.radiator, this.setOld.radiator, paramFloat), 0.0F);
-
-    this.mesh.chunkSetAngles("NeedAlt_Km", 0.0F, cvt(interp(this.setNew.altimeter, this.setOld.altimeter, paramFloat), 0.0F, 10000.0F, 0.0F, 450.0F), 0.0F);
-
-    float f3 = Pitot.Indicator((float)this.fm.Loc.z, this.fm.getSpeedKMH());
-
-    if (f3 < 100.0F) {
-      this.mesh.chunkSetAngles("NeedSpeed", 0.0F, -cvt(f3, 0.0F, 100.0F, 0.0F, -28.4F), 0.0F);
-    }
-    else if (f3 < 200.0F) {
-      this.mesh.chunkSetAngles("NeedSpeed", 0.0F, -cvt(f3, 100.0F, 200.0F, -28.4F, -102.0F), 0.0F);
-    }
-    else if (f3 < 300.0F) {
-      this.mesh.chunkSetAngles("NeedSpeed", 0.0F, -cvt(f3, 200.0F, 300.0F, -102.0F, -191.5F), 0.0F);
-    }
-    else {
-      this.mesh.chunkSetAngles("NeedSpeed", 0.0F, -cvt(f3, 300.0F, 450.0F, -191.5F, -326.0F), 0.0F);
-    }
-
-    this.mesh.chunkSetAngles("NeedFuel", 0.0F, cvt(this.fm.M.fuel, 0.0F, 250.0F, 0.0F, 255.5F), 0.0F);
-
-    f1 = this.fm.EI.engines[0].tOilOut;
-
-    if (f1 < 20.0F) {
-      this.mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 0.0F, 20.0F, 0.0F, 15.0F), 0.0F);
-    }
-    else if (f1 < 40.0F) {
-      this.mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 20.0F, 40.0F, 15.0F, 50.0F), 0.0F);
-    }
-    else if (f1 < 60.0F) {
-      this.mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 40.0F, 60.0F, 50.0F, 102.5F), 0.0F);
-    }
-    else if (f1 < 80.0F) {
-      this.mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 60.0F, 80.0F, 102.5F, 186.0F), 0.0F);
-    }
-    else if (f1 < 100.0F) {
-      this.mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 80.0F, 100.0F, 186.0F, 283.0F), 0.0F);
-    }
-    else if (f1 < 120.0F) {
-      this.mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 100.0F, 120.0F, 283.0F, 314.0F), 0.0F);
-    }
-    else {
-      this.mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 120.0F, 140.0F, 314.0F, 345.0F), 0.0F);
-    }
-
-    f1 = this.fm.EI.engines[0].getRPM();
-
-    this.mesh.chunkSetAngles("NeedRPM", 0.0F, cvt(f1, 0.0F, 3000.0F, 0.0F, 310.0F), 0.0F);
-
-    if ((this.fm.Or.getKren() < -110.0F) || (this.fm.Or.getKren() > 110.0F))
-      this.rpmGeneratedPressure -= 0.5F;
-    else if (f1 < this.rpmGeneratedPressure) {
-      this.rpmGeneratedPressure -= (this.rpmGeneratedPressure - f1) * 0.01F;
-    }
-    else {
-      this.rpmGeneratedPressure += (f1 - this.rpmGeneratedPressure) * 0.001F;
-    }
-
-    if (this.rpmGeneratedPressure < 600.0F)
-      this.oilPressure = cvt(this.rpmGeneratedPressure, 0.0F, 600.0F, 0.0F, 4.0F);
-    else if (this.rpmGeneratedPressure < 900.0F)
-      this.oilPressure = cvt(this.rpmGeneratedPressure, 600.0F, 900.0F, 4.0F, 7.0F);
-    else {
-      this.oilPressure = cvt(this.rpmGeneratedPressure, 900.0F, 1200.0F, 7.0F, 10.0F);
-    }
-    float f4 = 0.0F;
-    if (this.fm.EI.engines[0].tOilOut > 90.0F)
-      f4 = cvt(this.fm.EI.engines[0].tOilOut, 90.0F, 120.0F, 1.1F, 1.5F);
-    else if (this.fm.EI.engines[0].tOilOut < 50.0F)
-      f4 = cvt(this.fm.EI.engines[0].tOilOut, 0.0F, 50.0F, 1.5F, 0.9F);
-    else {
-      f4 = cvt(this.fm.EI.engines[0].tOilOut, 50.0F, 90.0F, 0.9F, 1.1F);
-    }
-    float f5 = f4 * this.fm.EI.engines[0].getReadyness() * this.oilPressure;
-
-    if (f5 < 12.0F) {
-      this.mesh.chunkSetAngles("NeedOilPress", 0.0F, cvt(f5, 0.0F, 12.0F, 0.0F, 230.0F), 0.0F);
-    }
-    else if (f5 < 16.0F) {
-      this.mesh.chunkSetAngles("NeedOilPress", 0.0F, cvt(f5, 12.0F, 16.0F, 230.0F, 285.0F), 0.0F);
-    }
-    else {
-      this.mesh.chunkSetAngles("NeedOilPress", 0.0F, cvt(f5, 16.0F, 32.0F, 285.0F, 320.0F), 0.0F);
-    }
-
-    f1 = this.fm.EI.engines[0].tWaterOut;
-
-    if (f1 < 20.0F) {
-      this.mesh.chunkSetAngles("NeedWatTemp", 0.0F, cvt(f1, 0.0F, 20.0F, 0.0F, 15.0F), 0.0F);
-    }
-    else if (f1 < 40.0F) {
-      this.mesh.chunkSetAngles("NeedWatTemp", 0.0F, cvt(f1, 20.0F, 40.0F, 15.0F, 50.0F), 0.0F);
-    }
-    else if (f1 < 60.0F) {
-      this.mesh.chunkSetAngles("NeedWatTemp", 0.0F, cvt(f1, 40.0F, 60.0F, 50.0F, 109.0F), 0.0F);
-    }
-    else if (f1 < 80.0F) {
-      this.mesh.chunkSetAngles("NeedWatTemp", 0.0F, cvt(f1, 60.0F, 80.0F, 109.0F, 192.0F), 0.0F);
-    }
-    else if (f1 < 100.0F) {
-      this.mesh.chunkSetAngles("NeedWatTemp", 0.0F, cvt(f1, 80.0F, 100.0F, 192.0F, 294.0F), 0.0F);
-    }
-    else {
-      this.mesh.chunkSetAngles("NeedWatTemp", 0.0F, cvt(f1, 100.0F, 111.5F, 294.0F, 356.10001F), 0.0F);
-    }
-
-    this.mesh.chunkSetAngles("NeedFuelPress", 0.0F, cvt(this.rpmGeneratedPressure, 0.0F, 1200.0F, 0.0F, 260.0F), 0.0F);
-
-    this.mesh.chunkSetAngles("NeedBank", 0.0F, cvt(this.setNew.turn, -0.2F, 0.2F, 22.5F, -22.5F), 0.0F);
-
-    this.mesh.chunkSetAngles("NeedTurn", 0.0F, -cvt(getBall(8.0D), -8.0F, 8.0F, 9.5F, -9.5F), 0.0F);
-
-    this.mesh.chunkSetAngles("NeedClimb", 0.0F, -cvt(this.setNew.vspeed, -10.0F, 10.0F, 180.0F, -180.0F), 0.0F);
-
-    this.mesh.chunkSetAngles("TrimIndicator", 120.0F * -this.fm.CT.getTrimElevatorControl(), 0.0F, 0.0F);
-
-    this.mesh.chunkSetAngles("ElevTrim", 0.0F, 600.0F * this.fm.CT.getTrimElevatorControl(), 0.0F);
-
-    this.mesh.chunkSetAngles("IgnitionSwitch", 0.0F, 90.0F * (1 + this.fm.EI.engines[0].getControlMagnetos()), 0.0F);
-
-    if (this.fm.CT.bHasBrakeControl)
-    {
-      f1 = this.fm.CT.getBrake();
-
-      this.mesh.chunkSetAngles("BrakeLever", f1 * 20.0F, 0.0F, 0.0F);
-
-      this.mesh.chunkSetAngles("NeedAirPR", 0.0F, -cvt(f1 + f1 * this.fm.CT.getRudder(), 0.0F, 1.5F, 0.0F, 148.0F), 0.0F);
-
-      this.mesh.chunkSetAngles("NeedAirPL", 0.0F, cvt(f1 - f1 * this.fm.CT.getRudder(), 0.0F, 1.5F, 0.0F, 148.0F), 0.0F);
-
-      this.mesh.chunkSetAngles("NeedAirP", 0.0F, 110.0F - f1 * 20.0F, 0.0F);
-    }
-
-    this.mesh.chunkSetAngles("Trigger1", 10.0F * (this.fm.CT.saveWeaponControl[0] != 0 ? 1 : 0), 0.0F, 0.0F);
-
-    this.mesh.chunkSetAngles("Trigger2", 10.0F * (this.fm.CT.saveWeaponControl[1] != 0 ? 1 : 0), 0.0F, 0.0F);
-
-    if ((this.fm.CT.Weapons[0] == null) || ((this.fm.CT.Weapons[0][0].countBullets() < 1) && (this.fm.CT.Weapons[1][0].countBullets() < 1)))
-    {
-      this.mesh.chunkVisible("MGLightL", false);
-    }
-    if ((this.fm.CT.Weapons[0] == null) || ((this.fm.CT.Weapons[0][1].countBullets() < 1) && (this.fm.CT.Weapons[1][1].countBullets() < 1)))
-    {
-      this.mesh.chunkVisible("MGLightR", false);
-    }
-    Aircraft.xyz[0] = 0.0F;
-    Aircraft.xyz[2] = 0.0F;
-    Aircraft.ypr[0] = 0.0F;
-    Aircraft.ypr[1] = 0.0F;
-    Aircraft.ypr[2] = 0.0F;
-    Aircraft.xyz[1] = (this.fm.CT.getCockpitDoor() * 0.62F);
-    this.mesh.chunkSetLocate("Canopy", Aircraft.xyz, Aircraft.ypr);
-
-    if (this.fm.CT.saveWeaponControl[1] != 0)
-      updateBullets();
-  }
-
-  public void reflectCockpitState()
-  {
-    if ((this.fm.AS.astateCockpitState & 0x2) != 0) {
-      this.mesh.chunkVisible("DamageGlass1", true);
-    }
-    if ((this.fm.AS.astateCockpitState & 0x1) != 0)
-    {
-      this.mesh.chunkVisible("Gages1_d0", false);
-      this.mesh.chunkVisible("Gages1_d1", true);
-      this.mesh.chunkVisible("NeedOilTemp", false);
-      this.mesh.chunkVisible("NeedSpeed", false);
-      this.mesh.chunkVisible("NeedWatTemp", false);
-      this.mesh.chunkVisible("NeedAlt_Km", false);
-      this.mesh.chunkVisible("DamageHull1", true);
-    }
-
-    if ((this.fm.AS.astateCockpitState & 0x40) != 0)
-    {
-      this.mesh.chunkVisible("Gages2_d0", false);
-      this.mesh.chunkVisible("Gages2_d1", true);
-      this.mesh.chunkVisible("NeedClimb", false);
-      this.mesh.chunkVisible("NeedBank", false);
-      this.mesh.chunkVisible("NeedTurn", false);
-      this.mesh.chunkVisible("DamageHull1", true);
-    }
-
-    if ((this.fm.AS.astateCockpitState & 0x4) != 0)
-    {
-      this.mesh.chunkVisible("DamageHull2", true);
-      this.mesh.chunkVisible("DamageGlass3", true);
-    }
-
-    if ((this.fm.AS.astateCockpitState & 0x8) != 0)
-    {
-      this.mesh.chunkVisible("DamageHull3", true);
-      this.mesh.chunkVisible("DamageGlass3", true);
-    }
-
-    if ((this.fm.AS.astateCockpitState & 0x10) != 0)
-    {
-      this.mesh.chunkVisible("DamageGlass2", true);
-      this.mesh.chunkVisible("DamageHull4", true);
-    }
-
-    if ((this.fm.AS.astateCockpitState & 0x80) != 0)
-      this.mesh.chunkVisible("OilSplats", true);
-  }
-
-  protected void reflectPlaneToModel()
-  {
-    HierMesh localHierMesh = aircraft().hierMesh();
-    this.mesh.chunkVisible("WingLMid_D0", localHierMesh.isChunkVisible("WingLMid_D0"));
-    this.mesh.chunkVisible("WingRMid_D0", localHierMesh.isChunkVisible("WingRMid_D0"));
-  }
-
-  public void doToggleUp(boolean paramBoolean)
-  {
-    super.doToggleUp(paramBoolean);
-  }
-
-  public void destroy()
-  {
-    super.destroy();
-  }
-
-  public void toggleDim()
-  {
-    this.cockpitDimControl = (!this.cockpitDimControl);
-  }
-
-  protected void reflectPlaneMats()
-  {
-    HierMesh localHierMesh = aircraft().hierMesh();
-    Mat localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D0o"));
-    this.mesh.materialReplace("Gloss1D0o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D1o"));
-    this.mesh.materialReplace("Gloss1D1o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Gloss1D2o"));
-    this.mesh.materialReplace("Gloss1D2o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Gloss2D0o"));
-    this.mesh.materialReplace("Gloss2D0o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Gloss2D1o"));
-    this.mesh.materialReplace("Gloss2D1o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Gloss2D2o"));
-    this.mesh.materialReplace("Gloss2D2o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Matt2D0o"));
-    this.mesh.materialReplace("Matt2D0o", localMat);
-    localMat = localHierMesh.material(localHierMesh.materialFind("Matt2D2o"));
-    this.mesh.materialReplace("Matt2D2o", localMat);
-  }
-
-  public void toggleLight()
-  {
-    this.cockpitLightControl = (!this.cockpitLightControl);
-    if (this.cockpitLightControl)
-      setNightMats(true);
-    else
-      setNightMats(false);
-  }
-
-  protected boolean doFocusEnter()
-  {
-    this.previousCycle = -1;
-    this.cycleCount = 5;
-    updateBullets();
-    return super.doFocusEnter();
-  }
-
-  private void updateBullets()
-  {
-    int i = 0;
-    Aircraft.xyz[0] = 0.0F;
-    Aircraft.xyz[1] = 0.0F;
-    Aircraft.xyz[2] = 0.0F;
-    Aircraft.ypr[0] = 0.0F;
-    Aircraft.ypr[1] = 0.0F;
-    Aircraft.ypr[2] = 0.0F;
-
-    BulletEmitter[] arrayOfBulletEmitter = this.fm.CT.Weapons[1];
-    if ((arrayOfBulletEmitter != null) && ((this.gunROK) || (this.gunLOK)))
-    {
-      int j = 300;
-
-      if (this.gunROK)
-        j = 300 - arrayOfBulletEmitter[1].countBullets();
-      else if (this.gunLOK) {
-        j = 300 - arrayOfBulletEmitter[0].countBullets();
-      }
-      int k = j % 5 + 1;
-      if (k != this.previousCycle)
-      {
-        this.hIncrementSize = (0.012F / this.cycleCount);
-        this.vIncrementSize = (0.004F / (this.cycleCount * 2));
-        this.hIncrement = (this.hIncrementSize * (this.cycleCount - 1));
-        this.vIncrement = (this.vIncrementSize * (this.cycleCount - 1));
-        this.cycleCount = 1;
-        this.vIncrement = 0.0F;
-      }
-      else
-      {
-        this.cycleCount += 1;
-        this.hIncrement -= this.hIncrementSize;
-        if (this.vIncrement >= 0.0025F)
-          this.vIncrement -= this.vIncrementSize;
-        else {
-          this.vIncrement += this.vIncrementSize;
-        }
-      }
-      if (this.hIncrement < 0.0F) {
-        return;
-      }
-      int m = 0;
-      if (j >= 80)
-      {
-        if (j < 95) {
-          this.turningCycle = true;
-        } else if (j < 120)
+        float altimeter;
+        float throttle;
+        float mix;
+        float radiator;
+        float prop;
+        float turn;
+        float vspeed;
+        float stbyPosition;
+        float dimPos;
+        com.maddox.JGP.Point3d planeLoc;
+        com.maddox.JGP.Point3d planeMove;
+        com.maddox.JGP.Vector3d compassPoint[];
+        com.maddox.JGP.Vector3d cP[];
+
+        private Variables()
         {
-          hideBullets(1);
-          m = 2;
-          this.turningCycle = false;
-          this.cycleMultiplier = -1;
+            planeLoc = new Point3d();
+            planeMove = new Point3d();
+            compassPoint = new com.maddox.JGP.Vector3d[4];
+            cP = new com.maddox.JGP.Vector3d[4];
+            compassPoint[0] = new Vector3d(0.0D, java.lang.Math.sqrt(1.0D - com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ * com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ), com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ);
+            compassPoint[1] = new Vector3d(-java.lang.Math.sqrt(1.0D - com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ * com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ), 0.0D, com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ);
+            compassPoint[2] = new Vector3d(0.0D, -java.lang.Math.sqrt(1.0D - com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ * com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ), com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ);
+            compassPoint[3] = new Vector3d(java.lang.Math.sqrt(1.0D - com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ * com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ), 0.0D, com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ);
+            cP[0] = new Vector3d(0.0D, java.lang.Math.sqrt(1.0D - com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ * com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ), com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ);
+            cP[1] = new Vector3d(-java.lang.Math.sqrt(1.0D - com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ * com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ), 0.0D, com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ);
+            cP[2] = new Vector3d(0.0D, -java.lang.Math.sqrt(1.0D - com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ * com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ), com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ);
+            cP[3] = new Vector3d(java.lang.Math.sqrt(1.0D - com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ * com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ), 0.0D, com.maddox.il2.objects.air.CockpitAVIA_B534.compassZ);
         }
-        else if (j < 135)
-        {
-          m = 2;
-          this.turningCycle = true;
-        }
-        else if (j < 160)
-        {
-          hideBullets(1);
-          hideBullets(2);
-          hideBullets(3);
-          m = 4;
-          this.turningCycle = false;
-          this.cycleMultiplier = -1;
-        }
-        else if (j < 175)
-        {
-          m = 4;
-          this.turningCycle = true;
-        }
-        else if (j < 200)
-        {
-          hideBullets(1);
-          hideBullets(2);
-          hideBullets(3);
-          hideBullets(4);
-          hideBullets(5);
-          m = 6;
-          this.turningCycle = false;
-          this.cycleMultiplier = -1;
-          this.mesh.chunkVisible("RBullet21", true);
-          this.mesh.chunkVisible("LBullet21", true);
-        }
-        else if (j < 215)
-        {
-          m = 6;
-          this.turningCycle = true;
-          if (this.gunROK) {
-            this.mesh.chunkVisible("RBullet21", false);
-          }
-          if (this.gunLOK)
-            this.mesh.chunkVisible("LBullet21", false);
-        }
-        else if (j < 240)
-        {
-          hideBullets(1);
-          hideBullets(2);
-          hideBullets(3);
-          hideBullets(4);
-          hideBullets(5);
-          hideBullets(6);
-          hideBullets(7);
-          m = 8;
-          this.turningCycle = false;
-          this.cycleMultiplier = -1;
-          this.mesh.chunkVisible("RBullet21", true);
-          this.mesh.chunkVisible("LBullet21", true);
-        }
-        else if (j < 255)
-        {
-          m = 8;
-          this.turningCycle = true;
-          if (this.gunROK) {
-            this.mesh.chunkVisible("RBullet21", false);
-          }
-          if (this.gunLOK)
-            this.mesh.chunkVisible("LBullet21", false);
-        }
-        else
-        {
-          hideBullets(1);
-          hideBullets(2);
-          hideBullets(3);
-          hideBullets(4);
-          hideBullets(5);
-          hideBullets(6);
-          hideBullets(7);
-          hideBullets(8);
-          hideBullets(9);
-          m = 10;
-          this.turningCycle = false;
 
-          this.cycleMultiplier = -1;
+    }
 
-          if (j >= 280)
-          {
-            i = 1;
-            if (k == 5)
+    class Interpolater extends com.maddox.il2.engine.InterpolateRef
+    {
+
+        public boolean tick()
+        {
+            if(bNeedSetUp)
             {
-              if (this.gunROK) {
-                this.mesh.chunkVisible("RBullet21", false);
-              }
-              if (this.gunLOK) {
-                this.mesh.chunkVisible("LBullet21", false);
-              }
-              hideBullets(10);
+                reflectPlaneMats();
+                bNeedSetUp = false;
             }
-
-            if (j >= 291)
+            if(ac != null && ac.bChangedPit)
             {
-              hideBullets(10);
-              if (this.gunROK)
-              {
-                for (n = 1; n <= j - 290; n++) {
-                  this.mesh.chunkVisible("RBullet0" + n, false);
-                }
-              }
-              if (this.gunLOK)
-              {
-                for (n = 1; n <= j - 290; n++) {
-                  this.mesh.chunkVisible("LBullet0" + n, false);
-                }
-              }
+                reflectPlaneToModel();
+                ac.bChangedPit = false;
             }
-            if (j >= 300)
-              hideAllBullets();
-          }
-          else
-          {
-            this.mesh.chunkVisible("RBullet21", true);
-            this.mesh.chunkVisible("LBullet21", true);
-          }
-        }
-      }
-
-      for (int n = 5; n >= 1; n--)
-      {
-        Aircraft.xyz[2] = this.hIncrement;
-        Aircraft.xyz[0] = 0.0F;
-        if (this.gunROK) {
-          this.mesh.chunkSetLocate("RBullet0" + n, Aircraft.xyz, Aircraft.ypr);
-        }
-        if (this.gunLOK) {
-          this.mesh.chunkSetLocate("LBullet0" + n, Aircraft.xyz, Aircraft.ypr);
-        }
-      }
-      for (n = 9; n >= 6; n--)
-      {
-        Aircraft.xyz[0] = this.hIncrement;
-        Aircraft.xyz[2] = 0.0F;
-        if (this.gunROK) {
-          this.mesh.chunkSetLocate("RBullet0" + n, Aircraft.xyz, Aircraft.ypr);
-        }
-        if (this.gunLOK)
-          this.mesh.chunkSetLocate("LBullet0" + n, Aircraft.xyz, Aircraft.ypr);
-      }
-      int i1;
-      if (this.turningCycle)
-      {
-        if ((k != this.previousCycle) && (k == 1)) {
-          this.cycleMultiplier += 1;
-        }
-        n = k + this.cycleMultiplier * 5;
-
-        if (n > 10)
-        {
-          hideBullets(m + 1);
-          this.previousCycle = k;
-          return;
-        }
-
-        i1 = 0;
-        if (n % 2 != 0) {
-          i1 = n / 2 + 1;
-        }
-        int i2 = n / 2;
-
-        for (int i3 = 1; i3 <= 6; i3++)
-        {
-          if (i3 <= i2)
-          {
-            int i4 = n - (i3 + (i3 - 1));
-            Aircraft.xyz[0] = (i4 * -0.012F + this.hIncrement - 0.006F);
-            Aircraft.xyz[2] = (0.01F + this.vIncrement);
-            if (this.gunROK) {
-              this.mesh.chunkSetLocate("RBullet" + (m + 1) + i3, Aircraft.xyz, Aircraft.ypr);
-            }
-            if (this.gunLOK) {
-              this.mesh.chunkSetLocate("LBullet" + (m + 1) + i3, Aircraft.xyz, Aircraft.ypr);
-            }
-          }
-          if (i3 == i1)
-          {
-            Aircraft.xyz[0] = (-0.006F + this.hIncrement / 2.0F);
-            Aircraft.xyz[2] = (0.01F - this.hIncrement);
-            if (this.gunROK) {
-              this.mesh.chunkSetLocate("RBullet" + (m + 1) + i1, Aircraft.xyz, Aircraft.ypr);
-            }
-
-            if (this.gunLOK) {
-              this.mesh.chunkSetLocate("LBullet" + (m + 1) + i1, Aircraft.xyz, Aircraft.ypr);
-            }
-          }
-
-          if ((n >= 6) || (i3 > 6) || (m == 0))
-            continue;
-          Aircraft.xyz[0] = ((n + 1) * -0.012F + this.hIncrement);
-          Aircraft.xyz[2] = (0.0F + this.vIncrement);
-          if (this.gunROK) {
-            this.mesh.chunkSetLocate("RBullet" + m + i3, Aircraft.xyz, Aircraft.ypr);
-          }
-          if (this.gunLOK) {
-            this.mesh.chunkSetLocate("LBullet" + m + i3, Aircraft.xyz, Aircraft.ypr);
-          }
-        }
-
-        if ((n >= 5) && (m != 0))
-          hideBullets(m);
-      }
-      else if (m != 0)
-      {
-        for (n = 6; n >= 1; n--)
-        {
-          if ((k + n >= 7) && (i == 0))
-          {
-            i1 = 6 - n - k;
-            if (i1 == 0)
+            setTmp = setOld;
+            setOld = setNew;
+            setNew = setTmp;
+            if((fm.AS.astateCockpitState & 2) != 0 && setNew.stbyPosition < 1.0F)
             {
-              Aircraft.xyz[0] = ((n + i1) * 0.012F);
-              Aircraft.xyz[2] = 0.0F;
-              if (this.gunROK) {
-                this.mesh.chunkSetLocate("RBullet" + m + n, Aircraft.xyz, Aircraft.ypr);
-              }
-              if (this.gunLOK)
-                this.mesh.chunkSetLocate("LBullet" + m + n, Aircraft.xyz, Aircraft.ypr);
+                setNew.stbyPosition = setOld.stbyPosition + 0.0125F;
+                setOld.stbyPosition = setNew.stbyPosition;
             }
+            setNew.altimeter = fm.getAltitude();
+            setNew.throttle = (10F * setOld.throttle + fm.EI.engines[0].getControlThrottle()) / 11F;
+            setNew.mix = (10F * setOld.mix + fm.EI.engines[0].getControlMix()) / 11F;
+            setNew.radiator = (10F * setOld.radiator + fm.EI.engines[0].getControlRadiator()) / 11F;
+            setNew.prop = setOld.prop;
+            if(setNew.prop < fm.EI.engines[0].getControlProp() - 0.01F)
+                setNew.prop += 0.0025F;
+            if(setNew.prop > fm.EI.engines[0].getControlProp() + 0.01F)
+                setNew.prop -= 0.0025F;
+            w.set(fm.getW());
+            fm.Or.transform(w);
+            setNew.turn = (12F * setOld.turn + w.z) / 13F;
+            setNew.vspeed = (299F * setOld.vspeed + fm.getVertSpeed()) / 300F;
+            pictSupc = 0.8F * pictSupc + 0.2F * (float)fm.EI.engines[0].getControlCompressor();
+            if(cockpitDimControl)
+            {
+                if(setNew.dimPos < 1.0F)
+                    setNew.dimPos = setOld.dimPos + 0.03F;
+            } else
+            if(setNew.dimPos > 0.0F)
+                setNew.dimPos = setOld.dimPos - 0.03F;
+            if(!fm.Gears.bTailwheelLocked && tailWheelLock < 1.0F)
+                tailWheelLock = tailWheelLock + 0.05F;
             else
-            {
-              Aircraft.xyz[0] = ((n + i1) * 0.012F + this.hIncrement);
-              Aircraft.xyz[2] = (0.0F + this.vIncrement);
-              if (this.gunROK) {
-                this.mesh.chunkSetLocate("RBullet" + m + n, Aircraft.xyz, Aircraft.ypr);
-              }
-              if (this.gunLOK)
-                this.mesh.chunkSetLocate("LBullet" + m + n, Aircraft.xyz, Aircraft.ypr);
-            }
-          }
-          else
-          {
-            Aircraft.xyz[0] = (k * -0.012F + this.hIncrement);
-            Aircraft.xyz[2] = (0.0F + this.vIncrement);
-            if (this.gunROK) {
-              this.mesh.chunkSetLocate("RBullet" + m + n, Aircraft.xyz, Aircraft.ypr);
-            }
-            if (this.gunLOK) {
-              this.mesh.chunkSetLocate("LBullet" + m + n, Aircraft.xyz, Aircraft.ypr);
-            }
-          }
+            if(fm.Gears.bTailwheelLocked && tailWheelLock > 0.0F)
+                tailWheelLock = tailWheelLock - 0.05F;
+            updateCompass();
+            return true;
         }
-        if (m >= 6)
+
+        Interpolater()
         {
-          Aircraft.xyz[0] = (-0.072F + this.hIncrement);
-          Aircraft.xyz[2] = (-0.010742F * (m - 2) + this.vIncrement);
-
-          if (this.gunROK) {
-            this.mesh.chunkSetLocate("RBullet21", Aircraft.xyz, Aircraft.ypr);
-          }
-          if (this.gunLOK) {
-            this.mesh.chunkSetLocate("LBullet21", Aircraft.xyz, Aircraft.ypr);
-          }
         }
-      }
-      this.previousCycle = k;
     }
-  }
 
-  private void hideBullets(int paramInt)
-  {
-    if (this.gunLOK)
+
+    public CockpitAVIA_B534()
     {
-      this.mesh.chunkVisible("LBullet" + paramInt + 1, false);
-      this.mesh.chunkVisible("LBullet" + paramInt + 2, false);
-      this.mesh.chunkVisible("LBullet" + paramInt + 3, false);
-      this.mesh.chunkVisible("LBullet" + paramInt + 4, false);
-      this.mesh.chunkVisible("LBullet" + paramInt + 5, false);
-      this.mesh.chunkVisible("LBullet" + paramInt + 6, false);
+        super("3DO/Cockpit/AviaB-534/hier.him", "bf109");
+        setOld = new Variables();
+        setNew = new Variables();
+        w = new Vector3f();
+        bNeedSetUp = true;
+        pictAiler = 0.0F;
+        pictElev = 0.0F;
+        pictSupc = 0.0F;
+        tailWheelLock = 1.0F;
+        ac = null;
+        rpmGeneratedPressure = 0.0F;
+        oilPressure = 0.0F;
+        hIncrement = 0.0096F;
+        vIncrement = 0.0F;
+        hIncrementSize = 0.0024F;
+        vIncrementSize = 0.0005F;
+        previousCycle = 0;
+        cycleCount = 5;
+        turningCycle = false;
+        cycleMultiplier = -1;
+        gunLOK = true;
+        gunROK = true;
+        compassFirst = 0;
+        ac = (com.maddox.il2.objects.air.AVIA_B534)aircraft();
+        ac.registerPit(this);
+        cockpitNightMats = (new java.lang.String[] {
+            "Compass", "gauge1", "gauge2", "gauge3", "gauge4", "gauge5", "DM_gauge1", "DM_gauge2"
+        });
+        setNightMats(false);
+        interpPut(new Interpolater(), null, com.maddox.rts.Time.current(), null);
+        if(acoustics != null)
+            acoustics.globFX = new ReverbFXRoom(0.45F);
     }
 
-    if (this.gunROK)
+    private void initCompass()
     {
-      this.mesh.chunkVisible("RBullet" + paramInt + 1, false);
-      this.mesh.chunkVisible("RBullet" + paramInt + 2, false);
-      this.mesh.chunkVisible("RBullet" + paramInt + 3, false);
-      this.mesh.chunkVisible("RBullet" + paramInt + 4, false);
-      this.mesh.chunkVisible("RBullet" + paramInt + 5, false);
-      this.mesh.chunkVisible("RBullet" + paramInt + 6, false);
+        accel = new Vector3d();
+        compassSpeed = new com.maddox.JGP.Vector3d[4];
+        compassSpeed[0] = new Vector3d(0.0D, 0.0D, 0.0D);
+        compassSpeed[1] = new Vector3d(0.0D, 0.0D, 0.0D);
+        compassSpeed[2] = new Vector3d(0.0D, 0.0D, 0.0D);
+        compassSpeed[3] = new Vector3d(0.0D, 0.0D, 0.0D);
+        float af[] = {
+            87F, 77.5F, 65.3F, 41.5F, -0.3F, -43.5F, -62.9F, -64F, -66.3F, -75.8F
+        };
+        float af1[] = {
+            55.8F, 51.5F, 47F, 40.1F, 33.8F, 33.7F, 32.7F, 35.1F, 46.6F, 61F
+        };
+        float f = cvt(com.maddox.il2.engine.Engine.land().config.declin, -90F, 90F, 9F, 0.0F);
+        float f1 = floatindex(f, af);
+        compassNorth = new Vector3d(0.0D, java.lang.Math.cos(0.017452777777777779D * (double)f1), -java.lang.Math.sin(0.017452777777777779D * (double)f1));
+        compassSouth = new Vector3d(0.0D, -java.lang.Math.cos(0.017452777777777779D * (double)f1), java.lang.Math.sin(0.017452777777777779D * (double)f1));
+        float f2 = floatindex(f, af1);
+        compassNorth.scale((f2 / 600F) * com.maddox.rts.Time.tickLenFs());
+        compassSouth.scale((f2 / 600F) * com.maddox.rts.Time.tickLenFs());
+        segLen1 = 2D * java.lang.Math.sqrt(1.0D - compassZ * compassZ);
+        segLen2 = segLen1 / java.lang.Math.sqrt(2D);
+        compassLimit = -1D * java.lang.Math.sin(0.01745328888888889D * compassLimitAngle);
+        compassLimit *= compassLimit;
+        compassAcc = 4.6666666599999997D * (double)com.maddox.rts.Time.tickLenFs();
+        compassSc = 0.10193679899999999D / (double)com.maddox.rts.Time.tickLenFs() / (double)com.maddox.rts.Time.tickLenFs();
     }
-  }
 
-  public void jamLeftGun()
-  {
-    this.gunLOK = false;
-  }
-
-  public void jamRightGun()
-  {
-    this.gunROK = false;
-  }
-
-  public void hideAllBullets()
-  {
-    for (int i = 1; i <= 10; i++)
+    private void updateCompass()
     {
-      if (this.gunLOK)
-      {
-        this.mesh.chunkVisible("LBullet" + i + 1, false);
-        this.mesh.chunkVisible("LBullet" + i + 2, false);
-        this.mesh.chunkVisible("LBullet" + i + 3, false);
-        this.mesh.chunkVisible("LBullet" + i + 4, false);
-        this.mesh.chunkVisible("LBullet" + i + 5, false);
-        this.mesh.chunkVisible("LBullet" + i + 6, false);
-      }
-      if (!this.gunROK)
-        continue;
-      this.mesh.chunkVisible("RBullet" + i + 1, false);
-      this.mesh.chunkVisible("RBullet" + i + 2, false);
-      this.mesh.chunkVisible("RBullet" + i + 3, false);
-      this.mesh.chunkVisible("RBullet" + i + 4, false);
-      this.mesh.chunkVisible("RBullet" + i + 5, false);
-      this.mesh.chunkVisible("RBullet" + i + 6, false);
+        if(compassFirst == 0)
+        {
+            initCompass();
+            fm.getLoc(setOld.planeLoc);
+        }
+        fm.getLoc(setNew.planeLoc);
+        setNew.planeMove.set(setNew.planeLoc);
+        setNew.planeMove.sub(setOld.planeLoc);
+        accel.set(setNew.planeMove);
+        accel.sub(setOld.planeMove);
+        accel.scale(compassSc);
+        accel.x = -accel.x;
+        accel.y = -accel.y;
+        accel.z = -accel.z - 1.0D;
+        accel.scale(compassAcc);
+        if(accel.length() > -compassZ * 0.69999999999999996D)
+            accel.scale((-compassZ * 0.69999999999999996D) / accel.length());
+        for(int i = 0; i < 4; i++)
+        {
+            compassSpeed[i].set(setOld.compassPoint[i]);
+            compassSpeed[i].sub(setNew.compassPoint[i]);
+        }
+
+        for(int j = 0; j < 4; j++)
+        {
+            double d = compassSpeed[j].length();
+            d = 0.98499999999999999D / (1.0D + d * d * 15D);
+            compassSpeed[j].scale(d);
+        }
+
+        com.maddox.JGP.Vector3d vector3d = new Vector3d();
+        vector3d.set(setOld.compassPoint[0]);
+        vector3d.add(setOld.compassPoint[1]);
+        vector3d.add(setOld.compassPoint[2]);
+        vector3d.add(setOld.compassPoint[3]);
+        vector3d.normalize();
+        for(int k = 0; k < 4; k++)
+        {
+            com.maddox.JGP.Vector3d vector3d2 = new Vector3d();
+            double d1 = vector3d.dot(compassSpeed[k]);
+            vector3d2.set(vector3d);
+            d1 *= 0.28000000000000003D;
+            vector3d2.scale(-d1);
+            compassSpeed[k].add(vector3d2);
+        }
+
+        for(int l = 0; l < 4; l++)
+            compassSpeed[l].add(accel);
+
+        compassSpeed[0].add(compassNorth);
+        compassSpeed[2].add(compassSouth);
+        for(int i1 = 0; i1 < 4; i1++)
+        {
+            setNew.compassPoint[i1].set(setOld.compassPoint[i1]);
+            setNew.compassPoint[i1].add(compassSpeed[i1]);
+        }
+
+        vector3d.set(setNew.compassPoint[0]);
+        vector3d.add(setNew.compassPoint[1]);
+        vector3d.add(setNew.compassPoint[2]);
+        vector3d.add(setNew.compassPoint[3]);
+        vector3d.scale(0.25D);
+        com.maddox.JGP.Vector3d vector3d1 = new Vector3d(vector3d);
+        vector3d1.normalize();
+        vector3d1.scale(-compassZ);
+        vector3d1.sub(vector3d);
+        for(int j1 = 0; j1 < 4; j1++)
+            setNew.compassPoint[j1].add(vector3d1);
+
+        for(int k1 = 0; k1 < 4; k1++)
+            setNew.compassPoint[k1].normalize();
+
+        for(int l1 = 0; l1 < 2; l1++)
+        {
+            compassDist(setNew.compassPoint[0], setNew.compassPoint[2], segLen1);
+            compassDist(setNew.compassPoint[1], setNew.compassPoint[3], segLen1);
+            compassDist(setNew.compassPoint[0], setNew.compassPoint[1], segLen2);
+            compassDist(setNew.compassPoint[2], setNew.compassPoint[3], segLen2);
+            compassDist(setNew.compassPoint[1], setNew.compassPoint[2], segLen2);
+            compassDist(setNew.compassPoint[3], setNew.compassPoint[0], segLen2);
+            for(int i2 = 0; i2 < 4; i2++)
+                setNew.compassPoint[i2].normalize();
+
+            compassDist(setNew.compassPoint[3], setNew.compassPoint[0], segLen2);
+            compassDist(setNew.compassPoint[1], setNew.compassPoint[2], segLen2);
+            compassDist(setNew.compassPoint[2], setNew.compassPoint[3], segLen2);
+            compassDist(setNew.compassPoint[0], setNew.compassPoint[1], segLen2);
+            compassDist(setNew.compassPoint[1], setNew.compassPoint[3], segLen1);
+            compassDist(setNew.compassPoint[0], setNew.compassPoint[2], segLen1);
+            for(int j2 = 0; j2 < 4; j2++)
+                setNew.compassPoint[j2].normalize();
+
+        }
+
+        com.maddox.il2.engine.Orientation orientation = new Orientation();
+        fm.getOrient(orientation);
+        for(int k2 = 0; k2 < 4; k2++)
+        {
+            setNew.cP[k2].set(setNew.compassPoint[k2]);
+            orientation.transformInv(setNew.cP[k2]);
+        }
+
+        com.maddox.JGP.Vector3d vector3d3 = new Vector3d();
+        vector3d3.set(setNew.cP[0]);
+        vector3d3.add(setNew.cP[1]);
+        vector3d3.add(setNew.cP[2]);
+        vector3d3.add(setNew.cP[3]);
+        vector3d3.scale(0.25D);
+        com.maddox.JGP.Vector3d vector3d4 = new Vector3d();
+        vector3d4.set(vector3d3);
+        vector3d4.normalize();
+        float f = (float)(vector3d4.x * vector3d4.x + vector3d4.y * vector3d4.y);
+        if((double)f > compassLimit || vector3d3.z > 0.0D)
+        {
+            for(int l2 = 0; l2 < 4; l2++)
+            {
+                setNew.cP[l2].set(setOld.cP[l2]);
+                setNew.compassPoint[l2].set(setOld.cP[l2]);
+                orientation.transform(setNew.compassPoint[l2]);
+            }
+
+            vector3d3.set(setNew.cP[0]);
+            vector3d3.add(setNew.cP[1]);
+            vector3d3.add(setNew.cP[2]);
+            vector3d3.add(setNew.cP[3]);
+            vector3d3.scale(0.25D);
+        }
+        vector3d4.set(setNew.cP[0]);
+        vector3d4.sub(vector3d3);
+        double d2 = -java.lang.Math.atan2(vector3d3.y, -vector3d3.z);
+        vectorRot2(vector3d3, d2);
+        vectorRot2(vector3d4, d2);
+        double d3 = java.lang.Math.atan2(vector3d3.x, -vector3d3.z);
+        vectorRot1(vector3d4, -d3);
+        double d4 = java.lang.Math.atan2(vector3d4.y, vector3d4.x);
+        mesh.chunkSetAngles("NeedCompass_A", -(float)((d2 * 180D) / 3.1415926000000001D), -(float)((d3 * 180D) / 3.1415926000000001D), 0.0F);
+        mesh.chunkSetAngles("NeedCompass_B", 0.0F, (float)(90D - (d4 * 180D) / 3.1415926000000001D), 0.0F);
+        compassFirst++;
     }
 
-    for (i = 1; i <= 9; i++)
+    private void vectorRot1(com.maddox.JGP.Vector3d vector3d, double d)
     {
-      if (this.gunLOK)
-        this.mesh.chunkVisible("LBullet0" + i, false);
-      if (this.gunROK)
-        this.mesh.chunkVisible("RBullet0" + i, false);
+        double d1 = java.lang.Math.sin(d);
+        double d2 = java.lang.Math.cos(d);
+        double d3 = vector3d.x * d2 - vector3d.z * d1;
+        vector3d.z = vector3d.x * d1 + vector3d.z * d2;
+        vector3d.x = d3;
     }
-  }
 
-  private class Variables
-  {
-    float altimeter;
-    float throttle;
-    float mix;
-    float radiator;
-    float prop;
-    float turn;
-    float vspeed;
-    float stbyPosition;
-    float dimPos;
-    Point3d planeLoc;
-    Point3d planeMove;
-    Vector3d[] compassPoint;
-    Vector3d[] cP;
-    private final CockpitAVIA_B534 this$0;
-
-    private Variables()
+    private void vectorRot2(com.maddox.JGP.Vector3d vector3d, double d)
     {
-      this.this$0 = this$1;
-
-      this.planeLoc = new Point3d();
-      this.planeMove = new Point3d();
-      this.compassPoint = new Vector3d[4];
-      this.cP = new Vector3d[4];
-
-      this.compassPoint[0] = new Vector3d(0.0D, Math.sqrt(1.0D - CockpitAVIA_B534.compassZ * CockpitAVIA_B534.compassZ), CockpitAVIA_B534.compassZ);
-
-      this.compassPoint[1] = new Vector3d(-Math.sqrt(1.0D - CockpitAVIA_B534.compassZ * CockpitAVIA_B534.compassZ), 0.0D, CockpitAVIA_B534.compassZ);
-      this.compassPoint[2] = new Vector3d(0.0D, -Math.sqrt(1.0D - CockpitAVIA_B534.compassZ * CockpitAVIA_B534.compassZ), CockpitAVIA_B534.compassZ);
-      this.compassPoint[3] = new Vector3d(Math.sqrt(1.0D - CockpitAVIA_B534.compassZ * CockpitAVIA_B534.compassZ), 0.0D, CockpitAVIA_B534.compassZ);
-
-      this.cP[0] = new Vector3d(0.0D, Math.sqrt(1.0D - CockpitAVIA_B534.compassZ * CockpitAVIA_B534.compassZ), CockpitAVIA_B534.compassZ);
-
-      this.cP[1] = new Vector3d(-Math.sqrt(1.0D - CockpitAVIA_B534.compassZ * CockpitAVIA_B534.compassZ), 0.0D, CockpitAVIA_B534.compassZ);
-      this.cP[2] = new Vector3d(0.0D, -Math.sqrt(1.0D - CockpitAVIA_B534.compassZ * CockpitAVIA_B534.compassZ), CockpitAVIA_B534.compassZ);
-      this.cP[3] = new Vector3d(Math.sqrt(1.0D - CockpitAVIA_B534.compassZ * CockpitAVIA_B534.compassZ), 0.0D, CockpitAVIA_B534.compassZ);
+        double d1 = java.lang.Math.sin(d);
+        double d2 = java.lang.Math.cos(d);
+        double d3 = vector3d.y * d2 - vector3d.z * d1;
+        vector3d.z = vector3d.y * d1 + vector3d.z * d2;
+        vector3d.y = d3;
     }
 
-    Variables(CockpitAVIA_B534.1 arg2)
+    private void compassDist(com.maddox.JGP.Vector3d vector3d, com.maddox.JGP.Vector3d vector3d1, double d)
     {
-      this();
+        com.maddox.JGP.Vector3d vector3d2 = new Vector3d();
+        vector3d2.set(vector3d);
+        vector3d2.sub(vector3d1);
+        double d1 = vector3d2.length();
+        if(d1 < 9.9999999999999995E-007D)
+            d1 = 9.9999999999999995E-007D;
+        d1 = (d - d1) / d1 / 2D;
+        vector3d2.scale(d1);
+        vector3d.add(vector3d2);
+        vector3d1.sub(vector3d2);
     }
-  }
 
-  class Interpolater extends InterpolateRef
-  {
-    Interpolater()
+    public void reflectWorldToInstruments(float f)
     {
+        float f1 = 0.0F;
+        if(bNeedSetUp)
+        {
+            reflectPlaneMats();
+            bNeedSetUp = false;
+        }
+        if(((com.maddox.il2.objects.air.AVIA_B534)aircraft()).bChangedPit)
+        {
+            reflectPlaneToModel();
+            ((com.maddox.il2.objects.air.AVIA_B534)aircraft()).bChangedPit = false;
+        }
+        mesh.chunkSetAngles("NeedManPress", 0.0F, pictManifold = 0.85F * pictManifold + 0.15F * cvt(fm.EI.engines[0].getManifoldPressure() * 760F, 260F, 1200F, 33.3F, 360F), 0.0F);
+        f1 = -15F * (pictAiler = 0.85F * pictAiler + 0.15F * fm.CT.AileronControl);
+        float f3 = 14F * (pictElev = 0.85F * pictElev + 0.2F * fm.CT.ElevatorControl);
+        mesh.chunkSetAngles("StickB", 0.0F, -f1, f3);
+        f1 = fm.CT.getRudder();
+        mesh.chunkSetAngles("Pedal_L", 0.0F, 18F * f1, 0.0F);
+        mesh.chunkSetAngles("Pedal_R", 0.0F, 18F * f1, 0.0F);
+        mesh.chunkSetAngles("TQHandle", 0.0F, 0.0F, 75F * interp(setNew.throttle, setOld.throttle, f));
+        mesh.chunkSetAngles("MixLvr", 0.0F, 0.0F, 65F * interp(setNew.mix, setOld.mix, f));
+        mesh.chunkSetAngles("CowlFlapLvr", 0.0F, -70F * interp(setNew.radiator, setOld.radiator, f), 0.0F);
+        mesh.chunkSetAngles("NeedAlt_Km", 0.0F, cvt(interp(setNew.altimeter, setOld.altimeter, f), 0.0F, 10000F, 0.0F, 450F), 0.0F);
+        float f4 = com.maddox.il2.fm.Pitot.Indicator((float)fm.Loc.z, fm.getSpeedKMH());
+        if(f4 < 100F)
+            mesh.chunkSetAngles("NeedSpeed", 0.0F, -cvt(f4, 0.0F, 100F, 0.0F, -28.4F), 0.0F);
+        else
+        if(f4 < 200F)
+            mesh.chunkSetAngles("NeedSpeed", 0.0F, -cvt(f4, 100F, 200F, -28.4F, -102F), 0.0F);
+        else
+        if(f4 < 300F)
+            mesh.chunkSetAngles("NeedSpeed", 0.0F, -cvt(f4, 200F, 300F, -102F, -191.5F), 0.0F);
+        else
+            mesh.chunkSetAngles("NeedSpeed", 0.0F, -cvt(f4, 300F, 450F, -191.5F, -326F), 0.0F);
+        mesh.chunkSetAngles("NeedFuel", 0.0F, cvt(fm.M.fuel, 0.0F, 250F, 0.0F, 255.5F), 0.0F);
+        f1 = fm.EI.engines[0].tOilOut;
+        if(f1 < 20F)
+            mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 0.0F, 20F, 0.0F, 15F), 0.0F);
+        else
+        if(f1 < 40F)
+            mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 20F, 40F, 15F, 50F), 0.0F);
+        else
+        if(f1 < 60F)
+            mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 40F, 60F, 50F, 102.5F), 0.0F);
+        else
+        if(f1 < 80F)
+            mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 60F, 80F, 102.5F, 186F), 0.0F);
+        else
+        if(f1 < 100F)
+            mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 80F, 100F, 186F, 283F), 0.0F);
+        else
+        if(f1 < 120F)
+            mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 100F, 120F, 283F, 314F), 0.0F);
+        else
+            mesh.chunkSetAngles("NeedOilTemp", 0.0F, cvt(f1, 120F, 140F, 314F, 345F), 0.0F);
+        f1 = fm.EI.engines[0].getRPM();
+        mesh.chunkSetAngles("NeedRPM", 0.0F, cvt(f1, 0.0F, 3000F, 0.0F, 310F), 0.0F);
+        if(fm.Or.getKren() < -110F || fm.Or.getKren() > 110F)
+            rpmGeneratedPressure = rpmGeneratedPressure - 0.5F;
+        else
+        if(f1 < rpmGeneratedPressure)
+            rpmGeneratedPressure = rpmGeneratedPressure - (rpmGeneratedPressure - f1) * 0.01F;
+        else
+            rpmGeneratedPressure = rpmGeneratedPressure + (f1 - rpmGeneratedPressure) * 0.001F;
+        if(rpmGeneratedPressure < 600F)
+            oilPressure = cvt(rpmGeneratedPressure, 0.0F, 600F, 0.0F, 4F);
+        else
+        if(rpmGeneratedPressure < 900F)
+            oilPressure = cvt(rpmGeneratedPressure, 600F, 900F, 4F, 7F);
+        else
+            oilPressure = cvt(rpmGeneratedPressure, 900F, 1200F, 7F, 10F);
+        float f5 = 0.0F;
+        if(fm.EI.engines[0].tOilOut > 90F)
+            f5 = cvt(fm.EI.engines[0].tOilOut, 90F, 120F, 1.1F, 1.5F);
+        else
+        if(fm.EI.engines[0].tOilOut < 50F)
+            f5 = cvt(fm.EI.engines[0].tOilOut, 0.0F, 50F, 1.5F, 0.9F);
+        else
+            f5 = cvt(fm.EI.engines[0].tOilOut, 50F, 90F, 0.9F, 1.1F);
+        float f6 = f5 * fm.EI.engines[0].getReadyness() * oilPressure;
+        if(f6 < 12F)
+            mesh.chunkSetAngles("NeedOilPress", 0.0F, cvt(f6, 0.0F, 12F, 0.0F, 230F), 0.0F);
+        else
+        if(f6 < 16F)
+            mesh.chunkSetAngles("NeedOilPress", 0.0F, cvt(f6, 12F, 16F, 230F, 285F), 0.0F);
+        else
+            mesh.chunkSetAngles("NeedOilPress", 0.0F, cvt(f6, 16F, 32F, 285F, 320F), 0.0F);
+        f1 = fm.EI.engines[0].tWaterOut;
+        if(f1 < 20F)
+            mesh.chunkSetAngles("NeedWatTemp", 0.0F, cvt(f1, 0.0F, 20F, 0.0F, 15F), 0.0F);
+        else
+        if(f1 < 40F)
+            mesh.chunkSetAngles("NeedWatTemp", 0.0F, cvt(f1, 20F, 40F, 15F, 50F), 0.0F);
+        else
+        if(f1 < 60F)
+            mesh.chunkSetAngles("NeedWatTemp", 0.0F, cvt(f1, 40F, 60F, 50F, 109F), 0.0F);
+        else
+        if(f1 < 80F)
+            mesh.chunkSetAngles("NeedWatTemp", 0.0F, cvt(f1, 60F, 80F, 109F, 192F), 0.0F);
+        else
+        if(f1 < 100F)
+            mesh.chunkSetAngles("NeedWatTemp", 0.0F, cvt(f1, 80F, 100F, 192F, 294F), 0.0F);
+        else
+            mesh.chunkSetAngles("NeedWatTemp", 0.0F, cvt(f1, 100F, 111.5F, 294F, 356.1F), 0.0F);
+        mesh.chunkSetAngles("NeedFuelPress", 0.0F, cvt(rpmGeneratedPressure, 0.0F, 1200F, 0.0F, 260F), 0.0F);
+        mesh.chunkSetAngles("NeedBank", 0.0F, cvt(setNew.turn, -0.2F, 0.2F, 22.5F, -22.5F), 0.0F);
+        mesh.chunkSetAngles("NeedTurn", 0.0F, -cvt(getBall(8D), -8F, 8F, 9.5F, -9.5F), 0.0F);
+        mesh.chunkSetAngles("NeedClimb", 0.0F, -cvt(setNew.vspeed, -10F, 10F, 180F, -180F), 0.0F);
+        mesh.chunkSetAngles("TrimIndicator", 120F * -fm.CT.getTrimElevatorControl(), 0.0F, 0.0F);
+        mesh.chunkSetAngles("ElevTrim", 0.0F, 600F * fm.CT.getTrimElevatorControl(), 0.0F);
+        mesh.chunkSetAngles("IgnitionSwitch", 0.0F, 90F * (float)(1 + fm.EI.engines[0].getControlMagnetos()), 0.0F);
+        if(fm.CT.bHasBrakeControl)
+        {
+            float f2 = fm.CT.getBrake();
+            mesh.chunkSetAngles("BrakeLever", f2 * 20F, 0.0F, 0.0F);
+            mesh.chunkSetAngles("NeedAirPR", 0.0F, -cvt(f2 + f2 * fm.CT.getRudder(), 0.0F, 1.5F, 0.0F, 148F), 0.0F);
+            mesh.chunkSetAngles("NeedAirPL", 0.0F, cvt(f2 - f2 * fm.CT.getRudder(), 0.0F, 1.5F, 0.0F, 148F), 0.0F);
+            mesh.chunkSetAngles("NeedAirP", 0.0F, 110F - f2 * 20F, 0.0F);
+        }
+        mesh.chunkSetAngles("Trigger1", 10F * (float)(fm.CT.saveWeaponControl[0] ? 1 : 0), 0.0F, 0.0F);
+        mesh.chunkSetAngles("Trigger2", 10F * (float)(fm.CT.saveWeaponControl[1] ? 1 : 0), 0.0F, 0.0F);
+        if(fm.CT.Weapons[0] == null || fm.CT.Weapons[0][0].countBullets() < 1 && fm.CT.Weapons[1][0].countBullets() < 1)
+            mesh.chunkVisible("MGLightL", false);
+        if(fm.CT.Weapons[0] == null || fm.CT.Weapons[0][1].countBullets() < 1 && fm.CT.Weapons[1][1].countBullets() < 1)
+            mesh.chunkVisible("MGLightR", false);
+        com.maddox.il2.objects.air.Aircraft.xyz[0] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.xyz[2] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.ypr[0] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.ypr[1] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.ypr[2] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.xyz[1] = fm.CT.getCockpitDoor() * 0.62F;
+        mesh.chunkSetLocate("Canopy", com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+        if(fm.CT.saveWeaponControl[1])
+            updateBullets();
     }
 
-    public boolean tick()
+    public void reflectCockpitState()
     {
-      if (CockpitAVIA_B534.this.bNeedSetUp)
-      {
-        CockpitAVIA_B534.this.reflectPlaneMats();
-        CockpitAVIA_B534.access$102(CockpitAVIA_B534.this, false);
-      }
-
-      if ((CockpitAVIA_B534.this.ac != null) && (CockpitAVIA_B534.this.ac.bChangedPit))
-      {
-        CockpitAVIA_B534.this.reflectPlaneToModel();
-        CockpitAVIA_B534.this.ac.bChangedPit = false;
-      }
-
-      CockpitAVIA_B534.access$302(CockpitAVIA_B534.this, CockpitAVIA_B534.this.setOld);
-      CockpitAVIA_B534.access$402(CockpitAVIA_B534.this, CockpitAVIA_B534.this.setNew);
-      CockpitAVIA_B534.access$502(CockpitAVIA_B534.this, CockpitAVIA_B534.this.setTmp);
-      if (((CockpitAVIA_B534.this.fm.AS.astateCockpitState & 0x2) != 0) && (CockpitAVIA_B534.this.setNew.stbyPosition < 1.0F))
-      {
-        CockpitAVIA_B534.this.setNew.stbyPosition = (CockpitAVIA_B534.this.setOld.stbyPosition + 0.0125F);
-        CockpitAVIA_B534.this.setOld.stbyPosition = CockpitAVIA_B534.this.setNew.stbyPosition;
-      }
-
-      CockpitAVIA_B534.this.setNew.altimeter = CockpitAVIA_B534.this.fm.getAltitude();
-
-      CockpitAVIA_B534.this.setNew.throttle = ((10.0F * CockpitAVIA_B534.this.setOld.throttle + CockpitAVIA_B534.this.fm.EI.engines[0].getControlThrottle()) / 11.0F);
-
-      CockpitAVIA_B534.this.setNew.mix = ((10.0F * CockpitAVIA_B534.this.setOld.mix + CockpitAVIA_B534.this.fm.EI.engines[0].getControlMix()) / 11.0F);
-      CockpitAVIA_B534.this.setNew.radiator = ((10.0F * CockpitAVIA_B534.this.setOld.radiator + CockpitAVIA_B534.this.fm.EI.engines[0].getControlRadiator()) / 11.0F);
-
-      CockpitAVIA_B534.this.setNew.prop = CockpitAVIA_B534.this.setOld.prop;
-      if (CockpitAVIA_B534.this.setNew.prop < CockpitAVIA_B534.this.fm.EI.engines[0].getControlProp() - 0.01F) {
-        CockpitAVIA_B534.this.setNew.prop += 0.0025F;
-      }
-      if (CockpitAVIA_B534.this.setNew.prop > CockpitAVIA_B534.this.fm.EI.engines[0].getControlProp() + 0.01F) {
-        CockpitAVIA_B534.this.setNew.prop -= 0.0025F;
-      }
-      CockpitAVIA_B534.this.w.set(CockpitAVIA_B534.this.fm.getW());
-      CockpitAVIA_B534.this.fm.Or.transform(CockpitAVIA_B534.this.w);
-      CockpitAVIA_B534.this.setNew.turn = ((12.0F * CockpitAVIA_B534.this.setOld.turn + CockpitAVIA_B534.this.w.z) / 13.0F);
-      CockpitAVIA_B534.this.setNew.vspeed = ((299.0F * CockpitAVIA_B534.this.setOld.vspeed + CockpitAVIA_B534.this.fm.getVertSpeed()) / 300.0F);
-      CockpitAVIA_B534.access$702(CockpitAVIA_B534.this, 0.8F * CockpitAVIA_B534.this.pictSupc + 0.2F * CockpitAVIA_B534.this.fm.EI.engines[0].getControlCompressor());
-
-      if (CockpitAVIA_B534.this.cockpitDimControl)
-      {
-        if (CockpitAVIA_B534.this.setNew.dimPos < 1.0F)
-          CockpitAVIA_B534.this.setNew.dimPos = (CockpitAVIA_B534.this.setOld.dimPos + 0.03F);
-      }
-      else if (CockpitAVIA_B534.this.setNew.dimPos > 0.0F) {
-        CockpitAVIA_B534.this.setNew.dimPos = (CockpitAVIA_B534.this.setOld.dimPos - 0.03F);
-      }
-      if ((!CockpitAVIA_B534.this.fm.Gears.bTailwheelLocked) && (CockpitAVIA_B534.this.tailWheelLock < 1.0F))
-        CockpitAVIA_B534.access$802(CockpitAVIA_B534.this, CockpitAVIA_B534.this.tailWheelLock + 0.05F);
-      else if ((CockpitAVIA_B534.this.fm.Gears.bTailwheelLocked) && (CockpitAVIA_B534.this.tailWheelLock > 0.0F)) {
-        CockpitAVIA_B534.access$802(CockpitAVIA_B534.this, CockpitAVIA_B534.this.tailWheelLock - 0.05F);
-      }
-      CockpitAVIA_B534.this.updateCompass();
-      return true;
+        if((fm.AS.astateCockpitState & 2) != 0)
+            mesh.chunkVisible("DamageGlass1", true);
+        if((fm.AS.astateCockpitState & 1) != 0)
+        {
+            mesh.chunkVisible("Gages1_d0", false);
+            mesh.chunkVisible("Gages1_d1", true);
+            mesh.chunkVisible("NeedOilTemp", false);
+            mesh.chunkVisible("NeedSpeed", false);
+            mesh.chunkVisible("NeedWatTemp", false);
+            mesh.chunkVisible("NeedAlt_Km", false);
+            mesh.chunkVisible("DamageHull1", true);
+        }
+        if((fm.AS.astateCockpitState & 0x40) != 0)
+        {
+            mesh.chunkVisible("Gages2_d0", false);
+            mesh.chunkVisible("Gages2_d1", true);
+            mesh.chunkVisible("NeedClimb", false);
+            mesh.chunkVisible("NeedBank", false);
+            mesh.chunkVisible("NeedTurn", false);
+            mesh.chunkVisible("DamageHull1", true);
+        }
+        if((fm.AS.astateCockpitState & 4) != 0)
+        {
+            mesh.chunkVisible("DamageHull2", true);
+            mesh.chunkVisible("DamageGlass3", true);
+        }
+        if((fm.AS.astateCockpitState & 8) != 0)
+        {
+            mesh.chunkVisible("DamageHull3", true);
+            mesh.chunkVisible("DamageGlass3", true);
+        }
+        if((fm.AS.astateCockpitState & 0x10) != 0)
+        {
+            mesh.chunkVisible("DamageGlass2", true);
+            mesh.chunkVisible("DamageHull4", true);
+        }
+        if((fm.AS.astateCockpitState & 0x80) != 0)
+            mesh.chunkVisible("OilSplats", true);
     }
-  }
+
+    protected void reflectPlaneToModel()
+    {
+        com.maddox.il2.engine.HierMesh hiermesh = aircraft().hierMesh();
+        mesh.chunkVisible("WingLMid_D0", hiermesh.isChunkVisible("WingLMid_D0"));
+        mesh.chunkVisible("WingRMid_D0", hiermesh.isChunkVisible("WingRMid_D0"));
+    }
+
+    public void doToggleUp(boolean flag)
+    {
+        super.doToggleUp(flag);
+    }
+
+    public void destroy()
+    {
+        super.destroy();
+    }
+
+    public void toggleDim()
+    {
+        cockpitDimControl = !cockpitDimControl;
+    }
+
+    protected void reflectPlaneMats()
+    {
+        com.maddox.il2.engine.HierMesh hiermesh = aircraft().hierMesh();
+        com.maddox.il2.engine.Mat mat = hiermesh.material(hiermesh.materialFind("Gloss1D0o"));
+        mesh.materialReplace("Gloss1D0o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Gloss1D1o"));
+        mesh.materialReplace("Gloss1D1o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Gloss1D2o"));
+        mesh.materialReplace("Gloss1D2o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Gloss2D0o"));
+        mesh.materialReplace("Gloss2D0o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Gloss2D1o"));
+        mesh.materialReplace("Gloss2D1o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Gloss2D2o"));
+        mesh.materialReplace("Gloss2D2o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Matt2D0o"));
+        mesh.materialReplace("Matt2D0o", mat);
+        mat = hiermesh.material(hiermesh.materialFind("Matt2D2o"));
+        mesh.materialReplace("Matt2D2o", mat);
+    }
+
+    public void toggleLight()
+    {
+        cockpitLightControl = !cockpitLightControl;
+        if(cockpitLightControl)
+            setNightMats(true);
+        else
+            setNightMats(false);
+    }
+
+    protected boolean doFocusEnter()
+    {
+        previousCycle = -1;
+        cycleCount = 5;
+        updateBullets();
+        return super.doFocusEnter();
+    }
+
+    private void updateBullets()
+    {
+        boolean flag = false;
+        com.maddox.il2.objects.air.Aircraft.xyz[0] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.xyz[1] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.xyz[2] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.ypr[0] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.ypr[1] = 0.0F;
+        com.maddox.il2.objects.air.Aircraft.ypr[2] = 0.0F;
+        com.maddox.il2.ai.BulletEmitter abulletemitter[] = fm.CT.Weapons[1];
+        if(abulletemitter != null && (gunROK || gunLOK))
+        {
+            int i = 300;
+            if(gunROK)
+                i = 300 - abulletemitter[1].countBullets();
+            else
+            if(gunLOK)
+                i = 300 - abulletemitter[0].countBullets();
+            int j = i % 5 + 1;
+            if(j != previousCycle)
+            {
+                hIncrementSize = 0.012F / (float)cycleCount;
+                vIncrementSize = 0.004F / (float)(cycleCount * 2);
+                hIncrement = hIncrementSize * (float)(cycleCount - 1);
+                vIncrement = vIncrementSize * (float)(cycleCount - 1);
+                cycleCount = 1;
+                vIncrement = 0.0F;
+            } else
+            {
+                cycleCount++;
+                hIncrement = hIncrement - hIncrementSize;
+                if(vIncrement >= 0.0025F)
+                    vIncrement = vIncrement - vIncrementSize;
+                else
+                    vIncrement = vIncrement + vIncrementSize;
+            }
+            if(hIncrement < 0.0F)
+                return;
+            byte byte0 = 0;
+            if(i >= 80)
+                if(i < 95)
+                    turningCycle = true;
+                else
+                if(i < 120)
+                {
+                    hideBullets(1);
+                    byte0 = 2;
+                    turningCycle = false;
+                    cycleMultiplier = -1;
+                } else
+                if(i < 135)
+                {
+                    byte0 = 2;
+                    turningCycle = true;
+                } else
+                if(i < 160)
+                {
+                    hideBullets(1);
+                    hideBullets(2);
+                    hideBullets(3);
+                    byte0 = 4;
+                    turningCycle = false;
+                    cycleMultiplier = -1;
+                } else
+                if(i < 175)
+                {
+                    byte0 = 4;
+                    turningCycle = true;
+                } else
+                if(i < 200)
+                {
+                    hideBullets(1);
+                    hideBullets(2);
+                    hideBullets(3);
+                    hideBullets(4);
+                    hideBullets(5);
+                    byte0 = 6;
+                    turningCycle = false;
+                    cycleMultiplier = -1;
+                    mesh.chunkVisible("RBullet21", true);
+                    mesh.chunkVisible("LBullet21", true);
+                } else
+                if(i < 215)
+                {
+                    byte0 = 6;
+                    turningCycle = true;
+                    if(gunROK)
+                        mesh.chunkVisible("RBullet21", false);
+                    if(gunLOK)
+                        mesh.chunkVisible("LBullet21", false);
+                } else
+                if(i < 240)
+                {
+                    hideBullets(1);
+                    hideBullets(2);
+                    hideBullets(3);
+                    hideBullets(4);
+                    hideBullets(5);
+                    hideBullets(6);
+                    hideBullets(7);
+                    byte0 = 8;
+                    turningCycle = false;
+                    cycleMultiplier = -1;
+                    mesh.chunkVisible("RBullet21", true);
+                    mesh.chunkVisible("LBullet21", true);
+                } else
+                if(i < 255)
+                {
+                    byte0 = 8;
+                    turningCycle = true;
+                    if(gunROK)
+                        mesh.chunkVisible("RBullet21", false);
+                    if(gunLOK)
+                        mesh.chunkVisible("LBullet21", false);
+                } else
+                {
+                    hideBullets(1);
+                    hideBullets(2);
+                    hideBullets(3);
+                    hideBullets(4);
+                    hideBullets(5);
+                    hideBullets(6);
+                    hideBullets(7);
+                    hideBullets(8);
+                    hideBullets(9);
+                    byte0 = 10;
+                    turningCycle = false;
+                    cycleMultiplier = -1;
+                    if(i >= 280)
+                    {
+                        flag = true;
+                        if(j == 5)
+                        {
+                            if(gunROK)
+                                mesh.chunkVisible("RBullet21", false);
+                            if(gunLOK)
+                                mesh.chunkVisible("LBullet21", false);
+                            hideBullets(10);
+                        }
+                        if(i >= 291)
+                        {
+                            hideBullets(10);
+                            if(gunROK)
+                            {
+                                for(int k = 1; k <= i - 290; k++)
+                                    mesh.chunkVisible("RBullet0" + k, false);
+
+                            }
+                            if(gunLOK)
+                            {
+                                for(int l = 1; l <= i - 290; l++)
+                                    mesh.chunkVisible("LBullet0" + l, false);
+
+                            }
+                        }
+                        if(i >= 300)
+                            hideAllBullets();
+                    } else
+                    {
+                        mesh.chunkVisible("RBullet21", true);
+                        mesh.chunkVisible("LBullet21", true);
+                    }
+                }
+            for(int i1 = 5; i1 >= 1; i1--)
+            {
+                com.maddox.il2.objects.air.Aircraft.xyz[2] = hIncrement;
+                com.maddox.il2.objects.air.Aircraft.xyz[0] = 0.0F;
+                if(gunROK)
+                    mesh.chunkSetLocate("RBullet0" + i1, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                if(gunLOK)
+                    mesh.chunkSetLocate("LBullet0" + i1, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+            }
+
+            for(int j1 = 9; j1 >= 6; j1--)
+            {
+                com.maddox.il2.objects.air.Aircraft.xyz[0] = hIncrement;
+                com.maddox.il2.objects.air.Aircraft.xyz[2] = 0.0F;
+                if(gunROK)
+                    mesh.chunkSetLocate("RBullet0" + j1, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                if(gunLOK)
+                    mesh.chunkSetLocate("LBullet0" + j1, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+            }
+
+            if(turningCycle)
+            {
+                if(j != previousCycle && j == 1)
+                    cycleMultiplier++;
+                int k1 = j + cycleMultiplier * 5;
+                if(k1 > 10)
+                {
+                    hideBullets(byte0 + 1);
+                    previousCycle = j;
+                    return;
+                }
+                int i2 = 0;
+                if(k1 % 2 != 0)
+                    i2 = k1 / 2 + 1;
+                int k2 = k1 / 2;
+                for(int l2 = 1; l2 <= 6; l2++)
+                {
+                    if(l2 <= k2)
+                    {
+                        int i3 = k1 - (l2 + (l2 - 1));
+                        com.maddox.il2.objects.air.Aircraft.xyz[0] = ((float)i3 * -0.012F + hIncrement) - 0.006F;
+                        com.maddox.il2.objects.air.Aircraft.xyz[2] = 0.01F + vIncrement;
+                        if(gunROK)
+                            mesh.chunkSetLocate("RBullet" + (byte0 + 1) + l2, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                        if(gunLOK)
+                            mesh.chunkSetLocate("LBullet" + (byte0 + 1) + l2, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                    }
+                    if(l2 == i2)
+                    {
+                        com.maddox.il2.objects.air.Aircraft.xyz[0] = -0.006F + hIncrement / 2.0F;
+                        com.maddox.il2.objects.air.Aircraft.xyz[2] = 0.01F - hIncrement;
+                        if(gunROK)
+                            mesh.chunkSetLocate("RBullet" + (byte0 + 1) + i2, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                        if(gunLOK)
+                            mesh.chunkSetLocate("LBullet" + (byte0 + 1) + i2, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                    }
+                    if(k1 >= 6 || l2 > 6 || byte0 == 0)
+                        continue;
+                    com.maddox.il2.objects.air.Aircraft.xyz[0] = (float)(k1 + 1) * -0.012F + hIncrement;
+                    com.maddox.il2.objects.air.Aircraft.xyz[2] = 0.0F + vIncrement;
+                    if(gunROK)
+                        mesh.chunkSetLocate("RBullet" + byte0 + l2, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                    if(gunLOK)
+                        mesh.chunkSetLocate("LBullet" + byte0 + l2, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                }
+
+                if(k1 >= 5 && byte0 != 0)
+                    hideBullets(byte0);
+            } else
+            if(byte0 != 0)
+            {
+                for(int l1 = 6; l1 >= 1; l1--)
+                {
+                    if(j + l1 >= 7 && !flag)
+                    {
+                        int j2 = 6 - l1 - j;
+                        if(j2 == 0)
+                        {
+                            com.maddox.il2.objects.air.Aircraft.xyz[0] = (float)(l1 + j2) * 0.012F;
+                            com.maddox.il2.objects.air.Aircraft.xyz[2] = 0.0F;
+                            if(gunROK)
+                                mesh.chunkSetLocate("RBullet" + byte0 + l1, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                            if(gunLOK)
+                                mesh.chunkSetLocate("LBullet" + byte0 + l1, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                            continue;
+                        }
+                        com.maddox.il2.objects.air.Aircraft.xyz[0] = (float)(l1 + j2) * 0.012F + hIncrement;
+                        com.maddox.il2.objects.air.Aircraft.xyz[2] = 0.0F + vIncrement;
+                        if(gunROK)
+                            mesh.chunkSetLocate("RBullet" + byte0 + l1, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                        if(gunLOK)
+                            mesh.chunkSetLocate("LBullet" + byte0 + l1, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                        continue;
+                    }
+                    com.maddox.il2.objects.air.Aircraft.xyz[0] = (float)j * -0.012F + hIncrement;
+                    com.maddox.il2.objects.air.Aircraft.xyz[2] = 0.0F + vIncrement;
+                    if(gunROK)
+                        mesh.chunkSetLocate("RBullet" + byte0 + l1, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                    if(gunLOK)
+                        mesh.chunkSetLocate("LBullet" + byte0 + l1, com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                }
+
+                if(byte0 >= 6)
+                {
+                    com.maddox.il2.objects.air.Aircraft.xyz[0] = -0.072F + hIncrement;
+                    com.maddox.il2.objects.air.Aircraft.xyz[2] = -0.010742F * (float)(byte0 - 2) + vIncrement;
+                    if(gunROK)
+                        mesh.chunkSetLocate("RBullet21", com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                    if(gunLOK)
+                        mesh.chunkSetLocate("LBullet21", com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
+                }
+            }
+            previousCycle = j;
+        }
+    }
+
+    private void hideBullets(int i)
+    {
+        if(gunLOK)
+        {
+            mesh.chunkVisible("LBullet" + i + 1, false);
+            mesh.chunkVisible("LBullet" + i + 2, false);
+            mesh.chunkVisible("LBullet" + i + 3, false);
+            mesh.chunkVisible("LBullet" + i + 4, false);
+            mesh.chunkVisible("LBullet" + i + 5, false);
+            mesh.chunkVisible("LBullet" + i + 6, false);
+        }
+        if(gunROK)
+        {
+            mesh.chunkVisible("RBullet" + i + 1, false);
+            mesh.chunkVisible("RBullet" + i + 2, false);
+            mesh.chunkVisible("RBullet" + i + 3, false);
+            mesh.chunkVisible("RBullet" + i + 4, false);
+            mesh.chunkVisible("RBullet" + i + 5, false);
+            mesh.chunkVisible("RBullet" + i + 6, false);
+        }
+    }
+
+    public void jamLeftGun()
+    {
+        gunLOK = false;
+    }
+
+    public void jamRightGun()
+    {
+        gunROK = false;
+    }
+
+    public void hideAllBullets()
+    {
+        for(int i = 1; i <= 10; i++)
+        {
+            if(gunLOK)
+            {
+                mesh.chunkVisible("LBullet" + i + 1, false);
+                mesh.chunkVisible("LBullet" + i + 2, false);
+                mesh.chunkVisible("LBullet" + i + 3, false);
+                mesh.chunkVisible("LBullet" + i + 4, false);
+                mesh.chunkVisible("LBullet" + i + 5, false);
+                mesh.chunkVisible("LBullet" + i + 6, false);
+            }
+            if(gunROK)
+            {
+                mesh.chunkVisible("RBullet" + i + 1, false);
+                mesh.chunkVisible("RBullet" + i + 2, false);
+                mesh.chunkVisible("RBullet" + i + 3, false);
+                mesh.chunkVisible("RBullet" + i + 4, false);
+                mesh.chunkVisible("RBullet" + i + 5, false);
+                mesh.chunkVisible("RBullet" + i + 6, false);
+            }
+        }
+
+        for(int j = 1; j <= 9; j++)
+        {
+            if(gunLOK)
+                mesh.chunkVisible("LBullet0" + j, false);
+            if(gunROK)
+                mesh.chunkVisible("RBullet0" + j, false);
+        }
+
+    }
+
+    private com.maddox.il2.objects.air.Variables setOld;
+    private com.maddox.il2.objects.air.Variables setNew;
+    private com.maddox.il2.objects.air.Variables setTmp;
+    private com.maddox.JGP.Vector3f w;
+    private boolean bNeedSetUp;
+    private float pictAiler;
+    private float pictElev;
+    private float pictSupc;
+    private float pictManifold;
+    private float tailWheelLock;
+    private com.maddox.il2.objects.air.AVIA_B534 ac;
+    private float rpmGeneratedPressure;
+    private float oilPressure;
+    private float hIncrement;
+    private float vIncrement;
+    private float hIncrementSize;
+    private float vIncrementSize;
+    private int previousCycle;
+    private int cycleCount;
+    private boolean turningCycle;
+    private int cycleMultiplier;
+    private boolean gunLOK;
+    private boolean gunROK;
+    private static double compassZ = -0.20000000000000001D;
+    private double segLen1;
+    private double segLen2;
+    private double compassLimit;
+    private static double compassLimitAngle = 25D;
+    private com.maddox.JGP.Vector3d compassSpeed[];
+    int compassFirst;
+    private com.maddox.JGP.Vector3d accel;
+    private com.maddox.JGP.Vector3d compassNorth;
+    private com.maddox.JGP.Vector3d compassSouth;
+    private double compassAcc;
+    private double compassSc;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

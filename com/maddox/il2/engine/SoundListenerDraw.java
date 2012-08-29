@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ActorSoundListener.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
@@ -9,228 +14,259 @@ import com.maddox.sound.SoundFX;
 import com.maddox.sound.SoundListener;
 import java.util.HashMap;
 
-class SoundListenerDraw extends ActorDraw
+// Referenced classes of package com.maddox.il2.engine:
+//            ActorDraw, ActorSoundListener, Orient, Config, 
+//            Engine, BulletGeneric, BulletProperties, Actor, 
+//            EffClouds, ActorPos, Landscape
+
+class SoundListenerDraw extends com.maddox.il2.engine.ActorDraw
 {
-  private Acoustics ownerAcoustics = null;
-  private static Vector3d Ahead = new Vector3d();
-  private static Vector3d Up = new Vector3d();
-  private boolean bInited = false;
-  private static final int numBullets = 6;
-  public static final double maxBulletDist = 30.0D;
-  private static final double maxBulletDist2 = 900.0D;
-  private BulletInfo[] bulletInfo;
-  private BulletInfo[] biFree;
-  private HashMap biMap;
-  private final double bsRho = 0.0D;
-  private final double rMax = 40.0D;
+    class BulletInfo
+    {
 
-  public static Point3d p = new Point3d();
-  private static Orient o = new Orient();
-  private static Vector3d v = new Vector3d();
-  private static Point3d dp = new Point3d();
+        public com.maddox.sound.SoundFX sound;
+        public com.maddox.il2.engine.BulletGeneric bullet;
+        public double rho;
+        public float km;
 
-  SoundListenerDraw()
-  {
-    this.bulletInfo = new BulletInfo[6];
-    this.biFree = new BulletInfo[6];
-    this.biMap = new HashMap();
-  }
-
-  public void init()
-  {
-    if (Config.isUSE_RENDER())
-      for (int i = 0; i < 6; i++) {
-        this.bulletInfo[i] = new BulletInfo();
-        this.bulletInfo[i].sound = new SoundFX("objects.bullet");
-        this.bulletInfo[i].sound.setAcoustics(Engine.worldAcoustics());
-        this.bulletInfo[i].bullet = null;
-        this.bulletInfo[i].rho = 900.0D;
-      }
-  }
-
-  private void setBulletPos(BulletInfo paramBulletInfo)
-  {
-    Point3d localPoint3d = paramBulletInfo.bullet.p1;
-    double d = localPoint3d.distance(p);
-    if (d > 40.0D) {
-      dp.sub(localPoint3d, p);
-      dp.scale(40.0D / d);
-      dp.add(p);
-      paramBulletInfo.sound.setPosition(dp.x, dp.y, dp.z);
-    } else {
-      paramBulletInfo.sound.setPosition(localPoint3d.x, localPoint3d.y, localPoint3d.z);
-    }
-    paramBulletInfo.sound.setControl(202, paramBulletInfo.km);
-  }
-
-  private void renderBullets()
-  {
-    BulletGeneric localBulletGeneric1 = Engine.cur.bulletList;
-    int i = 0;
-    BulletInfo localBulletInfo;
-    for (int j = 0; j < 6; j++) {
-      localBulletInfo = this.bulletInfo[j];
-      if ((localBulletInfo.bullet != null) && 
-        (localBulletInfo.bullet.owner == null) && (localBulletInfo.bullet.gun == null)) localBulletInfo.bullet = null;
-
-      if ((localBulletInfo.bullet == null) || (!localBulletInfo.sound.isPlaying())) {
-        localBulletInfo.rho = 900.0D;
-        this.biFree[(i++)] = localBulletInfo;
-        localBulletInfo.bullet = null;
-      }
-      if (localBulletInfo.bullet != null) {
-        this.biMap.put(localBulletInfo.bullet, localBulletInfo);
-      }
+        BulletInfo()
+        {
+        }
     }
 
-    if (!Main3D.cur3D().isViewOutside()) return;
 
-    if (i > 0) {
-      while (localBulletGeneric1 != null) {
-        if ((localBulletGeneric1.owner != null) || (localBulletGeneric1.gun != null)) {
-          double d = localBulletGeneric1.p1.distanceSquared(p);
-          if ((d < 900.0D) && 
-            (!this.biMap.containsKey(localBulletGeneric1))) {
-            for (int m = 0; m < i; m++) {
-              if (this.biFree[m].rho > d) {
-                BulletGeneric localBulletGeneric2 = this.biFree[(i - 1)].bullet;
-                if (localBulletGeneric2 != null) {
-                  if (this.biMap.containsKey(localBulletGeneric2)) this.biMap.remove(localBulletGeneric2);
-                  for (int n = i - 1; n > m; n--) {
-                    this.biFree[n].bullet = this.biFree[(n - 1)].bullet;
-                    this.biFree[n].rho = this.biFree[(n - 1)].rho;
-                  }
-                }
-                this.biFree[m].rho = d;
-                this.biFree[m].bullet = localBulletGeneric1;
-                this.biMap.put(localBulletGeneric1, this.biFree[m]);
-                break;
-              }
+    SoundListenerDraw()
+    {
+        ownerAcoustics = null;
+        bInited = false;
+        bulletInfo = new com.maddox.il2.engine.BulletInfo[6];
+        biFree = new com.maddox.il2.engine.BulletInfo[6];
+        biMap = new HashMap();
+    }
+
+    public void init()
+    {
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            for(int i = 0; i < 6; i++)
+            {
+                bulletInfo[i] = new BulletInfo();
+                bulletInfo[i].sound = new SoundFX("objects.bullet");
+                bulletInfo[i].sound.setAcoustics(com.maddox.il2.engine.Engine.worldAcoustics());
+                bulletInfo[i].bullet = null;
+                bulletInfo[i].rho = 900D;
             }
-          }
+
+        }
+    }
+
+    private void setBulletPos(com.maddox.il2.engine.BulletInfo bulletinfo)
+    {
+        com.maddox.JGP.Point3d point3d = bulletinfo.bullet.p1;
+        double d = point3d.distance(p);
+        if(d > 40D)
+        {
+            dp.sub(point3d, p);
+            dp.scale(40D / d);
+            dp.add(p);
+            bulletinfo.sound.setPosition(dp.x, dp.y, dp.z);
+        } else
+        {
+            bulletinfo.sound.setPosition(point3d.x, point3d.y, point3d.z);
+        }
+        bulletinfo.sound.setControl(202, bulletinfo.km);
+    }
+
+    private void renderBullets()
+    {
+        com.maddox.il2.engine.BulletGeneric bulletgeneric = com.maddox.il2.engine.Engine.cur.bulletList;
+        int i = 0;
+        for(int j = 0; j < 6; j++)
+        {
+            com.maddox.il2.engine.BulletInfo bulletinfo = bulletInfo[j];
+            if(bulletinfo.bullet != null && bulletinfo.bullet.owner == null && bulletinfo.bullet.gun == null)
+                bulletinfo.bullet = null;
+            if(bulletinfo.bullet == null || !bulletinfo.sound.isPlaying())
+            {
+                bulletinfo.rho = 900D;
+                biFree[i++] = bulletinfo;
+                bulletinfo.bullet = null;
+            }
+            if(bulletinfo.bullet != null)
+                biMap.put(bulletinfo.bullet, bulletinfo);
         }
 
-        localBulletGeneric1 = localBulletGeneric1.nextBullet;
-      }
-    }
+        if(!com.maddox.il2.game.Main3D.cur3D().isViewOutside())
+            return;
+        if(i > 0)
+label0:
+            for(; bulletgeneric != null; bulletgeneric = bulletgeneric.nextBullet)
+            {
+                if(bulletgeneric.owner == null && bulletgeneric.gun == null)
+                    continue;
+                double d = bulletgeneric.p1.distanceSquared(p);
+                if(d >= 900D || biMap.containsKey(bulletgeneric))
+                    continue;
+                int i1 = 0;
+                do
+                {
+                    if(i1 >= i)
+                        continue label0;
+                    if(biFree[i1].rho > d)
+                    {
+                        com.maddox.il2.engine.BulletGeneric bulletgeneric1 = biFree[i - 1].bullet;
+                        if(bulletgeneric1 != null)
+                        {
+                            if(biMap.containsKey(bulletgeneric1))
+                                biMap.remove(bulletgeneric1);
+                            for(int j1 = i - 1; j1 > i1; j1--)
+                            {
+                                biFree[j1].bullet = biFree[j1 - 1].bullet;
+                                biFree[j1].rho = biFree[j1 - 1].rho;
+                            }
 
-    for (int k = 0; k < 6; k++) {
-      localBulletInfo = this.bulletInfo[k];
-      if (localBulletInfo.bullet == null) continue; setBulletPos(localBulletInfo);
-    }
+                        }
+                        biFree[i1].rho = d;
+                        biFree[i1].bullet = bulletgeneric;
+                        biMap.put(bulletgeneric, biFree[i1]);
+                        continue label0;
+                    }
+                    i1++;
+                } while(true);
+            }
 
-    for (k = 0; k < i; k++) {
-      localBulletInfo = this.biFree[k];
-      if (localBulletInfo.bullet != null) {
-        float f1 = localBulletInfo.bullet.properties().massa; float f2 = 0.2F;
-
-        if (f1 > 0.09F) {
-          f2 = (float)Math.log(f1) / (float)Math.log(10.0D) + 1.0F;
-          if (f2 < 0.0F) f2 = 0.0F;
-          else if (f2 > 3.0F) f2 = 3.0F;
-          f2 = 4.0F - f2;
+        for(int k = 0; k < 6; k++)
+        {
+            com.maddox.il2.engine.BulletInfo bulletinfo1 = bulletInfo[k];
+            if(bulletinfo1.bullet != null)
+                setBulletPos(bulletinfo1);
         }
-        localBulletInfo.km = f2;
-        localBulletInfo.sound.setUsrFlag(f2 <= 0.4F ? 0 : 1);
-        localBulletInfo.sound.play();
-        setBulletPos(localBulletInfo);
-      }
-      this.biFree[k] = null;
+
+        for(int l = 0; l < i; l++)
+        {
+            com.maddox.il2.engine.BulletInfo bulletinfo2 = biFree[l];
+            if(bulletinfo2.bullet != null)
+            {
+                float f = bulletinfo2.bullet.properties().massa;
+                float f1 = 0.2F;
+                if(f > 0.09F)
+                {
+                    f1 = (float)java.lang.Math.log(f) / (float)java.lang.Math.log(10D) + 1.0F;
+                    if(f1 < 0.0F)
+                        f1 = 0.0F;
+                    else
+                    if(f1 > 3F)
+                        f1 = 3F;
+                    f1 = 4F - f1;
+                }
+                bulletinfo2.km = f1;
+                bulletinfo2.sound.setUsrFlag(f1 > 0.4F ? 1 : 0);
+                bulletinfo2.sound.play();
+                setBulletPos(bulletinfo2);
+            }
+            biFree[l] = null;
+        }
+
+        biMap.clear();
     }
 
-    this.biMap.clear();
-  }
-
-  public int preRender(Actor paramActor)
-  {
-    if (!this.bInited) {
-      if (Config.cur.isSoundUse()) {
-        SoundListener.setAcoustics(Engine.worldAcoustics());
-      } else {
-        paramActor.postDestroy();
+    public int preRender(com.maddox.il2.engine.Actor actor)
+    {
+        if(!bInited)
+        {
+            if(com.maddox.il2.engine.Config.cur.isSoundUse())
+            {
+                com.maddox.sound.SoundListener.setAcoustics(com.maddox.il2.engine.Engine.worldAcoustics());
+            } else
+            {
+                actor.postDestroy();
+                return 0;
+            }
+            bInited = true;
+        }
+        boolean flag = false;
+        com.maddox.il2.engine.Actor actor1 = actor.actorAcoustics();
+        com.maddox.sound.Acoustics acoustics = null;
+        if(actor1 != null)
+            acoustics = actor1.acoustics;
+        else
+            acoustics = com.maddox.il2.engine.Engine.worldAcoustics();
+        if(ownerAcoustics != acoustics)
+        {
+            ownerAcoustics = acoustics;
+            com.maddox.sound.SoundListener.setAcoustics(acoustics);
+            com.maddox.il2.game.Main3D main3d = com.maddox.il2.game.Main3D.cur3D();
+            if(main3d != null && main3d.clouds != null && main3d.clouds.sound != null)
+                main3d.clouds.sound.setAcoustics(acoustics);
+        }
+        if(actor1 != null)
+        {
+            actor1.pos.getRender(p, o);
+            Ahead.set(1.0D, 0.0D, 0.0D);
+            Up.set(0.0D, 0.0D, 1.0D);
+            o.transform(Ahead);
+            o.transform(Up);
+            acoustics.setOrientation((float)Ahead.x, (float)Ahead.y, (float)Ahead.z, (float)Up.x, (float)Up.y, (float)Up.z);
+            flag = true;
+        }
+        actor.pos.getRender(p, o);
+        double d = 0.0D;
+        d = com.maddox.il2.engine.Engine.land().HQ(p.x, p.y);
+        com.maddox.il2.engine.Engine.worldAcoustics().setPosition(p.x, p.y, d);
+        Ahead.set(1.0D, 0.0D, 0.0D);
+        Up.set(0.0D, 0.0D, 1.0D);
+        o.transform(Ahead);
+        o.transform(Up);
+        ((com.maddox.il2.engine.ActorSoundListener)actor).absPos.set(p);
+        com.maddox.sound.SoundListener.setOrientation((float)Ahead.x, (float)Ahead.y, (float)Ahead.z, (float)Up.x, (float)Up.y, (float)Up.z);
+        com.maddox.sound.SoundListener.setPosition(p.x, p.y, p.z);
+        if(flag)
+            acoustics.setPosition(p.x, p.y, p.z);
+        com.maddox.il2.engine.Config _tmp = com.maddox.il2.engine.Config.cur;
+        if(com.maddox.il2.engine.Config.isUSE_RENDER() && com.maddox.il2.game.Main3D.cur3D().clouds != null)
+            com.maddox.il2.game.Main3D.cur3D().clouds.soundUpdate(p.z);
+        if(((com.maddox.il2.engine.ActorSoundListener)actor).isUseBaseSpeed())
+        {
+            com.maddox.il2.engine.Actor actor2 = actor.pos.base();
+            if(actor2 != null)
+                actor2 = actor2.pos.base();
+            if(actor2 == null)
+                actor.getSpeed(v);
+            else
+                actor2.getSpeed(v);
+        } else
+        {
+            actor.getSpeed(v);
+        }
+        com.maddox.sound.SoundListener.setVelocity((float)v.x, (float)v.y, (float)v.z);
+        if(com.maddox.il2.engine.Config.isUSE_RENDER() && !com.maddox.rts.Time.isPaused())
+            renderBullets();
         return 0;
-      }
-      this.bInited = true;
     }
 
-    int i = 0;
-
-    Actor localActor1 = paramActor.actorAcoustics();
-    Acoustics localAcoustics = null;
-    if (localActor1 != null) localAcoustics = localActor1.acoustics; else
-      localAcoustics = Engine.worldAcoustics();
-    if (this.ownerAcoustics != localAcoustics) {
-      this.ownerAcoustics = localAcoustics;
-      SoundListener.setAcoustics(localAcoustics);
-      Main3D localMain3D = Main3D.cur3D();
-      if ((localMain3D != null) && 
-        (localMain3D.clouds != null) && 
-        (localMain3D.clouds.sound != null)) localMain3D.clouds.sound.setAcoustics(localAcoustics);
-
-    }
-
-    if (localActor1 != null) {
-      localActor1.pos.getRender(p, o);
-      Ahead.set(1.0D, 0.0D, 0.0D);
-      Up.set(0.0D, 0.0D, 1.0D);
-      o.transform(Ahead);
-      o.transform(Up);
-      localAcoustics.setOrientation((float)Ahead.x, (float)Ahead.y, (float)Ahead.z, (float)Up.x, (float)Up.y, (float)Up.z);
-      i = 1;
-    }
-
-    paramActor.pos.getRender(p, o);
-    double d = 0.0D;
-    d = Engine.land().HQ(p.x, p.y);
-    Engine.worldAcoustics().setPosition(p.x, p.y, d);
-
-    Ahead.set(1.0D, 0.0D, 0.0D);
-    Up.set(0.0D, 0.0D, 1.0D);
-    o.transform(Ahead);
-    o.transform(Up);
-
-    ((ActorSoundListener)paramActor).absPos.set(p);
-
-    SoundListener.setOrientation((float)Ahead.x, (float)Ahead.y, (float)Ahead.z, (float)Up.x, (float)Up.y, (float)Up.z);
-    SoundListener.setPosition(p.x, p.y, p.z);
-    if (i != 0) localAcoustics.setPosition(p.x, p.y, p.z);
-
-    if ((Config.isUSE_RENDER()) && 
-      (Main3D.cur3D().clouds != null)) Main3D.cur3D().clouds.soundUpdate(p.z);
-
-    if (((ActorSoundListener)paramActor).isUseBaseSpeed()) {
-      Actor localActor2 = paramActor.pos.base();
-      if (localActor2 != null) localActor2 = localActor2.pos.base();
-      if (localActor2 == null) paramActor.getSpeed(v); else
-        localActor2.getSpeed(v);
-    } else {
-      paramActor.getSpeed(v);
-    }
-
-    SoundListener.setVelocity((float)v.x, (float)v.y, (float)v.z);
-
-    if ((Config.isUSE_RENDER()) && (!Time.isPaused())) renderBullets();
-
-    return 0;
-  }
-
-  public void render(Actor paramActor)
-  {
-  }
-
-  public void destroy()
-  {
-  }
-
-  class BulletInfo
-  {
-    public SoundFX sound;
-    public BulletGeneric bullet;
-    public double rho;
-    public float km;
-
-    BulletInfo()
+    public void render(com.maddox.il2.engine.Actor actor)
     {
     }
-  }
+
+    public void destroy()
+    {
+    }
+
+    private com.maddox.sound.Acoustics ownerAcoustics;
+    private static com.maddox.JGP.Vector3d Ahead = new Vector3d();
+    private static com.maddox.JGP.Vector3d Up = new Vector3d();
+    private boolean bInited;
+    private static final int numBullets = 6;
+    public static final double maxBulletDist = 30D;
+    private static final double maxBulletDist2 = 900D;
+    private com.maddox.il2.engine.BulletInfo bulletInfo[];
+    private com.maddox.il2.engine.BulletInfo biFree[];
+    private java.util.HashMap biMap;
+    private final double bsRho = 0.0D;
+    private final double rMax = 40D;
+    public static com.maddox.JGP.Point3d p = new Point3d();
+    private static com.maddox.il2.engine.Orient o = new Orient();
+    private static com.maddox.JGP.Vector3d v = new Vector3d();
+    private static com.maddox.JGP.Point3d dp = new Point3d();
+
 }

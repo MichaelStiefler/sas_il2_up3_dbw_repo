@@ -1,63 +1,67 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ZutiTimer_Refly.java
+
 package com.maddox.il2.game;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ZutiTimer_Refly extends TimerTask
+// Referenced classes of package com.maddox.il2.game:
+//            ZutiSupportMethods
+
+public class ZutiTimer_Refly extends java.util.TimerTask
 {
-  private Timer timer = null;
-  private int counter = 0;
-  private float reflyDelay = 0.0F;
 
-  public ZutiTimer_Refly(float paramFloat)
-  {
-    this.reflyDelay = paramFloat;
-
-    this.timer = new Timer();
-    this.timer.schedule(this, 0L, 1000L);
-  }
-
-  public void run()
-  {
-    try
+    public ZutiTimer_Refly(float f)
     {
-      if (this.counter > this.reflyDelay - 1.0F)
-      {
-        ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = true;
-        stop();
-      }
+        timer = null;
+        counter = 0;
+        reflyDelay = 0.0F;
+        reflyDelay = f;
+        timer = new Timer();
+        timer.schedule(this, 0L, 1000L);
     }
-    catch (Exception localException)
+
+    public void run()
     {
+        try
+        {
+            if((float)counter > reflyDelay - 1.0F)
+            {
+                com.maddox.il2.game.ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = true;
+                stop();
+            }
+        }
+        catch(java.lang.Exception exception) { }
+        counter++;
     }
 
-    this.counter += 1;
-  }
-
-  public void stop()
-  {
-    cancel();
-  }
-
-  public String getRemaimingTime()
-  {
-    int i = (int)this.reflyDelay - this.counter;
-    int j = i / 60;
-    int k = i % 60;
-
-    String str1 = "";
-    String str2 = "";
-
-    if (j < 10)
-      str1 = "0" + j;
-    else {
-      str1 = "" + j;
+    public void stop()
+    {
+        cancel();
     }
-    if (k < 10)
-      str2 = "0" + k;
-    else {
-      str2 = "" + k;
+
+    public java.lang.String getRemaimingTime()
+    {
+        int i = (int)reflyDelay - counter;
+        int j = i / 60;
+        int k = i % 60;
+        java.lang.String s = "";
+        java.lang.String s1 = "";
+        if(j < 10)
+            s = "0" + j;
+        else
+            s = "" + j;
+        if(k < 10)
+            s1 = "0" + k;
+        else
+            s1 = "" + k;
+        return s + ":" + s1;
     }
-    return str1 + ":" + str2;
-  }
+
+    private java.util.Timer timer;
+    private int counter;
+    private float reflyDelay;
 }

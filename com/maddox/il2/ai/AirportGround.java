@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   AirportGround.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.il2.engine.Actor;
@@ -14,244 +19,266 @@ import com.maddox.rts.NetChannelInStream;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.NetObj;
 import com.maddox.rts.Time;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-public class AirportGround extends AirportStatic
+// Referenced classes of package com.maddox.il2.ai:
+//            AirportStatic, World, RangeRandom
+
+public class AirportGround extends com.maddox.il2.ai.AirportStatic
 {
-  private ArrayList runwayLights = null;
-  private boolean lightsOn = false;
-  private Aircraft acThatRequestedLights = null;
-  private boolean aircraftIsTakingOff = false;
-  private boolean canTurnOffLights = false;
-  private boolean canTurnOnLights = false;
-  private int randomDelay = 0;
-  private long timeOfLightsOn = 0L;
-  private final int maxLightsOnTimeMs = 90000;
-
-  public AirportGround()
-  {
-    this.net = null;
-    if ((Mission.cur() != null) && (
-      (!NetMissionTrack.isPlaying()) || (NetMissionTrack.playingOriginalVersion() > 102))) {
-      int i = Mission.cur().getUnitNetIdRemote(this);
-      NetChannel localNetChannel = Mission.cur().getNetMasterChannel();
-      if (localNetChannel == null) {
-        this.net = new Master(this);
-      }
-      else if (i != 0)
-        this.net = new Mirror(this, (NetChannel)localNetChannel, i);
-    }
-  }
-
-  protected void update()
-  {
-    super.update();
-
-    if (Mission.cur() == null)
-      return;
-    if ((NetMissionTrack.isPlaying()) && (NetMissionTrack.playingOriginalVersion() <= 102))
-      return;
-    if (this.net.isMirror())
-      return;
-    if (this.lightsOn)
+    class Mirror extends com.maddox.il2.engine.ActorNet
     {
-      if (this.canTurnOffLights)
-      {
-        if (this.randomDelay < 0)
-          turnOnLights(false);
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+            {
+                int i = netmsginput.readUnsignedByte();
+                if(i == 80)
+                {
+                    boolean flag = netmsginput.readBoolean();
+                    turnOnLights(flag);
+                }
+                return true;
+            } else
+            {
+                return true;
+            }
+        }
+
+        com.maddox.rts.NetMsgFiltered out;
+
+        public Mirror(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(actor, netchannel, i);
+            out = new NetMsgFiltered();
+        }
+    }
+
+    class Master extends com.maddox.il2.engine.ActorNet
+    {
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+                return true;
+            if(netmsginput.readUnsignedByte() == 81)
+            {
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                acThatRequestedLights = netobj != null ? (com.maddox.il2.objects.air.Aircraft)(com.maddox.il2.objects.air.Aircraft)((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                turnOnLights(acThatRequestedLights);
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
+        public Master(com.maddox.il2.engine.Actor actor)
+        {
+            super(actor);
+        }
+    }
+
+
+    public AirportGround()
+    {
+        runwayLights = null;
+        lightsOn = false;
+        acThatRequestedLights = null;
+        aircraftIsTakingOff = false;
+        canTurnOffLights = false;
+        canTurnOnLights = false;
+        randomDelay = 0;
+        timeOfLightsOn = 0L;
+        net = null;
+        if(com.maddox.il2.game.Mission.cur() != null && (!com.maddox.il2.net.NetMissionTrack.isPlaying() || com.maddox.il2.net.NetMissionTrack.playingOriginalVersion() > 102))
+        {
+            int i = com.maddox.il2.game.Mission.cur().getUnitNetIdRemote(this);
+            com.maddox.rts.NetChannel netchannel = com.maddox.il2.game.Mission.cur().getNetMasterChannel();
+            if(netchannel == null)
+                net = new Master(this);
+            else
+            if(i != 0)
+                net = new Mirror(this, (com.maddox.rts.NetChannel)netchannel, i);
+        }
+    }
+
+    protected void update()
+    {
+        super.update();
+        if(com.maddox.il2.game.Mission.cur() == null)
+            return;
+        if(com.maddox.il2.net.NetMissionTrack.isPlaying() && com.maddox.il2.net.NetMissionTrack.playingOriginalVersion() <= 102)
+            return;
+        if(net.isMirror())
+            return;
+        if(lightsOn)
+        {
+            if(canTurnOffLights)
+            {
+                if(randomDelay < 0)
+                    turnOnLights(false);
+                else
+                    randomDelay--;
+            } else
+            if(acThatRequestedLights != null && aircraftIsTakingOff)
+            {
+                if(!acThatRequestedLights.FM.Gears.onGround() || !acThatRequestedLights.isAlive())
+                {
+                    randomDelay = 300 + com.maddox.il2.ai.World.Rnd().nextInt(800);
+                    canTurnOffLights = true;
+                } else
+                if(com.maddox.rts.Time.current() > timeOfLightsOn + 0x15f90L)
+                {
+                    canTurnOffLights = true;
+                    turnOnLights(false);
+                }
+            } else
+            if(acThatRequestedLights != null && !aircraftIsTakingOff)
+            {
+                if(acThatRequestedLights.FM.Gears.onGround() || !acThatRequestedLights.isAlive())
+                {
+                    randomDelay = 300 + (int)(java.lang.Math.random() * 800D);
+                    canTurnOffLights = true;
+                } else
+                if(com.maddox.rts.Time.current() > timeOfLightsOn + 0x15f90L)
+                {
+                    canTurnOffLights = true;
+                    turnOnLights(false);
+                }
+            } else
+            if(com.maddox.rts.Time.current() > timeOfLightsOn + 0x15f90L)
+            {
+                canTurnOffLights = true;
+                turnOnLights(false);
+            }
+        } else
+        if(canTurnOnLights)
+            if(randomDelay < 0)
+            {
+                canTurnOnLights = false;
+                turnOnLights(true);
+                timeOfLightsOn = com.maddox.rts.Time.current();
+            } else
+            {
+                randomDelay--;
+            }
+    }
+
+    public boolean hasLights()
+    {
+        return runwayLights != null && runwayLights.size() > 0;
+    }
+
+    public void addLights(com.maddox.il2.objects.vehicles.stationary.SmokeGeneric smokegeneric)
+    {
+        if(runwayLights == null)
+            runwayLights = new ArrayList();
+        runwayLights.add(smokegeneric);
+        smokegeneric.setArmy(0);
+    }
+
+    private void turnOnLights(boolean flag)
+    {
+        lightsOn = flag;
+        if(!net.isMirror())
+            master_sendLights(lightsOn);
+        if(runwayLights != null)
+        {
+            for(int i = 0; i < runwayLights.size(); i++)
+            {
+                com.maddox.il2.objects.vehicles.stationary.SmokeGeneric smokegeneric = (com.maddox.il2.objects.vehicles.stationary.SmokeGeneric)runwayLights.get(i);
+                smokegeneric.setVisible(flag);
+            }
+
+        }
+    }
+
+    public void turnOnLights(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        if(net.isMirror())
+        {
+            mirror_sendLights(aircraft);
+            return;
+        }
+        canTurnOnLights = true;
+        canTurnOffLights = false;
+        acThatRequestedLights = aircraft;
+        if(acThatRequestedLights != null && acThatRequestedLights.FM.Gears.onGround())
+            aircraftIsTakingOff = true;
         else
-          this.randomDelay -= 1;
-      }
-      else if ((this.acThatRequestedLights != null) && (this.aircraftIsTakingOff))
-      {
-        if ((!this.acThatRequestedLights.FM.Gears.onGround()) || (!this.acThatRequestedLights.isAlive()))
-        {
-          this.randomDelay = (300 + World.Rnd().nextInt(800));
-          this.canTurnOffLights = true;
-        }
-        else if (Time.current() > this.timeOfLightsOn + 90000L)
-        {
-          this.canTurnOffLights = true;
-          turnOnLights(false);
-        }
-      }
-      else if ((this.acThatRequestedLights != null) && (!this.aircraftIsTakingOff))
-      {
-        if ((this.acThatRequestedLights.FM.Gears.onGround()) || (!this.acThatRequestedLights.isAlive()))
-        {
-          this.randomDelay = (300 + World.Rnd().nextInt(800));
-          this.canTurnOffLights = true;
-        }
-        else if (Time.current() > this.timeOfLightsOn + 90000L)
-        {
-          this.canTurnOffLights = true;
-          turnOnLights(false);
-        }
-      }
-      else if (Time.current() > this.timeOfLightsOn + 90000L)
-      {
-        this.canTurnOffLights = true;
-        turnOnLights(false);
-      }
-
+            aircraftIsTakingOff = false;
+        randomDelay = 200 + com.maddox.il2.ai.World.Rnd().nextInt(200);
     }
-    else if (this.canTurnOnLights)
+
+    public void netFirstUpdate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
     {
-      if (this.randomDelay < 0)
-      {
-        this.canTurnOnLights = false;
-        turnOnLights(true);
-        this.timeOfLightsOn = Time.current();
-      }
-      else {
-        this.randomDelay -= 1;
-      }
-    }
-  }
-
-  public boolean hasLights()
-  {
-    return (this.runwayLights != null) && (this.runwayLights.size() > 0);
-  }
-
-  public void addLights(SmokeGeneric paramSmokeGeneric)
-  {
-    if (this.runwayLights == null)
-      this.runwayLights = new ArrayList();
-    this.runwayLights.add(paramSmokeGeneric);
-    paramSmokeGeneric.setArmy(0);
-  }
-
-  private void turnOnLights(boolean paramBoolean)
-  {
-    this.lightsOn = paramBoolean;
-    if (!this.net.isMirror())
-      master_sendLights(this.lightsOn);
-    if (this.runwayLights != null)
-    {
-      for (int i = 0; i < this.runwayLights.size(); i++)
-      {
-        SmokeGeneric localSmokeGeneric = (SmokeGeneric)this.runwayLights.get(i);
-        localSmokeGeneric.setVisible(paramBoolean);
-      }
-    }
-  }
-
-  public void turnOnLights(Aircraft paramAircraft)
-  {
-    if (this.net.isMirror()) {
-      mirror_sendLights(paramAircraft);
-      return;
-    }
-    this.canTurnOnLights = true;
-    this.canTurnOffLights = false;
-    this.acThatRequestedLights = paramAircraft;
-
-    if ((this.acThatRequestedLights != null) && (this.acThatRequestedLights.FM.Gears.onGround()))
-      this.aircraftIsTakingOff = true;
-    else {
-      this.aircraftIsTakingOff = false;
-    }
-    this.randomDelay = (200 + World.Rnd().nextInt(200));
-  }
-
-  public void netFirstUpdate(NetChannel paramNetChannel)
-    throws IOException
-  {
-    try
-    {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(80);
-      localNetMsgGuaranted.writeBoolean(this.lightsOn);
-      this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-    }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-      throw new RuntimeException("Airport lights: NetFirstUpdate failed");
-    }
-  }
-
-  private boolean master_sendLights(boolean paramBoolean) {
-    if (this.net.isMirror())
-      return false;
-    try {
-      NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-      localNetMsgGuaranted.writeByte(80);
-      localNetMsgGuaranted.writeBoolean(paramBoolean);
-      this.net.post(localNetMsgGuaranted);
-      return true;
-    }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }return false;
-  }
-
-  private boolean mirror_sendLights(Aircraft paramAircraft)
-  {
-    if ((!this.net.isMirror()) || ((this.net.masterChannel() instanceof NetChannelInStream)))
-      return false;
-    try {
-      NetMsgFiltered localNetMsgFiltered = null;
-      localNetMsgFiltered = new NetMsgFiltered();
-      localNetMsgFiltered.writeByte(81);
-      localNetMsgFiltered.writeNetObj(paramAircraft == null ? null : paramAircraft.net);
-      localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(NetServerParams.getServerTime(), this.net.masterChannel(), localNetMsgFiltered);
-      return true;
-    }
-    catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }return false;
-  }
-
-  class Mirror extends ActorNet
-  {
-    NetMsgFiltered out = new NetMsgFiltered();
-
-    public Mirror(Actor paramNetChannel, NetChannel paramInt, int arg4)
-    {
-      super(paramInt, i);
-    }
-
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted()) {
-        int i = paramNetMsgInput.readUnsignedByte();
-
-        if (i == 80) {
-          boolean bool = paramNetMsgInput.readBoolean();
-          AirportGround.this.turnOnLights(bool);
+        try
+        {
+            com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+            netmsgguaranted.writeByte(80);
+            netmsgguaranted.writeBoolean(lightsOn);
+            net.postTo(netchannel, netmsgguaranted);
         }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            throw new RuntimeException("Airport lights: NetFirstUpdate failed");
+        }
+    }
+
+    private boolean master_sendLights(boolean flag)
+    {
+        if(net.isMirror())
+            return false;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        netmsgguaranted.writeByte(80);
+        netmsgguaranted.writeBoolean(flag);
+        net.post(netmsgguaranted);
         return true;
-      }
-
-      return true;
+        java.lang.Exception exception;
+        exception;
+        java.lang.System.out.println(exception.getMessage());
+        exception.printStackTrace();
+        return false;
     }
-  }
 
-  class Master extends ActorNet
-  {
-    public Master(Actor arg2)
+    private boolean mirror_sendLights(com.maddox.il2.objects.air.Aircraft aircraft)
     {
-      super();
-    }
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted()) {
+        if(!net.isMirror() || (net.masterChannel() instanceof com.maddox.rts.NetChannelInStream))
+            return false;
+        com.maddox.rts.NetMsgFiltered netmsgfiltered = null;
+        netmsgfiltered = new NetMsgFiltered();
+        netmsgfiltered.writeByte(81);
+        netmsgfiltered.writeNetObj(aircraft != null ? ((com.maddox.rts.NetObj) (aircraft.net)) : null);
+        netmsgfiltered.setIncludeTime(false);
+        net.postTo(com.maddox.il2.net.NetServerParams.getServerTime(), net.masterChannel(), netmsgfiltered);
         return true;
-      }
-      if (paramNetMsgInput.readUnsignedByte() == 81) {
-        NetObj localNetObj = paramNetMsgInput.readNetObj();
-        AirportGround.access$002(AirportGround.this, localNetObj == null ? null : (Aircraft)(Aircraft)((ActorNet)localNetObj).actor());
-        AirportGround.this.turnOnLights(AirportGround.this.acThatRequestedLights);
-        return true;
-      }
-      return false;
+        java.lang.Exception exception;
+        exception;
+        java.lang.System.out.println(exception.getMessage());
+        exception.printStackTrace();
+        return false;
     }
-  }
+
+    private java.util.ArrayList runwayLights;
+    private boolean lightsOn;
+    private com.maddox.il2.objects.air.Aircraft acThatRequestedLights;
+    private boolean aircraftIsTakingOff;
+    private boolean canTurnOffLights;
+    private boolean canTurnOnLights;
+    private int randomDelay;
+    private long timeOfLightsOn;
+    private final int maxLightsOnTimeMs = 0x15f90;
+
+
+
 }

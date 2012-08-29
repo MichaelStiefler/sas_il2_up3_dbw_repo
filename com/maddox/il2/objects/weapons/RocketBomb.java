@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RocketBomb.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
@@ -15,7 +20,6 @@ import com.maddox.il2.engine.ActorMesh;
 import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.Eff3DActor;
-import com.maddox.il2.engine.Hook;
 import com.maddox.il2.engine.Interpolate;
 import com.maddox.il2.engine.LightPoint;
 import com.maddox.il2.engine.LightPointActor;
@@ -39,326 +43,334 @@ import com.maddox.rts.Time;
 import com.maddox.sound.SoundFX;
 import com.maddox.util.HashMapExt;
 
-public class RocketBomb extends ActorMesh
-  implements MsgCollisionRequestListener, MsgCollisionListener
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Ballistics
+
+public class RocketBomb extends com.maddox.il2.engine.ActorMesh
+    implements com.maddox.il2.engine.MsgCollisionRequestListener, com.maddox.il2.engine.MsgCollisionListener
 {
-  private long started;
-  private long impact;
-  private boolean isArmed = true;
-  private static long armingTime = 5000L;
-  private static final boolean DEBUG_TYPE = false;
-  protected long noGDelay = -1L;
-  public static Point3d p = new Point3d();
-  private boolean endedSmoke = false;
-  protected Eff3DActor smoke;
-  protected Eff3DActor sprite;
-  protected Actor flame;
-  protected LightPointActor light;
-  protected long timeFire;
-  protected long timeLife;
-  protected Vector3d speed = new Vector3d();
-  private float S;
-  public float M;
-  public float Minit;
-  public boolean isThrust = true;
-  private float DM;
-  private float P;
-  protected SoundFX sound = null;
-
-  static Vector3d spd = new Vector3d();
-  static Orient Or = new Orient();
-  float curTm;
-
-  protected void updateSound()
-  {
-    if (this.sound != null) {
-      this.sound.setControl(200, (float)getSpeed(null));
-      if (this.curTm < 5.0F)
-        this.sound.setControl(201, this.curTm);
-      else if (this.curTm < 5.0F + 2 * Time.tickConstLen())
-        this.sound.setControl(201, 5.0F);
-    }
-  }
-
-  public void msgCollisionRequest(Actor paramActor, boolean[] paramArrayOfBoolean) {
-    if (paramActor == getOwner())
-      paramArrayOfBoolean[0] = false;
-  }
-
-  public void msgCollision(Actor paramActor, String paramString1, String paramString2)
-  {
-    this.impact = (Time.current() - this.started);
-
-    if ((this.impact < armingTime) && (this.isArmed))
+    class Interpolater extends com.maddox.il2.engine.Interpolate
     {
-      this.isArmed = false;
-    }
 
-    if ((getOwner() == World.getPlayerAircraft()) && (!(paramActor instanceof ActorLand)))
-    {
-      World.cur().scoreCounter.rocketsHit += 1;
-      if ((Mission.isNet()) && ((paramActor instanceof Aircraft)) && (((Aircraft)paramActor).isNetPlayer()))
-      {
-        Chat.sendLogRnd(3, "gore_rocketed", (Aircraft)getOwner(), (Aircraft)paramActor);
-      }
-
-    }
-
-    if (this.isArmed)
-    {
-      if ((paramString2.indexOf("Mast") > -1) || (paramString2.indexOf("Wire") > -1) || (paramString2.indexOf("SSC") > -1) || (paramString2.indexOf("struct") > -1))
-      {
-        doExplosion(paramActor, "Hull2");
-      }
-      else
-        doExplosion(paramActor, paramString2);
-    }
-    else
-      destroy();
-  }
-
-  protected void doExplosion(Actor paramActor, String paramString)
-  {
-    if ((getOwner() != null) && ((getOwner() instanceof TypeGuidedBombCarrier)))
-    {
-      localObject = (TypeGuidedBombCarrier)(TypeGuidedBombCarrier)getOwner();
-      ((TypeGuidedBombCarrier)localObject).typeGuidedBombCsetIsGuiding(false);
-    }
-
-    this.pos.getTime(Time.current(), p);
-    Object localObject = getClass();
-    float f1 = Property.floatValue((Class)localObject, "power", 1000.0F);
-    int i = Property.intValue((Class)localObject, "powerType", 0);
-    float f2 = Property.floatValue((Class)localObject, "radius", 0.0F);
-    getSpeed(this.speed);
-    Vector3f localVector3f = new Vector3f(this.speed);
-    if (f2 <= 0.0F) {
-      MsgShot.send(paramActor, paramString, p, localVector3f, this.M, getOwner(), f1, 1, 0.0D);
-    }
-    else
-    {
-      MsgShot.send(paramActor, paramString, p, localVector3f, this.M, getOwner(), (float)(0.5F * this.M * this.speed.lengthSquared()), 0, 0.0D);
-
-      MsgExplosion.send(paramActor, paramString, p, getOwner(), this.M, f1, i, f2);
-    }
-
-    Explosions.generate(paramActor, p, f1, i, f2, !Mission.isNet());
-    destroy();
-  }
-
-  protected void doExplosionAir()
-  {
-    if ((getOwner() != null) && ((getOwner() instanceof TypeGuidedBombCarrier)))
-    {
-      localObject = (TypeGuidedBombCarrier)(TypeGuidedBombCarrier)getOwner();
-      ((TypeGuidedBombCarrier)localObject).typeGuidedBombCsetIsGuiding(false);
-    }
-
-    this.pos.getTime(Time.current(), p);
-    Object localObject = getClass();
-    float f1 = Property.floatValue((Class)localObject, "power", 1000.0F);
-    int i = Property.intValue((Class)localObject, "powerType", 0);
-    float f2 = Property.floatValue((Class)localObject, "radius", 150.0F);
-    MsgExplosion.send(null, null, p, getOwner(), this.M, f1, i, f2);
-    Explosions.AirFlak(p, 0);
-  }
-
-  public boolean interpolateStep() {
-    return true;
-  }
-
-  protected void endSmoke() {
-    if (!this.endedSmoke) {
-      this.endedSmoke = true;
-      if (this.light != null)
-        this.light.light.setEmit(0.0F, 1.0F);
-      Eff3DActor.finish(this.smoke);
-      Eff3DActor.finish(this.sprite);
-      ObjState.destroy(this.flame);
-    }
-  }
-
-  public void destroy()
-  {
-    if ((getOwner() != null) && ((getOwner() instanceof TypeGuidedBombCarrier)))
-    {
-      TypeGuidedBombCarrier localTypeGuidedBombCarrier = (TypeGuidedBombCarrier)(TypeGuidedBombCarrier)getOwner();
-      localTypeGuidedBombCarrier.typeGuidedBombCsetIsGuiding(false);
-    }
-
-    endSmoke();
-    super.destroy();
-    this.smoke = null;
-    this.sprite = null;
-    this.flame = null;
-    this.light = null;
-    if (this.sound != null)
-      this.sound.cancel();
-  }
-
-  protected void setThrust(float paramFloat) {
-    this.P = paramFloat;
-  }
-
-  public double getSpeed(Vector3d paramVector3d) {
-    if (paramVector3d != null)
-      paramVector3d.set(this.speed);
-    return this.speed.length();
-  }
-
-  public void setSpeed(Vector3d paramVector3d) {
-    this.speed.set(paramVector3d);
-  }
-
-  protected void init(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6)
-  {
-    if ((Actor.isValid(getOwner())) && (World.getPlayerAircraft() == getOwner()))
-    {
-      setName("_rocket_");
-    }super.getSpeed(this.speed);
-    this.S = (float)(3.141592653589793D * paramFloat1 * paramFloat1 / 4.0D);
-    this.M = paramFloat2;
-    this.Minit = this.M;
-    if (paramFloat4 > 0.0F)
-      this.DM = ((paramFloat2 - paramFloat3) / (paramFloat4 / Time.tickConstLenFs()));
-    else
-      this.DM = 0.0F;
-    this.P = paramFloat5;
-    this.timeFire = ()(paramFloat4 * 1000.0F + 0.5D);
-    this.timeLife = ()(paramFloat6 * 1000.0F + 0.5D);
-  }
-
-  public void start(float paramFloat)
-  {
-    Class localClass = getClass();
-    float f1 = Property.floatValue(localClass, "kalibr", 0.082F);
-    if (paramFloat <= 0.0F)
-      paramFloat = Property.floatValue(localClass, "timeLife", 45.0F);
-    init(f1, Property.floatValue(localClass, "massa", 6.8F), Property.floatValue(localClass, "massaEnd", 2.52F), Property.floatValue(localClass, "timeFire", 4.0F), Property.floatValue(localClass, "force", 500.0F), paramFloat);
-
-    this.curTm = 0.0F;
-    setOwner(this.pos.base(), false, false, false);
-    this.pos.setBase(null, null, true);
-    this.pos.setAbs(this.pos.getCurrent());
-    this.pos.getAbs(Aircraft.tmpOr);
-    float f2 = 0.5F * Property.floatValue(localClass, "maxDeltaAngle", 0.0F);
-
-    Aircraft.tmpOr.increment(World.Rnd().nextFloat(-f2, f2), World.Rnd().nextFloat(-f2, f2), 0.0F);
-
-    this.pos.setAbs(Aircraft.tmpOr);
-    this.pos.getRelOrient().transformInv(this.speed);
-
-    this.speed.z -= 3.5D;
-    Object localObject;
-    if ((getOwner() != null) && ((getOwner() instanceof TypeGuidedBombCarrier)))
-    {
-      localObject = (TypeGuidedBombCarrier)(TypeGuidedBombCarrier)getOwner();
-      ((TypeGuidedBombCarrier)localObject).typeGuidedBombCsetIsGuiding(true);
-    }
-
-    this.pos.getRelOrient().transform(this.speed);
-    collide(true);
-    interpPut(new Interpolater(), null, Time.current(), null);
-    if (getOwner() == World.getPlayerAircraft())
-      World.cur().scoreCounter.rocketsFire += 1;
-    if (Config.isUSE_RENDER()) {
-      localObject = null;
-      String str1 = Property.stringValue(localClass, "sprite", null);
-      if (str1 != null)
-      {
-        if (localObject == null)
-          localObject = findHook("_SMOKE");
-        this.sprite = Eff3DActor.New(this, (Hook)localObject, null, f1, str1, -1.0F);
-        if (this.sprite != null)
-          this.sprite.pos.changeHookToRel();
-      }
-      str1 = Property.stringValue(localClass, "flame", null);
-      if (str1 != null)
-      {
-        if (localObject == null)
-          localObject = findHook("_SMOKE");
-        this.flame = new ActorSimpleMesh(str1);
-        if (this.flame != null) {
-          ((ActorSimpleMesh)this.flame).mesh().setScale(f1);
-          this.flame.pos.setBase(this, (Hook)localObject, false);
-          this.flame.pos.changeHookToRel();
-          this.flame.pos.resetAsBase();
+        public boolean tick()
+        {
+            if(timeBegin + timeLife < com.maddox.rts.Time.current())
+            {
+                doExplosionAir();
+                postDestroy();
+                collide(false);
+                drawing(false);
+                return false;
+            }
+            if(timeBegin + timeFire < com.maddox.rts.Time.current())
+            {
+                endSmoke();
+                P = 0.0F;
+                isThrust = false;
+            } else
+            {
+                M -= DM;
+            }
+            if(interpolateStep())
+            {
+                boolean flag = timeBegin + noGDelay < com.maddox.rts.Time.current();
+                curTm += com.maddox.rts.Time.tickLenFs();
+                com.maddox.il2.objects.weapons.Ballistics.updateRocketBomb(actor, M, S, P, timeBegin + noGDelay < com.maddox.rts.Time.current());
+                updateSound();
+            }
+            return true;
         }
-      }
-      str1 = Property.stringValue(localClass, "smoke", null);
-      if (str1 != null)
-      {
-        if (localObject == null)
-          localObject = findHook("_SMOKE");
-        this.smoke = Eff3DActor.New(this, (Hook)localObject, null, 1.0F, str1, -1.0F);
-        if (this.smoke != null)
-          this.smoke.pos.changeHookToRel();
-      }
-      this.light = new LightPointActor(new LightPointWorld(), new Point3d());
-      this.light.light.setColor((Color3f)Property.value(localClass, "emitColor", new Color3f(1.0F, 1.0F, 0.5F)));
-      this.light.light.setEmit(Property.floatValue(localClass, "emitMax", 1.0F), Property.floatValue(localClass, "emitLen", 50.0F));
 
-      this.draw.lightMap().put("light", this.light);
-
-      if (haveSound()) {
-        String str2 = Property.stringValue(localClass, "sound", null);
-        if (str2 != null)
-          this.sound = newSound(str2, true);
-      }
+        Interpolater()
+        {
+        }
     }
-  }
 
-  protected boolean haveSound() {
-    return true;
-  }
 
-  public Object getSwitchListener(Message paramMessage) {
-    return this;
-  }
+    protected void updateSound()
+    {
+        if(sound != null)
+        {
+            sound.setControl(200, (float)getSpeed(null));
+            if(curTm < 5F)
+                sound.setControl(201, curTm);
+            else
+            if(curTm < 5F + (float)(2 * com.maddox.rts.Time.tickConstLen()))
+                sound.setControl(201, 5F);
+        }
+    }
 
-  public RocketBomb() {
-    setMesh(MeshShared.get(Property.stringValue(getClass(), "mesh", null)));
+    public void msgCollisionRequest(com.maddox.il2.engine.Actor actor, boolean aflag[])
+    {
+        if(actor == getOwner())
+            aflag[0] = false;
+    }
 
-    this.flags |= 224;
-    collide(false);
-    drawing(true);
-  }
+    public void msgCollision(com.maddox.il2.engine.Actor actor, java.lang.String s, java.lang.String s1)
+    {
+        impact = com.maddox.rts.Time.current() - started;
+        if(impact < armingTime && isArmed)
+            isArmed = false;
+        if(getOwner() == com.maddox.il2.ai.World.getPlayerAircraft() && !(actor instanceof com.maddox.il2.objects.ActorLand))
+        {
+            com.maddox.il2.ai.World.cur().scoreCounter.rocketsHit++;
+            if(com.maddox.il2.game.Mission.isNet() && (actor instanceof com.maddox.il2.objects.air.Aircraft) && ((com.maddox.il2.objects.air.Aircraft)actor).isNetPlayer())
+                com.maddox.il2.net.Chat.sendLogRnd(3, "gore_rocketed", (com.maddox.il2.objects.air.Aircraft)getOwner(), (com.maddox.il2.objects.air.Aircraft)actor);
+        }
+        if(isArmed)
+        {
+            if(s1.indexOf("Mast") > -1 || s1.indexOf("Wire") > -1 || s1.indexOf("SSC") > -1 || s1.indexOf("struct") > -1)
+                doExplosion(actor, "Hull2");
+            else
+                doExplosion(actor, s1);
+        } else
+        {
+            destroy();
+        }
+    }
 
-  protected void mydebug(String paramString)
-  {
-  }
+    protected void doExplosion(com.maddox.il2.engine.Actor actor, java.lang.String s)
+    {
+        if(getOwner() != null && (getOwner() instanceof com.maddox.il2.objects.air.TypeGuidedBombCarrier))
+        {
+            com.maddox.il2.objects.air.TypeGuidedBombCarrier typeguidedbombcarrier = (com.maddox.il2.objects.air.TypeGuidedBombCarrier)(com.maddox.il2.objects.air.TypeGuidedBombCarrier)getOwner();
+            typeguidedbombcarrier.typeGuidedBombCsetIsGuiding(false);
+        }
+        pos.getTime(com.maddox.rts.Time.current(), p);
+        java.lang.Class class1 = getClass();
+        float f = com.maddox.rts.Property.floatValue(class1, "power", 1000F);
+        int i = com.maddox.rts.Property.intValue(class1, "powerType", 0);
+        float f1 = com.maddox.rts.Property.floatValue(class1, "radius", 0.0F);
+        getSpeed(speed);
+        com.maddox.JGP.Vector3f vector3f = new Vector3f(speed);
+        if(f1 <= 0.0F)
+        {
+            com.maddox.il2.ai.MsgShot.send(actor, s, p, vector3f, M, getOwner(), f, 1, 0.0D);
+        } else
+        {
+            com.maddox.il2.ai.MsgShot.send(actor, s, p, vector3f, M, getOwner(), (float)((double)(0.5F * M) * speed.lengthSquared()), 0, 0.0D);
+            com.maddox.il2.ai.MsgExplosion.send(actor, s, p, getOwner(), M, f, i, f1);
+        }
+        com.maddox.il2.objects.effects.Explosions.generate(actor, p, f, i, f1, !com.maddox.il2.game.Mission.isNet());
+        destroy();
+    }
 
-  class Interpolater extends Interpolate
-  {
-    Interpolater()
+    protected void doExplosionAir()
+    {
+        if(getOwner() != null && (getOwner() instanceof com.maddox.il2.objects.air.TypeGuidedBombCarrier))
+        {
+            com.maddox.il2.objects.air.TypeGuidedBombCarrier typeguidedbombcarrier = (com.maddox.il2.objects.air.TypeGuidedBombCarrier)(com.maddox.il2.objects.air.TypeGuidedBombCarrier)getOwner();
+            typeguidedbombcarrier.typeGuidedBombCsetIsGuiding(false);
+        }
+        pos.getTime(com.maddox.rts.Time.current(), p);
+        java.lang.Class class1 = getClass();
+        float f = com.maddox.rts.Property.floatValue(class1, "power", 1000F);
+        int i = com.maddox.rts.Property.intValue(class1, "powerType", 0);
+        float f1 = com.maddox.rts.Property.floatValue(class1, "radius", 150F);
+        com.maddox.il2.ai.MsgExplosion.send(null, null, p, getOwner(), M, f, i, f1);
+        com.maddox.il2.objects.effects.Explosions.AirFlak(p, 0);
+    }
+
+    public boolean interpolateStep()
+    {
+        return true;
+    }
+
+    protected void endSmoke()
+    {
+        if(!endedSmoke)
+        {
+            endedSmoke = true;
+            if(light != null)
+                light.light.setEmit(0.0F, 1.0F);
+            com.maddox.il2.engine.Eff3DActor.finish(smoke);
+            com.maddox.il2.engine.Eff3DActor.finish(sprite);
+            com.maddox.rts.ObjState.destroy(flame);
+        }
+    }
+
+    public void destroy()
+    {
+        if(getOwner() != null && (getOwner() instanceof com.maddox.il2.objects.air.TypeGuidedBombCarrier))
+        {
+            com.maddox.il2.objects.air.TypeGuidedBombCarrier typeguidedbombcarrier = (com.maddox.il2.objects.air.TypeGuidedBombCarrier)(com.maddox.il2.objects.air.TypeGuidedBombCarrier)getOwner();
+            typeguidedbombcarrier.typeGuidedBombCsetIsGuiding(false);
+        }
+        endSmoke();
+        super.destroy();
+        smoke = null;
+        sprite = null;
+        flame = null;
+        light = null;
+        if(sound != null)
+            sound.cancel();
+    }
+
+    protected void setThrust(float f)
+    {
+        P = f;
+    }
+
+    public double getSpeed(com.maddox.JGP.Vector3d vector3d)
+    {
+        if(vector3d != null)
+            vector3d.set(speed);
+        return speed.length();
+    }
+
+    public void setSpeed(com.maddox.JGP.Vector3d vector3d)
+    {
+        speed.set(vector3d);
+    }
+
+    protected void init(float f, float f1, float f2, float f3, float f4, float f5)
+    {
+        if(com.maddox.il2.engine.Actor.isValid(getOwner()) && com.maddox.il2.ai.World.getPlayerAircraft() == getOwner())
+            setName("_rocket_");
+        super.getSpeed(speed);
+        S = (float)((3.1415926535897931D * (double)f * (double)f) / 4D);
+        M = f1;
+        Minit = M;
+        if(f3 > 0.0F)
+            DM = (f1 - f2) / (f3 / com.maddox.rts.Time.tickConstLenFs());
+        else
+            DM = 0.0F;
+        P = f4;
+        timeFire = (long)((double)(f3 * 1000F) + 0.5D);
+        timeLife = (long)((double)(f5 * 1000F) + 0.5D);
+    }
+
+    public void start(float f)
+    {
+        java.lang.Class class1 = getClass();
+        float f1 = com.maddox.rts.Property.floatValue(class1, "kalibr", 0.082F);
+        if(f <= 0.0F)
+            f = com.maddox.rts.Property.floatValue(class1, "timeLife", 45F);
+        init(f1, com.maddox.rts.Property.floatValue(class1, "massa", 6.8F), com.maddox.rts.Property.floatValue(class1, "massaEnd", 2.52F), com.maddox.rts.Property.floatValue(class1, "timeFire", 4F), com.maddox.rts.Property.floatValue(class1, "force", 500F), f);
+        curTm = 0.0F;
+        setOwner(pos.base(), false, false, false);
+        pos.setBase(null, null, true);
+        pos.setAbs(pos.getCurrent());
+        pos.getAbs(com.maddox.il2.objects.air.Aircraft.tmpOr);
+        float f2 = 0.5F * com.maddox.rts.Property.floatValue(class1, "maxDeltaAngle", 0.0F);
+        com.maddox.il2.objects.air.Aircraft.tmpOr.increment(com.maddox.il2.ai.World.Rnd().nextFloat(-f2, f2), com.maddox.il2.ai.World.Rnd().nextFloat(-f2, f2), 0.0F);
+        pos.setAbs(com.maddox.il2.objects.air.Aircraft.tmpOr);
+        pos.getRelOrient().transformInv(speed);
+        speed.z -= 3.5D;
+        if(getOwner() != null && (getOwner() instanceof com.maddox.il2.objects.air.TypeGuidedBombCarrier))
+        {
+            com.maddox.il2.objects.air.TypeGuidedBombCarrier typeguidedbombcarrier = (com.maddox.il2.objects.air.TypeGuidedBombCarrier)(com.maddox.il2.objects.air.TypeGuidedBombCarrier)getOwner();
+            typeguidedbombcarrier.typeGuidedBombCsetIsGuiding(true);
+        }
+        pos.getRelOrient().transform(speed);
+        collide(true);
+        interpPut(new Interpolater(), null, com.maddox.rts.Time.current(), null);
+        if(getOwner() == com.maddox.il2.ai.World.getPlayerAircraft())
+            com.maddox.il2.ai.World.cur().scoreCounter.rocketsFire++;
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            com.maddox.il2.engine.Hook hook = null;
+            java.lang.String s = com.maddox.rts.Property.stringValue(class1, "sprite", null);
+            if(s != null)
+            {
+                if(hook == null)
+                    hook = findHook("_SMOKE");
+                sprite = com.maddox.il2.engine.Eff3DActor.New(this, hook, null, f1, s, -1F);
+                if(sprite != null)
+                    sprite.pos.changeHookToRel();
+            }
+            s = com.maddox.rts.Property.stringValue(class1, "flame", null);
+            if(s != null)
+            {
+                if(hook == null)
+                    hook = findHook("_SMOKE");
+                flame = new ActorSimpleMesh(s);
+                if(flame != null)
+                {
+                    ((com.maddox.il2.objects.ActorSimpleMesh)flame).mesh().setScale(f1);
+                    flame.pos.setBase(this, hook, false);
+                    flame.pos.changeHookToRel();
+                    flame.pos.resetAsBase();
+                }
+            }
+            s = com.maddox.rts.Property.stringValue(class1, "smoke", null);
+            if(s != null)
+            {
+                if(hook == null)
+                    hook = findHook("_SMOKE");
+                smoke = com.maddox.il2.engine.Eff3DActor.New(this, hook, null, 1.0F, s, -1F);
+                if(smoke != null)
+                    smoke.pos.changeHookToRel();
+            }
+            light = new LightPointActor(new LightPointWorld(), new Point3d());
+            light.light.setColor((com.maddox.JGP.Color3f)com.maddox.rts.Property.value(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F)));
+            light.light.setEmit(com.maddox.rts.Property.floatValue(class1, "emitMax", 1.0F), com.maddox.rts.Property.floatValue(class1, "emitLen", 50F));
+            draw.lightMap().put("light", light);
+            if(haveSound())
+            {
+                java.lang.String s1 = com.maddox.rts.Property.stringValue(class1, "sound", null);
+                if(s1 != null)
+                    sound = newSound(s1, true);
+            }
+        }
+    }
+
+    protected boolean haveSound()
+    {
+        return true;
+    }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    public RocketBomb()
+    {
+        isArmed = true;
+        noGDelay = -1L;
+        endedSmoke = false;
+        speed = new Vector3d();
+        isThrust = true;
+        sound = null;
+        setMesh(com.maddox.il2.engine.MeshShared.get(com.maddox.rts.Property.stringValue(getClass(), "mesh", null)));
+        flags |= 0xe0;
+        collide(false);
+        drawing(true);
+    }
+
+    protected void mydebug(java.lang.String s)
     {
     }
 
-    public boolean tick()
-    {
-      if (this.timeBegin + RocketBomb.this.timeLife < Time.current()) {
-        RocketBomb.this.doExplosionAir();
-        RocketBomb.this.postDestroy();
-        RocketBomb.this.collide(false);
-        RocketBomb.this.drawing(false);
-        return false;
-      }
-      if (this.timeBegin + RocketBomb.this.timeFire < Time.current()) {
-        RocketBomb.this.endSmoke();
-        RocketBomb.access$002(RocketBomb.this, 0.0F);
-        RocketBomb.this.isThrust = false;
-      } else {
-        RocketBomb.this.M -= RocketBomb.this.DM;
-      }if (RocketBomb.this.interpolateStep())
-      {
-        int i = this.timeBegin + RocketBomb.this.noGDelay < Time.current() ? 1 : 0;
+    private long started;
+    private long impact;
+    private boolean isArmed;
+    private static long armingTime = 5000L;
+    private static final boolean DEBUG_TYPE = false;
+    protected long noGDelay;
+    public static com.maddox.JGP.Point3d p = new Point3d();
+    private boolean endedSmoke;
+    protected com.maddox.il2.engine.Eff3DActor smoke;
+    protected com.maddox.il2.engine.Eff3DActor sprite;
+    protected com.maddox.il2.engine.Actor flame;
+    protected com.maddox.il2.engine.LightPointActor light;
+    protected long timeFire;
+    protected long timeLife;
+    protected com.maddox.JGP.Vector3d speed;
+    private float S;
+    public float M;
+    public float Minit;
+    public boolean isThrust;
+    private float DM;
+    private float P;
+    protected com.maddox.sound.SoundFX sound;
+    static com.maddox.JGP.Vector3d spd = new Vector3d();
+    static com.maddox.il2.engine.Orient Or = new Orient();
+    float curTm;
 
-        RocketBomb.this.curTm += Time.tickLenFs();
-        Ballistics.updateRocketBomb(this.actor, RocketBomb.this.M, RocketBomb.this.S, RocketBomb.this.P, this.timeBegin + RocketBomb.this.noGDelay < Time.current());
-        RocketBomb.this.updateSound();
-      }
 
-      return true;
-    }
-  }
+
+
+
 }

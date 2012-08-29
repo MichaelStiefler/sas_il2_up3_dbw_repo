@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetWing.java
+
 package com.maddox.il2.net;
 
 import com.maddox.il2.ai.Squadron;
@@ -11,78 +16,74 @@ import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.NetAircraft;
 
-public class NetWing extends Wing
+// Referenced classes of package com.maddox.il2.net:
+//            NetAirGroup
+
+public class NetWing extends com.maddox.il2.ai.Wing
 {
-  private int indexInSquadron;
 
-  public int aircReady()
-  {
-    if (Actor.isValid(this.airc[0])) return 1;
-    return 0;
-  }
-
-  public int aircIndex(Aircraft paramAircraft)
-  {
-    if (this.airc[0] == paramAircraft) return 0;
-    return -1;
-  }
-
-  public int indexInSquadron()
-  {
-    return this.indexInSquadron;
-  }
-
-  public void setPlane(NetAircraft paramNetAircraft, int paramInt)
-  {
-    int i = paramNetAircraft.getArmy();
-
-    Aircraft localAircraft = (Aircraft)paramNetAircraft;
-    this.airc[0] = localAircraft;
-
-    localAircraft.setArmy(i);
-
-    localAircraft.setOwner(this);
-    if (localAircraft == World.getPlayerAircraft())
-      World.setPlayerRegiment();
-    localAircraft.preparePaintScheme(paramInt);
-    localAircraft.prepareCamouflage();
-
-    if ((Mission.isDogfight()) && (Mission.isServer())) {
-      AirGroup localAirGroup = null;
-
-      int j = AirGroupList.length(War.Groups[(i - 1 & 0x1)]);
-
-      for (int k = 0; k < j; k++) {
-        localAirGroup = AirGroupList.getGroup(War.Groups[(i - 1 & 0x1)], k);
-        if (!(localAirGroup instanceof NetAirGroup)) {
-          continue;
-        }
-        if ((localAirGroup == null) || (localAirGroup.nOfAirc >= 16))
-          continue;
-        localAirGroup.addAircraft(localAircraft);
-
-        return;
-      }
-
-      if ((!(localAirGroup instanceof NetAirGroup)) || (localAirGroup.nOfAirc >= 16))
-      {
-        NetAirGroup localNetAirGroup = new NetAirGroup();
-        localNetAirGroup.addAircraft(localAircraft);
-        AirGroupList.addAirGroup(War.Groups, i - 1 & 0x1, localNetAirGroup);
-      }
+    public int aircReady()
+    {
+        return !com.maddox.il2.engine.Actor.isValid(airc[0]) ? 0 : 1;
     }
-  }
 
-  public void destroy()
-  {
-    destroy(squadron());
-    super.destroy();
-  }
+    public int aircIndex(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        return airc[0] != aircraft ? -1 : 0;
+    }
 
-  public NetWing(Squadron paramSquadron, int paramInt) {
-    this.indexInSquadron = paramInt;
-    setOwner(paramSquadron);
-    paramSquadron.wing[paramInt] = this;
-    setArmy(paramSquadron.getArmy());
-  }
+    public int indexInSquadron()
+    {
+        return indexInSquadron;
+    }
+
+    public void setPlane(com.maddox.il2.objects.air.NetAircraft netaircraft, int i)
+    {
+        int j = netaircraft.getArmy();
+        com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft)netaircraft;
+        airc[0] = aircraft;
+        aircraft.setArmy(j);
+        aircraft.setOwner(this);
+        if(aircraft == com.maddox.il2.ai.World.getPlayerAircraft())
+            com.maddox.il2.ai.World.setPlayerRegiment();
+        aircraft.preparePaintScheme(i);
+        aircraft.prepareCamouflage();
+        if(com.maddox.il2.game.Mission.isDogfight() && com.maddox.il2.game.Mission.isServer())
+        {
+            com.maddox.il2.ai.air.AirGroup airgroup = null;
+            int k = com.maddox.il2.ai.air.AirGroupList.length(com.maddox.il2.ai.War.Groups[j - 1 & 1]);
+            for(int l = 0; l < k; l++)
+            {
+                airgroup = com.maddox.il2.ai.air.AirGroupList.getGroup(com.maddox.il2.ai.War.Groups[j - 1 & 1], l);
+                if((airgroup instanceof com.maddox.il2.net.NetAirGroup) && airgroup != null && airgroup.nOfAirc < 16)
+                {
+                    airgroup.addAircraft(aircraft);
+                    return;
+                }
+            }
+
+            if(!(airgroup instanceof com.maddox.il2.net.NetAirGroup) || airgroup.nOfAirc >= 16)
+            {
+                com.maddox.il2.net.NetAirGroup netairgroup = new NetAirGroup();
+                netairgroup.addAircraft(aircraft);
+                com.maddox.il2.ai.air.AirGroupList.addAirGroup(com.maddox.il2.ai.War.Groups, j - 1 & 1, netairgroup);
+            }
+        }
+    }
+
+    public void destroy()
+    {
+        com.maddox.il2.net.NetWing.destroy(((com.maddox.rts.Destroy) (squadron())));
+        super.destroy();
+    }
+
+    public NetWing(com.maddox.il2.ai.Squadron squadron, int i)
+    {
+        indexInSquadron = i;
+        setOwner(squadron);
+        squadron.wing[i] = this;
+        setArmy(squadron.getArmy());
+    }
+
+    private int indexInSquadron;
 }

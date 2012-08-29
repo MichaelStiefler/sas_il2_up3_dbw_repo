@@ -1,72 +1,81 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Vector2f.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
-public class Vector2f extends Tuple2f
-  implements Serializable, Cloneable
+// Referenced classes of package com.maddox.JGP:
+//            Tuple2f, Tuple2d
+
+public class Vector2f extends com.maddox.JGP.Tuple2f
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public Vector2f(float paramFloat1, float paramFloat2)
-  {
-    super(paramFloat1, paramFloat2);
-  }
 
-  public Vector2f(float[] paramArrayOfFloat)
-  {
-    super(paramArrayOfFloat);
-  }
+    public Vector2f(float f, float f1)
+    {
+        super(f, f1);
+    }
 
-  public Vector2f(Tuple2f paramTuple2f)
-  {
-    super(paramTuple2f);
-  }
+    public Vector2f(float af[])
+    {
+        super(af);
+    }
 
-  public Vector2f(Tuple2d paramTuple2d)
-  {
-    super(paramTuple2d);
-  }
+    public Vector2f(com.maddox.JGP.Tuple2f tuple2f)
+    {
+        super(tuple2f);
+    }
 
-  public Vector2f()
-  {
-  }
+    public Vector2f(com.maddox.JGP.Tuple2d tuple2d)
+    {
+        super(tuple2d);
+    }
 
-  public final float dot(Tuple2f paramTuple2f)
-  {
-    return this.x * paramTuple2f.x + this.y * paramTuple2f.y;
-  }
+    public Vector2f()
+    {
+    }
 
-  public final float length()
-  {
-    return (float)Math.sqrt(this.x * this.x + this.y * this.y);
-  }
+    public final float dot(com.maddox.JGP.Tuple2f tuple2f)
+    {
+        return x * tuple2f.x + y * tuple2f.y;
+    }
 
-  public final float lengthSquared()
-  {
-    return this.x * this.x + this.y * this.y;
-  }
+    public final float length()
+    {
+        return (float)java.lang.Math.sqrt(x * x + y * y);
+    }
 
-  public final void normalize()
-  {
-    double d = length();
+    public final float lengthSquared()
+    {
+        return x * x + y * y;
+    }
 
-    this.x = (float)(this.x / d);
-    this.y = (float)(this.y / d);
-  }
+    public final void normalize()
+    {
+        double d = length();
+        x /= d;
+        y /= d;
+    }
 
-  public final void normalize(Tuple2f paramTuple2f)
-  {
-    set(paramTuple2f);
-    normalize();
-  }
+    public final void normalize(com.maddox.JGP.Tuple2f tuple2f)
+    {
+        set(tuple2f);
+        normalize();
+    }
 
-  public final float angle(Tuple2f paramTuple2f)
-  {
-    return (float)Math.abs(Math.atan2(this.x * paramTuple2f.y - this.y * paramTuple2f.x, dot(paramTuple2f)));
-  }
+    public final float angle(com.maddox.JGP.Tuple2f tuple2f)
+    {
+        return (float)java.lang.Math.abs(java.lang.Math.atan2(x * tuple2f.y - y * tuple2f.x, dot(tuple2f)));
+    }
 
-  public final float direction()
-  {
-    float f = (float)Math.atan2(this.y, this.x);
-    if (f < 0.0F) f += 6.283186F;
-    return f;
-  }
+    public final float direction()
+    {
+        float f = (float)java.lang.Math.atan2(y, x);
+        if(f < 0.0F)
+            f += 6.283185F;
+        return f;
+    }
 }

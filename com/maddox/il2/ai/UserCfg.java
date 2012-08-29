@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   UserCfg.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.il2.engine.Config;
@@ -15,391 +20,507 @@ import com.maddox.util.NumberTokenizer;
 import com.maddox.util.UnicodeTo8bit;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Map.Entry;
+import java.util.Map;
 
 public class UserCfg
 {
-  public static final String defName;
-  public static final String defCallsign;
-  public static final String defSurname;
-  public static final String[] nameHotKeyEnvs;
-  public String sId;
-  private int[] krypto;
-  public String name;
-  public String callsign;
-  public String surname;
-  public int singleDifficulty;
-  public int netDifficulty;
-  public String placeBirth;
-  public int yearBirth;
-  public String netRegiment;
-  public String netAirName;
-  public String netPilot;
-  public int netSquadron = 0;
-  public int netTacticalNumber = 1;
-  public boolean netNumberOn = true;
 
-  public float coverMashineGun = 500.0F;
-  public float coverCannon = 500.0F;
-  public float coverRocket = 500.0F;
-  public float rocketDelay = 10.0F;
-  public float bombDelay = 0.0F;
-  public float fuel = 100.0F;
-
-  private HashMapExt skinMap = new HashMapExt();
-  private HashMapExt weaponMap = new HashMapExt();
-  private HashMapExt noseartMap = new HashMapExt();
-
-  public String iniFileName() {
-    return "users/" + this.sId + "/settings.ini";
-  }
-
-  public String getSkin(String paramString) {
-    return (String)this.skinMap.get(paramString);
-  }
-  public String getWeapon(String paramString) {
-    return (String)this.weaponMap.get(paramString);
-  }
-  public String getNoseart(String paramString) {
-    return (String)this.noseartMap.get(paramString);
-  }
-  public void setSkin(String paramString1, String paramString2) {
-    this.skinMap.put(paramString1, paramString2);
-  }
-  public void setWeapon(String paramString1, String paramString2) {
-    this.weaponMap.put(paramString1, paramString2);
-  }
-  public void setNoseart(String paramString1, String paramString2) {
-    this.noseartMap.put(paramString1, paramString2);
-  }
-
-  private void loadMap(IniFile paramIniFile, HashMapExt paramHashMapExt, String paramString) {
-    paramHashMapExt.clear();
-    String[] arrayOfString = paramIniFile.getVariables(paramString);
-    if ((arrayOfString == null) || (arrayOfString.length == 0)) return;
-    for (int i = 0; i < arrayOfString.length; i++) {
-      String str = paramIniFile.get(paramString, arrayOfString[i], (String)null);
-      if (str != null)
-        paramHashMapExt.put(arrayOfString[i], str); 
-    }
-  }
-
-  private void saveMap(IniFile paramIniFile, HashMapExt paramHashMapExt, String paramString) {
-    paramIniFile.deleteSubject(paramString);
-    if (paramHashMapExt.size() == 0) return;
-    Map.Entry localEntry = paramHashMapExt.nextEntry(null);
-    while (localEntry != null) {
-      if (localEntry.getValue() != null)
-        paramIniFile.set(paramString, (String)localEntry.getKey(), (String)localEntry.getValue());
-      localEntry = paramHashMapExt.nextEntry(localEntry);
-    }
-  }
-
-  public void loadConf() {
-    IniFile localIniFile = new IniFile(iniFileName(), 0);
-    for (int i = 0; i < nameHotKeyEnvs.length; i++) {
-      HotKeyEnv.setCurrentEnv(nameHotKeyEnvs[i]);
-      HotKeyEnv.currentEnv().all().clear();
-      HotKeyEnv.fromIni(nameHotKeyEnvs[i], localIniFile, "HotKey " + nameHotKeyEnvs[i]);
-    }
-    this.singleDifficulty = localIniFile.get("difficulty", "single", 0);
-    this.netDifficulty = localIniFile.get("difficulty", "net", 0);
-    this.netRegiment = localIniFile.get("net", "regiment", (String)null);
-    this.netAirName = localIniFile.get("net", "airclass", (String)null);
-    this.netPilot = localIniFile.get("net", "pilot", (String)null);
-    this.netSquadron = localIniFile.get("net", "squadron", 0, 0, 3);
-    this.netTacticalNumber = localIniFile.get("net", "tacticalnumber", 1, 1, 99);
-    this.netNumberOn = (localIniFile.get("net", "numberOn", 1, 0, 1) == 1);
-    this.coverMashineGun = localIniFile.get("cover", "mashinegun", 500.0F, 100.0F, 1000.0F);
-    this.coverCannon = localIniFile.get("cover", "cannon", 500.0F, 100.0F, 1000.0F);
-    this.coverRocket = localIniFile.get("cover", "rocket", 500.0F, 100.0F, 1000.0F);
-    this.rocketDelay = localIniFile.get("cover", "rocketdelay", 10.0F, 1.0F, 60.0F);
-    this.bombDelay = localIniFile.get("cover", "bombdelay", 0.0F, 0.0F, 10.0F);
-    this.fuel = localIniFile.get("cover", "fuel", 100.0F, 0.0F, 100.0F);
-    loadMap(localIniFile, this.skinMap, "skin");
-    loadMap(localIniFile, this.weaponMap, "weapon");
-    loadMap(localIniFile, this.noseartMap, "noseart");
-    this.placeBirth = localIniFile.get("dgen", "placeBirth", (String)null);
-    this.yearBirth = localIniFile.get("dgen", "yearBirth", 1910, 1850, 2050);
-    redirectKeysPause();
-    if (Config.cur.newCloudsRender) {
-      this.singleDifficulty |= 16777216;
-      this.netDifficulty |= 16777216;
-    } else {
-      this.singleDifficulty &= -16777217;
-      this.netDifficulty &= -16777217;
-    }
-  }
-
-  public void saveConf() {
-    IniFile localIniFile = new IniFile(iniFileName(), 1);
-    for (int i = 0; i < nameHotKeyEnvs.length; i++) {
-      localIniFile.deleteSubject("HotKey " + nameHotKeyEnvs[i]);
-      HotKeyEnv.toIni(nameHotKeyEnvs[i], localIniFile, "HotKey " + nameHotKeyEnvs[i]);
-    }
-    localIniFile.deleteSubject("difficulty");
-    localIniFile.set("difficulty", "single", this.singleDifficulty);
-    localIniFile.set("difficulty", "net", this.netDifficulty);
-    localIniFile.deleteSubject("net");
-    if (this.netRegiment != null) localIniFile.set("net", "regiment", this.netRegiment);
-    if (this.netAirName != null) localIniFile.set("net", "airclass", this.netAirName);
-    if (this.netPilot != null) localIniFile.set("net", "pilot", this.netPilot);
-    localIniFile.set("net", "squadron", this.netSquadron);
-    localIniFile.set("net", "tacticalnumber", this.netTacticalNumber);
-    localIniFile.set("net", "numberOn", this.netNumberOn ? "1" : "0");
-    localIniFile.deleteSubject("cover");
-    localIniFile.set("cover", "mashinegun", this.coverMashineGun);
-    localIniFile.set("cover", "cannon", this.coverCannon);
-    localIniFile.set("cover", "rocket", this.coverRocket);
-    localIniFile.set("cover", "rocketdelay", this.rocketDelay);
-    localIniFile.set("cover", "bombdelay", this.bombDelay);
-    localIniFile.set("cover", "fuel", this.fuel);
-    saveMap(localIniFile, this.skinMap, "skin");
-    saveMap(localIniFile, this.weaponMap, "weapon");
-    saveMap(localIniFile, this.noseartMap, "noseart");
-    if (this.placeBirth != null) localIniFile.set("dgen", "placeBirth", this.placeBirth);
-    localIniFile.set("dgen", "yearBirth", this.yearBirth);
-    localIniFile.saveFile();
-    redirectKeysPause();
-  }
-
-  private void redirectKeysPause() {
-    ArrayList localArrayList = new ArrayList();
-    HotKeyEnv localHotKeyEnv = HotKeyEnv.env("hotkeys");
-    HashMapInt localHashMapInt = localHotKeyEnv.all();
-    HashMapIntEntry localHashMapIntEntry = localHashMapInt.nextEntry(null);
-    Object localObject;
-    while (localHashMapIntEntry != null) {
-      i = localHashMapIntEntry.getKey();
-      localObject = (String)(String)localHashMapIntEntry.getValue();
-      if ("pause".equals(localObject))
-        localArrayList.add(new Integer(i));
-      localHashMapIntEntry = localHashMapInt.nextEntry(localHashMapIntEntry);
-    }
-    for (int i = 0; i < localArrayList.size(); i++) {
-      localObject = (Integer)localArrayList.get(i);
-      localHashMapInt.remove(((Integer)localObject).intValue());
-    }
-    localArrayList.clear();
-
-    localHotKeyEnv = HotKeyEnv.env("timeCompression");
-    localHashMapInt = localHotKeyEnv.all();
-    localHashMapIntEntry = localHashMapInt.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      i = localHashMapIntEntry.getKey();
-      localObject = (String)(String)localHashMapIntEntry.getValue();
-      if ("timeSpeedPause".equals(localObject))
-        localArrayList.add(new Integer(i));
-      localHashMapIntEntry = localHashMapInt.nextEntry(localHashMapIntEntry);
-    }
-
-    for (i = 0; i < localArrayList.size(); i++) {
-      localObject = (Integer)localArrayList.get(i);
-      int j = ((Integer)localObject).intValue();
-      HotKeyEnv.env("hotkeys").all().put(j, "pause");
-    }
-  }
-
-  public int[] krypto() {
-    if (this.krypto == null) {
-      long l = Finger.Long("users/" + this.sId);
-      this.krypto = new int[17];
-      for (int i = 0; i < 17; i++) {
-        int j = (int)(l >> 8 * (i % 8) & 0xFF);
-        int k = i / 8;
-        while (k > 0) {
-          j <<= 2; j = (j & 0x3 | j) & 0xFF;
-          k--;
-        }
-        if (j == 0) j = 255;
-        this.krypto[i] = j;
-      }
-    }
-    return this.krypto;
-  }
-
-  public boolean existUserDir() {
-    return existUserDir(this.sId);
-  }
-  private boolean existUserDir(String paramString) {
-    File localFile = new File(HomePath.toFileSystemName("users/" + paramString, 0));
-    return localFile.isDirectory();
-  }
-  public boolean existUserConf() {
-    File localFile = new File(HomePath.toFileSystemName("users/" + this.sId + "/settings.ini", 0));
-    return localFile.exists();
-  }
-  private void removeDGens() {
-    String str1 = "users/" + this.sId + "/campaigns.ini";
-    SectFile localSectFile = new SectFile(str1, 0, false, krypto());
-    int i = localSectFile.sectionIndex("list");
-    if (i < 0) return;
-    int j = localSectFile.vars(i);
-    for (int k = 0; k < j; k++)
-      try {
-        Campaign localCampaign = (Campaign)ObjIO.fromString(localSectFile.value(i, k));
-        if (localCampaign.isDGen()) {
-          String str2 = "missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir();
-          File localFile1 = new File(HomePath.toFileSystemName(str2, 0));
-          File[] arrayOfFile = localFile1.listFiles();
-          if (arrayOfFile != null) {
-            for (int m = 0; m < arrayOfFile.length; m++) {
-              File localFile2 = arrayOfFile[m];
-              String str3 = localFile2.getName();
-              if ((".".equals(str3)) || ("..".equals(str3)))
-                continue;
-              localFile2.delete();
-            }
-          }
-          localFile1.delete();
-        }
-        localCampaign.clearSavedStatics(localSectFile); } catch (Exception localException) {
-      }
-  }
-
-  public void removeUserDir() {
-    removeDGens();
-    File localFile = new File(HomePath.toFileSystemName("users/" + this.sId, 0));
-    removeTree(localFile);
-  }
-  public static void removeTree(File paramFile) {
-    if (paramFile.isDirectory()) {
-      File[] arrayOfFile = paramFile.listFiles();
-      if (arrayOfFile != null) {
-        for (int i = 0; i < arrayOfFile.length; i++) {
-          if (arrayOfFile[i].isDirectory()) removeTree(arrayOfFile[i]); else
-            arrayOfFile[i].delete();
-        }
-      }
-    }
-    paramFile.delete();
-  }
-  public void createUserDir() {
-    File localFile = new File(HomePath.toFileSystemName("users/" + this.sId, 0));
-    if (localFile.exists())
-      removeTree(localFile);
-    localFile.mkdirs();
-  }
-  public void createUserConf() {
-    String str1 = "users/" + this.sId + "/settings.ini";
-    File localFile = new File(HomePath.toFileSystemName(str1, 0));
-    if (localFile.exists())
-      removeTree(localFile);
-    String str2 = "users/default.ini";
-    IniFile localIniFile = new IniFile(str2, 0);
-    localIniFile.saveFile(str1);
-  }
-
-  public void makeId() {
-    String str1 = "";
-    this.sId = null;
-    if (this.surname.length() > 0) {
-      this.sId = this.surname.toLowerCase();
-      if (!Character.isDigit(this.sId.charAt(0))) {
-        for (i = 0; i < this.sId.length(); i++) {
-          char c = this.sId.charAt(i);
-          if (!Character.isLetterOrDigit(c)) {
-            this.sId = null;
-            break;
-          }
-        }
-      }
-    }
-    if (this.sId == null)
-      this.sId = "";
-    else {
-      for (i = 0; i < this.sId.length(); i++)
-        if (this.sId.charAt(i) >= '') {
-          this.sId = "";
-          break;
-        }
-    }
-    int i = 0;
-    while (true)
+    public java.lang.String iniFileName()
     {
-      String str2;
-      if ((i == 0) && (this.sId.length() > 0)) str2 = this.sId; else
-        str2 = this.sId + i;
-      if (!existUserDir(str2)) {
-        this.sId = str2;
-        return;
-      }
-      i++;
-    }
-  }
-  public UserCfg() {
-  }
-
-  public UserCfg(String paramString1, String paramString2, String paramString3) {
-    if ((paramString1 == null) || (paramString1.length() == 0)) paramString1 = " ";
-    if ((paramString2 == null) || (paramString2.length() == 0)) paramString2 = " ";
-    if ((paramString3 == null) || (paramString3.length() == 0)) paramString3 = " ";
-    this.name = paramString1;
-    this.callsign = paramString2;
-    this.surname = paramString3;
-    this.sId = null;
-  }
-
-  public static UserCfg loadCurrent() {
-    File localFile = new File(HomePath.toFileSystemName("users/all.ini", 0));
-    if (!localFile.exists())
-      return createDefault();
-    SectFile localSectFile = new SectFile("users/all.ini", 0);
-    int i = localSectFile.sectionIndex("list");
-    int j = localSectFile.sectionIndex("current");
-    if ((i < 0) || (j < 0))
-      return createDefault();
-    int k = localSectFile.vars(i);
-    if (k == 0)
-      return createDefault();
-    String str1 = localSectFile.var(j, 0);
-    int m = 0;
-    try { m = Integer.parseInt(str1); } catch (Exception localException) {
-    }
-    if (m >= k)
-      m = k - 1;
-    String str2 = localSectFile.var(i, m);
-    NumberTokenizer localNumberTokenizer = new NumberTokenizer(localSectFile.value(i, m));
-    UserCfg localUserCfg = new UserCfg(UnicodeTo8bit.load(localNumberTokenizer.next(defName)), UnicodeTo8bit.load(localNumberTokenizer.next(defCallsign)), UnicodeTo8bit.load(localNumberTokenizer.next(defSurname)));
-
-    localUserCfg.sId = str2;
-    if (!localUserCfg.existUserDir())
-      localUserCfg.createUserDir();
-    if (!localUserCfg.existUserConf())
-      localUserCfg.createUserConf();
-    localUserCfg.loadConf();
-    return localUserCfg;
-  }
-
-  public static UserCfg createDefault() {
-    SectFile localSectFile = new SectFile();
-    localSectFile.clear();
-    UserCfg localUserCfg = new UserCfg(defName, defCallsign, defSurname);
-    localUserCfg.makeId();
-    int i = localSectFile.sectionAdd("list");
-    localSectFile.lineAdd(i, localUserCfg.sId, UnicodeTo8bit.save(localUserCfg.name, true) + " " + UnicodeTo8bit.save(localUserCfg.callsign, true) + " " + UnicodeTo8bit.save(localUserCfg.surname, true));
-
-    int j = localSectFile.sectionAdd("current");
-    localSectFile.lineAdd(j, "0");
-    localSectFile.saveFile("users/all.ini");
-    localUserCfg.createUserDir();
-    localUserCfg.createUserConf();
-    localUserCfg.loadConf();
-    return localUserCfg;
-  }
-
-  static
-  {
-    if (Config.LOCALE.equals("RU")) {
-      defName = "Иван";
-      defCallsign = "Ваня";
-      defSurname = "Иванов";
-    } else {
-      defName = "John";
-      defCallsign = "Mad";
-      defSurname = "Doe";
+        return "users/" + sId + "/settings.ini";
     }
 
-    nameHotKeyEnvs = new String[] { "pilot", "gunner", "aircraftView", "SnapView", "PanView", "orders", "misc", "$$$misc", "timeCompression", "move" };
-  }
+    public java.lang.String getSkin(java.lang.String s)
+    {
+        return (java.lang.String)skinMap.get(s);
+    }
+
+    public java.lang.String getWeapon(java.lang.String s)
+    {
+        return (java.lang.String)weaponMap.get(s);
+    }
+
+    public java.lang.String getNoseart(java.lang.String s)
+    {
+        return (java.lang.String)noseartMap.get(s);
+    }
+
+    public void setSkin(java.lang.String s, java.lang.String s1)
+    {
+        skinMap.put(s, s1);
+    }
+
+    public void setWeapon(java.lang.String s, java.lang.String s1)
+    {
+        weaponMap.put(s, s1);
+    }
+
+    public void setNoseart(java.lang.String s, java.lang.String s1)
+    {
+        noseartMap.put(s, s1);
+    }
+
+    private void loadMap(com.maddox.rts.IniFile inifile, com.maddox.util.HashMapExt hashmapext, java.lang.String s)
+    {
+        hashmapext.clear();
+        java.lang.String as[] = inifile.getVariables(s);
+        if(as == null || as.length == 0)
+            return;
+        for(int i = 0; i < as.length; i++)
+        {
+            java.lang.String s1 = inifile.get(s, as[i], (java.lang.String)null);
+            if(s1 != null)
+                hashmapext.put(as[i], s1);
+        }
+
+    }
+
+    private void saveMap(com.maddox.rts.IniFile inifile, com.maddox.util.HashMapExt hashmapext, java.lang.String s)
+    {
+        inifile.deleteSubject(s);
+        if(hashmapext.size() == 0)
+            return;
+        for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+            if(entry.getValue() != null)
+                inifile.set(s, (java.lang.String)entry.getKey(), (java.lang.String)entry.getValue());
+
+    }
+
+    public void loadConf()
+    {
+        com.maddox.rts.IniFile inifile = new IniFile(iniFileName(), 0);
+        for(int i = 0; i < nameHotKeyEnvs.length; i++)
+        {
+            com.maddox.rts.HotKeyEnv.setCurrentEnv(nameHotKeyEnvs[i]);
+            com.maddox.rts.HotKeyEnv.currentEnv().all().clear();
+            com.maddox.rts.HotKeyEnv.fromIni(nameHotKeyEnvs[i], inifile, "HotKey " + nameHotKeyEnvs[i]);
+        }
+
+        singleDifficulty = inifile.get("difficulty", "single", 0);
+        netDifficulty = inifile.get("difficulty", "net", 0);
+        netRegiment = inifile.get("net", "regiment", (java.lang.String)null);
+        netAirName = inifile.get("net", "airclass", (java.lang.String)null);
+        netPilot = inifile.get("net", "pilot", (java.lang.String)null);
+        netSquadron = inifile.get("net", "squadron", 0, 0, 3);
+        netTacticalNumber = inifile.get("net", "tacticalnumber", 1, 1, 99);
+        netNumberOn = inifile.get("net", "numberOn", 1, 0, 1) == 1;
+        coverMashineGun = inifile.get("cover", "mashinegun", 500F, 100F, 1000F);
+        coverCannon = inifile.get("cover", "cannon", 500F, 100F, 1000F);
+        coverRocket = inifile.get("cover", "rocket", 500F, 100F, 1000F);
+        rocketDelay = inifile.get("cover", "rocketdelay", 10F, 1.0F, 60F);
+        bombDelay = inifile.get("cover", "bombdelay", 0.0F, 0.0F, 10F);
+        fuel = inifile.get("cover", "fuel", 100F, 0.0F, 100F);
+        loadMap(inifile, skinMap, "skin");
+        loadMap(inifile, weaponMap, "weapon");
+        loadMap(inifile, noseartMap, "noseart");
+        placeBirth = inifile.get("dgen", "placeBirth", (java.lang.String)null);
+        yearBirth = inifile.get("dgen", "yearBirth", 1910, 1850, 2050);
+        redirectKeysPause();
+        if(com.maddox.il2.engine.Config.cur.newCloudsRender)
+        {
+            singleDifficulty |= 0x1000000;
+            netDifficulty |= 0x1000000;
+        } else
+        {
+            singleDifficulty &= 0xfeffffff;
+            netDifficulty &= 0xfeffffff;
+        }
+    }
+
+    public void saveConf()
+    {
+        com.maddox.rts.IniFile inifile = new IniFile(iniFileName(), 1);
+        for(int i = 0; i < nameHotKeyEnvs.length; i++)
+        {
+            inifile.deleteSubject("HotKey " + nameHotKeyEnvs[i]);
+            com.maddox.rts.HotKeyEnv.toIni(nameHotKeyEnvs[i], inifile, "HotKey " + nameHotKeyEnvs[i]);
+        }
+
+        inifile.deleteSubject("difficulty");
+        inifile.set("difficulty", "single", singleDifficulty);
+        inifile.set("difficulty", "net", netDifficulty);
+        inifile.deleteSubject("net");
+        if(netRegiment != null)
+            inifile.set("net", "regiment", netRegiment);
+        if(netAirName != null)
+            inifile.set("net", "airclass", netAirName);
+        if(netPilot != null)
+            inifile.set("net", "pilot", netPilot);
+        inifile.set("net", "squadron", netSquadron);
+        inifile.set("net", "tacticalnumber", netTacticalNumber);
+        inifile.set("net", "numberOn", netNumberOn ? "1" : "0");
+        inifile.deleteSubject("cover");
+        inifile.set("cover", "mashinegun", coverMashineGun);
+        inifile.set("cover", "cannon", coverCannon);
+        inifile.set("cover", "rocket", coverRocket);
+        inifile.set("cover", "rocketdelay", rocketDelay);
+        inifile.set("cover", "bombdelay", bombDelay);
+        inifile.set("cover", "fuel", fuel);
+        saveMap(inifile, skinMap, "skin");
+        saveMap(inifile, weaponMap, "weapon");
+        saveMap(inifile, noseartMap, "noseart");
+        if(placeBirth != null)
+            inifile.set("dgen", "placeBirth", placeBirth);
+        inifile.set("dgen", "yearBirth", yearBirth);
+        inifile.saveFile();
+        redirectKeysPause();
+    }
+
+    private void redirectKeysPause()
+    {
+        java.util.ArrayList arraylist = new ArrayList();
+        com.maddox.rts.HotKeyEnv hotkeyenv = com.maddox.rts.HotKeyEnv.env("hotkeys");
+        com.maddox.util.HashMapInt hashmapint = hotkeyenv.all();
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = hashmapint.nextEntry(null); hashmapintentry != null; hashmapintentry = hashmapint.nextEntry(hashmapintentry))
+        {
+            int i = hashmapintentry.getKey();
+            java.lang.String s = (java.lang.String)(java.lang.String)hashmapintentry.getValue();
+            if("pause".equals(s))
+                arraylist.add(new Integer(i));
+        }
+
+        for(int j = 0; j < arraylist.size(); j++)
+        {
+            java.lang.Integer integer = (java.lang.Integer)arraylist.get(j);
+            hashmapint.remove(integer.intValue());
+        }
+
+        arraylist.clear();
+        hotkeyenv = com.maddox.rts.HotKeyEnv.env("timeCompression");
+        hashmapint = hotkeyenv.all();
+        for(com.maddox.util.HashMapIntEntry hashmapintentry1 = hashmapint.nextEntry(null); hashmapintentry1 != null; hashmapintentry1 = hashmapint.nextEntry(hashmapintentry1))
+        {
+            int k = hashmapintentry1.getKey();
+            java.lang.String s1 = (java.lang.String)(java.lang.String)hashmapintentry1.getValue();
+            if("timeSpeedPause".equals(s1))
+                arraylist.add(new Integer(k));
+        }
+
+        for(int l = 0; l < arraylist.size(); l++)
+        {
+            java.lang.Integer integer1 = (java.lang.Integer)arraylist.get(l);
+            int i1 = integer1.intValue();
+            com.maddox.rts.HotKeyEnv.env("hotkeys").all().put(i1, "pause");
+        }
+
+    }
+
+    public int[] krypto()
+    {
+        if(krypto == null)
+        {
+            long l = com.maddox.rts.Finger.Long("users/" + sId);
+            krypto = new int[17];
+            for(int i = 0; i < 17; i++)
+            {
+                int j = (int)(l >> 8 * (i % 8) & 255L);
+                for(int k = i / 8; k > 0; k--)
+                {
+                    j <<= 2;
+                    j = (j & 3 | j) & 0xff;
+                }
+
+                if(j == 0)
+                    j = 255;
+                krypto[i] = j;
+            }
+
+        }
+        return krypto;
+    }
+
+    public boolean existUserDir()
+    {
+        return existUserDir(sId);
+    }
+
+    private boolean existUserDir(java.lang.String s)
+    {
+        java.io.File file = new File(com.maddox.rts.HomePath.toFileSystemName("users/" + s, 0));
+        return file.isDirectory();
+    }
+
+    public boolean existUserConf()
+    {
+        java.io.File file = new File(com.maddox.rts.HomePath.toFileSystemName("users/" + sId + "/settings.ini", 0));
+        return file.exists();
+    }
+
+    private void removeDGens()
+    {
+        java.lang.String s = "users/" + sId + "/campaigns.ini";
+        com.maddox.rts.SectFile sectfile = new SectFile(s, 0, false, krypto());
+        int i = sectfile.sectionIndex("list");
+        if(i < 0)
+            return;
+        int j = sectfile.vars(i);
+        for(int k = 0; k < j; k++)
+            try
+            {
+                com.maddox.il2.game.campaign.Campaign campaign = (com.maddox.il2.game.campaign.Campaign)com.maddox.rts.ObjIO.fromString(sectfile.value(i, k));
+                if(campaign.isDGen())
+                {
+                    java.lang.String s1 = "missions/campaign/" + campaign.branch() + "/" + campaign.missionsDir();
+                    java.io.File file = new File(com.maddox.rts.HomePath.toFileSystemName(s1, 0));
+                    java.io.File afile[] = file.listFiles();
+                    if(afile != null)
+                    {
+                        for(int l = 0; l < afile.length; l++)
+                        {
+                            java.io.File file1 = afile[l];
+                            java.lang.String s2 = file1.getName();
+                            if(!".".equals(s2) && !"..".equals(s2))
+                                file1.delete();
+                        }
+
+                    }
+                    file.delete();
+                }
+                campaign.clearSavedStatics(sectfile);
+            }
+            catch(java.lang.Exception exception) { }
+
+    }
+
+    public void removeUserDir()
+    {
+        removeDGens();
+        java.io.File file = new File(com.maddox.rts.HomePath.toFileSystemName("users/" + sId, 0));
+        com.maddox.il2.ai.UserCfg.removeTree(file);
+    }
+
+    public static void removeTree(java.io.File file)
+    {
+        if(file.isDirectory())
+        {
+            java.io.File afile[] = file.listFiles();
+            if(afile != null)
+            {
+                for(int i = 0; i < afile.length; i++)
+                    if(afile[i].isDirectory())
+                        com.maddox.il2.ai.UserCfg.removeTree(afile[i]);
+                    else
+                        afile[i].delete();
+
+            }
+        }
+        file.delete();
+    }
+
+    public void createUserDir()
+    {
+        java.io.File file = new File(com.maddox.rts.HomePath.toFileSystemName("users/" + sId, 0));
+        if(file.exists())
+            com.maddox.il2.ai.UserCfg.removeTree(file);
+        file.mkdirs();
+    }
+
+    public void createUserConf()
+    {
+        java.lang.String s = "users/" + sId + "/settings.ini";
+        java.io.File file = new File(com.maddox.rts.HomePath.toFileSystemName(s, 0));
+        if(file.exists())
+            com.maddox.il2.ai.UserCfg.removeTree(file);
+        java.lang.String s1 = "users/default.ini";
+        com.maddox.rts.IniFile inifile = new IniFile(s1, 0);
+        inifile.saveFile(s);
+    }
+
+    public void makeId()
+    {
+        java.lang.String s = "";
+        sId = null;
+        if(surname.length() > 0)
+        {
+            sId = surname.toLowerCase();
+            if(!java.lang.Character.isDigit(sId.charAt(0)))
+            {
+                int i = 0;
+                do
+                {
+                    if(i >= sId.length())
+                        break;
+                    char c = sId.charAt(i);
+                    if(!java.lang.Character.isLetterOrDigit(c))
+                    {
+                        sId = null;
+                        break;
+                    }
+                    i++;
+                } while(true);
+            }
+        }
+        if(sId == null)
+        {
+            sId = "";
+        } else
+        {
+            int j = 0;
+            do
+            {
+                if(j >= sId.length())
+                    break;
+                if(sId.charAt(j) >= '\200')
+                {
+                    sId = "";
+                    break;
+                }
+                j++;
+            } while(true);
+        }
+        int k = 0;
+        do
+        {
+            java.lang.String s1;
+            if(k == 0 && sId.length() > 0)
+                s1 = sId;
+            else
+                s1 = sId + k;
+            if(!existUserDir(s1))
+            {
+                sId = s1;
+                return;
+            }
+            k++;
+        } while(true);
+    }
+
+    public UserCfg()
+    {
+        netSquadron = 0;
+        netTacticalNumber = 1;
+        netNumberOn = true;
+        coverMashineGun = 500F;
+        coverCannon = 500F;
+        coverRocket = 500F;
+        rocketDelay = 10F;
+        bombDelay = 0.0F;
+        fuel = 100F;
+        skinMap = new HashMapExt();
+        weaponMap = new HashMapExt();
+        noseartMap = new HashMapExt();
+    }
+
+    public UserCfg(java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        netSquadron = 0;
+        netTacticalNumber = 1;
+        netNumberOn = true;
+        coverMashineGun = 500F;
+        coverCannon = 500F;
+        coverRocket = 500F;
+        rocketDelay = 10F;
+        bombDelay = 0.0F;
+        fuel = 100F;
+        skinMap = new HashMapExt();
+        weaponMap = new HashMapExt();
+        noseartMap = new HashMapExt();
+        if(s == null || s.length() == 0)
+            s = " ";
+        if(s1 == null || s1.length() == 0)
+            s1 = " ";
+        if(s2 == null || s2.length() == 0)
+            s2 = " ";
+        name = s;
+        callsign = s1;
+        surname = s2;
+        sId = null;
+    }
+
+    public static com.maddox.il2.ai.UserCfg loadCurrent()
+    {
+        java.io.File file = new File(com.maddox.rts.HomePath.toFileSystemName("users/all.ini", 0));
+        if(!file.exists())
+            return com.maddox.il2.ai.UserCfg.createDefault();
+        com.maddox.rts.SectFile sectfile = new SectFile("users/all.ini", 0);
+        int i = sectfile.sectionIndex("list");
+        int j = sectfile.sectionIndex("current");
+        if(i < 0 || j < 0)
+            return com.maddox.il2.ai.UserCfg.createDefault();
+        int k = sectfile.vars(i);
+        if(k == 0)
+            return com.maddox.il2.ai.UserCfg.createDefault();
+        java.lang.String s = sectfile.var(j, 0);
+        int l = 0;
+        try
+        {
+            l = java.lang.Integer.parseInt(s);
+        }
+        catch(java.lang.Exception exception) { }
+        if(l >= k)
+            l = k - 1;
+        java.lang.String s1 = sectfile.var(i, l);
+        com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.value(i, l));
+        com.maddox.il2.ai.UserCfg usercfg = new UserCfg(com.maddox.util.UnicodeTo8bit.load(numbertokenizer.next(defName)), com.maddox.util.UnicodeTo8bit.load(numbertokenizer.next(defCallsign)), com.maddox.util.UnicodeTo8bit.load(numbertokenizer.next(defSurname)));
+        usercfg.sId = s1;
+        if(!usercfg.existUserDir())
+            usercfg.createUserDir();
+        if(!usercfg.existUserConf())
+            usercfg.createUserConf();
+        usercfg.loadConf();
+        return usercfg;
+    }
+
+    public static com.maddox.il2.ai.UserCfg createDefault()
+    {
+        com.maddox.rts.SectFile sectfile = new SectFile();
+        sectfile.clear();
+        com.maddox.il2.ai.UserCfg usercfg = new UserCfg(defName, defCallsign, defSurname);
+        usercfg.makeId();
+        int i = sectfile.sectionAdd("list");
+        sectfile.lineAdd(i, usercfg.sId, com.maddox.util.UnicodeTo8bit.save(usercfg.name, true) + " " + com.maddox.util.UnicodeTo8bit.save(usercfg.callsign, true) + " " + com.maddox.util.UnicodeTo8bit.save(usercfg.surname, true));
+        int j = sectfile.sectionAdd("current");
+        sectfile.lineAdd(j, "0");
+        sectfile.saveFile("users/all.ini");
+        usercfg.createUserDir();
+        usercfg.createUserConf();
+        usercfg.loadConf();
+        return usercfg;
+    }
+
+    public static final java.lang.String defName;
+    public static final java.lang.String defCallsign;
+    public static final java.lang.String defSurname;
+    public static final java.lang.String nameHotKeyEnvs[] = {
+        "pilot", "gunner", "aircraftView", "SnapView", "PanView", "orders", "misc", "$$$misc", "timeCompression", "move"
+    };
+    public java.lang.String sId;
+    private int krypto[];
+    public java.lang.String name;
+    public java.lang.String callsign;
+    public java.lang.String surname;
+    public int singleDifficulty;
+    public int netDifficulty;
+    public java.lang.String placeBirth;
+    public int yearBirth;
+    public java.lang.String netRegiment;
+    public java.lang.String netAirName;
+    public java.lang.String netPilot;
+    public int netSquadron;
+    public int netTacticalNumber;
+    public boolean netNumberOn;
+    public float coverMashineGun;
+    public float coverCannon;
+    public float coverRocket;
+    public float rocketDelay;
+    public float bombDelay;
+    public float fuel;
+    private com.maddox.util.HashMapExt skinMap;
+    private com.maddox.util.HashMapExt weaponMap;
+    private com.maddox.util.HashMapExt noseartMap;
+
+    static 
+    {
+        if(com.maddox.il2.engine.Config.LOCALE.equals("RU"))
+        {
+            defName = "\u0418\u0432\u0430\u043D";
+            defCallsign = "\u0412\u0430\u043D\u044F";
+            defSurname = "\u0418\u0432\u0430\u043D\u043E\u0432";
+        } else
+        {
+            defName = "John";
+            defCallsign = "Mad";
+            defSurname = "Doe";
+        }
+    }
 }

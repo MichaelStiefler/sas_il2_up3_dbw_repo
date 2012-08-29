@@ -1,291 +1,435 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowVScrollBar.java
+
 package com.maddox.gwindow;
 
-public class GWindowVScrollBar extends GWindowDialogControl
+
+// Referenced classes of package com.maddox.gwindow:
+//            GWindowDialogControl, GWindowRoot, GWindowLookAndFeel, GWindow, 
+//            GWindowButton, GSize, GRegion, GWindowButtonTexture
+
+public class GWindowVScrollBar extends com.maddox.gwindow.GWindowDialogControl
 {
-  public float posMin = 0.0F;
-  public float posVisible = 0.2F;
-  public float posMax = 1.0F - this.posVisible;
-  public float pos = (this.posMax - this.posMin) / 2.0F;
-  public float scroll = 0.1F;
-  public UButton uButton;
-  public DButton dButton;
-  public MButton mButton;
-  public static final int DOWN_NONE = 0;
-  public static final int DOWN_MIN = 1;
-  public static final int DOWN_MAX = 2;
-  public int downState = 0;
-  public float yM;
-  public float dyM;
-  private float timeout = 0.0F;
-  private float timeoutScroll = 0.0F;
-  public boolean bKeyDown = false;
-
-  public float pos() { return this.pos; }
-
-  public boolean scroll(float paramFloat) {
-    return setPos(this.pos + paramFloat, true);
-  }
-
-  public boolean setPos(float paramFloat, boolean paramBoolean) {
-    float f = this.pos;
-    this.pos = paramFloat;
-    resized();
-    if (f != this.pos) {
-      if (paramBoolean)
-        notify(2, 0);
-      return true;
-    }
-    return false;
-  }
-
-  public void setRange(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5) {
-    this.posMin = paramFloat1;
-    this.posMax = (paramFloat2 - paramFloat3);
-    this.posVisible = paramFloat3;
-    this.pos = paramFloat5;
-    this.scroll = paramFloat4;
-    resized();
-  }
-
-  public boolean checkRange() {
-    if (this.pos > this.posMax) this.pos = this.posMax;
-    if (this.pos < this.posMin) this.pos = this.posMin;
-    boolean bool = this.posMin < this.posMax;
-    if (bool != this.bEnable)
-      _setEnable(bool);
-    return this.bEnable;
-  }
-
-  public void _setEnable(boolean paramBoolean) {
-    super.setEnable(paramBoolean);
-    this.uButton.setEnable(paramBoolean);
-    this.mButton.setEnable(paramBoolean);
-    this.dButton.setEnable(paramBoolean);
-  }
-
-  public void setEnable(boolean paramBoolean) {
-    if (paramBoolean != this.bEnable) {
-      if ((!checkRange()) && (paramBoolean))
-        return;
-      _setEnable(paramBoolean);
-    }
-  }
-
-  public void cancelAcceptsKeyFocus() {
-    this.bAcceptsKeyFocus = false;
-  }
-
-  public void keyboardKey(int paramInt, boolean paramBoolean) {
-    this.bKeyDown = paramBoolean;
-    switch (paramInt) {
-    case 38:
-      if ((paramBoolean) && (this.bEnable)) {
-        this.timeoutScroll = (-this.scroll);
-        scroll(this.timeoutScroll);
-      }
-      return;
-    case 40:
-      if ((paramBoolean) && (this.bEnable)) {
-        this.timeoutScroll = this.scroll;
-        scroll(this.timeoutScroll);
-      }
-      return;
-    case 33:
-      if ((paramBoolean) && (this.bEnable)) {
-        this.timeoutScroll = (-(this.posVisible - this.scroll));
-        scroll(this.timeoutScroll);
-      }
-      return;
-    case 34:
-      if ((paramBoolean) && (this.bEnable)) {
-        this.timeoutScroll = (this.posVisible - this.scroll);
-        scroll(this.timeoutScroll);
-      }
-      return;
-    case 36:
-      if ((paramBoolean) && (this.bEnable)) setPos(this.posMin, true);
-      this.bKeyDown = false;
-      return;
-    case 35:
-      if ((paramBoolean) && (this.bEnable)) setPos(this.posMax, true);
-      this.bKeyDown = false;
-      return;
-    case 37:
-    case 39:
-    }
-    this.bKeyDown = false;
-    super.keyboardKey(paramInt, paramBoolean);
-  }
-
-  public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-    super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-    if ((paramInt != 0) || (!this.bEnable)) return;
-    if (!paramBoolean) { this.downState = 0; return; }
-    this.downState = (paramFloat2 <= this.yM ? 1 : 2);
-    this.timeoutScroll = (this.downState == 1 ? -(this.posVisible - this.scroll) : this.posVisible - this.scroll);
-    scroll(this.timeoutScroll);
-    this.timeout = 0.5F;
-  }
-
-  public void scrollDz(float paramFloat) {
-    if (paramFloat == 0.0F) return;
-    scroll(-this.scroll * paramFloat / 5.0F);
-  }
-
-  public boolean notify(int paramInt1, int paramInt2) {
-    if (paramInt1 == 17) {
-      scrollDz(this.root.mouseRelMoveZ);
-      return true;
-    }
-    return super.notify(paramInt1, paramInt2);
-  }
-
-  public void preRender() {
-    super.preRender();
-    if ((this.bEnable) && ((this.bDown) || (this.bKeyDown))) {
-      this.timeout -= this.root.deltaTimeSec;
-      if (this.timeout <= 0.0F) {
-        this.timeout = 0.1F;
-        scroll(this.timeoutScroll);
-      }
-    }
-  }
-
-  public void render()
-  {
-    lookAndFeel().render(this);
-  }
-
-  public void resized() {
-    checkRange();
-    lookAndFeel().setupVScrollBarSizes(this);
-  }
-
-  public void created() {
-    super.created();
-  }
-
-  public void afterCreated() {
-    super.afterCreated();
-    this.uButton = new UButton(this);
-    this.mButton = new MButton(this);
-    this.dButton = new DButton(this);
-    resized();
-  }
-
-  public void resolutionChanged() {
-    boolean bool = this.bEnable;
-    resized();
-    if (!bool) setEnable(false); 
-  }
-
-  public GWindowVScrollBar(GWindow paramGWindow)
-  {
-    doNew(paramGWindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
-  }
-
-  public GWindowVScrollBar(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6, float paramFloat7)
-  {
-    this.posMin = paramFloat1;
-    this.posVisible = paramFloat3;
-    this.posMax = (paramFloat2 - paramFloat3);
-    this.pos = ((this.posMax + this.posMin) / 2.0F);
-    this.scroll = paramFloat4;
-    float f = paramGWindow.lookAndFeel().getVScrollBarW() / paramGWindow.lookAndFeel().metric();
-    doNew(paramGWindow, paramFloat5, paramFloat6, f, paramFloat7, true);
-  }
-
-  public class MButton extends GWindowButton
-  {
-    public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
+    public class MButton extends com.maddox.gwindow.GWindowButton
     {
-      super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-      if (paramInt != 0) return;
-      if (!this.bEnable) { mouseCapture(false); return; }
-      mouseCapture(paramBoolean);
-    }
-    public void mouseMove(float paramFloat1, float paramFloat2) {
-      if ((this.bEnable) && (isMouseCaptured())) {
-        GWindowVScrollBar localGWindowVScrollBar = (GWindowVScrollBar)this.parentWindow;
-        GWindowVScrollBar.this.scroll(this.root.mouseStep.dy * (GWindowVScrollBar.this.posMax - GWindowVScrollBar.this.posMin) / (localGWindowVScrollBar.win.dy - localGWindowVScrollBar.uButton.win.dy - localGWindowVScrollBar.uButton.win.dy - this.win.dy));
-      }
-    }
 
-    public void mouseRelMove(float paramFloat1, float paramFloat2, float paramFloat3) {
-      super.mouseRelMove(paramFloat1, paramFloat2, paramFloat3);
-      GWindowVScrollBar.this.scrollDz(paramFloat3);
-    }
-    public void created() {
-      this.bAcceptsKeyFocus = false;
-      this.bDrawOnlyUP = true;
-      this.bDrawActive = false;
-    }
-    public MButton(GWindow arg2) {
-      super();
-    }
-  }
-
-  public class DButton extends GWindowButtonTexture
-  {
-    public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
-    {
-      super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-      if ((paramInt != 0) || (!paramBoolean) || (!this.bEnable)) return;
-      GWindowVScrollBar.this.scroll(GWindowVScrollBar.this.scroll);
-      GWindowVScrollBar.access$002(GWindowVScrollBar.this, 0.5F);
-    }
-    public void mouseRelMove(float paramFloat1, float paramFloat2, float paramFloat3) {
-      super.mouseRelMove(paramFloat1, paramFloat2, paramFloat3);
-      GWindowVScrollBar.this.scrollDz(paramFloat3);
-    }
-    public void preRender() {
-      super.preRender();
-      if ((this.bDown) && (this.bEnable)) {
-        GWindowVScrollBar.access$024(GWindowVScrollBar.this, this.root.deltaTimeSec);
-        if (GWindowVScrollBar.this.timeout <= 0.0F) {
-          GWindowVScrollBar.access$002(GWindowVScrollBar.this, 0.1F);
-          GWindowVScrollBar.this.scroll(GWindowVScrollBar.this.scroll);
+        public void mouseButton(int i, boolean flag, float f, float f1)
+        {
+            super.mouseButton(i, flag, f, f1);
+            if(i != 0)
+                return;
+            if(!bEnable)
+            {
+                mouseCapture(false);
+                return;
+            } else
+            {
+                mouseCapture(flag);
+                return;
+            }
         }
-      }
-    }
 
-    public void created() {
-      this.bAcceptsKeyFocus = false;
-      lookAndFeel().setupScrollButtonDOWN(this);
-    }
-    public DButton(GWindow arg2) { super();
-    }
-  }
-
-  public class UButton extends GWindowButtonTexture
-  {
-    public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2)
-    {
-      super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-      if ((paramInt != 0) || (!paramBoolean) || (!this.bEnable)) return;
-      GWindowVScrollBar.this.scroll(-GWindowVScrollBar.this.scroll);
-      GWindowVScrollBar.access$002(GWindowVScrollBar.this, 0.5F);
-    }
-    public void mouseRelMove(float paramFloat1, float paramFloat2, float paramFloat3) {
-      super.mouseRelMove(paramFloat1, paramFloat2, paramFloat3);
-      GWindowVScrollBar.this.scrollDz(paramFloat3);
-    }
-    public void preRender() {
-      super.preRender();
-      if ((this.bDown) && (this.bEnable)) {
-        GWindowVScrollBar.access$024(GWindowVScrollBar.this, this.root.deltaTimeSec);
-        if (GWindowVScrollBar.this.timeout <= 0.0F) {
-          GWindowVScrollBar.access$002(GWindowVScrollBar.this, 0.1F);
-          GWindowVScrollBar.this.scroll(-GWindowVScrollBar.this.scroll);
+        public void mouseMove(float f, float f1)
+        {
+            if(bEnable && isMouseCaptured())
+            {
+                com.maddox.gwindow.GWindowVScrollBar gwindowvscrollbar = (com.maddox.gwindow.GWindowVScrollBar)parentWindow;
+                scroll((root.mouseStep.dy * (posMax - posMin)) / (gwindowvscrollbar.win.dy - gwindowvscrollbar.uButton.win.dy - gwindowvscrollbar.uButton.win.dy - win.dy));
+            }
         }
-      }
+
+        public void mouseRelMove(float f, float f1, float f2)
+        {
+            super.mouseRelMove(f, f1, f2);
+            scrollDz(f2);
+        }
+
+        public void created()
+        {
+            bAcceptsKeyFocus = false;
+            bDrawOnlyUP = true;
+            bDrawActive = false;
+        }
+
+        public MButton(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+        }
     }
 
-    public void created() {
-      this.bAcceptsKeyFocus = false;
-      lookAndFeel().setupScrollButtonUP(this);
+    public class DButton extends com.maddox.gwindow.GWindowButtonTexture
+    {
+
+        public void mouseButton(int i, boolean flag, float f, float f1)
+        {
+            super.mouseButton(i, flag, f, f1);
+            if(i != 0 || !flag || !bEnable)
+            {
+                return;
+            } else
+            {
+                scroll(scroll);
+                timeout = 0.5F;
+                return;
+            }
+        }
+
+        public void mouseRelMove(float f, float f1, float f2)
+        {
+            super.mouseRelMove(f, f1, f2);
+            scrollDz(f2);
+        }
+
+        public void preRender()
+        {
+            super.preRender();
+            if(bDown && bEnable)
+            {
+                timeout-= = root.deltaTimeSec;
+                if(timeout <= 0.0F)
+                {
+                    timeout = 0.1F;
+                    scroll(scroll);
+                }
+            }
+        }
+
+        public void created()
+        {
+            bAcceptsKeyFocus = false;
+            lookAndFeel().setupScrollButtonDOWN(this);
+        }
+
+        public DButton(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+        }
     }
-    public UButton(GWindow arg2) { super();
+
+    public class UButton extends com.maddox.gwindow.GWindowButtonTexture
+    {
+
+        public void mouseButton(int i, boolean flag, float f, float f1)
+        {
+            super.mouseButton(i, flag, f, f1);
+            if(i != 0 || !flag || !bEnable)
+            {
+                return;
+            } else
+            {
+                scroll(-scroll);
+                timeout = 0.5F;
+                return;
+            }
+        }
+
+        public void mouseRelMove(float f, float f1, float f2)
+        {
+            super.mouseRelMove(f, f1, f2);
+            scrollDz(f2);
+        }
+
+        public void preRender()
+        {
+            super.preRender();
+            if(bDown && bEnable)
+            {
+                timeout-= = root.deltaTimeSec;
+                if(timeout <= 0.0F)
+                {
+                    timeout = 0.1F;
+                    scroll(-scroll);
+                }
+            }
+        }
+
+        public void created()
+        {
+            bAcceptsKeyFocus = false;
+            lookAndFeel().setupScrollButtonUP(this);
+        }
+
+        public UButton(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+        }
     }
-  }
+
+
+    public float pos()
+    {
+        return pos;
+    }
+
+    public boolean scroll(float f)
+    {
+        return setPos(pos + f, true);
+    }
+
+    public boolean setPos(float f, boolean flag)
+    {
+        float f1 = pos;
+        pos = f;
+        resized();
+        if(f1 != pos)
+        {
+            if(flag)
+                notify(2, 0);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    public void setRange(float f, float f1, float f2, float f3, float f4)
+    {
+        posMin = f;
+        posMax = f1 - f2;
+        posVisible = f2;
+        pos = f4;
+        scroll = f3;
+        resized();
+    }
+
+    public boolean checkRange()
+    {
+        if(pos > posMax)
+            pos = posMax;
+        if(pos < posMin)
+            pos = posMin;
+        boolean flag = posMin < posMax;
+        if(flag != bEnable)
+            _setEnable(flag);
+        return bEnable;
+    }
+
+    public void _setEnable(boolean flag)
+    {
+        super.setEnable(flag);
+        uButton.setEnable(flag);
+        mButton.setEnable(flag);
+        dButton.setEnable(flag);
+    }
+
+    public void setEnable(boolean flag)
+    {
+        if(flag != bEnable)
+        {
+            if(!checkRange() && flag)
+                return;
+            _setEnable(flag);
+        }
+    }
+
+    public void cancelAcceptsKeyFocus()
+    {
+        bAcceptsKeyFocus = false;
+    }
+
+    public void keyboardKey(int i, boolean flag)
+    {
+        bKeyDown = flag;
+        switch(i)
+        {
+        case 38: // '&'
+            if(flag && bEnable)
+            {
+                timeoutScroll = -scroll;
+                scroll(timeoutScroll);
+            }
+            return;
+
+        case 40: // '('
+            if(flag && bEnable)
+            {
+                timeoutScroll = scroll;
+                scroll(timeoutScroll);
+            }
+            return;
+
+        case 33: // '!'
+            if(flag && bEnable)
+            {
+                timeoutScroll = -(posVisible - scroll);
+                scroll(timeoutScroll);
+            }
+            return;
+
+        case 34: // '"'
+            if(flag && bEnable)
+            {
+                timeoutScroll = posVisible - scroll;
+                scroll(timeoutScroll);
+            }
+            return;
+
+        case 36: // '$'
+            if(flag && bEnable)
+                setPos(posMin, true);
+            bKeyDown = false;
+            return;
+
+        case 35: // '#'
+            if(flag && bEnable)
+                setPos(posMax, true);
+            bKeyDown = false;
+            return;
+
+        case 37: // '%'
+        case 39: // '\''
+        default:
+            bKeyDown = false;
+            super.keyboardKey(i, flag);
+            return;
+        }
+    }
+
+    public void mouseButton(int i, boolean flag, float f, float f1)
+    {
+        super.mouseButton(i, flag, f, f1);
+        if(i != 0 || !bEnable)
+            return;
+        if(!flag)
+        {
+            downState = 0;
+            return;
+        } else
+        {
+            downState = f1 > yM ? 2 : 1;
+            timeoutScroll = downState != 1 ? posVisible - scroll : -(posVisible - scroll);
+            scroll(timeoutScroll);
+            timeout = 0.5F;
+            return;
+        }
+    }
+
+    public void scrollDz(float f)
+    {
+        if(f == 0.0F)
+        {
+            return;
+        } else
+        {
+            scroll((-scroll * f) / 5F);
+            return;
+        }
+    }
+
+    public boolean notify(int i, int j)
+    {
+        if(i == 17)
+        {
+            scrollDz(root.mouseRelMoveZ);
+            return true;
+        } else
+        {
+            return super.notify(i, j);
+        }
+    }
+
+    public void preRender()
+    {
+        super.preRender();
+        if(bEnable && (bDown || bKeyDown))
+        {
+            timeout -= root.deltaTimeSec;
+            if(timeout <= 0.0F)
+            {
+                timeout = 0.1F;
+                scroll(timeoutScroll);
+            }
+        }
+    }
+
+    public void render()
+    {
+        lookAndFeel().render(this);
+    }
+
+    public void resized()
+    {
+        checkRange();
+        lookAndFeel().setupVScrollBarSizes(this);
+    }
+
+    public void created()
+    {
+        super.created();
+    }
+
+    public void afterCreated()
+    {
+        super.afterCreated();
+        uButton = new UButton(this);
+        mButton = new MButton(this);
+        dButton = new DButton(this);
+        resized();
+    }
+
+    public void resolutionChanged()
+    {
+        boolean flag = bEnable;
+        resized();
+        if(!flag)
+            setEnable(false);
+    }
+
+    public GWindowVScrollBar(com.maddox.gwindow.GWindow gwindow)
+    {
+        posMin = 0.0F;
+        posVisible = 0.2F;
+        posMax = 1.0F - posVisible;
+        pos = (posMax - posMin) / 2.0F;
+        scroll = 0.1F;
+        downState = 0;
+        timeout = 0.0F;
+        timeoutScroll = 0.0F;
+        bKeyDown = false;
+        doNew(gwindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
+    }
+
+    public GWindowVScrollBar(com.maddox.gwindow.GWindow gwindow, float f, float f1, float f2, float f3, float f4, float f5, 
+            float f6)
+    {
+        posMin = 0.0F;
+        posVisible = 0.2F;
+        posMax = 1.0F - posVisible;
+        pos = (posMax - posMin) / 2.0F;
+        scroll = 0.1F;
+        downState = 0;
+        timeout = 0.0F;
+        timeoutScroll = 0.0F;
+        bKeyDown = false;
+        posMin = f;
+        posVisible = f2;
+        posMax = f1 - f2;
+        pos = (posMax + posMin) / 2.0F;
+        scroll = f3;
+        float f7 = gwindow.lookAndFeel().getVScrollBarW() / gwindow.lookAndFeel().metric();
+        doNew(gwindow, f4, f5, f7, f6, true);
+    }
+
+    public float posMin;
+    public float posVisible;
+    public float posMax;
+    public float pos;
+    public float scroll;
+    public com.maddox.gwindow.UButton uButton;
+    public com.maddox.gwindow.DButton dButton;
+    public com.maddox.gwindow.MButton mButton;
+    public static final int DOWN_NONE = 0;
+    public static final int DOWN_MIN = 1;
+    public static final int DOWN_MAX = 2;
+    public int downState;
+    public float yM;
+    public float dyM;
+    private float timeout;
+    private float timeoutScroll;
+    public boolean bKeyDown;
+
+
+
 }

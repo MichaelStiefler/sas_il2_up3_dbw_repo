@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Explosions.java
+
 package com.maddox.il2.objects.effects;
 
 import com.maddox.JGP.Point3d;
@@ -37,1050 +42,1513 @@ import com.maddox.rts.Time;
 import com.maddox.util.HashMapExt;
 import java.io.PrintStream;
 
+// Referenced classes of package com.maddox.il2.objects.effects:
+//            MyMsgAction
+
 public class Explosions
 {
-  private static Orient o = new Orient();
-  private static Loc l = new Loc();
-  private static Loc rel = new Loc();
-  private static Loc tmpLoc = new Loc();
-  private static RangeRandom rnd = new RangeRandom();
-  private static Point3d ap;
-  private static final int LAND = 0;
-  private static final int WATER = 1;
-  private static final int OBJECT = 2;
-  private static final int BOMB250 = 0;
-  private static final int BOMB1000 = 2;
-  private static final int RS82 = 1;
-  public static final int HOUSEEXPL_WOOD_SMALL = 0;
-  public static final int HOUSEEXPL_WOOD_MIDDLE = 1;
-  public static final int HOUSEEXPL_ROCK_MIDDLE = 2;
-  public static final int HOUSEEXPL_ROCK_BIG = 3;
-  public static final int HOUSEEXPL_ROCK_HUGE = 4;
-  public static final int HOUSEEXPL_FUEL_SMALL = 5;
-  public static final int HOUSEEXPL_FUEL_BIG = 6;
-  private static boolean bEnableActorCrater = true;
-
-  public static void HydrogenBalloonExplosion(Loc paramLoc, Actor paramActor)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    Loc localLoc = new Loc();
-    Vector3d localVector3d = new Vector3d();
-
-    for (int i = 0; i < 2; i++) {
-      localLoc.set(paramLoc);
-      localLoc.getPoint().x += World.Rnd().nextDouble(-12.0D, 12.0D);
-      localLoc.getPoint().y += World.Rnd().nextDouble(-12.0D, 12.0D);
-      localLoc.getPoint().z += World.Rnd().nextDouble(-3.0D, 3.0D);
-      Eff3DActor.New(localLoc, 1.0F, "3DO/Effects/Fireworks/Tank_Burn.eff", -1.0F);
-    }
-    int j = World.Rnd().nextInt(2, 6);
-    for (i = 0; i < j; i++) {
-      localVector3d.set(World.Rnd().nextFloat(-1.0F, 1.0F), World.Rnd().nextFloat(-1.0F, 1.0F), World.Rnd().nextFloat(-0.5F, 1.5F));
-      localVector3d.normalize();
-      localVector3d.scale(World.Rnd().nextFloat(4.0F, 15.0F));
-      float f = World.Rnd().nextFloat(4.0F, 7.0F);
-      BallisticProjectile localBallisticProjectile = new BallisticProjectile(paramLoc.getPoint(), localVector3d, f);
-      Eff3DActor.New(localBallisticProjectile, null, null, 1.0F, "3DO/Effects/Aircraft/BlackHeavySPD.eff", f);
-      Eff3DActor.New(localBallisticProjectile, null, null, 1.0F, "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", f);
-      Eff3DActor.New(localBallisticProjectile, null, null, 1.0F, "3DO/Effects/Aircraft/FireSPD.eff", f);
-    }
-    SfxExplosion.crashAir(paramLoc.getPoint(), 1);
-  }
-
-  public static void runByName(String paramString1, ActorHMesh paramActorHMesh, String paramString2, String paramString3, float paramFloat)
-  {
-    runByName(paramString1, paramActorHMesh, paramString2, paramString3, paramFloat, null);
-  }
-
-  public static void runByName(String paramString1, ActorHMesh paramActorHMesh, String paramString2, String paramString3, float paramFloat, Actor paramActor)
-  {
-    HookNamed localHookNamed = null;
-    if ((paramString2 != null) && (!paramString2.equals(""))) {
-      int i = paramActorHMesh.mesh().hookFind(paramString2);
-      if (i >= 0) {
-        localHookNamed = new HookNamed(paramActorHMesh, paramString2);
-      }
-      else if ((paramString3 != null) && (!paramString3.equals(""))) {
-        i = paramActorHMesh.mesh().hookFind(paramString3);
-        if (i >= 0) {
-          localHookNamed = new HookNamed(paramActorHMesh, paramString3);
-        }
-
-      }
-
-    }
-
-    if (paramString1.equalsIgnoreCase("Tank")) {
-      Tank_Explode(paramActorHMesh.pos.getAbsPoint());
-    } else if (paramString1.equalsIgnoreCase("_TankSmoke_")) {
-      if (paramFloat > 0.0F) {
-        Eff3DActor.New(paramActorHMesh, localHookNamed, null, 1.0F, "Effects/Smokes/TankDyingFire.eff", paramFloat * 0.7F);
-
-        Eff3DActor.New(paramActorHMesh, localHookNamed, null, 1.0F, "Effects/Smokes/TankDyingSmoke.eff", paramFloat);
-      }
-    }
-    else if (paramString1.equalsIgnoreCase("Car")) {
-      Car_Explode(paramActorHMesh.pos.getAbsPoint());
-      if (paramFloat > 0.0F) {
-        Eff3DActor.New(paramActorHMesh, localHookNamed, null, 1.0F, "Effects/Smokes/CarDyingFire.eff", paramFloat * 0.7F);
-
-        Eff3DActor.New(paramActorHMesh, localHookNamed, null, 1.0F, "Effects/Smokes/CarDyingSmoke.eff", paramFloat);
-      }
-
-    }
-    else if (paramString1.equalsIgnoreCase("CarFuel")) {
-      new MsgAction(0.0D, paramActorHMesh) {
-        public void doAction(Object paramObject) { Point3d localPoint3d = new Point3d();
-          ((Actor)paramObject).pos.getAbs(localPoint3d);
-          Explosions.ExplodeVagonFuel(localPoint3d, localPoint3d, 1.5F);
-        }
-      };
-      if (paramFloat > 0.0F) {
-        new MyMsgAction(0.43D, paramActorHMesh, paramActor) {
-          public void doAction(Object paramObject) { Point3d localPoint3d = new Point3d();
-            ((Actor)paramObject).pos.getAbs(localPoint3d);
-            float f1 = 25.0F;
-            int i = 0;
-            float f2 = 50.0F;
-            MsgExplosion.send((Actor)paramObject, "Body", localPoint3d, (Actor)this.obj2, 0.0F, f1, i, f2);
-          }
-        };
-        new MsgAction(1.2D, new MydataForSmoke(paramActorHMesh, paramFloat)) {
-          public void doAction(Object paramObject) {
-            Eff3DActor.New(((Explosions.MydataForSmoke)paramObject).a, null, null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", ((Explosions.MydataForSmoke)paramObject).tim);
-          }
-        };
-      }
-    }
-    else if (paramString1.equalsIgnoreCase("Artillery")) {
-      Antiaircraft_Explode(paramActorHMesh.pos.getAbsPoint());
-      if (paramFloat > 0.0F)
-      {
-        Eff3DActor.New(paramActorHMesh, localHookNamed, null, 1.0F, "Effects/Smokes/TankDyingFire.eff", paramFloat * 0.7F);
-
-        Eff3DActor.New(paramActorHMesh, localHookNamed, null, 1.0F, "Effects/Smokes/TankDyingSmoke.eff", paramFloat);
-      }
-    }
-    else if (paramString1.equalsIgnoreCase("Stationary"))
+    static class MydataForSmoke
     {
-      Antiaircraft_Explode(paramActorHMesh.pos.getAbsPoint());
-      if (paramFloat > 0.0F) {
-        Eff3DActor.New(paramActorHMesh, localHookNamed, null, 1.0F, "Effects/Smokes/TankDyingFire.eff", paramFloat * 0.7F);
 
-        Eff3DActor.New(paramActorHMesh, localHookNamed, null, 1.0F, "Effects/Smokes/TankDyingSmoke.eff", paramFloat);
-      }
-    }
-    else if (paramString1.equalsIgnoreCase("Aircraft"))
-    {
-      Antiaircraft_Explode(paramActorHMesh.pos.getAbsPoint());
-    } else if (paramString1.equalsIgnoreCase("Aircraft")) {
-      System.out.println("*** Unknown named explode: '" + paramString1 + "'");
-    }
-    else if (paramString1.equalsIgnoreCase("WagonWoodExplosives")) {
-      new MsgAction(0.0D, paramActorHMesh) {
-        public void doAction(Object paramObject) { Point3d localPoint3d = new Point3d();
-          ((Actor)paramObject).pos.getAbs(localPoint3d);
-          Explosions.ExplodeVagonArmor(localPoint3d, localPoint3d, 2.0F);
-        }
-      };
-      if (paramFloat > 0.0F) {
-        new MyMsgAction(0.43D, paramActorHMesh, paramActor) {
-          public void doAction(Object paramObject) { Point3d localPoint3d = new Point3d();
-            ((Actor)paramObject).pos.getAbs(localPoint3d);
-            float f1 = 180.0F;
-            int i = 0;
-            float f2 = 140.0F;
-            MsgExplosion.send((Actor)paramObject, "Body", localPoint3d, (Actor)this.obj2, 0.0F, f1, i, f2);
-          }
-        };
-        new MsgAction(1.2D, new MydataForSmoke(paramActorHMesh, paramFloat)) {
-          public void doAction(Object paramObject) {
-            Eff3DActor.New(((Explosions.MydataForSmoke)paramObject).a, null, null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", ((Explosions.MydataForSmoke)paramObject).tim);
-          }
-        };
-      }
-    }
-    else if (paramString1.equalsIgnoreCase("WagonWood")) {
-      new MsgAction(0.0D, paramActorHMesh) {
-        public void doAction(Object paramObject) { Point3d localPoint3d = new Point3d();
-          ((Actor)paramObject).pos.getAbs(localPoint3d);
-          Explosions.ExplodeVagonArmor(localPoint3d, localPoint3d, 2.0F);
-        }
-      };
-      if (paramFloat > 0.0F) {
-        new MsgAction(1.2D, new MydataForSmoke(paramActorHMesh, paramFloat)) {
-          public void doAction(Object paramObject) {
-            Eff3DActor.New(((Explosions.MydataForSmoke)paramObject).a, null, null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", ((Explosions.MydataForSmoke)paramObject).tim);
-          }
-        };
-      }
-    }
-    else if (paramString1.equalsIgnoreCase("WagonFuel")) {
-      new MsgAction(0.0D, paramActorHMesh) {
-        public void doAction(Object paramObject) { Point3d localPoint3d = new Point3d();
-          ((Actor)paramObject).pos.getAbs(localPoint3d);
-          Explosions.ExplodeVagonFuel(localPoint3d, localPoint3d, 2.0F);
-        }
-      };
-      if (paramFloat > 0.0F) {
-        new MyMsgAction(0.43D, paramActorHMesh, paramActor) {
-          public void doAction(Object paramObject) { Point3d localPoint3d = new Point3d();
-            ((Actor)paramObject).pos.getAbs(localPoint3d);
-            float f1 = 180.0F;
-            int i = 0;
-            float f2 = 120.0F;
-            MsgExplosion.send((Actor)paramObject, "Body", localPoint3d, (Actor)this.obj2, 0.0F, f1, i, f2);
-          }
-        };
-        new MsgAction(1.2D, new MydataForSmoke(paramActorHMesh, paramFloat)) {
-          public void doAction(Object paramObject) {
-            Eff3DActor.New(((Explosions.MydataForSmoke)paramObject).a, null, null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", ((Explosions.MydataForSmoke)paramObject).tim);
-          }
-        };
-      }
-    }
-    else if (paramString1.equalsIgnoreCase("WagonMetal")) {
-      new MsgAction(0.0D, paramActorHMesh) {
-        public void doAction(Object paramObject) { Point3d localPoint3d = new Point3d();
-          ((Actor)paramObject).pos.getAbs(localPoint3d);
-          Explosions.ExplodeVagonArmor(localPoint3d, localPoint3d, 2.0F);
-        }
-      };
-      if (paramFloat > 0.0F)
-        new MsgAction(1.2D, new MydataForSmoke(paramActorHMesh, paramFloat)) {
-          public void doAction(Object paramObject) {
-            Eff3DActor.New(((Explosions.MydataForSmoke)paramObject).a, null, null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", ((Explosions.MydataForSmoke)paramObject).tim);
-          }
-        };
-    }
-  }
+        com.maddox.il2.engine.ActorHMesh a;
+        float tim;
 
-  public static void shot(Point3d paramPoint3d)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    l.set(paramPoint3d, o);
-    Eff3DActor localEff3DActor = Eff3DActor.New(l, 2.0F, "effects/sprites/spritesun.eff", -1.0F);
-    localEff3DActor.postDestroy(Time.current() + 500L);
-  }
-
-  public static void HouseExplode(int paramInt, Loc paramLoc, float[] paramArrayOfFloat)
-  {
-    if (!Config.isUSE_RENDER()) return;
-
-    Point3d localPoint3d = new Point3d();
-    String str1 = "";
-    int i = 0;
-    int j = 0;
-    switch (paramInt) {
-    case 0:
-    case 1:
-      str1 = "Wood";
-      j = 4;
-      break;
-    case 2:
-    case 3:
-    case 4:
-      str1 = "Rock";
-      j = 3;
-      break;
-    case 5:
-    case 6:
-      str1 = "Fuel";
-      i = 1;
-      j = 5;
-      break;
-    default:
-      System.out.println("WARNING: HouseExplode(): unknown type"); return;
-    }
-
-    String str2 = "effects/Explodes/Objects/House/" + str1 + "/Boiling.eff";
-    String str3 = "effects/Explodes/Objects/House/" + str1 + "/Boiling2.eff";
-    String str4 = "effects/Explodes/Objects/House/" + str1 + "/Pieces.eff";
-    float f1 = 4.0F; float f2 = 1.0F;
-
-    Eff3D.initSetBoundBox(paramArrayOfFloat[0], paramArrayOfFloat[1], paramArrayOfFloat[2], paramArrayOfFloat[3], paramArrayOfFloat[4], paramArrayOfFloat[5]);
-    Eff3DActor.New(paramLoc, 1.0F, str2, 3.0F);
-
-    Eff3D.initSetBoundBox(paramArrayOfFloat[0] + (paramArrayOfFloat[3] - paramArrayOfFloat[0]) * 0.25F, paramArrayOfFloat[1] + (paramArrayOfFloat[4] - paramArrayOfFloat[1]) * 0.25F, paramArrayOfFloat[2], paramArrayOfFloat[3] - (paramArrayOfFloat[3] - paramArrayOfFloat[0]) * 0.25F, paramArrayOfFloat[4] - (paramArrayOfFloat[4] - paramArrayOfFloat[1]) * 0.25F, paramArrayOfFloat[2] + (paramArrayOfFloat[5] - paramArrayOfFloat[2]) * 0.5F);
-
-    Eff3DActor.New(paramLoc, 1.0F, str3, 3.0F);
-
-    SfxExplosion.building(paramLoc.getPoint(), j, paramArrayOfFloat);
-  }
-
-  private static void ExplodeSurfaceWave(int paramInt, float paramFloat1, float paramFloat2)
-  {
-    if (paramInt == 0)
-      new ActorSnapToLand("3do/Effects/Explosion/DustRing.sim", true, l, 1.0F, paramFloat1, 1.0F, 0.0F, paramFloat2);
-    else if (paramInt == 1)
-      new ActorSnapToLand("3do/Effects/Explosion/WaterRing.sim", true, l, 0.2F, paramFloat1, 1.0F, 0.0F, paramFloat2);
-  }
-
-  private static void SurfaceLight(int paramInt, float paramFloat1, float paramFloat2)
-  {
-    new ActorSnapToLand("3do/Effects/Explosion/LandLight.sim", true, l, 1.0F, paramFloat1, paramInt == 0 ? 1.0F : 0.5F, 0.0F, paramFloat2);
-  }
-
-  private static void SurfaceCrater(int paramInt, float paramFloat1, float paramFloat2) {
-    if (paramInt == 0) {
-      new ActorSnapToLand("3do/Effects/Explosion/Crater.sim", true, l, 0.2F, paramFloat1, paramFloat1 + 2.0F, 1.0F, 0.0F, paramFloat2);
-
-      if (bEnableActorCrater) {
-        int i = 64;
-        while ((i >= 2) && 
-          (paramFloat1 < i))
-          i /= 2;
-        if (i >= 2)
-          new ActorCrater("3do/Effects/Explosion/Crater" + i + "/Live.sim", l, paramFloat2);
-      }
-    }
-  }
-
-  private static void fontain(Point3d paramPoint3d, float paramFloat1, float paramFloat2, int paramInt1, int paramInt2, boolean paramBoolean)
-  {
-    int i = 4 + (int)(Math.random() * 2.0D);
-    float f1 = 30.0F;
-    o.set(0.0F, 90.0F, 0.0F);
-    l.set(paramPoint3d, o);
-    switch (paramInt1)
-    {
-    case 0:
-      String str1;
-      float f2;
-      float f4;
-      float f3;
-      float f5;
-      if (paramInt2 == 2) {
-        str1 = "Bomb1000"; f2 = 500.0F; f4 = 600.0F; f3 = 36.0F;
-        i = 3 + (int)(Math.random() * 3.0D);
-        f5 = 1.6F;
-      }
-      else if (paramInt2 == 0) {
-        str1 = "Bomb250"; f2 = 250.0F; f4 = 300.0F; f3 = 18.0F;
-        f5 = 0.8F;
-      } else {
-        str1 = "RS82"; f2 = 125.0F; f4 = 150.0F; f3 = 4.5F;
-        i = 2 + (int)(Math.random() * 2.0D);
-        f5 = 0.6F;
-      }
-
-      String str2 = "effects/Explodes/" + str1 + "/Land/Fontain.eff";
-      String str3 = "effects/Explodes/" + str1 + "/Land/Peaces.eff";
-      String str4 = "effects/Explodes/" + str1 + "/Land/Burn.eff";
-
-      Eff3DActor localEff3DActor1 = Eff3DActor.New(l, 1.0F, str3, 3.5F);
-      for (int j = 0; j < i; j++) {
-        float f7 = (float)(360.0D * Math.random());
-        float f8 = 90.0F + (2.0F * (float)Math.random() - 1.0F) * f1;
-        o.set(f7, f8, 0.0F);
-        l.set(paramPoint3d, o);
-        Eff3DActor.New(l, 1.0F, str2, paramFloat1);
-      }
-
-      o.set(0.0F, 0.0F, 0.0F);
-      l.set(paramPoint3d, o);
-      ExplodeSurfaceWave(paramInt1, f2, f5);
-      SurfaceLight(paramInt1, f4, 2.0F);
-
-      float f6 = 80.0F;
-      if ((paramBoolean) && (!Mission.isCoop()) && (!Mission.isDogfight()))
-      {
-        if (paramInt2 == 0)
-          f6 *= Main.cur().mission.zutiMisc_BombsCat2_CratersVisibilityMultiplier;
-        else if (paramInt2 == 2)
-          f6 *= Main.cur().mission.zutiMisc_BombsCat3_CratersVisibilityMultiplier;
-        else f6 *= Main.cur().mission.zutiMisc_BombsCat1_CratersVisibilityMultiplier;
-      }
-      SurfaceCrater(paramInt1, f3, f6);
-
-      o.set(0.0F, 90.0F, 0.0F);
-      l.set(paramPoint3d, o);
-      Eff3DActor localEff3DActor2 = Eff3DActor.New(l, 1.0F, str4, 1.0F);
-
-      localEff3DActor2.postDestroy(Time.current() + 1500L);
-      LightPointActor localLightPointActor = new LightPointActor(new LightPointWorld(), new Point3d());
-      localLightPointActor.light.setColor(1.0F, 0.9F, 0.5F);
-      localLightPointActor.light.setEmit(1.0F, f4 * 2.0F);
-      localEff3DActor2.draw.lightMap().put("light", localLightPointActor);
-
-      break;
-    case 1:
-      if (paramInt2 == 2) {
-        Eff3DActor.New(l, 1.0F, "effects/Explodes/Bomb1000/Water/Fontain.eff", paramFloat1);
-      }
-      else if (paramInt2 == 0)
-        Eff3DActor.New(l, 1.0F, "effects/Explodes/Bomb250/Water/Fontain.eff", paramFloat1);
-      else {
-        Eff3DActor.New(l, 1.0F, "effects/Explodes/RS82/Water/Fontain.eff", paramFloat1);
-      }
-      o.set(0.0F, 0.0F, 0.0F);
-      l.set(paramPoint3d, o);
-      if (paramInt2 == 2) {
-        ExplodeSurfaceWave(paramInt1, 750.0F, 15.0F);
-      }
-      else if (paramInt2 == 0)
-        ExplodeSurfaceWave(paramInt1, 325.0F, 10.0F);
-      else {
-        ExplodeSurfaceWave(paramInt1, 50.0F, 7.0F);
-      }
-
-      break;
-    case 2:
-      Tank_Explode(paramPoint3d);
-    }
-  }
-
-  public static void Tank_Explode(Point3d paramPoint3d) {
-    if (!Config.isUSE_RENDER()) return;
-    o.set(0.0F, 90.0F, 0.0F); l.set(paramPoint3d, o);
-    Tank_ExplodeCollapse(paramPoint3d);
-
-    float f1 = 31.25F; float f3 = 150.0F; float f2 = 6.75F;
-    int i = 0; int j = 1;
-
-    o.set(0.0F, 0.0F, 0.0F); l.set(paramPoint3d, o);
-    ExplodeSurfaceWave(i, f1, j == 0 ? 0.8F : 0.6F);
-    SurfaceLight(i, f3, 0.3F);
-  }
-
-  public static void Antiaircraft_Explode(Point3d paramPoint3d)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    Tank_Explode(paramPoint3d);
-  }
-  public static void Car_Explode(Point3d paramPoint3d) {
-    if (!Config.isUSE_RENDER()) return;
-    Tank_Explode(paramPoint3d);
-  }
-
-  private static void Building_Explode(Point3d paramPoint3d) {
-    if (!Config.isUSE_RENDER()) return;
-    float f1 = 20.0F;
-    int i = 3;
-    Point3d localPoint3d = new Point3d();
-    String str1 = "effects/Explodes/Objects/Building20m/SmokeBoiling.eff";
-    String str2 = "effects/Explodes/Objects/Building20m/SmokeBoiling2.eff";
-    float f2 = 4.0F; float f3 = 1.0F;
-    for (int j = 0; j < i * i; j++)
-    {
-      double d1 = (Math.random() - 0.5D) * f1;
-      double d2 = (Math.random() - 0.5D) * f1;
-      localPoint3d.set(paramPoint3d); localPoint3d.x += d1; localPoint3d.y += d2;
-      o.set(0.0F, 90.0F, 0.0F); l.set(localPoint3d, o);
-      Eff3DActor.New(l, 1.0F, Math.random() < 0.5D ? str1 : str2, 3.0F);
-    }
-
-    o.set(0.0F, 0.0F, 0.0F); l.set(paramPoint3d, o);
-
-    float f4 = 62.5F; float f6 = 150.0F; float f5 = 6.75F;
-    int k = 0; int m = 0;
-    ExplodeSurfaceWave(k, f4, m == 0 ? 0.8F : 0.6F);
-  }
-
-  public static void Tank_ExplodeCollapse(Point3d paramPoint3d)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    SfxExplosion.crashTank(paramPoint3d, 0);
-    explodeCollapse(paramPoint3d);
-  }
-
-  private static void explodeCollapse(Point3d paramPoint3d)
-  {
-    o.set(0.0F, 90.0F, 0.0F); l.set(paramPoint3d, o);
-
-    int i = 6 + (int)(Math.random() * 2.0D);
-    float f1 = 60.0F;
-
-    String str1 = "Objects/Tank_Collapse";
-
-    float f2 = 31.25F; float f4 = 150.0F; float f3 = 6.75F;
-
-    String str2 = "effects/Explodes/" + str1 + "/Peaces1.eff";
-    String str3 = "effects/Explodes/" + str1 + "/Peaces2.eff";
-    String str4 = "effects/Explodes/" + str1 + "/Sparks.eff";
-    String str5 = "effects/Explodes/" + str1 + "/Burn.eff";
-    String str6 = "effects/Explodes/" + str1 + "/SmokeBoiling.eff";
-
-    Eff3DActor localEff3DActor1 = Eff3DActor.New(l, 1.0F, str2, 3.5F);
-    Eff3DActor localEff3DActor2 = Eff3DActor.New(l, 1.0F, str3, 3.5F);
-    localEff3DActor2 = Eff3DActor.New(l, 1.0F, str4, 0.5F);
-
-    localEff3DActor2 = Eff3DActor.New(l, 1.0F, str6, 2.5F);
-
-    Eff3DActor localEff3DActor3 = Eff3DActor.New(l, 1.0F, str5, 0.3F);
-
-    localEff3DActor3.postDestroy(Time.current() + 1500L);
-
-    LightPointActor localLightPointActor = new LightPointActor(new LightPointWorld(), new Point3d(5.0D, 0.0D, 0.0D));
-    localLightPointActor.light.setColor(1.0F, 0.9F, 0.5F);
-    localLightPointActor.light.setEmit(1.0F, f4 * 2.0F);
-    localEff3DActor3.draw.lightMap().put("light", localLightPointActor);
-  }
-
-  public static void Car_ExplodeCollapse(Point3d paramPoint3d)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    explodeCollapse(paramPoint3d);
-  }
-
-  public static void AirDrop_Land(Point3d paramPoint3d) {
-    if (!Config.isUSE_RENDER()) return;
-    float f1 = 4.0F; float f2 = 1.0F;
-    if (Mission.isDeathmatch())
-      bEnableActorCrater = false;
-    fontain(paramPoint3d, f1, f2, 0, 0, false);
-    bEnableActorCrater = true;
-    SfxExplosion.crashAir(paramPoint3d, 0);
-  }
-  public static void AirDrop_Water(Point3d paramPoint3d) {
-    if (!Config.isUSE_RENDER()) return;
-    float f1 = 4.0F; float f2 = 1.0F;
-    fontain(paramPoint3d, f1, f2, 1, 0, false);
-    SfxExplosion.crashAir(paramPoint3d, 2);
-  }
-  public static void AirDrop_Air(Point3d paramPoint3d) {
-    if (!Config.isUSE_RENDER()) return;
-    explodeCollapse(paramPoint3d);
-    SfxExplosion.crashAir(paramPoint3d, 1);
-  }
-
-  public static void WreckageDrop_Water(Point3d paramPoint3d)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    float f1 = 3.0F; float f2 = 1.0F;
-    fontain(paramPoint3d, f1, f2, 1, 1, false);
-    SfxExplosion.crashParts(paramPoint3d, 2);
-  }
-
-  public static void SomethingDrop_Water(Point3d paramPoint3d, float paramFloat) {
-    if (!Config.isUSE_RENDER()) return;
-
-    o.set(0.0F, 0.0F, 0.0F);
-    l.set(paramPoint3d, o);
-    new ActorSnapToLand("3do/Effects/Explosion/WaterRing.sim", true, l, paramFloat * 0.2F, paramFloat, 1.0F, 0.0F, 2.5F);
-
-    SfxExplosion.crashParts(paramPoint3d, 2);
-  }
-
-  public static void AirFlak(Point3d paramPoint3d, int paramInt)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    o.set(0.0F, 90.0F, 0.0F); l.set(paramPoint3d, o);
-    String str = "effects/Explodes/Air/Zenitka/";
-
-    switch (paramInt) { case 0:
-      str = str + "USSR_85mm/"; break;
-    case 1:
-      str = str + "Germ_88mm/"; break;
-    case 2:
-      str = str + "USSR_25mm/"; break;
-    default:
-      str = str + "Germ_20mm/";
-    }
-    SfxExplosion.zenitka(paramPoint3d, paramInt);
-
-    float f = -1.0F;
-    Eff3DActor.New(l, 1.0F, str + "SmokeBoiling.eff", f);
-    Eff3DActor.New(l, 1.0F, str + "Burn.eff", f);
-    Eff3DActor.New(l, 1.0F, str + "Sparks.eff", f);
-    Eff3DActor.New(l, 1.0F, str + "SparksP.eff", f);
-  }
-
-  public static void ExplodeFuel(Point3d paramPoint3d) {
-    if (!Config.isUSE_RENDER()) return;
-    Loc localLoc = new Loc(paramPoint3d);
-    Eff3DActor.New(localLoc, 1.0F, "3DO/Effects/Fireworks/Tank_Burn.eff", -1.0F);
-    Eff3DActor.New(localLoc, 1.0F, "3DO/Effects/Fireworks/Tank_SmokeBoiling.eff", -1.0F);
-    Eff3DActor.New(localLoc, 1.0F, "3DO/Effects/Fireworks/Tank_Sparks.eff", -1.0F);
-    Eff3DActor.New(localLoc, 1.0F, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1.0F);
-    World.cur(); if (paramPoint3d.z - World.land().HQ(paramPoint3d.x, paramPoint3d.y) > 3.0D) {
-      SfxExplosion.crashAir(paramPoint3d, 1); } else {
-      World.cur(); if (World.land().isWater(paramPoint3d.x, paramPoint3d.y))
-        SfxExplosion.crashAir(paramPoint3d, 2);
-      else
-        SfxExplosion.crashAir(paramPoint3d, 0); 
-    }
-  }
-
-  private static void LinearExplode(Point3d paramPoint3d1, Point3d paramPoint3d2, float paramFloat1, float paramFloat2, String paramString1, String paramString2) {
-    double d = paramPoint3d1.distance(paramPoint3d2);
-    int i = (int)(2.0D * d / paramFloat1 * paramFloat2); if (i < 2) i = 2;
-    Point3d localPoint3d = new Point3d();
-
-    float f1 = 4.0F; float f2 = 1.0F;
-    for (int j = 0; j < i; j++)
-    {
-      localPoint3d.interpolate(paramPoint3d1, paramPoint3d2, Math.random()); o.set(0.0F, 90.0F, 0.0F); l.set(localPoint3d, o);
-      Eff3DActor.New(l, 1.0F, Math.random() < 0.5D ? paramString1 : paramString2, 3.0F);
-    }
-  }
-
-  public static void ExplodeBridge(Point3d paramPoint3d1, Point3d paramPoint3d2, float paramFloat) {
-    if (!Config.isUSE_RENDER()) return;
-    LinearExplode(paramPoint3d1, paramPoint3d2, paramFloat, 1.0F, "effects/Explodes/Objects/Bridges/SmokeBoiling.eff", "effects/Explodes/Objects/Bridges/SmokeBoiling2.eff");
-
-    SfxExplosion.bridge(paramPoint3d1, paramPoint3d2, paramFloat);
-  }
-
-  public static void ExplodeVagonArmor(Point3d paramPoint3d1, Point3d paramPoint3d2, float paramFloat)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    Point3d localPoint3d = new Point3d();
-    for (int i = 0; i < 3; i++) {
-      localPoint3d.interpolate(paramPoint3d1, paramPoint3d2, Math.random());
-      AirFlak(localPoint3d, 0);
-    }
-
-    LinearExplode(paramPoint3d1, paramPoint3d2, paramFloat, 0.5F, "effects/Explodes/Objects/VagonArmor/SmokeBoiling.eff", "effects/Explodes/Objects/VagonArmor/SmokeBoiling2.eff");
-
-    SfxExplosion.wagon(paramPoint3d1, paramPoint3d2, paramFloat, 6);
-  }
-
-  public static void ExplodeVagonFuel(Point3d paramPoint3d1, Point3d paramPoint3d2, float paramFloat) {
-    if (!Config.isUSE_RENDER()) return;
-    LinearExplode(paramPoint3d1, paramPoint3d2, paramFloat, 0.75F, "effects/Explodes/Objects/VagonFuel/SmokeBoilingFire.eff", "effects/Explodes/Objects/VagonFuel/SmokeBoilingFire2.eff");
-
-    SfxExplosion.wagon(paramPoint3d1, paramPoint3d2, paramFloat, 5);
-  }
-
-  public static void bomb50_land(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    o.set(0.0F, 90.0F, 0.0F);
-    l.set(paramPoint3d, o);
-    Eff3DActor.New(l, paramFloat2, "3DO/Effects/Fireworks/Tank_Burn.eff", -1.0F);
-
-    Eff3DActor.New(l, paramFloat2, "3DO/Effects/Fireworks/Tank_SmokeBoiling.eff", -1.0F);
-
-    Eff3DActor.New(l, paramFloat2, "3DO/Effects/Fireworks/Tank_Sparks.eff", -1.0F);
-
-    Eff3DActor.New(l, paramFloat2, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1.0F);
-  }
-
-  public static void BOMB250_Land(Point3d paramPoint3d, float paramFloat1, float paramFloat2, boolean paramBoolean)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 0, paramBoolean);
-  }
-  public static void BOMB250_Water(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 1, 0, false);
-  }
-  public static void BOMB250_Object(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 0, false);
-  }
-
-  public static void BOMB1000a_Land(Point3d paramPoint3d, float paramFloat1, float paramFloat2, boolean paramBoolean) {
-    if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 2, paramBoolean);
-  }
-  public static void BOMB1000a_Water(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 1, 2, false);
-  }
-  public static void BOMB1000a_Object(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 2, false);
-  }
-
-  public static void bomb1000_land(Point3d paramPoint3d, float paramFloat1, float paramFloat2, boolean paramBoolean) {
-    if (!Config.isUSE_RENDER()) return;
-    o.set(0.0F, 90.0F, 0.0F);
-    l.set(paramPoint3d, o);
-    SurfaceLight(0, 10000.0F, 1.0F);
-    SurfaceCrater(0, 112.1F, 600.0F);
-    ExplodeSurfaceWave(0, 2000.0F, 4.6F);
-    paramPoint3d.z += 5.0D;
-    l.set(paramPoint3d, o);
-    Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(buff).eff", -1.0F);
-    Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(circle).eff", -1.0F);
-    Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(column).eff", -1.0F);
-    Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(flare).eff", 0.1F);
-    Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(ring).eff", -1.0F);
-  }
-  public static void bomb1000_water(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    o.set(0.0F, 90.0F, 0.0F);
-    l.set(paramPoint3d, o);
-    SurfaceLight(0, 10000.0F, 1.0F);
-    ExplodeSurfaceWave(1, 3000.0F, 6.6F);
-    paramPoint3d.z += 5.0D;
-    l.set(paramPoint3d, o);
-    Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(buff).eff", -1.0F);
-    Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(circle).eff", -1.0F);
-    Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(column).eff", -1.0F);
-    Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(flare).eff", 0.1F);
-    Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(ring).eff", -1.0F);
-  }
-  public static void bomb1000_object(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return; 
-  }
-
-  public static void bomb5000_land(Point3d paramPoint3d, float paramFloat1, float paramFloat2)
-  {
-    if (!Config.isUSE_RENDER()) return; 
-  }
-
-  public static void bomb5000_water(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return; 
-  }
-
-  public static void bomb5000_object(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return; 
-  }
-
-  public static void bomb999999_object(Point3d paramPoint3d, float paramFloat1, float paramFloat2)
-  {
-    if (!Config.isUSE_RENDER()) return; 
-  }
-
-  public static void RS82_Land(Point3d paramPoint3d, float paramFloat1, float paramFloat2, boolean paramBoolean)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 1, paramBoolean);
-  }
-  public static void RS82_Water(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 1, 1, false);
-  }
-  public static void RS82_Object(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    fontain(paramPoint3d, paramFloat1, paramFloat2, 0, 1, false);
-  }
-
-  public static void Explode10Kg_Object(Point3d paramPoint3d, Vector3f paramVector3f, float paramFloat1, float paramFloat2)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    o.setAT0(paramVector3f); o.set(o.azimut(), o.tangage() + 180.0F, 0.0F); l.set(paramPoint3d, o);
-    Eff3DActor.New(l, 1.0F, "effects/Explodes/Explode10Kg/Object/Sparks.eff", paramFloat1);
-  }
-
-  public static void Explode10Kg_Land(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    o.set(0.0F, 90.0F, 0.0F);
-    l.set(paramPoint3d, o);
-    Eff3DActor.New(l, 1.0F, "effects/Explodes/Explode10Kg/Land/Fontain.eff", paramFloat1);
-  }
-
-  public static void Explode10Kg_Water(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    o.set(0.0F, 90.0F, 0.0F); l.set(paramPoint3d, o);
-    Eff3DActor.New(l, 1.0F, "effects/Explodes/Explode10Kg/Water/Fontain.eff", paramFloat1);
-    o.set(0.0F, 0.0F, 0.0F); l.set(paramPoint3d, o);
-    ExplodeSurfaceWave(1, 17.5F, 4.0F);
-  }
-
-  public static void Bullet_Object(Point3d paramPoint3d, Vector3d paramVector3d, float paramFloat1, float paramFloat2)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    o.setAT0(paramVector3d); o.set(o.azimut(), o.tangage() + 180.0F, 0.0F); l.set(paramPoint3d, o);
-
-    Eff3DActor.New(l, 1.0F, "effects/Explodes/Cannon/Object/Sparks.eff", paramFloat1);
-  }
-  public static void Bullet_Water(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    o.set(0.0F, 90.0F, 0.0F); l.set(paramPoint3d, o);
-    Eff3DActor.New(l, 1.0F, "effects/Explodes/Bullet/Water/Fontain.eff", paramFloat1);
-  }
-
-  public static void Bullet_Land(Point3d paramPoint3d, float paramFloat1, float paramFloat2)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    o.set(0.0F, 90.0F, 0.0F);
-    l.set(paramPoint3d, o);
-    Eff3DActor.New(l, 1.0F, "effects/Explodes/Bullet/Land/Fontain.eff", paramFloat1);
-  }
-
-  public static void Cannon_Object(Point3d paramPoint3d, Vector3f paramVector3f, float paramFloat1, float paramFloat2)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    o.setAT0(paramVector3f); o.set(o.azimut(), o.tangage() + 180.0F, 0.0F); l.set(paramPoint3d, o);
-
-    Eff3DActor.New(l, 1.0F, "effects/Explodes/Cannon/Object/Sparks.eff", paramFloat1);
-  }
-  public static void Cannon_Water(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    o.set(0.0F, 90.0F, 0.0F); l.set(paramPoint3d, o);
-    Eff3DActor.New(l, 1.0F, "effects/Explodes/Cannon/Water/Fontain.eff", paramFloat1);
-    o.set(0.0F, 0.0F, 0.0F); l.set(paramPoint3d, o);
-    ExplodeSurfaceWave(1, 17.5F, 4.0F);
-  }
-  public static void Cannon_Land(Point3d paramPoint3d, float paramFloat1, float paramFloat2) {
-    if (!Config.isUSE_RENDER()) return;
-    o.set(0.0F, 90.0F, 0.0F);
-    l.set(paramPoint3d, o);
-    Eff3DActor.New(l, 1.0F, "effects/Explodes/Cannon/Land/Fontain.eff", paramFloat1);
-  }
-
-  public static void generateSound(Actor paramActor, Point3d paramPoint3d, float paramFloat1, int paramInt, float paramFloat2)
-  {
-    if (Config.isUSE_RENDER())
-      if (paramActor == null) {
-        SfxExplosion.shell(paramPoint3d, 1, paramFloat1, paramInt, paramFloat2);
-      }
-      else if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y))
-        SfxExplosion.shell(paramPoint3d, 2, paramFloat1, paramInt, paramFloat2);
-      else
-        SfxExplosion.shell(paramPoint3d, 0, paramFloat1, paramInt, paramFloat2);
-  }
-
-  public static void generateRocket(Actor paramActor, Point3d paramPoint3d, float paramFloat1, int paramInt, float paramFloat2)
-  {
-    generate(paramActor, paramPoint3d, paramFloat1 > 15.0F ? paramFloat1 : 15.0F, paramInt, paramFloat2, false);
-  }
-
-  public static void generate(Actor paramActor, Point3d paramPoint3d, float paramFloat1, int paramInt, float paramFloat2, boolean paramBoolean)
-  {
-    if (!Config.isUSE_RENDER()) return;
-
-    if (paramActor != null)
-    {
-      generateSound(paramActor, paramPoint3d, paramFloat1, paramInt, paramFloat2);
-
-      rel.set(paramPoint3d);
-      paramActor.pos.getAbs(tmpLoc); paramActor.pos.getCurrent(l); l.interpolate(tmpLoc, 0.5D);
-      rel.sub(l);
-
-      if (paramInt == 2) {
-        if (paramFloat2 < 3.0F) {
-          switch (rnd.nextInt(1, 2)) {
-          case 1:
-            Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/Termit1W.eff", 10.0F);
-            break;
-          case 2:
-            Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/Termit1SM.eff", -1.0F);
-          }
-        }
-        else
+        MydataForSmoke(com.maddox.il2.engine.ActorHMesh actorhmesh, float f)
         {
-          Vector3d localVector3d = new Vector3d();
-          for (int i = 0; i < 36; i++) {
-            localVector3d.set(World.Rnd().nextDouble(-20.0D, 20.0D), World.Rnd().nextDouble(-20.0D, 20.0D), World.Rnd().nextDouble(3.0D, 20.0D));
-            float f = World.Rnd().nextFloat(3.0F, 15.0F);
-            BallisticProjectile localBallisticProjectile = new BallisticProjectile(paramPoint3d, localVector3d, f);
-            Eff3DActor.New(localBallisticProjectile, null, null, 1.0F, "3DO/Effects/Fireworks/PhosfourousFire.eff", f);
-          }
-
+            a = actorhmesh;
+            tim = f;
         }
-
-        return;
-      }
-
-      if ((paramActor instanceof ActorLand))
-      {
-        if (paramFloat1 < 15.0F) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) Explode10Kg_Water(paramPoint3d, 4.0F, 1.0F); else
-            Explode10Kg_Land(paramPoint3d, 4.0F, 1.0F);
-        } else if (paramFloat1 < 50.0F) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) RS82_Water(paramPoint3d, 4.0F, 1.0F); else
-            RS82_Land(paramPoint3d, 4.0F, 1.0F, paramBoolean);
-        } else if (paramFloat1 < 450.0F) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) BOMB250_Water(paramPoint3d, 4.0F, 1.0F); else
-            BOMB250_Land(paramPoint3d, 4.0F, 1.0F, paramBoolean);
-        } else if (paramFloat1 < 3000.0F) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) BOMB1000a_Water(paramPoint3d, 4.0F, 1.0F); else
-            BOMB1000a_Land(paramPoint3d, 4.0F, 1.0F, paramBoolean);
-        }
-        else if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) bomb1000_water(paramPoint3d, -1.0F, 1.0F); else {
-          bomb1000_land(paramPoint3d, -1.0F, 1.0F, paramBoolean);
-        }
-
-      }
-      else if (paramFloat1 < 50.0F) {
-        if (paramPoint3d.z - Engine.land().HQ_Air(paramPoint3d.x, paramPoint3d.y) < 5.0D) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) RS82_Water(paramPoint3d, 4.0F, 1.0F); else
-            RS82_Land(paramPoint3d, 4.0F, 1.0F, paramBoolean);
-        }
-        bomb50_land(paramPoint3d, -1.0F, 1.0F);
-      } else if (paramFloat1 < 450.0F) {
-        if (paramPoint3d.z - Engine.land().HQ_Air(paramPoint3d.x, paramPoint3d.y) < 10.0D) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) BOMB250_Water(paramPoint3d, 4.0F, 1.0F); else
-            BOMB250_Land(paramPoint3d, 4.0F, 1.0F, paramBoolean);
-        }
-        bomb50_land(paramPoint3d, -1.0F, 2.0F);
-      } else if (paramFloat1 < 3000.0F) {
-        if (paramPoint3d.z - Engine.land().HQ_Air(paramPoint3d.x, paramPoint3d.y) < 20.0D) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) BOMB1000a_Water(paramPoint3d, 4.0F, 1.0F); else
-            BOMB1000a_Land(paramPoint3d, 4.0F, 1.0F, paramBoolean);
-        }
-        bomb50_land(paramPoint3d, -1.0F, 2.0F);
-      } else {
-        if (paramPoint3d.z - Engine.land().HQ_Air(paramPoint3d.x, paramPoint3d.y) < 50.0D) {
-          if (Engine.land().isWater(paramPoint3d.x, paramPoint3d.y)) bomb1000_water(paramPoint3d, -1.0F, 1.0F); else
-            bomb1000_land(paramPoint3d, -1.0F, 1.0F, paramBoolean);
-        }
-        bomb50_land(paramPoint3d, -1.0F, 10.0F);
-      }
-    }
-  }
-
-  private static void playShotSound(Shot paramShot)
-  {
-    double d = paramShot.p.distanceSquared(Engine.soundListener().absPos);
-  }
-
-  public static void generateShot(Actor paramActor, Shot paramShot)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    float f = paramShot.mass;
-    playShotSound(paramShot);
-
-    rel.set(paramShot.p);
-    paramActor.pos.getAbs(tmpLoc); paramActor.pos.getCurrent(l); l.interpolate(tmpLoc, paramShot.tickOffset);
-    rel.sub(l);
-
-    if ((World.cur().isArcade()) && (!(paramActor instanceof Aircraft))) {
-      Eff3DActor.New(paramActor, null, rel, 0.75F, "3DO/Effects/Fireworks/Sprite.eff", 30.0F);
-    }
-    if (!(paramActor instanceof ActorLand)) {
-      switch (rnd.nextInt(1, 4)) {
-      case 1:
-        Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/Debris1A.eff", -1.0F);
-        break;
-      case 2:
-        Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/Debris1B.eff", -1.0F);
-        break;
-      case 3:
-        Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/Debris1C.eff", -1.0F);
-        break;
-      case 4:
-        Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/Debris1D.eff", -1.0F);
-      }
     }
 
-    if ((paramActor instanceof Aircraft)) return;
 
-    switch (paramShot.bodyMaterial)
+    public Explosions()
     {
-    case 0:
-      if (f < 1.0F)
-        Cannon_Land(paramShot.p, 4.0F, 1.0F);
-      else if (f < 5.0F)
-        Explode10Kg_Land(paramShot.p, 4.0F, 1.0F);
-      else if (f < 50.0F)
-        RS82_Land(paramShot.p, 4.0F, 1.0F, false);
-      else {
-        BOMB250_Land(paramShot.p, 4.0F, 1.0F, false);
-      }
-      break;
-    case 1:
-      if (f < 0.023F)
-        Bullet_Water(paramShot.p, 0.5F, 1.0F);
-      else if (f < 0.701F)
-        Cannon_Water(paramShot.p, 4.0F, 1.0F);
-      else if (f < 8.55F)
-        Explode10Kg_Water(paramShot.p, 4.0F, 1.0F);
-      else if (f < 24.200001F)
-        RS82_Water(paramShot.p, 4.0F, 1.0F);
-      else {
-        BOMB250_Water(paramShot.p, 4.0F, 1.0F);
-      }
-      break;
-    case 2:
-      Bullet_Object(paramShot.p, paramShot.v, 0.5F, 1.0F);
-      break;
-    case 3:
-      break;
-    default:
-      Bullet_Object(paramShot.p, paramShot.v, 1.0F, 1.0F);
-    }
-  }
-
-  public static void generateExplosion(Actor paramActor, Point3d paramPoint3d, float paramFloat1, int paramInt, float paramFloat2, double paramDouble)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    generateSound(paramActor, paramPoint3d, paramFloat1, paramInt, paramFloat2);
-
-    rel.set(paramPoint3d);
-    if (paramActor != null) {
-      paramActor.pos.getAbs(tmpLoc); paramActor.pos.getCurrent(l); l.interpolate(tmpLoc, paramDouble);
-      rel.sub(l);
     }
 
-    if (paramActor == null)
+    public static void HydrogenBalloonExplosion(com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Actor actor)
     {
-      return;
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        com.maddox.il2.engine.Loc loc1 = new Loc();
+        com.maddox.JGP.Vector3d vector3d = new Vector3d();
+        for(int i = 0; i < 2; i++)
+        {
+            loc1.set(loc);
+            loc1.getPoint().x += com.maddox.il2.ai.World.Rnd().nextDouble(-12D, 12D);
+            loc1.getPoint().y += com.maddox.il2.ai.World.Rnd().nextDouble(-12D, 12D);
+            loc1.getPoint().z += com.maddox.il2.ai.World.Rnd().nextDouble(-3D, 3D);
+            com.maddox.il2.engine.Eff3DActor.New(loc1, 1.0F, "3DO/Effects/Fireworks/Tank_Burn.eff", -1F);
+        }
+
+        int k = com.maddox.il2.ai.World.Rnd().nextInt(2, 6);
+        for(int j = 0; j < k; j++)
+        {
+            vector3d.set(com.maddox.il2.ai.World.Rnd().nextFloat(-1F, 1.0F), com.maddox.il2.ai.World.Rnd().nextFloat(-1F, 1.0F), com.maddox.il2.ai.World.Rnd().nextFloat(-0.5F, 1.5F));
+            vector3d.normalize();
+            vector3d.scale(com.maddox.il2.ai.World.Rnd().nextFloat(4F, 15F));
+            float f = com.maddox.il2.ai.World.Rnd().nextFloat(4F, 7F);
+            com.maddox.il2.objects.weapons.BallisticProjectile ballisticprojectile = new BallisticProjectile(loc.getPoint(), vector3d, f);
+            com.maddox.il2.engine.Eff3DActor.New(ballisticprojectile, null, null, 1.0F, "3DO/Effects/Aircraft/BlackHeavySPD.eff", f);
+            com.maddox.il2.engine.Eff3DActor.New(ballisticprojectile, null, null, 1.0F, "3DO/Effects/Aircraft/BlackHeavyTSPD.eff", f);
+            com.maddox.il2.engine.Eff3DActor.New(ballisticprojectile, null, null, 1.0F, "3DO/Effects/Aircraft/FireSPD.eff", f);
+        }
+
+        com.maddox.il2.objects.sounds.SfxExplosion.crashAir(loc.getPoint(), 1);
     }
 
-    if ((paramActor instanceof ActorLand))
+    public static void runByName(java.lang.String s, com.maddox.il2.engine.ActorHMesh actorhmesh, java.lang.String s1, java.lang.String s2, float f)
     {
-      boolean bool = Engine.land().isWater(paramPoint3d.x, paramPoint3d.y);
-
-      if (paramFloat1 < 0.001F) {
-        if (!bool) Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/12_Burn.eff", -1.0F); 
-      }
-      else if (paramFloat1 < 0.005F) {
-        if (!bool) Eff3DActor.New(rel, 1.0F, "3DO/Effects/Fireworks/20_SmokeBoiling.eff", -1.0F); 
-      }
-      else if (paramFloat1 < 0.05F) {
-        if (bool) Explode10Kg_Water(paramPoint3d, 4.0F, 1.0F); else
-          Explode10Kg_Land(paramPoint3d, 4.0F, 1.0F);
-      }
-      else if (paramFloat1 < 1.0F) {
-        if (bool) RS82_Water(paramPoint3d, 4.0F, 1.0F); else
-          RS82_Land(paramPoint3d, 4.0F, 1.0F, false);
-      } else if (paramFloat1 < 15.0F) {
-        if (bool) Explode10Kg_Water(paramPoint3d, 4.0F, 1.0F); else
-          Explode10Kg_Land(paramPoint3d, 4.0F, 1.0F);
-      } else if (paramFloat1 < 50.0F) {
-        if (bool) RS82_Water(paramPoint3d, 4.0F, 1.0F); else
-          RS82_Land(paramPoint3d, 4.0F, 1.0F, false);
-      }
-      else if (bool) BOMB250_Water(paramPoint3d, 4.0F, 1.0F); else {
-        BOMB250_Land(paramPoint3d, 4.0F, 1.0F, false);
-      }
-
+        com.maddox.il2.objects.effects.Explosions.runByName(s, actorhmesh, s1, s2, f, null);
     }
-    else if (paramFloat1 < 0.001F) {
-      Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/12_Burn.eff", -1.0F);
-    } else if (paramFloat1 < 0.003F) {
-      Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/12mmPluff.eff", 0.15F);
-    }
-    else if (paramFloat1 < 0.005F) {
-      Eff3DActor.New(paramActor, null, rel, 0.5F, "3DO/Effects/Fireworks/20_Burn.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 0.5F, "3DO/Effects/Fireworks/20_SmokeBoiling.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 0.5F, "3DO/Effects/Fireworks/20_Sparks.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 0.5F, "3DO/Effects/Fireworks/20_SparksP.eff", -1.0F);
-    } else if (paramFloat1 < 0.01F) {
-      Eff3DActor.New(paramActor, null, rel, 0.75F, "3DO/Effects/Fireworks/20_Burn.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 0.75F, "3DO/Effects/Fireworks/20_SmokeBoiling.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 0.75F, "3DO/Effects/Fireworks/20_Sparks.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 0.75F, "3DO/Effects/Fireworks/20_SparksP.eff", -1.0F);
-    } else if (paramFloat1 < 0.02F) {
-      Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/20_Burn.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/20_SmokeBoiling.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/20_Sparks.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/20_SparksP.eff", -1.0F);
-    } else if (paramFloat1 < 1.0F) {
-      Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/37_Burn.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/37_SmokeBoiling.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/37_Sparks.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 1.0F, "3DO/Effects/Fireworks/37_SparksP.eff", -1.0F);
-    }
-    else if (paramFloat1 < 9999.0F) {
-      Eff3DActor.New(paramActor, null, rel, 3.0F, "3DO/Effects/Fireworks/37_Burn.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 3.0F, "3DO/Effects/Fireworks/37_SmokeBoiling.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 3.0F, "3DO/Effects/Fireworks/37_Sparks.eff", -1.0F);
-      Eff3DActor.New(paramActor, null, rel, 3.0F, "3DO/Effects/Fireworks/37_SparksP.eff", -1.0F);
-    }
-  }
 
-  public static void generateComicBulb(Actor paramActor, String paramString, float paramFloat)
-  {
-    if (!Config.isUSE_RENDER()) return;
-    if (!World.cur().isArcade()) return;
-    Eff3DActor.New(paramActor, null, null, 1.0F, "3DO/Effects/Debug/msg" + paramString + ".eff", paramFloat);
-  }
-
-  static class MydataForSmoke
-  {
-    ActorHMesh a;
-    float tim;
-
-    MydataForSmoke(ActorHMesh paramActorHMesh, float paramFloat)
+    public static void runByName(java.lang.String s, com.maddox.il2.engine.ActorHMesh actorhmesh, java.lang.String s1, java.lang.String s2, float f, com.maddox.il2.engine.Actor actor)
     {
-      this.a = paramActorHMesh;
-      this.tim = paramFloat;
+        com.maddox.il2.engine.HookNamed hooknamed = null;
+        if(s1 != null && !s1.equals(""))
+        {
+            int i = actorhmesh.mesh().hookFind(s1);
+            if(i >= 0)
+                hooknamed = new HookNamed(actorhmesh, s1);
+            else
+            if(s2 != null && !s2.equals(""))
+            {
+                int j = actorhmesh.mesh().hookFind(s2);
+                if(j >= 0)
+                    hooknamed = new HookNamed(actorhmesh, s2);
+            }
+        }
+        if(s.equalsIgnoreCase("Tank"))
+            com.maddox.il2.objects.effects.Explosions.Tank_Explode(actorhmesh.pos.getAbsPoint());
+        else
+        if(s.equalsIgnoreCase("_TankSmoke_"))
+        {
+            if(f > 0.0F)
+            {
+                com.maddox.il2.engine.Eff3DActor.New(actorhmesh, hooknamed, null, 1.0F, "Effects/Smokes/TankDyingFire.eff", f * 0.7F);
+                com.maddox.il2.engine.Eff3DActor.New(actorhmesh, hooknamed, null, 1.0F, "Effects/Smokes/TankDyingSmoke.eff", f);
+            }
+        } else
+        if(s.equalsIgnoreCase("Car"))
+        {
+            com.maddox.il2.objects.effects.Explosions.Car_Explode(actorhmesh.pos.getAbsPoint());
+            if(f > 0.0F)
+            {
+                com.maddox.il2.engine.Eff3DActor.New(actorhmesh, hooknamed, null, 1.0F, "Effects/Smokes/CarDyingFire.eff", f * 0.7F);
+                com.maddox.il2.engine.Eff3DActor.New(actorhmesh, hooknamed, null, 1.0F, "Effects/Smokes/CarDyingSmoke.eff", f);
+            }
+        } else
+        if(s.equalsIgnoreCase("CarFuel"))
+        {
+            new com.maddox.rts.MsgAction(0.0D, actorhmesh) {
+
+                public void doAction(java.lang.Object obj)
+                {
+                    com.maddox.JGP.Point3d point3d = new Point3d();
+                    ((com.maddox.il2.engine.Actor)obj).pos.getAbs(point3d);
+                    com.maddox.il2.objects.effects.Explosions.ExplodeVagonFuel(point3d, point3d, 1.5F);
+                }
+
+            }
+;
+            if(f > 0.0F)
+            {
+                new com.maddox.il2.objects.effects.MyMsgAction(0.42999999999999999D, actorhmesh, actor) {
+
+                    public void doAction(java.lang.Object obj)
+                    {
+                        com.maddox.JGP.Point3d point3d = new Point3d();
+                        ((com.maddox.il2.engine.Actor)obj).pos.getAbs(point3d);
+                        float f1 = 25F;
+                        int k = 0;
+                        float f2 = 50F;
+                        com.maddox.il2.ai.MsgExplosion.send((com.maddox.il2.engine.Actor)obj, "Body", point3d, (com.maddox.il2.engine.Actor)obj2, 0.0F, f1, k, f2);
+                    }
+
+                }
+;
+                new com.maddox.rts.MsgAction(1.2D, new MydataForSmoke(actorhmesh, f)) {
+
+                    public void doAction(java.lang.Object obj)
+                    {
+                        com.maddox.il2.engine.Eff3DActor.New(((com.maddox.il2.objects.effects.MydataForSmoke)obj).a, null, null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", ((com.maddox.il2.objects.effects.MydataForSmoke)obj).tim);
+                    }
+
+                }
+;
+            }
+        } else
+        if(s.equalsIgnoreCase("Artillery"))
+        {
+            com.maddox.il2.objects.effects.Explosions.Antiaircraft_Explode(actorhmesh.pos.getAbsPoint());
+            if(f > 0.0F)
+            {
+                com.maddox.il2.engine.Eff3DActor.New(actorhmesh, hooknamed, null, 1.0F, "Effects/Smokes/TankDyingFire.eff", f * 0.7F);
+                com.maddox.il2.engine.Eff3DActor.New(actorhmesh, hooknamed, null, 1.0F, "Effects/Smokes/TankDyingSmoke.eff", f);
+            }
+        } else
+        if(s.equalsIgnoreCase("Stationary"))
+        {
+            com.maddox.il2.objects.effects.Explosions.Antiaircraft_Explode(actorhmesh.pos.getAbsPoint());
+            if(f > 0.0F)
+            {
+                com.maddox.il2.engine.Eff3DActor.New(actorhmesh, hooknamed, null, 1.0F, "Effects/Smokes/TankDyingFire.eff", f * 0.7F);
+                com.maddox.il2.engine.Eff3DActor.New(actorhmesh, hooknamed, null, 1.0F, "Effects/Smokes/TankDyingSmoke.eff", f);
+            }
+        } else
+        if(s.equalsIgnoreCase("Aircraft"))
+            com.maddox.il2.objects.effects.Explosions.Antiaircraft_Explode(actorhmesh.pos.getAbsPoint());
+        else
+        if(s.equalsIgnoreCase("Aircraft"))
+            java.lang.System.out.println("*** Unknown named explode: '" + s + "'");
+        else
+        if(s.equalsIgnoreCase("WagonWoodExplosives"))
+        {
+            new com.maddox.rts.MsgAction(0.0D, actorhmesh) {
+
+                public void doAction(java.lang.Object obj)
+                {
+                    com.maddox.JGP.Point3d point3d = new Point3d();
+                    ((com.maddox.il2.engine.Actor)obj).pos.getAbs(point3d);
+                    com.maddox.il2.objects.effects.Explosions.ExplodeVagonArmor(point3d, point3d, 2.0F);
+                }
+
+            }
+;
+            if(f > 0.0F)
+            {
+                new com.maddox.il2.objects.effects.MyMsgAction(0.42999999999999999D, actorhmesh, actor) {
+
+                    public void doAction(java.lang.Object obj)
+                    {
+                        com.maddox.JGP.Point3d point3d = new Point3d();
+                        ((com.maddox.il2.engine.Actor)obj).pos.getAbs(point3d);
+                        float f1 = 180F;
+                        int k = 0;
+                        float f2 = 140F;
+                        com.maddox.il2.ai.MsgExplosion.send((com.maddox.il2.engine.Actor)obj, "Body", point3d, (com.maddox.il2.engine.Actor)obj2, 0.0F, f1, k, f2);
+                    }
+
+                }
+;
+                new com.maddox.rts.MsgAction(1.2D, new MydataForSmoke(actorhmesh, f)) {
+
+                    public void doAction(java.lang.Object obj)
+                    {
+                        com.maddox.il2.engine.Eff3DActor.New(((com.maddox.il2.objects.effects.MydataForSmoke)obj).a, null, null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", ((com.maddox.il2.objects.effects.MydataForSmoke)obj).tim);
+                    }
+
+                }
+;
+            }
+        } else
+        if(s.equalsIgnoreCase("WagonWood"))
+        {
+            new com.maddox.rts.MsgAction(0.0D, actorhmesh) {
+
+                public void doAction(java.lang.Object obj)
+                {
+                    com.maddox.JGP.Point3d point3d = new Point3d();
+                    ((com.maddox.il2.engine.Actor)obj).pos.getAbs(point3d);
+                    com.maddox.il2.objects.effects.Explosions.ExplodeVagonArmor(point3d, point3d, 2.0F);
+                }
+
+            }
+;
+            if(f > 0.0F)
+                new com.maddox.rts.MsgAction(1.2D, new MydataForSmoke(actorhmesh, f)) {
+
+                    public void doAction(java.lang.Object obj)
+                    {
+                        com.maddox.il2.engine.Eff3DActor.New(((com.maddox.il2.objects.effects.MydataForSmoke)obj).a, null, null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", ((com.maddox.il2.objects.effects.MydataForSmoke)obj).tim);
+                    }
+
+                }
+;
+        } else
+        if(s.equalsIgnoreCase("WagonFuel"))
+        {
+            new com.maddox.rts.MsgAction(0.0D, actorhmesh) {
+
+                public void doAction(java.lang.Object obj)
+                {
+                    com.maddox.JGP.Point3d point3d = new Point3d();
+                    ((com.maddox.il2.engine.Actor)obj).pos.getAbs(point3d);
+                    com.maddox.il2.objects.effects.Explosions.ExplodeVagonFuel(point3d, point3d, 2.0F);
+                }
+
+            }
+;
+            if(f > 0.0F)
+            {
+                new com.maddox.il2.objects.effects.MyMsgAction(0.42999999999999999D, actorhmesh, actor) {
+
+                    public void doAction(java.lang.Object obj)
+                    {
+                        com.maddox.JGP.Point3d point3d = new Point3d();
+                        ((com.maddox.il2.engine.Actor)obj).pos.getAbs(point3d);
+                        float f1 = 180F;
+                        int k = 0;
+                        float f2 = 120F;
+                        com.maddox.il2.ai.MsgExplosion.send((com.maddox.il2.engine.Actor)obj, "Body", point3d, (com.maddox.il2.engine.Actor)obj2, 0.0F, f1, k, f2);
+                    }
+
+                }
+;
+                new com.maddox.rts.MsgAction(1.2D, new MydataForSmoke(actorhmesh, f)) {
+
+                    public void doAction(java.lang.Object obj)
+                    {
+                        com.maddox.il2.engine.Eff3DActor.New(((com.maddox.il2.objects.effects.MydataForSmoke)obj).a, null, null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", ((com.maddox.il2.objects.effects.MydataForSmoke)obj).tim);
+                    }
+
+                }
+;
+            }
+        } else
+        if(s.equalsIgnoreCase("WagonMetal"))
+        {
+            new com.maddox.rts.MsgAction(0.0D, actorhmesh) {
+
+                public void doAction(java.lang.Object obj)
+                {
+                    com.maddox.JGP.Point3d point3d = new Point3d();
+                    ((com.maddox.il2.engine.Actor)obj).pos.getAbs(point3d);
+                    com.maddox.il2.objects.effects.Explosions.ExplodeVagonArmor(point3d, point3d, 2.0F);
+                }
+
+            }
+;
+            if(f > 0.0F)
+                new com.maddox.rts.MsgAction(1.2D, new MydataForSmoke(actorhmesh, f)) {
+
+                    public void doAction(java.lang.Object obj)
+                    {
+                        com.maddox.il2.engine.Eff3DActor.New(((com.maddox.il2.objects.effects.MydataForSmoke)obj).a, null, null, 1.0F, "Effects/Smokes/SmokeBlack_Locomotive.eff", ((com.maddox.il2.objects.effects.MydataForSmoke)obj).tim);
+                    }
+
+                }
+;
+        }
     }
-  }
+
+    public static void shot(com.maddox.JGP.Point3d point3d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor eff3dactor = com.maddox.il2.engine.Eff3DActor.New(l, 2.0F, "effects/sprites/spritesun.eff", -1F);
+            eff3dactor.postDestroy(com.maddox.rts.Time.current() + 500L);
+            return;
+        }
+    }
+
+    public static void HouseExplode(int i, com.maddox.il2.engine.Loc loc, float af[])
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        java.lang.String s = "";
+        boolean flag = false;
+        byte byte0 = 0;
+        switch(i)
+        {
+        case 0: // '\0'
+        case 1: // '\001'
+            s = "Wood";
+            byte0 = 4;
+            break;
+
+        case 2: // '\002'
+        case 3: // '\003'
+        case 4: // '\004'
+            s = "Rock";
+            byte0 = 3;
+            break;
+
+        case 5: // '\005'
+        case 6: // '\006'
+            s = "Fuel";
+            boolean flag1 = true;
+            byte0 = 5;
+            break;
+
+        default:
+            java.lang.System.out.println("WARNING: HouseExplode(): unknown type");
+            return;
+        }
+        java.lang.String s1 = "effects/Explodes/Objects/House/" + s + "/Boiling.eff";
+        java.lang.String s2 = "effects/Explodes/Objects/House/" + s + "/Boiling2.eff";
+        java.lang.String s3 = "effects/Explodes/Objects/House/" + s + "/Pieces.eff";
+        float f = 4F;
+        float f1 = 1.0F;
+        com.maddox.il2.engine.Eff3D.initSetBoundBox(af[0], af[1], af[2], af[3], af[4], af[5]);
+        com.maddox.il2.engine.Eff3DActor.New(loc, 1.0F, s1, 3F);
+        com.maddox.il2.engine.Eff3D.initSetBoundBox(af[0] + (af[3] - af[0]) * 0.25F, af[1] + (af[4] - af[1]) * 0.25F, af[2], af[3] - (af[3] - af[0]) * 0.25F, af[4] - (af[4] - af[1]) * 0.25F, af[2] + (af[5] - af[2]) * 0.5F);
+        com.maddox.il2.engine.Eff3DActor.New(loc, 1.0F, s2, 3F);
+        com.maddox.il2.objects.sounds.SfxExplosion.building(loc.getPoint(), byte0, af);
+    }
+
+    private static void ExplodeSurfaceWave(int i, float f, float f1)
+    {
+        if(i == 0)
+            new ActorSnapToLand("3do/Effects/Explosion/DustRing.sim", true, l, 1.0F, f, 1.0F, 0.0F, f1);
+        else
+        if(i == 1)
+            new ActorSnapToLand("3do/Effects/Explosion/WaterRing.sim", true, l, 0.2F, f, 1.0F, 0.0F, f1);
+    }
+
+    private static void SurfaceLight(int i, float f, float f1)
+    {
+        new ActorSnapToLand("3do/Effects/Explosion/LandLight.sim", true, l, 1.0F, f, i != 0 ? 0.5F : 1.0F, 0.0F, f1);
+    }
+
+    private static void SurfaceCrater(int i, float f, float f1)
+    {
+        if(i == 0)
+        {
+            new ActorSnapToLand("3do/Effects/Explosion/Crater.sim", true, l, 0.2F, f, f + 2.0F, 1.0F, 0.0F, f1);
+            if(bEnableActorCrater)
+            {
+                int j;
+                for(j = 64; j >= 2 && f < (float)j; j /= 2);
+                if(j >= 2)
+                    new ActorCrater("3do/Effects/Explosion/Crater" + j + "/Live.sim", l, f1);
+            }
+        }
+    }
+
+    private static void fontain(com.maddox.JGP.Point3d point3d, float f, float f1, int i, int j, boolean flag)
+    {
+        int k = 4 + (int)(java.lang.Math.random() * 2D);
+        float f2 = 30F;
+        o.set(0.0F, 90F, 0.0F);
+        l.set(point3d, o);
+        switch(i)
+        {
+        default:
+            break;
+
+        case 0: // '\0'
+            java.lang.String s;
+            float f3;
+            float f4;
+            float f5;
+            float f6;
+            if(j == 2)
+            {
+                s = "Bomb1000";
+                f3 = 500F;
+                f5 = 600F;
+                f4 = 36F;
+                k = 3 + (int)(java.lang.Math.random() * 3D);
+                f6 = 1.6F;
+            } else
+            if(j == 0)
+            {
+                s = "Bomb250";
+                f3 = 250F;
+                f5 = 300F;
+                f4 = 18F;
+                f6 = 0.8F;
+            } else
+            {
+                s = "RS82";
+                f3 = 125F;
+                f5 = 150F;
+                f4 = 4.5F;
+                k = 2 + (int)(java.lang.Math.random() * 2D);
+                f6 = 0.6F;
+            }
+            java.lang.String s1 = "effects/Explodes/" + s + "/Land/Fontain.eff";
+            java.lang.String s2 = "effects/Explodes/" + s + "/Land/Peaces.eff";
+            java.lang.String s3 = "effects/Explodes/" + s + "/Land/Burn.eff";
+            com.maddox.il2.engine.Eff3DActor eff3dactor = com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, s2, 3.5F);
+            for(int i1 = 0; i1 < k; i1++)
+            {
+                float f8 = (float)(360D * java.lang.Math.random());
+                float f9 = 90F + (2.0F * (float)java.lang.Math.random() - 1.0F) * f2;
+                o.set(f8, f9, 0.0F);
+                l.set(point3d, o);
+                com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, s1, f);
+            }
+
+            o.set(0.0F, 0.0F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.objects.effects.Explosions.ExplodeSurfaceWave(i, f3, f6);
+            com.maddox.il2.objects.effects.Explosions.SurfaceLight(i, f5, 2.0F);
+            float f7 = 80F;
+            if(flag && !com.maddox.il2.game.Mission.isCoop() && !com.maddox.il2.game.Mission.isDogfight())
+                if(j == 0)
+                    f7 *= com.maddox.il2.game.Main.cur().mission.zutiMisc_BombsCat2_CratersVisibilityMultiplier;
+                else
+                if(j == 2)
+                    f7 *= com.maddox.il2.game.Main.cur().mission.zutiMisc_BombsCat3_CratersVisibilityMultiplier;
+                else
+                    f7 *= com.maddox.il2.game.Main.cur().mission.zutiMisc_BombsCat1_CratersVisibilityMultiplier;
+            com.maddox.il2.objects.effects.Explosions.SurfaceCrater(i, f4, f7);
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor eff3dactor1 = com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, s3, 1.0F);
+            eff3dactor1.postDestroy(com.maddox.rts.Time.current() + 1500L);
+            com.maddox.il2.engine.LightPointActor lightpointactor = new LightPointActor(new LightPointWorld(), new Point3d());
+            lightpointactor.light.setColor(1.0F, 0.9F, 0.5F);
+            lightpointactor.light.setEmit(1.0F, f5 * 2.0F);
+            ((com.maddox.il2.engine.Actor) (eff3dactor1)).draw.lightMap().put("light", lightpointactor);
+            break;
+
+        case 1: // '\001'
+            if(j == 2)
+                com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "effects/Explodes/Bomb1000/Water/Fontain.eff", f);
+            else
+            if(j == 0)
+                com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "effects/Explodes/Bomb250/Water/Fontain.eff", f);
+            else
+                com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "effects/Explodes/RS82/Water/Fontain.eff", f);
+            o.set(0.0F, 0.0F, 0.0F);
+            l.set(point3d, o);
+            if(j == 2)
+            {
+                com.maddox.il2.objects.effects.Explosions.ExplodeSurfaceWave(i, 750F, 15F);
+                break;
+            }
+            if(j == 0)
+                com.maddox.il2.objects.effects.Explosions.ExplodeSurfaceWave(i, 325F, 10F);
+            else
+                com.maddox.il2.objects.effects.Explosions.ExplodeSurfaceWave(i, 50F, 7F);
+            break;
+
+        case 2: // '\002'
+            com.maddox.il2.objects.effects.Explosions.Tank_Explode(point3d);
+            break;
+        }
+    }
+
+    public static void Tank_Explode(com.maddox.JGP.Point3d point3d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.objects.effects.Explosions.Tank_ExplodeCollapse(point3d);
+            float f = 31.25F;
+            float f2 = 150F;
+            float f1 = 6.75F;
+            int i = 0;
+            boolean flag = true;
+            o.set(0.0F, 0.0F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.objects.effects.Explosions.ExplodeSurfaceWave(i, f, flag ? 0.6F : 0.8F);
+            com.maddox.il2.objects.effects.Explosions.SurfaceLight(i, f2, 0.3F);
+            return;
+        }
+    }
+
+    public static void Antiaircraft_Explode(com.maddox.JGP.Point3d point3d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.Tank_Explode(point3d);
+            return;
+        }
+    }
+
+    public static void Car_Explode(com.maddox.JGP.Point3d point3d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.Tank_Explode(point3d);
+            return;
+        }
+    }
+
+    private static void Building_Explode(com.maddox.JGP.Point3d point3d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        float f = 20F;
+        byte byte0 = 3;
+        com.maddox.JGP.Point3d point3d1 = new Point3d();
+        java.lang.String s = "effects/Explodes/Objects/Building20m/SmokeBoiling.eff";
+        java.lang.String s1 = "effects/Explodes/Objects/Building20m/SmokeBoiling2.eff";
+        float f1 = 4F;
+        float f2 = 1.0F;
+        for(int i = 0; i < byte0 * byte0; i++)
+        {
+            double d = (java.lang.Math.random() - 0.5D) * (double)f;
+            double d1 = (java.lang.Math.random() - 0.5D) * (double)f;
+            point3d1.set(point3d);
+            point3d1.x += d;
+            point3d1.y += d1;
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d1, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, java.lang.Math.random() >= 0.5D ? s1 : s, 3F);
+        }
+
+        o.set(0.0F, 0.0F, 0.0F);
+        l.set(point3d, o);
+        float f3 = 62.5F;
+        float f5 = 150F;
+        float f4 = 6.75F;
+        int j = 0;
+        boolean flag = false;
+        com.maddox.il2.objects.effects.Explosions.ExplodeSurfaceWave(j, f3, flag ? 0.6F : 0.8F);
+    }
+
+    public static void Tank_ExplodeCollapse(com.maddox.JGP.Point3d point3d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.sounds.SfxExplosion.crashTank(point3d, 0);
+            com.maddox.il2.objects.effects.Explosions.explodeCollapse(point3d);
+            return;
+        }
+    }
+
+    private static void explodeCollapse(com.maddox.JGP.Point3d point3d)
+    {
+        o.set(0.0F, 90F, 0.0F);
+        l.set(point3d, o);
+        int i = 6 + (int)(java.lang.Math.random() * 2D);
+        float f = 60F;
+        java.lang.String s = "Objects/Tank_Collapse";
+        float f1 = 31.25F;
+        float f3 = 150F;
+        float f2 = 6.75F;
+        java.lang.String s1 = "effects/Explodes/" + s + "/Peaces1.eff";
+        java.lang.String s2 = "effects/Explodes/" + s + "/Peaces2.eff";
+        java.lang.String s3 = "effects/Explodes/" + s + "/Sparks.eff";
+        java.lang.String s4 = "effects/Explodes/" + s + "/Burn.eff";
+        java.lang.String s5 = "effects/Explodes/" + s + "/SmokeBoiling.eff";
+        com.maddox.il2.engine.Eff3DActor eff3dactor = com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, s1, 3.5F);
+        com.maddox.il2.engine.Eff3DActor eff3dactor1 = com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, s2, 3.5F);
+        eff3dactor1 = com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, s3, 0.5F);
+        eff3dactor1 = com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, s5, 2.5F);
+        com.maddox.il2.engine.Eff3DActor eff3dactor2 = com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, s4, 0.3F);
+        eff3dactor2.postDestroy(com.maddox.rts.Time.current() + 1500L);
+        com.maddox.il2.engine.LightPointActor lightpointactor = new LightPointActor(new LightPointWorld(), new Point3d(5D, 0.0D, 0.0D));
+        lightpointactor.light.setColor(1.0F, 0.9F, 0.5F);
+        lightpointactor.light.setEmit(1.0F, f3 * 2.0F);
+        ((com.maddox.il2.engine.Actor) (eff3dactor2)).draw.lightMap().put("light", lightpointactor);
+    }
+
+    public static void Car_ExplodeCollapse(com.maddox.JGP.Point3d point3d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.explodeCollapse(point3d);
+            return;
+        }
+    }
+
+    public static void AirDrop_Land(com.maddox.JGP.Point3d point3d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        float f = 4F;
+        float f1 = 1.0F;
+        if(com.maddox.il2.game.Mission.isDeathmatch())
+            bEnableActorCrater = false;
+        com.maddox.il2.objects.effects.Explosions.fontain(point3d, f, f1, 0, 0, false);
+        bEnableActorCrater = true;
+        com.maddox.il2.objects.sounds.SfxExplosion.crashAir(point3d, 0);
+    }
+
+    public static void AirDrop_Water(com.maddox.JGP.Point3d point3d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            float f = 4F;
+            float f1 = 1.0F;
+            com.maddox.il2.objects.effects.Explosions.fontain(point3d, f, f1, 1, 0, false);
+            com.maddox.il2.objects.sounds.SfxExplosion.crashAir(point3d, 2);
+            return;
+        }
+    }
+
+    public static void AirDrop_Air(com.maddox.JGP.Point3d point3d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.explodeCollapse(point3d);
+            com.maddox.il2.objects.sounds.SfxExplosion.crashAir(point3d, 1);
+            return;
+        }
+    }
+
+    public static void WreckageDrop_Water(com.maddox.JGP.Point3d point3d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            float f = 3F;
+            float f1 = 1.0F;
+            com.maddox.il2.objects.effects.Explosions.fontain(point3d, f, f1, 1, 1, false);
+            com.maddox.il2.objects.sounds.SfxExplosion.crashParts(point3d, 2);
+            return;
+        }
+    }
+
+    public static void SomethingDrop_Water(com.maddox.JGP.Point3d point3d, float f)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.set(0.0F, 0.0F, 0.0F);
+            l.set(point3d, o);
+            new ActorSnapToLand("3do/Effects/Explosion/WaterRing.sim", true, l, f * 0.2F, f, 1.0F, 0.0F, 2.5F);
+            com.maddox.il2.objects.sounds.SfxExplosion.crashParts(point3d, 2);
+            return;
+        }
+    }
+
+    public static void AirFlak(com.maddox.JGP.Point3d point3d, int i)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        o.set(0.0F, 90F, 0.0F);
+        l.set(point3d, o);
+        java.lang.String s = "effects/Explodes/Air/Zenitka/";
+        switch(i)
+        {
+        case 0: // '\0'
+            s = s + "USSR_85mm/";
+            break;
+
+        case 1: // '\001'
+            s = s + "Germ_88mm/";
+            break;
+
+        case 2: // '\002'
+            s = s + "USSR_25mm/";
+            break;
+
+        default:
+            s = s + "Germ_20mm/";
+            break;
+        }
+        com.maddox.il2.objects.sounds.SfxExplosion.zenitka(point3d, i);
+        float f = -1F;
+        com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, s + "SmokeBoiling.eff", f);
+        com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, s + "Burn.eff", f);
+        com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, s + "Sparks.eff", f);
+        com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, s + "SparksP.eff", f);
+    }
+
+    public static void ExplodeFuel(com.maddox.JGP.Point3d point3d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        com.maddox.il2.engine.Loc loc = new Loc(point3d);
+        com.maddox.il2.engine.Eff3DActor.New(loc, 1.0F, "3DO/Effects/Fireworks/Tank_Burn.eff", -1F);
+        com.maddox.il2.engine.Eff3DActor.New(loc, 1.0F, "3DO/Effects/Fireworks/Tank_SmokeBoiling.eff", -1F);
+        com.maddox.il2.engine.Eff3DActor.New(loc, 1.0F, "3DO/Effects/Fireworks/Tank_Sparks.eff", -1F);
+        com.maddox.il2.engine.Eff3DActor.New(loc, 1.0F, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1F);
+        if(point3d.z - com.maddox.il2.ai.World.cur().land().HQ(point3d.x, point3d.y) > 3D)
+        {
+            com.maddox.il2.objects.sounds.SfxExplosion.crashAir(point3d, 1);
+        } else
+        {
+            com.maddox.il2.ai.World.cur();
+            if(com.maddox.il2.ai.World.land().isWater(point3d.x, point3d.y))
+                com.maddox.il2.objects.sounds.SfxExplosion.crashAir(point3d, 2);
+            else
+                com.maddox.il2.objects.sounds.SfxExplosion.crashAir(point3d, 0);
+        }
+    }
+
+    private static void LinearExplode(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, float f, float f1, java.lang.String s, java.lang.String s1)
+    {
+        double d = point3d.distance(point3d1);
+        int i = (int)(((2D * d) / (double)f) * (double)f1);
+        if(i < 2)
+            i = 2;
+        com.maddox.JGP.Point3d point3d2 = new Point3d();
+        float f2 = 4F;
+        float f3 = 1.0F;
+        for(int j = 0; j < i; j++)
+        {
+            point3d2.interpolate(point3d, point3d1, java.lang.Math.random());
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d2, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, java.lang.Math.random() >= 0.5D ? s1 : s, 3F);
+        }
+
+    }
+
+    public static void ExplodeBridge(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, float f)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.LinearExplode(point3d, point3d1, f, 1.0F, "effects/Explodes/Objects/Bridges/SmokeBoiling.eff", "effects/Explodes/Objects/Bridges/SmokeBoiling2.eff");
+            com.maddox.il2.objects.sounds.SfxExplosion.bridge(point3d, point3d1, f);
+            return;
+        }
+    }
+
+    public static void ExplodeVagonArmor(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, float f)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        com.maddox.JGP.Point3d point3d2 = new Point3d();
+        for(int i = 0; i < 3; i++)
+        {
+            point3d2.interpolate(point3d, point3d1, java.lang.Math.random());
+            com.maddox.il2.objects.effects.Explosions.AirFlak(point3d2, 0);
+        }
+
+        com.maddox.il2.objects.effects.Explosions.LinearExplode(point3d, point3d1, f, 0.5F, "effects/Explodes/Objects/VagonArmor/SmokeBoiling.eff", "effects/Explodes/Objects/VagonArmor/SmokeBoiling2.eff");
+        com.maddox.il2.objects.sounds.SfxExplosion.wagon(point3d, point3d1, f, 6);
+    }
+
+    public static void ExplodeVagonFuel(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, float f)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.LinearExplode(point3d, point3d1, f, 0.75F, "effects/Explodes/Objects/VagonFuel/SmokeBoilingFire.eff", "effects/Explodes/Objects/VagonFuel/SmokeBoilingFire2.eff");
+            com.maddox.il2.objects.sounds.SfxExplosion.wagon(point3d, point3d1, f, 5);
+            return;
+        }
+    }
+
+    public static void bomb50_land(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, f1, "3DO/Effects/Fireworks/Tank_Burn.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(l, f1, "3DO/Effects/Fireworks/Tank_SmokeBoiling.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(l, f1, "3DO/Effects/Fireworks/Tank_Sparks.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(l, f1, "3DO/Effects/Fireworks/Tank_SparksP.eff", -1F);
+            return;
+        }
+    }
+
+    public static void BOMB250_Land(com.maddox.JGP.Point3d point3d, float f, float f1, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.fontain(point3d, f, f1, 0, 0, flag);
+            return;
+        }
+    }
+
+    public static void BOMB250_Water(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.fontain(point3d, f, f1, 1, 0, false);
+            return;
+        }
+    }
+
+    public static void BOMB250_Object(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.fontain(point3d, f, f1, 0, 0, false);
+            return;
+        }
+    }
+
+    public static void BOMB1000a_Land(com.maddox.JGP.Point3d point3d, float f, float f1, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.fontain(point3d, f, f1, 0, 2, flag);
+            return;
+        }
+    }
+
+    public static void BOMB1000a_Water(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.fontain(point3d, f, f1, 1, 2, false);
+            return;
+        }
+    }
+
+    public static void BOMB1000a_Object(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.fontain(point3d, f, f1, 0, 2, false);
+            return;
+        }
+    }
+
+    public static void bomb1000_land(com.maddox.JGP.Point3d point3d, float f, float f1, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.objects.effects.Explosions.SurfaceLight(0, 10000F, 1.0F);
+            com.maddox.il2.objects.effects.Explosions.SurfaceCrater(0, 112.1F, 600F);
+            com.maddox.il2.objects.effects.Explosions.ExplodeSurfaceWave(0, 2000F, 4.6F);
+            point3d.z += 5D;
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(buff).eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(circle).eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(column).eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(flare).eff", 0.1F);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(ring).eff", -1F);
+            return;
+        }
+    }
+
+    public static void bomb1000_water(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.objects.effects.Explosions.SurfaceLight(0, 10000F, 1.0F);
+            com.maddox.il2.objects.effects.Explosions.ExplodeSurfaceWave(1, 3000F, 6.6F);
+            point3d.z += 5D;
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(buff).eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(circle).eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(column).eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(flare).eff", 0.1F);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "3DO/Effects/Fireworks/FAB-1000(ring).eff", -1F);
+            return;
+        }
+    }
+
+    public static void bomb1000_object(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        else
+            return;
+    }
+
+    public static void bomb5000_land(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        else
+            return;
+    }
+
+    public static void bomb5000_water(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        else
+            return;
+    }
+
+    public static void bomb5000_object(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        else
+            return;
+    }
+
+    public static void bomb999999_object(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        else
+            return;
+    }
+
+    public static void RS82_Land(com.maddox.JGP.Point3d point3d, float f, float f1, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.fontain(point3d, f, f1, 0, 1, flag);
+            return;
+        }
+    }
+
+    public static void RS82_Water(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.fontain(point3d, f, f1, 1, 1, false);
+            return;
+        }
+    }
+
+    public static void RS82_Object(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.objects.effects.Explosions.fontain(point3d, f, f1, 0, 1, false);
+            return;
+        }
+    }
+
+    public static void Explode10Kg_Object(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Vector3f vector3f, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.setAT0(vector3f);
+            o.set(o.azimut(), o.tangage() + 180F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "effects/Explodes/Explode10Kg/Object/Sparks.eff", f);
+            return;
+        }
+    }
+
+    public static void Explode10Kg_Land(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "effects/Explodes/Explode10Kg/Land/Fontain.eff", f);
+            return;
+        }
+    }
+
+    public static void Explode10Kg_Water(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "effects/Explodes/Explode10Kg/Water/Fontain.eff", f);
+            o.set(0.0F, 0.0F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.objects.effects.Explosions.ExplodeSurfaceWave(1, 17.5F, 4F);
+            return;
+        }
+    }
+
+    public static void Bullet_Object(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Vector3d vector3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.setAT0(vector3d);
+            o.set(o.azimut(), o.tangage() + 180F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "effects/Explodes/Cannon/Object/Sparks.eff", f);
+            return;
+        }
+    }
+
+    public static void Bullet_Water(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "effects/Explodes/Bullet/Water/Fontain.eff", f);
+            return;
+        }
+    }
+
+    public static void Bullet_Land(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "effects/Explodes/Bullet/Land/Fontain.eff", f);
+            return;
+        }
+    }
+
+    public static void Cannon_Object(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Vector3f vector3f, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.setAT0(vector3f);
+            o.set(o.azimut(), o.tangage() + 180F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "effects/Explodes/Cannon/Object/Sparks.eff", f);
+            return;
+        }
+    }
+
+    public static void Cannon_Water(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "effects/Explodes/Cannon/Water/Fontain.eff", f);
+            o.set(0.0F, 0.0F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.objects.effects.Explosions.ExplodeSurfaceWave(1, 17.5F, 4F);
+            return;
+        }
+    }
+
+    public static void Cannon_Land(com.maddox.JGP.Point3d point3d, float f, float f1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            return;
+        } else
+        {
+            o.set(0.0F, 90F, 0.0F);
+            l.set(point3d, o);
+            com.maddox.il2.engine.Eff3DActor.New(l, 1.0F, "effects/Explodes/Cannon/Land/Fontain.eff", f);
+            return;
+        }
+    }
+
+    public static void generateSound(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, float f, int i, float f1)
+    {
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+            if(actor == null)
+                com.maddox.il2.objects.sounds.SfxExplosion.shell(point3d, 1, f, i, f1);
+            else
+            if(com.maddox.il2.engine.Engine.land().isWater(point3d.x, point3d.y))
+                com.maddox.il2.objects.sounds.SfxExplosion.shell(point3d, 2, f, i, f1);
+            else
+                com.maddox.il2.objects.sounds.SfxExplosion.shell(point3d, 0, f, i, f1);
+    }
+
+    public static void generateRocket(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, float f, int i, float f1)
+    {
+        com.maddox.il2.objects.effects.Explosions.generate(actor, point3d, f <= 15F ? 15F : f, i, f1, false);
+    }
+
+    public static void generate(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, float f, int i, float f1, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        if(actor != null)
+        {
+            com.maddox.il2.objects.effects.Explosions.generateSound(actor, point3d, f, i, f1);
+            rel.set(point3d);
+            actor.pos.getAbs(tmpLoc);
+            actor.pos.getCurrent(l);
+            l.interpolate(tmpLoc, 0.5D);
+            rel.sub(l);
+            if(i == 2)
+            {
+                if(f1 < 3F)
+                {
+                    switch(rnd.nextInt(1, 2))
+                    {
+                    case 1: // '\001'
+                        com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/Termit1W.eff", 10F);
+                        break;
+
+                    case 2: // '\002'
+                        com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/Termit1SM.eff", -1F);
+                        break;
+                    }
+                } else
+                {
+                    com.maddox.JGP.Vector3d vector3d = new Vector3d();
+                    for(int j = 0; j < 36; j++)
+                    {
+                        vector3d.set(com.maddox.il2.ai.World.Rnd().nextDouble(-20D, 20D), com.maddox.il2.ai.World.Rnd().nextDouble(-20D, 20D), com.maddox.il2.ai.World.Rnd().nextDouble(3D, 20D));
+                        float f2 = com.maddox.il2.ai.World.Rnd().nextFloat(3F, 15F);
+                        com.maddox.il2.objects.weapons.BallisticProjectile ballisticprojectile = new BallisticProjectile(point3d, vector3d, f2);
+                        com.maddox.il2.engine.Eff3DActor.New(ballisticprojectile, null, null, 1.0F, "3DO/Effects/Fireworks/PhosfourousFire.eff", f2);
+                    }
+
+                }
+                return;
+            }
+            if(actor instanceof com.maddox.il2.objects.ActorLand)
+            {
+                if(f < 15F)
+                {
+                    if(com.maddox.il2.engine.Engine.land().isWater(point3d.x, point3d.y))
+                        com.maddox.il2.objects.effects.Explosions.Explode10Kg_Water(point3d, 4F, 1.0F);
+                    else
+                        com.maddox.il2.objects.effects.Explosions.Explode10Kg_Land(point3d, 4F, 1.0F);
+                } else
+                if(f < 50F)
+                {
+                    if(com.maddox.il2.engine.Engine.land().isWater(point3d.x, point3d.y))
+                        com.maddox.il2.objects.effects.Explosions.RS82_Water(point3d, 4F, 1.0F);
+                    else
+                        com.maddox.il2.objects.effects.Explosions.RS82_Land(point3d, 4F, 1.0F, flag);
+                } else
+                if(f < 450F)
+                {
+                    if(com.maddox.il2.engine.Engine.land().isWater(point3d.x, point3d.y))
+                        com.maddox.il2.objects.effects.Explosions.BOMB250_Water(point3d, 4F, 1.0F);
+                    else
+                        com.maddox.il2.objects.effects.Explosions.BOMB250_Land(point3d, 4F, 1.0F, flag);
+                } else
+                if(f < 3000F)
+                {
+                    if(com.maddox.il2.engine.Engine.land().isWater(point3d.x, point3d.y))
+                        com.maddox.il2.objects.effects.Explosions.BOMB1000a_Water(point3d, 4F, 1.0F);
+                    else
+                        com.maddox.il2.objects.effects.Explosions.BOMB1000a_Land(point3d, 4F, 1.0F, flag);
+                } else
+                if(com.maddox.il2.engine.Engine.land().isWater(point3d.x, point3d.y))
+                    com.maddox.il2.objects.effects.Explosions.bomb1000_water(point3d, -1F, 1.0F);
+                else
+                    com.maddox.il2.objects.effects.Explosions.bomb1000_land(point3d, -1F, 1.0F, flag);
+            } else
+            if(f < 50F)
+            {
+                if(point3d.z - com.maddox.il2.engine.Engine.land().HQ_Air(point3d.x, point3d.y) < 5D)
+                    if(com.maddox.il2.engine.Engine.land().isWater(point3d.x, point3d.y))
+                        com.maddox.il2.objects.effects.Explosions.RS82_Water(point3d, 4F, 1.0F);
+                    else
+                        com.maddox.il2.objects.effects.Explosions.RS82_Land(point3d, 4F, 1.0F, flag);
+                com.maddox.il2.objects.effects.Explosions.bomb50_land(point3d, -1F, 1.0F);
+            } else
+            if(f < 450F)
+            {
+                if(point3d.z - com.maddox.il2.engine.Engine.land().HQ_Air(point3d.x, point3d.y) < 10D)
+                    if(com.maddox.il2.engine.Engine.land().isWater(point3d.x, point3d.y))
+                        com.maddox.il2.objects.effects.Explosions.BOMB250_Water(point3d, 4F, 1.0F);
+                    else
+                        com.maddox.il2.objects.effects.Explosions.BOMB250_Land(point3d, 4F, 1.0F, flag);
+                com.maddox.il2.objects.effects.Explosions.bomb50_land(point3d, -1F, 2.0F);
+            } else
+            if(f < 3000F)
+            {
+                if(point3d.z - com.maddox.il2.engine.Engine.land().HQ_Air(point3d.x, point3d.y) < 20D)
+                    if(com.maddox.il2.engine.Engine.land().isWater(point3d.x, point3d.y))
+                        com.maddox.il2.objects.effects.Explosions.BOMB1000a_Water(point3d, 4F, 1.0F);
+                    else
+                        com.maddox.il2.objects.effects.Explosions.BOMB1000a_Land(point3d, 4F, 1.0F, flag);
+                com.maddox.il2.objects.effects.Explosions.bomb50_land(point3d, -1F, 2.0F);
+            } else
+            {
+                if(point3d.z - com.maddox.il2.engine.Engine.land().HQ_Air(point3d.x, point3d.y) < 50D)
+                    if(com.maddox.il2.engine.Engine.land().isWater(point3d.x, point3d.y))
+                        com.maddox.il2.objects.effects.Explosions.bomb1000_water(point3d, -1F, 1.0F);
+                    else
+                        com.maddox.il2.objects.effects.Explosions.bomb1000_land(point3d, -1F, 1.0F, flag);
+                com.maddox.il2.objects.effects.Explosions.bomb50_land(point3d, -1F, 10F);
+            }
+        }
+    }
+
+    private static void playShotSound(com.maddox.il2.ai.Shot shot1)
+    {
+        double d = shot1.p.distanceSquared(com.maddox.il2.engine.Engine.soundListener().absPos);
+    }
+
+    public static void generateShot(com.maddox.il2.engine.Actor actor, com.maddox.il2.ai.Shot shot1)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        float f = shot1.mass;
+        com.maddox.il2.objects.effects.Explosions.playShotSound(shot1);
+        rel.set(shot1.p);
+        actor.pos.getAbs(tmpLoc);
+        actor.pos.getCurrent(l);
+        l.interpolate(tmpLoc, shot1.tickOffset);
+        rel.sub(l);
+        if(com.maddox.il2.ai.World.cur().isArcade() && !(actor instanceof com.maddox.il2.objects.air.Aircraft))
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 0.75F, "3DO/Effects/Fireworks/Sprite.eff", 30F);
+        if(!(actor instanceof com.maddox.il2.objects.ActorLand))
+            switch(rnd.nextInt(1, 4))
+            {
+            case 1: // '\001'
+                com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/Debris1A.eff", -1F);
+                break;
+
+            case 2: // '\002'
+                com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/Debris1B.eff", -1F);
+                break;
+
+            case 3: // '\003'
+                com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/Debris1C.eff", -1F);
+                break;
+
+            case 4: // '\004'
+                com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/Debris1D.eff", -1F);
+                break;
+            }
+        if(actor instanceof com.maddox.il2.objects.air.Aircraft)
+            return;
+        switch(shot1.bodyMaterial)
+        {
+        case 0: // '\0'
+            if(f < 1.0F)
+            {
+                com.maddox.il2.objects.effects.Explosions.Cannon_Land(shot1.p, 4F, 1.0F);
+                break;
+            }
+            if(f < 5F)
+            {
+                com.maddox.il2.objects.effects.Explosions.Explode10Kg_Land(shot1.p, 4F, 1.0F);
+                break;
+            }
+            if(f < 50F)
+                com.maddox.il2.objects.effects.Explosions.RS82_Land(shot1.p, 4F, 1.0F, false);
+            else
+                com.maddox.il2.objects.effects.Explosions.BOMB250_Land(shot1.p, 4F, 1.0F, false);
+            break;
+
+        case 3: // '\003'
+            break;
+
+        case 1: // '\001'
+            if(f < 0.023F)
+            {
+                com.maddox.il2.objects.effects.Explosions.Bullet_Water(shot1.p, 0.5F, 1.0F);
+                break;
+            }
+            if(f < 0.701F)
+            {
+                com.maddox.il2.objects.effects.Explosions.Cannon_Water(shot1.p, 4F, 1.0F);
+                break;
+            }
+            if(f < 8.55F)
+            {
+                com.maddox.il2.objects.effects.Explosions.Explode10Kg_Water(shot1.p, 4F, 1.0F);
+                break;
+            }
+            if(f < 24.2F)
+                com.maddox.il2.objects.effects.Explosions.RS82_Water(shot1.p, 4F, 1.0F);
+            else
+                com.maddox.il2.objects.effects.Explosions.BOMB250_Water(shot1.p, 4F, 1.0F);
+            break;
+
+        case 2: // '\002'
+            com.maddox.il2.objects.effects.Explosions.Bullet_Object(shot1.p, shot1.v, 0.5F, 1.0F);
+            break;
+
+        default:
+            com.maddox.il2.objects.effects.Explosions.Bullet_Object(shot1.p, shot1.v, 1.0F, 1.0F);
+            break;
+        }
+    }
+
+    public static void generateExplosion(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, float f, int i, float f1, double d)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        com.maddox.il2.objects.effects.Explosions.generateSound(actor, point3d, f, i, f1);
+        rel.set(point3d);
+        if(actor != null)
+        {
+            actor.pos.getAbs(tmpLoc);
+            actor.pos.getCurrent(l);
+            l.interpolate(tmpLoc, d);
+            rel.sub(l);
+        }
+        if(actor == null)
+            return;
+        if(actor instanceof com.maddox.il2.objects.ActorLand)
+        {
+            boolean flag = com.maddox.il2.engine.Engine.land().isWater(point3d.x, point3d.y);
+            if(f < 0.001F)
+            {
+                if(!flag)
+                    com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/12_Burn.eff", -1F);
+            } else
+            if(f < 0.005F)
+            {
+                if(!flag)
+                    com.maddox.il2.engine.Eff3DActor.New(rel, 1.0F, "3DO/Effects/Fireworks/20_SmokeBoiling.eff", -1F);
+            } else
+            if(f < 0.05F)
+            {
+                if(flag)
+                    com.maddox.il2.objects.effects.Explosions.Explode10Kg_Water(point3d, 4F, 1.0F);
+                else
+                    com.maddox.il2.objects.effects.Explosions.Explode10Kg_Land(point3d, 4F, 1.0F);
+            } else
+            if(f < 1.0F)
+            {
+                if(flag)
+                    com.maddox.il2.objects.effects.Explosions.RS82_Water(point3d, 4F, 1.0F);
+                else
+                    com.maddox.il2.objects.effects.Explosions.RS82_Land(point3d, 4F, 1.0F, false);
+            } else
+            if(f < 15F)
+            {
+                if(flag)
+                    com.maddox.il2.objects.effects.Explosions.Explode10Kg_Water(point3d, 4F, 1.0F);
+                else
+                    com.maddox.il2.objects.effects.Explosions.Explode10Kg_Land(point3d, 4F, 1.0F);
+            } else
+            if(f < 50F)
+            {
+                if(flag)
+                    com.maddox.il2.objects.effects.Explosions.RS82_Water(point3d, 4F, 1.0F);
+                else
+                    com.maddox.il2.objects.effects.Explosions.RS82_Land(point3d, 4F, 1.0F, false);
+            } else
+            if(flag)
+                com.maddox.il2.objects.effects.Explosions.BOMB250_Water(point3d, 4F, 1.0F);
+            else
+                com.maddox.il2.objects.effects.Explosions.BOMB250_Land(point3d, 4F, 1.0F, false);
+        } else
+        if(f < 0.001F)
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/12_Burn.eff", -1F);
+        else
+        if(f < 0.003F)
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/12mmPluff.eff", 0.15F);
+        else
+        if(f < 0.005F)
+        {
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 0.5F, "3DO/Effects/Fireworks/20_Burn.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 0.5F, "3DO/Effects/Fireworks/20_SmokeBoiling.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 0.5F, "3DO/Effects/Fireworks/20_Sparks.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 0.5F, "3DO/Effects/Fireworks/20_SparksP.eff", -1F);
+        } else
+        if(f < 0.01F)
+        {
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 0.75F, "3DO/Effects/Fireworks/20_Burn.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 0.75F, "3DO/Effects/Fireworks/20_SmokeBoiling.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 0.75F, "3DO/Effects/Fireworks/20_Sparks.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 0.75F, "3DO/Effects/Fireworks/20_SparksP.eff", -1F);
+        } else
+        if(f < 0.02F)
+        {
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/20_Burn.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/20_SmokeBoiling.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/20_Sparks.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/20_SparksP.eff", -1F);
+        } else
+        if(f < 1.0F)
+        {
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/37_Burn.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/37_SmokeBoiling.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/37_Sparks.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 1.0F, "3DO/Effects/Fireworks/37_SparksP.eff", -1F);
+        } else
+        if(f < 9999F)
+        {
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 3F, "3DO/Effects/Fireworks/37_Burn.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 3F, "3DO/Effects/Fireworks/37_SmokeBoiling.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 3F, "3DO/Effects/Fireworks/37_Sparks.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, rel, 3F, "3DO/Effects/Fireworks/37_SparksP.eff", -1F);
+        }
+    }
+
+    public static void generateComicBulb(com.maddox.il2.engine.Actor actor, java.lang.String s, float f)
+    {
+        if(!com.maddox.il2.engine.Config.isUSE_RENDER())
+            return;
+        if(!com.maddox.il2.ai.World.cur().isArcade())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.engine.Eff3DActor.New(actor, null, null, 1.0F, "3DO/Effects/Debug/msg" + s + ".eff", f);
+            return;
+        }
+    }
+
+    private static com.maddox.il2.engine.Orient o = new Orient();
+    private static com.maddox.il2.engine.Loc l = new Loc();
+    private static com.maddox.il2.engine.Loc rel = new Loc();
+    private static com.maddox.il2.engine.Loc tmpLoc = new Loc();
+    private static com.maddox.il2.ai.RangeRandom rnd = new RangeRandom();
+    private static com.maddox.JGP.Point3d ap;
+    private static final int LAND = 0;
+    private static final int WATER = 1;
+    private static final int OBJECT = 2;
+    private static final int BOMB250 = 0;
+    private static final int BOMB1000 = 2;
+    private static final int RS82 = 1;
+    public static final int HOUSEEXPL_WOOD_SMALL = 0;
+    public static final int HOUSEEXPL_WOOD_MIDDLE = 1;
+    public static final int HOUSEEXPL_ROCK_MIDDLE = 2;
+    public static final int HOUSEEXPL_ROCK_BIG = 3;
+    public static final int HOUSEEXPL_ROCK_HUGE = 4;
+    public static final int HOUSEEXPL_FUEL_SMALL = 5;
+    public static final int HOUSEEXPL_FUEL_BIG = 6;
+    private static boolean bEnableActorCrater = true;
+
 }

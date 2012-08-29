@@ -1,134 +1,184 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowHSliderInt.java
+
 package com.maddox.gwindow;
 
-public class GWindowHSliderInt extends GWindowDialogControl
+
+// Referenced classes of package com.maddox.gwindow:
+//            GWindowDialogControl, GRegion, GWindowLookAndFeel, GWindow
+
+public class GWindowHSliderInt extends com.maddox.gwindow.GWindowDialogControl
 {
-  public int posStart = 0;
-  public int posCount = 8;
-  public int pos = this.posStart + this.posCount / 2;
-  public boolean[] posEnable;
-  public boolean bSlidingNotify = false;
-  private int posSlidingSave;
-  private float mouseSlidingX;
-  public float xM;
-  public float dxM;
 
-  public int pos()
-  {
-    return this.pos;
-  }
-  public boolean setPos(int paramInt, boolean paramBoolean) {
-    int i = this.pos;
-    this.pos = paramInt;
-    resized();
-    if (i != this.pos) {
-      if (paramBoolean)
-        notify(2, 0);
-      return true;
-    }
-    return false;
-  }
-
-  public void setRange(int paramInt1, int paramInt2, int paramInt3) {
-    this.posStart = paramInt1;
-    this.posCount = paramInt2;
-    this.pos = paramInt3;
-    resized();
-  }
-
-  public void checkRange() {
-    if (this.pos < this.posStart) this.pos = this.posStart;
-    if (this.pos >= this.posStart + this.posCount) this.pos = (this.posStart + this.posCount - 1);
-    if (this.posEnable != null)
-      for (int i = 0; i < this.posCount; i++) {
-        if (this.posEnable[(this.pos - this.posStart)] != 0)
-          return;
-        if (this.pos == this.posStart)
-          return;
-        this.pos -= 1;
-      }
-  }
-
-  public void keyboardKey(int paramInt, boolean paramBoolean)
-  {
-    switch (paramInt) {
-    case 37:
-      if ((paramBoolean) && (this.bEnable))
-        setPos(this.pos - 1, true);
-      return;
-    case 39:
-      if ((paramBoolean) && (this.bEnable))
-        setPos(this.pos + 1, true);
-      return;
-    case 36:
-      if ((paramBoolean) && (this.bEnable))
-        setPos(this.posStart, true);
-      return;
-    case 35:
-      if ((paramBoolean) && (this.bEnable))
-        setPos(this.posStart + this.posCount - 1, true);
-      return;
-    case 38:
+    public int pos()
+    {
+        return pos;
     }
 
-    super.keyboardKey(paramInt, paramBoolean);
-  }
-
-  public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-    super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-    if (!this.bEnable) { mouseCapture(false); return; }
-    if (paramInt != 0) return;
-    if ((isMouseCaptured()) && (!paramBoolean)) {
-      mouseCapture(false);
-      if ((!this.bSlidingNotify) && 
-        (this.posSlidingSave != this.pos) && (this.bNotify)) {
-        notify(2, 0);
-      }
-      return;
+    public boolean setPos(int i, boolean flag)
+    {
+        int j = pos;
+        pos = i;
+        resized();
+        if(j != pos)
+        {
+            if(flag)
+                notify(2, 0);
+            return true;
+        } else
+        {
+            return false;
+        }
     }
-    if (paramFloat1 < this.xM) {
-      if (paramBoolean)
-        setPos(this.pos - 1, true);
-    } else if (paramFloat1 > this.xM + this.dxM) {
-      if (paramBoolean)
-        setPos(this.pos + 1, true);
+
+    public void setRange(int i, int j, int k)
+    {
+        posStart = i;
+        posCount = j;
+        pos = k;
+        resized();
     }
-    else if (paramBoolean) {
-      mouseCapture(true);
-      this.posSlidingSave = this.pos;
-      this.mouseSlidingX = paramFloat1;
+
+    public void checkRange()
+    {
+        if(pos < posStart)
+            pos = posStart;
+        if(pos >= posStart + posCount)
+            pos = (posStart + posCount) - 1;
+        if(posEnable != null)
+        {
+            for(int i = 0; i < posCount; i++)
+            {
+                if(posEnable[pos - posStart])
+                    return;
+                if(pos == posStart)
+                    return;
+                pos--;
+            }
+
+        }
     }
-  }
 
-  public void mouseMove(float paramFloat1, float paramFloat2)
-  {
-    if ((this.bEnable) && (isMouseCaptured()))
-      setPos((int)((paramFloat1 - this.mouseSlidingX) / this.win.dx * this.posCount + this.posSlidingSave + 0.5F), this.bSlidingNotify);
-  }
+    public void keyboardKey(int i, boolean flag)
+    {
+        switch(i)
+        {
+        case 37: // '%'
+            if(flag && bEnable)
+                setPos(pos - 1, true);
+            return;
 
-  public void render() {
-    lookAndFeel().render(this);
-  }
+        case 39: // '\''
+            if(flag && bEnable)
+                setPos(pos + 1, true);
+            return;
 
-  public void resized() {
-    checkRange();
-    lookAndFeel().setupHSliderIntSizes(this);
-  }
+        case 36: // '$'
+            if(flag && bEnable)
+                setPos(posStart, true);
+            return;
 
-  public void created() {
-    super.created();
-    resized();
-  }
+        case 35: // '#'
+            if(flag && bEnable)
+                setPos((posStart + posCount) - 1, true);
+            return;
 
-  public GWindowHSliderInt(GWindow paramGWindow) {
-    doNew(paramGWindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
-  }
+        case 38: // '&'
+        default:
+            super.keyboardKey(i, flag);
+            return;
+        }
+    }
 
-  public GWindowHSliderInt(GWindow paramGWindow, int paramInt1, int paramInt2, int paramInt3, float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    this.posStart = paramInt1;
-    this.posCount = paramInt2;
-    this.pos = paramInt3;
-    float f = paramGWindow.lookAndFeel().getHSliderIntH() / paramGWindow.lookAndFeel().metric();
-    doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, f, true);
-  }
+    public void mouseButton(int i, boolean flag, float f, float f1)
+    {
+        super.mouseButton(i, flag, f, f1);
+        if(!bEnable)
+        {
+            mouseCapture(false);
+            return;
+        }
+        if(i != 0)
+            return;
+        if(isMouseCaptured() && !flag)
+        {
+            mouseCapture(false);
+            if(!bSlidingNotify && posSlidingSave != pos && bNotify)
+                notify(2, 0);
+            return;
+        }
+        if(f < xM)
+        {
+            if(flag)
+                setPos(pos - 1, true);
+        } else
+        if(f > xM + dxM)
+        {
+            if(flag)
+                setPos(pos + 1, true);
+        } else
+        if(flag)
+        {
+            mouseCapture(true);
+            posSlidingSave = pos;
+            mouseSlidingX = f;
+        }
+    }
+
+    public void mouseMove(float f, float f1)
+    {
+        if(bEnable && isMouseCaptured())
+            setPos((int)(((f - mouseSlidingX) / win.dx) * (float)posCount + (float)posSlidingSave + 0.5F), bSlidingNotify);
+    }
+
+    public void render()
+    {
+        lookAndFeel().render(this);
+    }
+
+    public void resized()
+    {
+        checkRange();
+        lookAndFeel().setupHSliderIntSizes(this);
+    }
+
+    public void created()
+    {
+        super.created();
+        resized();
+    }
+
+    public GWindowHSliderInt(com.maddox.gwindow.GWindow gwindow)
+    {
+        posStart = 0;
+        posCount = 8;
+        pos = posStart + posCount / 2;
+        bSlidingNotify = false;
+        doNew(gwindow, 0.0F, 0.0F, 1.0F, 1.0F, false);
+    }
+
+    public GWindowHSliderInt(com.maddox.gwindow.GWindow gwindow, int i, int j, int k, float f, float f1, float f2)
+    {
+        posStart = 0;
+        posCount = 8;
+        pos = posStart + posCount / 2;
+        bSlidingNotify = false;
+        posStart = i;
+        posCount = j;
+        pos = k;
+        float f3 = gwindow.lookAndFeel().getHSliderIntH() / gwindow.lookAndFeel().metric();
+        doNew(gwindow, f, f1, f2, f3, true);
+    }
+
+    public int posStart;
+    public int posCount;
+    public int pos;
+    public boolean posEnable[];
+    public boolean bSlidingNotify;
+    private int posSlidingSave;
+    private float mouseSlidingX;
+    public float xM;
+    public float dxM;
 }

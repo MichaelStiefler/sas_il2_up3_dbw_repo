@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GameSpy.java
+
 package com.maddox.il2.net;
 
 import com.maddox.il2.ai.Army;
@@ -20,560 +25,734 @@ import com.maddox.rts.net.IPAddress;
 import java.io.PrintStream;
 import java.util.List;
 
+// Referenced classes of package com.maddox.il2.net:
+//            NetUser, Connect, NetServerParams, NetUserStat, 
+//            NetBanned
+
 public class GameSpy
-  implements MsgNetExtListener, MsgTimeOutListener
+    implements com.maddox.rts.MsgNetExtListener, com.maddox.rts.MsgTimeOutListener
 {
-  public String userName = null;
-  public String serverIP = null;
-  public String roomName = null;
-  public String gameType = "dogfight";
-  public int maxClients = 16;
-  private static final String gamename = "il2sturmovikfb";
-  private static final String gamever = "4.10.1m";
-  private static final String secret_key = "h53Ew8";
-  public static int MASTER_PORT = 27900;
-  public static String MASTER_ADDR = "master.gamespy.com";
-  private static final int MAX_DATA_SIZE = 1400;
-  private static final int FIRST_HB_TIME = 30000;
-  private static final int HB_TIME = 300000;
-  private static final int MAX_FIRST_COUNT = 10;
-  private int queryid = 1;
-  private int packetnumber = 0;
-  private int qport = 0;
-  private int no_query = 1;
-  private String room;
-  private StringBuffer strBuf = new StringBuffer();
 
-  private boolean _bGameModeWait = true;
-
-  private int[] armyScore = new int[Army.amountNet()];
-
-  private char[] _encrypted_val = new char[''];
-  private char[] _encoded_val = new char['È'];
-  private MsgTimeOut ticker;
-  private NetSocket master_socket;
-  private NetAddress master_address;
-  private NetSocket in_socket;
-  private NetAddress in_address;
-  private int in_port;
-  private StringBuffer outBuf = new StringBuffer();
-  private byte[] _outBuf = new byte[1500];
-
-  private static final String[] queries = { "basic", "info", "rules", "players", "status", "packets", "echo", "secure" };
-  private static final int qtbasic = 0;
-  private static final int qtinfo = 1;
-  private static final int qtrules = 2;
-  private static final int qtplayers = 3;
-  private static final int qtstatus = 4;
-  private static final int qtpackets = 5;
-  private static final int qtecho = 6;
-  private static final int qtsecure = 7;
-  private StringBuffer queryBuf = new StringBuffer();
-  private int queryVal_0;
-  private int queryVal_1;
-  int[] _trip = new int[3];
-  int[] _kwart = new int[4];
-
-  private char[] _state = new char[256];
-
-  public boolean isServer()
-  {
-    return this.serverIP == null;
-  }
-
-  public void sendStatechanged()
-  {
-    send_heartbeat(1);
-  }
-
-  public void sendExiting() {
-    send_heartbeat(2);
-  }
-
-  private void correctASCII()
-  {
-    int i = this.strBuf.length();
-    for (int j = 0; j < i; j++) {
-      int k = this.strBuf.charAt(j);
-      if ((k & 0x7F) != k)
-        this.strBuf.setCharAt(j, '?');
-    }
-  }
-
-  private void send_basic()
-  {
-    this.strBuf.append("\\gamename\\"); this.strBuf.append("il2sturmovikfb");
-    this.strBuf.append("\\gamever\\"); this.strBuf.append("4.10.1m");
-    this.strBuf.append("\\location\\"); this.strBuf.append(1);
-    buffer_send(this.strBuf);
-    this.strBuf.delete(0, this.strBuf.length());
-  }
-
-  private void send_info()
-  {
-    this.strBuf.append("\\hostname\\"); this.strBuf.append(Main.cur().netServerParams.serverName());
-    correctASCII();
-    this.strBuf.append("\\hostport\\");
-    if (isListenerOnly()) this.strBuf.append(Config.cur.netLocalPort); else
-      this.strBuf.append(this.qport);
-    if ((Mission.cur() != null) && (Mission.cur().name() != null)) {
-      this.strBuf.append("\\mapname\\"); this.strBuf.append(Mission.cur().name());
-    }this.strBuf.append("\\gametype\\");
-    if (Main.cur().netServerParams.isCoop())
-      this.strBuf.append("coop");
-    else if (Main.cur().netServerParams.isDogfight())
-      this.strBuf.append("dogfight");
-    else if (Main.cur().netServerParams.isSingle())
-      this.strBuf.append("single");
-    int i = NetEnv.hosts().size();
-    if (!Main.cur().netServerParams.isDedicated())
-      i++;
-    this.strBuf.append("\\numplayers\\"); this.strBuf.append(i);
-    this.strBuf.append("\\maxplayers\\"); this.strBuf.append(Main.cur().netServerParams.getMaxUsers());
-    String str = "unknown";
-    if (RTSConf.isRequestExitApp()) {
-      str = "exiting";
-    }
-    else if (Main.cur().netServerParams.isCoop()) {
-      if (NetEnv.cur().connect.isBindEnable()) { str = "wait"; this._bGameModeWait = true; } else {
-        str = "closedplaying"; this._bGameModeWait = false;
-      }
-    } else if (Main.cur().netServerParams.isDogfight()) {
-      if (Mission.isPlaying()) { str = "openplaying"; this._bGameModeWait = false; } else {
-        str = "wait"; this._bGameModeWait = true;
-      }
-    } else if (Main.cur().netServerParams.isSingle()) {
-      str = "closedplaying"; this._bGameModeWait = false;
-    }
-
-    this.strBuf.append("\\gamemode\\"); this.strBuf.append(str);
-    if (this.room != null) {
-      this.strBuf.append("\\groupid\\"); this.strBuf.append(this.room);
-    }
-    buffer_send(this.strBuf);
-    this.strBuf.delete(0, this.strBuf.length());
-  }
-
-  private void send_rules()
-  {
-    DifficultySettings localDifficultySettings = World.cur().diffCur;
-    this.strBuf.append("\\SeparateEStart\\"); this.strBuf.append(localDifficultySettings.SeparateEStart ? "1" : "0");
-    this.strBuf.append("\\ComplexEManagement\\"); this.strBuf.append(localDifficultySettings.ComplexEManagement ? "1" : "0");
-    this.strBuf.append("\\EngineOverheat\\"); this.strBuf.append(localDifficultySettings.Engine_Overheat ? "1" : "0");
-    this.strBuf.append("\\TorqueGyroEffects\\"); this.strBuf.append(localDifficultySettings.Torque_N_Gyro_Effects ? "1" : "0");
-    this.strBuf.append("\\FlutterEffect\\"); this.strBuf.append(localDifficultySettings.Flutter_Effect ? "1" : "0");
-    this.strBuf.append("\\WindTurbulence\\"); this.strBuf.append(localDifficultySettings.Wind_N_Turbulence ? "1" : "0");
-    this.strBuf.append("\\StallsSpins\\"); this.strBuf.append(localDifficultySettings.Stalls_N_Spins ? "1" : "0");
-    this.strBuf.append("\\Vulnerability\\"); this.strBuf.append(localDifficultySettings.Vulnerability ? "1" : "0");
-    this.strBuf.append("\\BlackoutsRedouts\\"); this.strBuf.append(localDifficultySettings.Blackouts_N_Redouts ? "1" : "0");
-    this.strBuf.append("\\RealisticGunnery\\"); this.strBuf.append(localDifficultySettings.Realistic_Gunnery ? "1" : "0");
-    this.strBuf.append("\\LimitedAmmo\\"); this.strBuf.append(localDifficultySettings.Limited_Ammo ? "1" : "0");
-    this.strBuf.append("\\LimitedFuel\\"); this.strBuf.append(localDifficultySettings.Limited_Fuel ? "1" : "0");
-    this.strBuf.append("\\CockpitAlwaysOn\\"); this.strBuf.append(localDifficultySettings.Cockpit_Always_On ? "1" : "0");
-    this.strBuf.append("\\NoOutsideViews\\"); this.strBuf.append(localDifficultySettings.No_Outside_Views ? "1" : "0");
-    this.strBuf.append("\\HeadShake\\"); this.strBuf.append(localDifficultySettings.Head_Shake ? "1" : "0");
-    this.strBuf.append("\\NoIcons\\"); this.strBuf.append(localDifficultySettings.No_Icons ? "1" : "0");
-    this.strBuf.append("\\NoPadlock\\"); this.strBuf.append(localDifficultySettings.No_Padlock ? "1" : "0");
-    this.strBuf.append("\\Clouds\\"); this.strBuf.append(localDifficultySettings.Clouds ? "1" : "0");
-    this.strBuf.append("\\NoInstantSuccess\\"); this.strBuf.append(localDifficultySettings.NoInstantSuccess ? "1" : "0");
-    this.strBuf.append("\\TakeoffLanding\\"); this.strBuf.append(localDifficultySettings.Takeoff_N_Landing ? "1" : "0");
-    this.strBuf.append("\\RealisticLandings\\"); this.strBuf.append(localDifficultySettings.Realistic_Landings ? "1" : "0");
-    this.strBuf.append("\\NoMapIcons\\"); this.strBuf.append(localDifficultySettings.No_Map_Icons ? "1" : "0");
-    this.strBuf.append("\\NoMinimapPath\\"); this.strBuf.append(localDifficultySettings.NoMinimapPath ? "1" : "0");
-    this.strBuf.append("\\NoSpeedBar\\"); this.strBuf.append(localDifficultySettings.NoSpeedBar ? "1" : "0");
-
-    this.strBuf.append("\\Reliability\\"); this.strBuf.append(localDifficultySettings.Reliability ? "1" : "0");
-    this.strBuf.append("\\GLimits\\"); this.strBuf.append(localDifficultySettings.G_Limits ? "1" : "0");
-    this.strBuf.append("\\RealisticPilotVulnerability\\"); this.strBuf.append(localDifficultySettings.RealisticPilotVulnerability ? "1" : "0");
-    this.strBuf.append("\\RealisticNavigationInstruments\\"); this.strBuf.append(localDifficultySettings.RealisticNavigationInstruments ? "1" : "0");
-    this.strBuf.append("\\NoPlayerIcon\\"); this.strBuf.append(localDifficultySettings.No_Player_Icon ? "1" : "0");
-    this.strBuf.append("\\NoFogOfWarIcons\\"); this.strBuf.append(localDifficultySettings.No_Fog_Of_War_Icons ? "1" : "0");
-
-    if (Main.cur().netServerParams.isProtected())
-      this.strBuf.append("\\password\\1");
-    buffer_send(this.strBuf);
-    this.strBuf.delete(0, this.strBuf.length());
-  }
-
-  private void send_player(int paramInt, NetUser paramNetUser) {
-    this.strBuf.append("\\player_" + paramInt + "\\"); this.strBuf.append(paramNetUser.shortName());
-    this.strBuf.append("\\score_" + paramInt + "\\"); this.strBuf.append((int)paramNetUser.stat().score);
-    this.strBuf.append("\\ping_" + paramInt + "\\"); this.strBuf.append(paramNetUser.ping);
-    this.strBuf.append("\\team_" + paramInt + "\\"); this.strBuf.append(paramNetUser.getArmy());
-    int i = paramNetUser.getArmy();
-    if (this.armyScore[i] < 0)
-      this.armyScore[i] = 0;
-    this.armyScore[i] += (int)paramNetUser.stat().score;
-  }
-
-  private void send_players()
-  {
-    for (int i = 0; i < this.armyScore.length; i++) {
-      this.armyScore[i] = -1;
-    }
-    i = 0;
-    if (!Main.cur().netServerParams.isDedicated())
-      send_player(i++, (NetUser)NetEnv.host());
-    List localList = NetEnv.hosts();
-    int j = localList.size();
-    for (int k = 0; k < j; k++) {
-      send_player(i++, (NetUser)localList.get(k));
-    }
-    for (k = 0; k < this.armyScore.length; k++) {
-      if (this.armyScore[k] >= 0) {
-        this.strBuf.append("\\team_t" + k + "\\" + Army.name(k));
-        this.strBuf.append("\\score_t" + k + "\\" + this.armyScore[k]);
-      }
-    }
-    correctASCII();
-    buffer_send(this.strBuf);
-    this.strBuf.delete(0, this.strBuf.length());
-  }
-
-  private void send_echo(String paramString)
-  {
-    if (paramString.length() > 1350)
-      return;
-    this.strBuf.append("\\echo\\"); this.strBuf.append(paramString);
-    buffer_send(this.strBuf);
-    this.strBuf.delete(0, this.strBuf.length());
-  }
-
-  private void send_final(String paramString)
-  {
-    if (paramString != null) {
-      int i = paramString.length();
-      if (i > 128) return;
-      paramString.getChars(0, i, this._encrypted_val, 0);
-      gs_encrypt("h53Ew8", this._encrypted_val, i);
-      int j = gs_encode(this._encrypted_val, i, this._encoded_val);
-      this.strBuf.append("\\validate\\"); this.strBuf.append(this._encoded_val, 0, j);
-      buffer_send(this.strBuf);
-      this.strBuf.delete(0, this.strBuf.length());
-    }
-    this.strBuf.append("\\final\\"); buffer_send(this.strBuf);
-    this.strBuf.delete(0, this.strBuf.length());
-    packet_send();
-  }
-
-  public void msgTimeOut(Object paramObject)
-  {
-    int i = 300000;
-    if ((this.master_socket != null) && (this.master_address != null) && (MASTER_PORT != 0)) {
-      send_heartbeat(0);
-      if (this.no_query > 0) {
-        this.no_query += 1;
-        if (this.no_query > 10)
-          this.no_query = 0;
-        else
-          i = 30000;
-      }
-    }
-    else {
-      i = 30000;
-    }
-    this.ticker.post(Time.currentReal() + i);
-  }
-
-  public void set(String paramString, NetSocket paramNetSocket, int paramInt)
-  {
-    if (paramString != null)
-      this.room = paramString;
-    this.master_socket = paramNetSocket;
-    this.qport = paramInt;
-    if ((this.master_socket != null) && (this.master_address == null)) {
-      try {
-        IPAddress localIPAddress = new IPAddress();
-        localIPAddress.create(MASTER_ADDR);
-        this.master_address = localIPAddress;
-      } catch (Exception localException) {
-        System.out.println("Unknown master address: " + MASTER_ADDR);
-      }
-
-      if (this.ticker == null) {
-        this.ticker = new MsgTimeOut();
-        this.ticker.setNotCleanAfterSend();
-        this.ticker.setListener(this);
-        this.ticker.setFlags(64);
-      }
-      if (!this.ticker.busy()) {
-        this.ticker.post();
-      }
-      NetEnv.cur().msgAddListener(this, null);
-      onMsgTimeout();
-    }
-  }
-
-  public void setListenerOnly(String paramString) {
-    this.room = paramString;
-    NetEnv.cur().msgAddListener(this, null);
-  }
-
-  public boolean isListenerOnly() {
-    return Main.cur().netGameSpyListener == this;
-  }
-
-  public void onMsgTimeout() {
-    new MsgInvokeMethod("onMsgTimeout").post(64, this, 5.0D);
-    if ((Main.cur() != null) && (Main.cur().netServerParams != null) && (NetEnv.cur() != null) && (NetEnv.cur().connect != null))
+    public GameSpy()
     {
-      int i;
-      if (Main.cur().netServerParams.isCoop()) {
-        if (NetEnv.cur().connect.isBindEnable()) i = 1; else
-          i = 0;
-      }
-      else if (Mission.isPlaying()) i = 0; else {
-        i = 1;
-      }
-      if (i != this._bGameModeWait)
-        sendStatechanged();
+        userName = null;
+        serverIP = null;
+        roomName = null;
+        gameType = "dogfight";
+        maxClients = 16;
+        queryid = 1;
+        packetnumber = 0;
+        qport = 0;
+        no_query = 1;
+        strBuf = new StringBuffer();
+        _bGameModeWait = true;
+        armyScore = new int[com.maddox.il2.ai.Army.amountNet()];
+        _encrypted_val = new char[128];
+        _encoded_val = new char[200];
+        outBuf = new StringBuffer();
+        _outBuf = new byte[1500];
+        queryBuf = new StringBuffer();
+        _trip = new int[3];
+        _kwart = new int[4];
+        _state = new char[256];
     }
-  }
 
-  private void send_heartbeat(int paramInt)
-  {
-    if ((this.master_socket == null) || (this.master_address == null) || (MASTER_PORT == 0))
-      return;
-    this.outBuf.append("\\heartbeat\\"); this.outBuf.append(this.qport);
-    this.outBuf.append("\\gamename\\"); this.outBuf.append("il2sturmovikfb");
-    if (paramInt != 0) {
-      this.outBuf.append("\\statechanged\\"); this.outBuf.append(paramInt);
+    public boolean isServer()
+    {
+        return serverIP == null;
     }
 
-    int i = this.outBuf.length();
-    for (int j = 0; j < i; j++)
-      this._outBuf[j] = (byte)(this.outBuf.charAt(j) & 0xFF);
-    this.outBuf.delete(0, i);
-
-    RTSConf.cur.netEnv.postExt(this._outBuf, 0, i, this.master_socket, this.master_address, MASTER_PORT);
-  }
-
-  private void packet_send()
-  {
-    if (this.outBuf.length() == 0)
-      return;
-    this.packetnumber += 1;
-    this.outBuf.append("\\queryid\\"); this.outBuf.append(this.queryid); this.outBuf.append("."); this.outBuf.append(this.packetnumber);
-
-    int i = this.outBuf.length();
-    for (int j = 0; j < i; j++)
-      this._outBuf[j] = (byte)(this.outBuf.charAt(j) & 0xFF);
-    this.outBuf.delete(0, i);
-
-    RTSConf.cur.netEnv.postExt(this._outBuf, 0, i, this.in_socket, this.in_address, this.in_port);
-  }
-
-  private void strcat(StringBuffer paramStringBuffer1, StringBuffer paramStringBuffer2) {
-    strcat(paramStringBuffer1, paramStringBuffer2, 0, paramStringBuffer2.length());
-  }
-  private void strcat(StringBuffer paramStringBuffer1, StringBuffer paramStringBuffer2, int paramInt1, int paramInt2) {
-    for (int i = 0; i < paramInt2; i++)
-      paramStringBuffer1.append(paramStringBuffer2.charAt(paramInt1 + i));
-  }
-
-  private void buffer_send(StringBuffer paramStringBuffer)
-  {
-    buffer_send(paramStringBuffer, 0, paramStringBuffer.length());
-  }
-  private void buffer_send(StringBuffer paramStringBuffer, int paramInt1, int paramInt2) {
-    if (this.outBuf.length() + paramInt2 < 1350) {
-      strcat(this.outBuf, paramStringBuffer, paramInt1, paramInt2);
+    public void sendStatechanged()
+    {
+        send_heartbeat(1);
     }
-    else if (paramInt2 > 1350) {
-      int i = 0;
-      int j = 0;
-      int k = 0;
-      while (i < 1350) {
-        if ('\\' == paramStringBuffer.charAt(paramInt1 + i)) {
-          if (k % 2 == 0)
-            j = i;
-          k++;
+
+    public void sendExiting()
+    {
+        send_heartbeat(2);
+    }
+
+    private void correctASCII()
+    {
+        int i = strBuf.length();
+        for(int j = 0; j < i; j++)
+        {
+            char c = strBuf.charAt(j);
+            if((c & 0x7f) != c)
+                strBuf.setCharAt(j, '?');
         }
-        i++;
-      }
-      if (j == 0)
-        return;
-      buffer_send(paramStringBuffer, 0, j);
-      buffer_send(paramStringBuffer, j, paramInt2 - j);
-    } else {
-      packet_send();
-      strcat(this.outBuf, paramStringBuffer, paramInt1, paramInt2);
+
     }
-  }
 
-  private void setQuery(byte[] paramArrayOfByte)
-  {
-    this.queryBuf.delete(0, this.queryBuf.length());
-    for (int i = 0; i < paramArrayOfByte.length; i++)
-      this.queryBuf.append((char)paramArrayOfByte[i]);
-  }
+    private void send_basic()
+    {
+        strBuf.append("\\gamename\\");
+        strBuf.append("il2sturmovikfb");
+        strBuf.append("\\gamever\\");
+        strBuf.append("4.10m");
+        strBuf.append("\\location\\");
+        strBuf.append(1);
+        buffer_send(strBuf);
+        strBuf.delete(0, strBuf.length());
+    }
 
-  private boolean isExistQueryKey(int paramInt) {
-    String str = queries[paramInt];
-    int i = this.queryBuf.length();
-    int j = str.length();
-    int k = i - j;
-    int m = 0;
-    while (m <= k) {
-      int n = this.queryBuf.charAt(m++);
-      if (n == 92) {
+    private void send_info()
+    {
+        strBuf.append("\\hostname\\");
+        strBuf.append(com.maddox.il2.game.Main.cur().netServerParams.serverName());
+        correctASCII();
+        strBuf.append("\\hostport\\");
+        if(isListenerOnly())
+            strBuf.append(com.maddox.il2.engine.Config.cur.netLocalPort);
+        else
+            strBuf.append(qport);
+        if(com.maddox.il2.game.Mission.cur() != null && com.maddox.il2.game.Mission.cur().name() != null)
+        {
+            strBuf.append("\\mapname\\");
+            strBuf.append(com.maddox.il2.game.Mission.cur().name());
+        }
+        strBuf.append("\\gametype\\");
+        if(com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+            strBuf.append("coop");
+        else
+        if(com.maddox.il2.game.Main.cur().netServerParams.isDogfight())
+            strBuf.append("dogfight");
+        else
+        if(com.maddox.il2.game.Main.cur().netServerParams.isSingle())
+            strBuf.append("single");
+        int i = com.maddox.rts.NetEnv.hosts().size();
+        if(!com.maddox.il2.game.Main.cur().netServerParams.isDedicated())
+            i++;
+        strBuf.append("\\numplayers\\");
+        strBuf.append(i);
+        strBuf.append("\\maxplayers\\");
+        strBuf.append(com.maddox.il2.game.Main.cur().netServerParams.getMaxUsers());
+        java.lang.String s = "unknown";
+        if(com.maddox.rts.RTSConf.isRequestExitApp())
+            s = "exiting";
+        else
+        if(com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+        {
+            if(com.maddox.rts.NetEnv.cur().connect.isBindEnable())
+            {
+                s = "wait";
+                _bGameModeWait = true;
+            } else
+            {
+                s = "closedplaying";
+                _bGameModeWait = false;
+            }
+        } else
+        if(com.maddox.il2.game.Main.cur().netServerParams.isDogfight())
+        {
+            if(com.maddox.il2.game.Mission.isPlaying())
+            {
+                s = "openplaying";
+                _bGameModeWait = false;
+            } else
+            {
+                s = "wait";
+                _bGameModeWait = true;
+            }
+        } else
+        if(com.maddox.il2.game.Main.cur().netServerParams.isSingle())
+        {
+            s = "closedplaying";
+            _bGameModeWait = false;
+        }
+        strBuf.append("\\gamemode\\");
+        strBuf.append(s);
+        if(room != null)
+        {
+            strBuf.append("\\groupid\\");
+            strBuf.append(room);
+        }
+        buffer_send(strBuf);
+        strBuf.delete(0, strBuf.length());
+    }
+
+    private void send_rules()
+    {
+        com.maddox.il2.ai.DifficultySettings difficultysettings = com.maddox.il2.ai.World.cur().diffCur;
+        strBuf.append("\\SeparateEStart\\");
+        strBuf.append(difficultysettings.SeparateEStart ? "1" : "0");
+        strBuf.append("\\ComplexEManagement\\");
+        strBuf.append(difficultysettings.ComplexEManagement ? "1" : "0");
+        strBuf.append("\\EngineOverheat\\");
+        strBuf.append(difficultysettings.Engine_Overheat ? "1" : "0");
+        strBuf.append("\\TorqueGyroEffects\\");
+        strBuf.append(difficultysettings.Torque_N_Gyro_Effects ? "1" : "0");
+        strBuf.append("\\FlutterEffect\\");
+        strBuf.append(difficultysettings.Flutter_Effect ? "1" : "0");
+        strBuf.append("\\WindTurbulence\\");
+        strBuf.append(difficultysettings.Wind_N_Turbulence ? "1" : "0");
+        strBuf.append("\\StallsSpins\\");
+        strBuf.append(difficultysettings.Stalls_N_Spins ? "1" : "0");
+        strBuf.append("\\Vulnerability\\");
+        strBuf.append(difficultysettings.Vulnerability ? "1" : "0");
+        strBuf.append("\\BlackoutsRedouts\\");
+        strBuf.append(difficultysettings.Blackouts_N_Redouts ? "1" : "0");
+        strBuf.append("\\RealisticGunnery\\");
+        strBuf.append(difficultysettings.Realistic_Gunnery ? "1" : "0");
+        strBuf.append("\\LimitedAmmo\\");
+        strBuf.append(difficultysettings.Limited_Ammo ? "1" : "0");
+        strBuf.append("\\LimitedFuel\\");
+        strBuf.append(difficultysettings.Limited_Fuel ? "1" : "0");
+        strBuf.append("\\CockpitAlwaysOn\\");
+        strBuf.append(difficultysettings.Cockpit_Always_On ? "1" : "0");
+        strBuf.append("\\NoOutsideViews\\");
+        strBuf.append(difficultysettings.No_Outside_Views ? "1" : "0");
+        strBuf.append("\\HeadShake\\");
+        strBuf.append(difficultysettings.Head_Shake ? "1" : "0");
+        strBuf.append("\\NoIcons\\");
+        strBuf.append(difficultysettings.No_Icons ? "1" : "0");
+        strBuf.append("\\NoPadlock\\");
+        strBuf.append(difficultysettings.No_Padlock ? "1" : "0");
+        strBuf.append("\\Clouds\\");
+        strBuf.append(difficultysettings.Clouds ? "1" : "0");
+        strBuf.append("\\NoInstantSuccess\\");
+        strBuf.append(difficultysettings.NoInstantSuccess ? "1" : "0");
+        strBuf.append("\\TakeoffLanding\\");
+        strBuf.append(difficultysettings.Takeoff_N_Landing ? "1" : "0");
+        strBuf.append("\\RealisticLandings\\");
+        strBuf.append(difficultysettings.Realistic_Landings ? "1" : "0");
+        strBuf.append("\\NoMapIcons\\");
+        strBuf.append(difficultysettings.No_Map_Icons ? "1" : "0");
+        strBuf.append("\\NoMinimapPath\\");
+        strBuf.append(difficultysettings.NoMinimapPath ? "1" : "0");
+        strBuf.append("\\NoSpeedBar\\");
+        strBuf.append(difficultysettings.NoSpeedBar ? "1" : "0");
+        strBuf.append("\\Reliability\\");
+        strBuf.append(difficultysettings.Reliability ? "1" : "0");
+        strBuf.append("\\GLimits\\");
+        strBuf.append(difficultysettings.G_Limits ? "1" : "0");
+        strBuf.append("\\RealisticPilotVulnerability\\");
+        strBuf.append(difficultysettings.RealisticPilotVulnerability ? "1" : "0");
+        strBuf.append("\\RealisticNavigationInstruments\\");
+        strBuf.append(difficultysettings.RealisticNavigationInstruments ? "1" : "0");
+        strBuf.append("\\NoPlayerIcon\\");
+        strBuf.append(difficultysettings.No_Player_Icon ? "1" : "0");
+        strBuf.append("\\NoFogOfWarIcons\\");
+        strBuf.append(difficultysettings.No_Fog_Of_War_Icons ? "1" : "0");
+        if(com.maddox.il2.game.Main.cur().netServerParams.isProtected())
+            strBuf.append("\\password\\1");
+        buffer_send(strBuf);
+        strBuf.delete(0, strBuf.length());
+    }
+
+    private void send_player(int i, com.maddox.il2.net.NetUser netuser)
+    {
+        strBuf.append("\\player_" + i + "\\");
+        strBuf.append(netuser.shortName());
+        strBuf.append("\\score_" + i + "\\");
+        strBuf.append((int)netuser.stat().score);
+        strBuf.append("\\ping_" + i + "\\");
+        strBuf.append(netuser.ping);
+        strBuf.append("\\team_" + i + "\\");
+        strBuf.append(netuser.getArmy());
+        int j = netuser.getArmy();
+        if(armyScore[j] < 0)
+            armyScore[j] = 0;
+        armyScore[j] += (int)netuser.stat().score;
+    }
+
+    private void send_players()
+    {
+        for(int i = 0; i < armyScore.length; i++)
+            armyScore[i] = -1;
+
+        int j = 0;
+        if(!com.maddox.il2.game.Main.cur().netServerParams.isDedicated())
+            send_player(j++, (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host());
+        java.util.List list = com.maddox.rts.NetEnv.hosts();
+        int k = list.size();
+        for(int l = 0; l < k; l++)
+            send_player(j++, (com.maddox.il2.net.NetUser)list.get(l));
+
+        for(int i1 = 0; i1 < armyScore.length; i1++)
+            if(armyScore[i1] >= 0)
+            {
+                strBuf.append("\\team_t" + i1 + "\\" + com.maddox.il2.ai.Army.name(i1));
+                strBuf.append("\\score_t" + i1 + "\\" + armyScore[i1]);
+            }
+
+        correctASCII();
+        buffer_send(strBuf);
+        strBuf.delete(0, strBuf.length());
+    }
+
+    private void send_echo(java.lang.String s)
+    {
+        if(s.length() > 1350)
+        {
+            return;
+        } else
+        {
+            strBuf.append("\\echo\\");
+            strBuf.append(s);
+            buffer_send(strBuf);
+            strBuf.delete(0, strBuf.length());
+            return;
+        }
+    }
+
+    private void send_final(java.lang.String s)
+    {
+        if(s != null)
+        {
+            int i = s.length();
+            if(i > 128)
+                return;
+            s.getChars(0, i, _encrypted_val, 0);
+            gs_encrypt("h53Ew8", _encrypted_val, i);
+            int j = gs_encode(_encrypted_val, i, _encoded_val);
+            strBuf.append("\\validate\\");
+            strBuf.append(_encoded_val, 0, j);
+            buffer_send(strBuf);
+            strBuf.delete(0, strBuf.length());
+        }
+        strBuf.append("\\final\\");
+        buffer_send(strBuf);
+        strBuf.delete(0, strBuf.length());
+        packet_send();
+    }
+
+    public void msgTimeOut(java.lang.Object obj)
+    {
+        int i = 0x493e0;
+        if(master_socket != null && master_address != null && MASTER_PORT != 0)
+        {
+            send_heartbeat(0);
+            if(no_query > 0)
+            {
+                no_query++;
+                if(no_query > 10)
+                    no_query = 0;
+                else
+                    i = 30000;
+            }
+        } else
+        {
+            i = 30000;
+        }
+        ticker.post(com.maddox.rts.Time.currentReal() + (long)i);
+    }
+
+    public void set(java.lang.String s, com.maddox.rts.NetSocket netsocket, int i)
+    {
+        if(s != null)
+            room = s;
+        master_socket = netsocket;
+        qport = i;
+        if(master_socket != null && master_address == null)
+        {
+            try
+            {
+                com.maddox.rts.net.IPAddress ipaddress = new IPAddress();
+                ipaddress.create(MASTER_ADDR);
+                master_address = ipaddress;
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println("Unknown master address: " + MASTER_ADDR);
+            }
+            if(ticker == null)
+            {
+                ticker = new MsgTimeOut();
+                ticker.setNotCleanAfterSend();
+                ticker.setListener(this);
+                ticker.setFlags(64);
+            }
+            if(!ticker.busy())
+                ticker.post();
+            com.maddox.rts.NetEnv.cur().msgAddListener(this, null);
+            onMsgTimeout();
+        }
+    }
+
+    public void setListenerOnly(java.lang.String s)
+    {
+        room = s;
+        com.maddox.rts.NetEnv.cur().msgAddListener(this, null);
+    }
+
+    public boolean isListenerOnly()
+    {
+        return com.maddox.il2.game.Main.cur().netGameSpyListener == this;
+    }
+
+    public void onMsgTimeout()
+    {
+        (new MsgInvokeMethod("onMsgTimeout")).post(64, this, 5D);
+        if(com.maddox.il2.game.Main.cur() != null && com.maddox.il2.game.Main.cur().netServerParams != null && com.maddox.rts.NetEnv.cur() != null && com.maddox.rts.NetEnv.cur().connect != null)
+        {
+            boolean flag;
+            if(com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+            {
+                if(com.maddox.rts.NetEnv.cur().connect.isBindEnable())
+                    flag = true;
+                else
+                    flag = false;
+            } else
+            if(com.maddox.il2.game.Mission.isPlaying())
+                flag = false;
+            else
+                flag = true;
+            if(flag != _bGameModeWait)
+                sendStatechanged();
+        }
+    }
+
+    private void send_heartbeat(int i)
+    {
+        if(master_socket == null || master_address == null || MASTER_PORT == 0)
+            return;
+        outBuf.append("\\heartbeat\\");
+        outBuf.append(qport);
+        outBuf.append("\\gamename\\");
+        outBuf.append("il2sturmovikfb");
+        if(i != 0)
+        {
+            outBuf.append("\\statechanged\\");
+            outBuf.append(i);
+        }
+        int j = outBuf.length();
+        for(int k = 0; k < j; k++)
+            _outBuf[k] = (byte)(outBuf.charAt(k) & 0xff);
+
+        outBuf.delete(0, j);
+        com.maddox.rts.RTSConf.cur.netEnv.postExt(_outBuf, 0, j, master_socket, master_address, MASTER_PORT);
+    }
+
+    private void packet_send()
+    {
+        if(outBuf.length() == 0)
+            return;
+        packetnumber++;
+        outBuf.append("\\queryid\\");
+        outBuf.append(queryid);
+        outBuf.append(".");
+        outBuf.append(packetnumber);
+        int i = outBuf.length();
+        for(int j = 0; j < i; j++)
+            _outBuf[j] = (byte)(outBuf.charAt(j) & 0xff);
+
+        outBuf.delete(0, i);
+        com.maddox.rts.RTSConf.cur.netEnv.postExt(_outBuf, 0, i, in_socket, in_address, in_port);
+    }
+
+    private void strcat(java.lang.StringBuffer stringbuffer, java.lang.StringBuffer stringbuffer1)
+    {
+        strcat(stringbuffer, stringbuffer1, 0, stringbuffer1.length());
+    }
+
+    private void strcat(java.lang.StringBuffer stringbuffer, java.lang.StringBuffer stringbuffer1, int i, int j)
+    {
+        for(int k = 0; k < j; k++)
+            stringbuffer.append(stringbuffer1.charAt(i + k));
+
+    }
+
+    private void buffer_send(java.lang.StringBuffer stringbuffer)
+    {
+        buffer_send(stringbuffer, 0, stringbuffer.length());
+    }
+
+    private void buffer_send(java.lang.StringBuffer stringbuffer, int i, int j)
+    {
+        if(outBuf.length() + j < 1350)
+            strcat(outBuf, stringbuffer, i, j);
+        else
+        if(j > 1350)
+        {
+            int k = 0;
+            int l = 0;
+            int i1 = 0;
+            for(; k < 1350; k++)
+            {
+                if('\\' != stringbuffer.charAt(i + k))
+                    continue;
+                if(i1 % 2 == 0)
+                    l = k;
+                i1++;
+            }
+
+            if(l == 0)
+                return;
+            buffer_send(stringbuffer, 0, l);
+            buffer_send(stringbuffer, l, j - l);
+        } else
+        {
+            packet_send();
+            strcat(outBuf, stringbuffer, i, j);
+        }
+    }
+
+    private void setQuery(byte abyte0[])
+    {
+        queryBuf.delete(0, queryBuf.length());
+        for(int i = 0; i < abyte0.length; i++)
+            queryBuf.append((char)abyte0[i]);
+
+    }
+
+    private boolean isExistQueryKey(int i)
+    {
+        java.lang.String s = queries[i];
+        int j = queryBuf.length();
+        int k = s.length();
+        int l = j - k;
         int i1 = 0;
-        while (i1 < j) {
-          int i2 = str.charAt(i1);
-          n = this.queryBuf.charAt(m++);
-          if (n == 92) {
-            m--;
+        do
+        {
+            if(i1 > l)
+                break;
+            char c = queryBuf.charAt(i1++);
+            if(c != '\\')
+                continue;
+            int j1 = 0;
+            do
+            {
+                if(j1 >= k)
+                    break;
+                char c2 = s.charAt(j1);
+                c = queryBuf.charAt(i1++);
+                if(c == '\\')
+                {
+                    i1--;
+                    break;
+                }
+                if(c != c2)
+                    break;
+                j1++;
+            } while(true);
+            if(j1 != k)
+                continue;
+            queryVal_0 = queryVal_1 = 0;
+            if(i1 == j)
+                return true;
+            c = queryBuf.charAt(i1++);
+            if(c == '\\')
+            {
+                if(i1 == j)
+                    return true;
+                queryVal_0 = i1;
+                char c1;
+                do
+                {
+                    if(i1 >= j)
+                        break;
+                    c1 = queryBuf.charAt(i1++);
+                } while(c1 != '\\');
+                queryVal_1 = i1 - 1;
+                return true;
+            }
             break;
-          }
-          if (n != i2)
-            break;
-          i1++;
+        } while(true);
+        return false;
+    }
+
+    private java.lang.String getQueryValue()
+    {
+        return queryBuf.substring(queryVal_0, queryVal_1);
+    }
+
+    public void msgNetExt(byte abyte0[], com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetAddress netaddress, int i)
+    {
+        if(abyte0 == null || abyte0.length < 1)
+            return;
+        if((char)abyte0[0] != '\\')
+            return;
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return;
+        if(((com.maddox.il2.net.Connect)com.maddox.rts.NetEnv.cur().connect).banned.isExist(netaddress))
+            return;
+        in_socket = netsocket;
+        in_address = netaddress;
+        in_port = i;
+        java.lang.String s = null;
+        queryid++;
+        packetnumber = 0;
+        if(no_query > 0)
+            no_query = 0;
+        outBuf.delete(0, outBuf.length());
+        setQuery(abyte0);
+        for(int j = 0; j <= 7; j++)
+            if(isExistQueryKey(j))
+                switch(j)
+                {
+                case 0: // '\0'
+                    send_basic();
+                    break;
+
+                case 1: // '\001'
+                    send_info();
+                    break;
+
+                case 2: // '\002'
+                    send_rules();
+                    break;
+
+                case 3: // '\003'
+                    send_players();
+                    break;
+
+                case 4: // '\004'
+                    send_basic();
+                    send_info();
+                    send_rules();
+                    send_players();
+                    break;
+
+                case 5: // '\005'
+                    send_basic();
+                    packet_send();
+                    send_info();
+                    packet_send();
+                    send_rules();
+                    packet_send();
+                    send_players();
+                    break;
+
+                case 6: // '\006'
+                    send_echo(getQueryValue());
+                    break;
+
+                case 7: // '\007'
+                    s = getQueryValue();
+                    break;
+                }
+
+        send_final(s);
+        in_socket = null;
+        in_address = null;
+    }
+
+    private int encode_ct(int i)
+    {
+        if(i < 26)
+            return 65 + i;
+        if(i < 52)
+            return (97 + i) - 26;
+        if(i < 62)
+            return (48 + i) - 52;
+        if(i == 62)
+            return 43;
+        return i != 63 ? 0 : 47;
+    }
+
+    private int gs_encode(char ac[], int i, char ac1[])
+    {
+        int i1 = 0;
+        int j1 = 0;
+        for(int j = 0; j < i;)
+        {
+            for(int k = 0; k <= 2;)
+            {
+                if(j < i)
+                    _trip[k] = ac[i1++];
+                else
+                    _trip[k] = 0;
+                k++;
+                j++;
+            }
+
+            _kwart[0] = _trip[0] >> 2;
+            _kwart[1] = ((_trip[0] & 3) << 4) + (_trip[1] >> 4);
+            _kwart[2] = ((_trip[1] & 0xf) << 2) + (_trip[2] >> 6);
+            _kwart[3] = _trip[2] & 0x3f;
+            int l = 0;
+            while(l <= 3) 
+            {
+                ac1[j1++] = (char)(encode_ct(_kwart[l]) & 0xff);
+                l++;
+            }
         }
-        if (i1 == j) {
-          this.queryVal_0 = (this.queryVal_1 = 0);
-          if (m == i) return true;
-          n = this.queryBuf.charAt(m++);
-          if (n != 92) break;
-          if (m == i) return true;
-          this.queryVal_0 = m;
-          while (m < i) {
-            n = this.queryBuf.charAt(m++);
-            if (n != 92) continue;
-          }
-          this.queryVal_1 = (m - 1);
-          return true;
+
+        return j1;
+    }
+
+    private void gs_encrypt(java.lang.String s, char ac[], int i)
+    {
+        int j = s.length();
+        for(int k = 0; k < 256; k++)
+            _state[k] = (char)k;
+
+        int j1 = 0;
+        int k1 = 0;
+        for(int l = 0; l < 256; l++)
+        {
+            k1 = (s.charAt(j1) + _state[l] + k1) % 256;
+            j1 = (j1 + 1) % j;
+            char c = _state[k1];
+            _state[k1] = _state[l];
+            _state[l] = c;
         }
-      }
-    }
-    return false;
-  }
-  private String getQueryValue() {
-    return this.queryBuf.substring(this.queryVal_0, this.queryVal_1);
-  }
 
-  public void msgNetExt(byte[] paramArrayOfByte, NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt) {
-    if ((paramArrayOfByte == null) || (paramArrayOfByte.length < 1)) return;
-    if ((char)paramArrayOfByte[0] != '\\') return;
-    if (Main.cur().netServerParams == null) return;
-    if (((Connect)NetEnv.cur().connect).banned.isExist(paramNetAddress)) {
-      return;
-    }
-    this.in_socket = paramNetSocket;
-    this.in_address = paramNetAddress;
-    this.in_port = paramInt;
-    String str = null;
-
-    this.queryid += 1;
-    this.packetnumber = 0;
-    if (this.no_query > 0) {
-      this.no_query = 0;
-    }
-    this.outBuf.delete(0, this.outBuf.length());
-    setQuery(paramArrayOfByte);
-
-    for (int i = 0; i <= 7; i++) {
-      if (isExistQueryKey(i)) {
-        switch (i) {
-        case 0:
-          send_basic();
-          break;
-        case 1:
-          send_info();
-          break;
-        case 2:
-          send_rules();
-          break;
-        case 3:
-          send_players();
-          break;
-        case 4:
-          send_basic();
-          send_info();
-          send_rules();
-          send_players();
-          break;
-        case 5:
-          send_basic(); packet_send();
-          send_info(); packet_send();
-          send_rules(); packet_send();
-          send_players();
-          break;
-        case 6:
-          send_echo(getQueryValue());
-          break;
-        case 7:
-          str = getQueryValue();
+        j1 = 0;
+        k1 = 0;
+        for(int i1 = 0; i1 < i; i1++)
+        {
+            j1 = (j1 + ac[i1] + 1) % 256;
+            k1 = (_state[j1] + k1) % 256;
+            char c1 = _state[k1];
+            _state[k1] = _state[j1];
+            _state[j1] = c1;
+            int l1 = (_state[j1] + _state[k1]) % 256;
+            ac[i1] ^= _state[l1];
+            ac[i1] &= '\377';
         }
-      }
 
     }
 
-    send_final(str);
-    this.in_socket = null;
-    this.in_address = null;
-  }
+    public java.lang.String userName;
+    public java.lang.String serverIP;
+    public java.lang.String roomName;
+    public java.lang.String gameType;
+    public int maxClients;
+    private static final java.lang.String gamename = "il2sturmovikfb";
+    private static final java.lang.String gamever = "4.10m";
+    private static final java.lang.String secret_key = "h53Ew8";
+    public static int MASTER_PORT = 27900;
+    public static java.lang.String MASTER_ADDR = "master.gamespy.com";
+    private static final int MAX_DATA_SIZE = 1400;
+    private static final int FIRST_HB_TIME = 30000;
+    private static final int HB_TIME = 0x493e0;
+    private static final int MAX_FIRST_COUNT = 10;
+    private int queryid;
+    private int packetnumber;
+    private int qport;
+    private int no_query;
+    private java.lang.String room;
+    private java.lang.StringBuffer strBuf;
+    private boolean _bGameModeWait;
+    private int armyScore[];
+    private char _encrypted_val[];
+    private char _encoded_val[];
+    private com.maddox.rts.MsgTimeOut ticker;
+    private com.maddox.rts.NetSocket master_socket;
+    private com.maddox.rts.NetAddress master_address;
+    private com.maddox.rts.NetSocket in_socket;
+    private com.maddox.rts.NetAddress in_address;
+    private int in_port;
+    private java.lang.StringBuffer outBuf;
+    private byte _outBuf[];
+    private static final java.lang.String queries[] = {
+        "basic", "info", "rules", "players", "status", "packets", "echo", "secure"
+    };
+    private static final int qtbasic = 0;
+    private static final int qtinfo = 1;
+    private static final int qtrules = 2;
+    private static final int qtplayers = 3;
+    private static final int qtstatus = 4;
+    private static final int qtpackets = 5;
+    private static final int qtecho = 6;
+    private static final int qtsecure = 7;
+    private java.lang.StringBuffer queryBuf;
+    private int queryVal_0;
+    private int queryVal_1;
+    int _trip[];
+    int _kwart[];
+    private char _state[];
 
-  private int encode_ct(int paramInt)
-  {
-    if (paramInt < 26) return 65 + paramInt;
-    if (paramInt < 52) return 97 + paramInt - 26;
-    if (paramInt < 62) return 48 + paramInt - 52;
-    if (paramInt == 62) return 43;
-    if (paramInt == 63) return 47;
-    return 0;
-  }
-
-  private int gs_encode(char[] paramArrayOfChar1, int paramInt, char[] paramArrayOfChar2)
-  {
-    int k = 0;
-    int m = 0;
-
-    int i = 0;
-    while (i < paramInt) {
-      for (int j = 0; j <= 2; i++) {
-        if (i < paramInt) this._trip[j] = paramArrayOfChar1[(k++)]; else
-          this._trip[j] = 0;
-        j++;
-      }
-
-      this._kwart[0] = (this._trip[0] >> 2);
-      this._kwart[1] = (((this._trip[0] & 0x3) << 4) + (this._trip[1] >> 4));
-      this._kwart[2] = (((this._trip[1] & 0xF) << 2) + (this._trip[2] >> 6));
-      this._kwart[3] = (this._trip[2] & 0x3F);
-      for (j = 0; j <= 3; j++)
-        paramArrayOfChar2[(m++)] = (char)(encode_ct(this._kwart[j]) & 0xFF);
-    }
-    return m;
-  }
-
-  private void gs_encrypt(String paramString, char[] paramArrayOfChar, int paramInt)
-  {
-    int i = paramString.length();
-
-    for (int j = 0; j < 256; j++) this._state[j] = (char)j;
-
-    int k = 0; int m = 0;
-    int i1;
-    for (j = 0; j < 256; j++) {
-      m = (paramString.charAt(k) + this._state[j] + m) % 256;
-      k = (k + 1) % i;
-      i1 = this._state[m];
-      this._state[m] = this._state[j];
-      this._state[j] = i1;
-    }
-
-    k = 0; m = 0;
-    for (j = 0; j < paramInt; j++) {
-      k = (k + paramArrayOfChar[j] + 1) % 256;
-      m = (this._state[k] + m) % 256;
-      i1 = this._state[m];
-      this._state[m] = this._state[k];
-      this._state[k] = i1;
-      int n = (this._state[k] + this._state[m]) % 256;
-      int tmp222_220 = j;
-      char[] tmp222_219 = paramArrayOfChar; tmp222_219[tmp222_220] = (char)(tmp222_219[tmp222_220] ^ this._state[n]);
-      int tmp237_235 = j;
-      char[] tmp237_234 = paramArrayOfChar; tmp237_234[tmp237_235] = (char)(tmp237_234[tmp237_235] & 0xFF);
-    }
-  }
 }

@@ -1,48 +1,67 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ActorSoundListener.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.rts.Message;
 
-public class ActorSoundListener extends Actor
+// Referenced classes of package com.maddox.il2.engine:
+//            Actor, SoundListenerDraw, ActorPosMove
+
+public class ActorSoundListener extends com.maddox.il2.engine.Actor
 {
-  private boolean bUseBaseSpeed = true;
 
-  public Point3d absPos = new Point3d();
+    public void setUseBaseSpeed(boolean flag)
+    {
+        bUseBaseSpeed = flag;
+    }
 
-  public void setUseBaseSpeed(boolean paramBoolean)
-  {
-    this.bUseBaseSpeed = paramBoolean;
-  }
-  public boolean isUseBaseSpeed() { return this.bUseBaseSpeed; } 
-  public boolean isDrawing() {
-    return true;
-  }
-  public Object getSwitchListener(Message paramMessage) {
-    return this;
-  }
+    public boolean isUseBaseSpeed()
+    {
+        return bUseBaseSpeed;
+    }
 
-  public ActorSoundListener() {
-    this.draw = new SoundListenerDraw();
-    this.pos = new ActorPosMove(this);
-    drawing(true);
-    setName("ActorSoundListener");
-  }
+    public boolean isDrawing()
+    {
+        return true;
+    }
 
-  protected void createActorHashCode()
-  {
-    makeActorRealHashCode();
-  }
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
 
-  public double getRelRhoSqr(Point3d paramPoint3d)
-  {
-    double d1 = paramPoint3d.x - this.absPos.x;
-    double d2 = paramPoint3d.y - this.absPos.y;
-    double d3 = paramPoint3d.z - this.absPos.z;
-    return d1 * d1 + d2 * d2 + d3 * d3;
-  }
+    public ActorSoundListener()
+    {
+        bUseBaseSpeed = true;
+        absPos = new Point3d();
+        draw = new SoundListenerDraw();
+        pos = new ActorPosMove(this);
+        drawing(true);
+        setName("ActorSoundListener");
+    }
 
-  public void initDraw()
-  {
-    ((SoundListenerDraw)this.draw).init();
-  }
+    protected void createActorHashCode()
+    {
+        makeActorRealHashCode();
+    }
+
+    public double getRelRhoSqr(com.maddox.JGP.Point3d point3d)
+    {
+        double d = point3d.x - absPos.x;
+        double d1 = point3d.y - absPos.y;
+        double d2 = point3d.z - absPos.z;
+        return d * d + d1 * d1 + d2 * d2;
+    }
+
+    public void initDraw()
+    {
+        ((com.maddox.il2.engine.SoundListenerDraw)draw).init();
+    }
+
+    private boolean bUseBaseSpeed;
+    public com.maddox.JGP.Point3d absPos;
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PlMisDestruction.java
+
 package com.maddox.il2.builder;
 
 import com.maddox.JGP.Point3d;
@@ -21,7 +26,6 @@ import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.engine.Mat;
 import com.maddox.il2.engine.Render;
 import com.maddox.il2.objects.Statics;
-import com.maddox.il2.objects.Statics.Block;
 import com.maddox.il2.objects.bridges.Bridge;
 import com.maddox.il2.objects.bridges.BridgeSegment;
 import com.maddox.il2.objects.bridges.LongBridge;
@@ -32,471 +36,662 @@ import com.maddox.util.HashMapInt;
 import java.util.AbstractCollection;
 import java.util.BitSet;
 
-public class PlMisDestruction extends Plugin
+// Referenced classes of package com.maddox.il2.builder:
+//            Plugin, PlMission, Builder, BldConfig, 
+//            PlMapLoad
+
+public class PlMisDestruction extends com.maddox.il2.builder.Plugin
 {
-  public static final int TILE_SIZE = 64;
-  GWindowMenuItem mDialog;
-  WDialog wDialog;
-  private int fillSize;
-  private int fillValue;
-  Tile[][] tiles;
-  boolean tilesChanged;
-  Mat baseTileMat;
-  byte[] buf;
-  boolean bufEmpty;
-  private Point3d _startFill;
-  private Point3d _endFill;
-  private Point3d _stepFill;
-  private PlMission pluginMission;
-  private SelectFilter _selectFilter;
-  Actor findedActor;
-
-  public PlMisDestruction()
-  {
-    this.fillSize = 1;
-    this.fillValue = 127;
-
-    this.tilesChanged = false;
-
-    this.buf = new byte[16384];
-    this.bufEmpty = true;
-
-    this._startFill = new Point3d();
-    this._endFill = new Point3d();
-    this._stepFill = new Point3d();
-
-    this._selectFilter = new SelectFilter();
-
-    this.findedActor = null;
-  }
-
-  public boolean isActive()
-  {
-    if (builder.isFreeView()) return false;
-    if (this.tiles == null) return false;
-    return this.mDialog.bChecked;
-  }
-
-  private void tilesDel()
-  {
-    if (this.tiles == null) return;
-    this.tiles = ((Tile[][])null);
-  }
-  private void tilesNew() {
-    tilesDel();
-    int i = Landscape.getSizeXpix();
-    int j = Landscape.getSizeYpix();
-    int k = (i + 64 - 1) / 64;
-    int m = (j + 64 - 1) / 64;
-    this.tiles = new Tile[m][k];
-
-    Tile localTile = null;
-    for (int n = 0; n < m; n++)
-      for (int i1 = 0; i1 < k; i1++) {
-        if (localTile == null) {
-          localTile = new Tile(i1 * 64, n * 64);
-        } else {
-          localTile.x0 = (i1 * 64);
-          localTile.y0 = (n * 64);
-        }
-        if (localTile.fillFromStatic(true)) {
-          this.tiles[n][i1] = localTile;
-          localTile = null;
-          this.tilesChanged = true;
-        }
-      }
-  }
-
-  public void preRenderMap2D()
-  {
-    if (!isActive()) return;
-    if (!this.tilesChanged) return;
-    int i = this.tiles[0].length;
-    int j = this.tiles.length;
-    for (int k = 0; k < j; k++) {
-      for (int m = 0; m < i; m++) {
-        Tile localTile = this.tiles[k][m];
-        if ((localTile != null) && (localTile.bChanged)) {
-          localTile.updateImage();
-        }
-      }
-    }
-    this.tilesChanged = false;
-  }
-
-  public void renderMap2D() {
-    if (!isActive()) return;
-    CameraOrtho2D localCameraOrtho2D = (CameraOrtho2D)Render.currentCamera();
-    int i = this.tiles[0].length;
-    int j = this.tiles.length;
-    float f1 = 12800.0F;
-    float f2 = (float)(f1 * localCameraOrtho2D.worldScale);
-    int k = builder.conf.iLightDestruction << 24 | 0xFFFFFF;
-    for (int m = 0; m < j; m++) {
-      float f3 = (float)((m * f1 - localCameraOrtho2D.worldYOffset) * localCameraOrtho2D.worldScale);
-      if (f3 > localCameraOrtho2D.top) break;
-      if (f3 + f2 >= localCameraOrtho2D.bottom)
-        for (int n = 0; n < i; n++) {
-          float f4 = (float)((n * f1 - localCameraOrtho2D.worldXOffset) * localCameraOrtho2D.worldScale);
-          if (f4 > localCameraOrtho2D.right) break;
-          if (f4 + f2 >= localCameraOrtho2D.left) {
-            Tile localTile = this.tiles[m][n];
-            if ((localTile != null) && (localTile.mat != null))
-              Render.drawTile(f4, f3, f2, f2, 0.0F, localTile.mat, k, 0.0F, 0.0F, 1.0F, 1.0F); 
-          }
-        }
-    }
-  }
-
-  public void mapLoaded() {
-    tilesDel();
-    if (this.mDialog.bChecked)
-      this.wDialog.hideWindow();
-  }
-
-  public void load(SectFile paramSectFile) {
-    World.cur().statics.restoreAllBridges();
-    World.cur().statics.restoreAllHouses();
-    World.cur().statics.loadStateBridges(paramSectFile, false);
-    World.cur().statics.loadStateHouses(paramSectFile, false);
-    if (this.tiles == null) return;
-    int i = this.tiles[0].length;
-    int j = this.tiles.length;
-    for (int k = 0; k < j; k++) {
-      for (int m = 0; m < i; m++) {
-        Tile localTile = this.tiles[k][m];
-        if (localTile != null)
-          localTile.bChanged = true;
-      }
-    }
-    this.tilesChanged = true;
-  }
-
-  public boolean save(SectFile paramSectFile) {
-    int i = paramSectFile.sectionAdd("Bridge");
-    World.cur().statics.saveStateBridges(paramSectFile, i);
-    i = paramSectFile.sectionAdd("House");
-    World.cur().statics.saveStateHouses(paramSectFile, i);
-    return true;
-  }
-
-  private void fill(Point3d paramPoint3d, int paramInt) {
-    Statics localStatics = World.cur().statics;
-    HashMapInt localHashMapInt = localStatics.allBlocks();
-    int i = (int)(paramPoint3d.x / 200.0D);
-    int j = (int)(paramPoint3d.y / 200.0D);
-    paramInt |= 1;
-    int k = i - paramInt / 2;
-    int m = j - paramInt / 2;
-    for (int n = m; n < m + paramInt; n++)
-      for (int i1 = k; i1 < k + paramInt; i1++) {
-        int i2 = localStatics.key(n, i1);
-        Statics.Block localBlock = (Statics.Block)localHashMapInt.get(i2);
-        if (localBlock != null) {
-          int i3 = i1 / 64;
-          int i4 = n / 64;
-          this.tiles[i4][i3].bChanged = true;
-          this.tilesChanged = true;
-          localBlock.setDestruction(this.fillValue / 255.0F);
-          PlMission.setChanged();
-        }
-      }
-  }
-
-  private void _doFill()
-  {
-    double d = this._endFill.distance(this._startFill);
-    int i = (int)Math.round(d / 200.0D) + 1;
-    float f = 1.0F / i;
-    for (int j = 0; j <= i; j++) {
-      this._stepFill.interpolate(this._startFill, this._endFill, j * f);
-      fill(this._stepFill, this.fillSize);
-    }
-  }
-
-  public void beginFill(Point3d paramPoint3d)
-  {
-    if (!isActive()) return;
-    this._startFill.set(paramPoint3d);
-  }
-  public void fill(Point3d paramPoint3d) {
-    if (!isActive()) return;
-    this._endFill.set(paramPoint3d);
-    _doFill();
-    this._startFill.set(paramPoint3d);
-  }
-  public void endFill(Point3d paramPoint3d) {
-  }
-  public void configure() {
-    if (getPlugin("Mission") == null)
-      throw new RuntimeException("PlMisDestruction: plugin 'Mission' not found");
-    this.pluginMission = ((PlMission)getPlugin("Mission"));
-  }
-
-  public Actor selectNear(Point3d paramPoint3d, double paramDouble)
-  {
-    this._selectFilter.reset(paramDouble * paramDouble);
-    Engine.drawEnv().getFiltered((AbstractCollection)null, paramPoint3d.x - paramDouble, paramPoint3d.y - paramDouble, paramPoint3d.x + paramDouble, paramPoint3d.y + paramDouble, 15, this._selectFilter);
-
-    return this._selectFilter.get();
-  }
-
-  public void fillPopUpMenu(GWindowMenuPopUp paramGWindowMenuPopUp, Point3d paramPoint3d)
-  {
-    if (!isActive()) return;
-    this.findedActor = selectNear(paramPoint3d, 100.0D);
-    if (this.findedActor == null) return;
-    if ((this.findedActor instanceof Bridge)) {
-      if (Actor.isAlive(this.findedActor))
-        paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, i18n("De&stroyBridge"), i18n("TIPDestroyBridge")) {
-          public void execute() { PlMisDestruction.this.doBridge(true); }
-        });
-      else paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, i18n("Re&storeBridge"), i18n("TIPRestoreBridge")) {
-          public void execute() { PlMisDestruction.this.doBridge(false); }
-        });
-    }
-    else if (Actor.isAlive(this.findedActor))
-      paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, i18n("De&stroyObject"), i18n("TIPDestroyObject")) {
-        public void execute() { PlMisDestruction.this.doHouse(true); }
-      });
-    else paramGWindowMenuPopUp.addItem(new GWindowMenuItem(paramGWindowMenuPopUp, i18n("Re&storeObject"), i18n("TIPRestoreObject")) {
-        public void execute() { PlMisDestruction.this.doHouse(false); }
-      });
-  }
-
-  private void doHouse(boolean paramBoolean)
-  {
-    Point3d localPoint3d = this.findedActor.pos.getAbsPoint();
-    int i = (int)(localPoint3d.x / 64.0D / 200.0D);
-    int j = (int)(localPoint3d.y / 64.0D / 200.0D);
-    Tile localTile = this.tiles[j][i];
-    if (localTile == null) return;
-    localTile.bChanged = true;
-    this.tilesChanged = true;
-    this.findedActor.setDiedFlag(paramBoolean);
-    PlMission.setChanged();
-  }
-  private void doBridge(boolean paramBoolean) {
-    LongBridge localLongBridge = (LongBridge)this.findedActor;
-    if (paramBoolean) {
-      int i = localLongBridge.NumStateBits();
-      BitSet localBitSet = new BitSet(i);
-      int j = (int)(this.fillValue * i / 255.0F);
-      if (j == 0) j = 1;
-      if (j > i) j = i;
-      int k = j;
-      while (k > 0) {
-        int m = (int)(Math.random() * j);
-        if (!localBitSet.get(m)) {
-          localBitSet.set(m);
-          k--;
-        }
-      }
-      localLongBridge.SetStateOfSegments(localBitSet);
-    }
-    else {
-      localLongBridge.BeLive();
-    }
-    PlMission.setChanged();
-  }
-
-  public void createGUI()
-  {
-    this.baseTileMat = Mat.New("3do/builder/tile.mat");
-
-    this.mDialog = builder.mView.subMenu.addItem(2, new GWindowMenuItem(builder.mView.subMenu, i18n("De&struction"), i18n("TIPDestruction"))
+    class WDialog extends com.maddox.gwindow.GWindowFramed
     {
-      public void execute() {
-        if (PlMisDestruction.this.wDialog.isVisible()) PlMisDestruction.this.wDialog.hideWindow();
-        else if (PlMapLoad.getLandLoaded() != null) PlMisDestruction.this.wDialog.showWindow();
-      }
-    });
-    this.wDialog = new WDialog();
-  }
 
-  public void freeResources() {
-    this.findedActor = null;
-  }
-  static {
-    Property.set(PlMisDestruction.class, "name", "MisDestruction");
-  }
+        public void windowShown()
+        {
+            mDialog.bChecked = true;
+            if(tiles == null)
+                tilesNew();
+            super.windowShown();
+        }
 
-  class WDialog extends GWindowFramed
-  {
-    public GWindowHSliderInt wLight;
-    public GWindowHSliderInt wSize;
-    public GWindowHSliderInt wValue;
+        public void windowHidden()
+        {
+            mDialog.bChecked = false;
+            super.windowHidden();
+        }
 
-    public void windowShown()
+        public void created()
+        {
+            bAlwaysOnTop = true;
+            super.created();
+            title = com.maddox.il2.builder.Plugin.i18n("Destruction");
+            com.maddox.gwindow.GWindowDialogClient gwindowdialogclient;
+            clientWindow = create(gwindowdialogclient = new GWindowDialogClient());
+            com.maddox.gwindow.GWindowLabel gwindowlabel;
+            gwindowdialogclient.addLabel(gwindowlabel = new GWindowLabel(gwindowdialogclient, 1.0F, 1.0F, 11F, 1.3F, com.maddox.il2.builder.Plugin.i18n("DestLight"), null));
+            gwindowlabel.align = 2;
+            gwindowdialogclient.addLabel(gwindowlabel = new GWindowLabel(gwindowdialogclient, 1.0F, 3F, 11F, 1.3F, com.maddox.il2.builder.Plugin.i18n("DestSize"), null));
+            gwindowlabel.align = 2;
+            gwindowdialogclient.addLabel(gwindowlabel = new GWindowLabel(gwindowdialogclient, 1.0F, 5F, 11F, 1.3F, com.maddox.il2.builder.Plugin.i18n("DestValue"), null));
+            gwindowlabel.align = 2;
+            if(com.maddox.il2.builder.Plugin.builder.conf.iLightDestruction < 0)
+                com.maddox.il2.builder.Plugin.builder.conf.iLightDestruction = 0;
+            if(com.maddox.il2.builder.Plugin.builder.conf.iLightDestruction > 255)
+                com.maddox.il2.builder.Plugin.builder.conf.iLightDestruction = 255;
+            gwindowdialogclient.addControl(wLight = new com.maddox.gwindow.GWindowHSliderInt(gwindowdialogclient, 0, 256, com.maddox.il2.builder.Plugin.builder.conf.iLightDestruction, 13F, 1.0F, 10F) {
+
+                public boolean notify(int i, int j)
+                {
+                    com.maddox.il2.builder.Plugin.builder.conf.iLightDestruction = pos();
+                    return super.notify(i, j);
+                }
+
+                public void created()
+                {
+                    bSlidingNotify = true;
+                }
+
+            }
+);
+            wLight.toolTip = com.maddox.il2.builder.Plugin.i18n("TIPDestLight");
+            wLight.resized();
+            gwindowdialogclient.addControl(wSize = new com.maddox.gwindow.GWindowHSliderInt(gwindowdialogclient, 0, 7, 0, 13F, 3F, 10F) {
+
+                public boolean notify(int i, int j)
+                {
+                    fillSize = (int)java.lang.Math.pow(2D, pos());
+                    return super.notify(i, j);
+                }
+
+                public void created()
+                {
+                    bSlidingNotify = true;
+                }
+
+            }
+);
+            wSize.toolTip = com.maddox.il2.builder.Plugin.i18n("TIPDestSize");
+            wSize.resized();
+            gwindowdialogclient.addControl(wValue = new com.maddox.gwindow.GWindowHSliderInt(gwindowdialogclient, 0, 256, fillValue, 13F, 5F, 10F) {
+
+                public boolean notify(int i, int j)
+                {
+                    fillValue = pos();
+                    return super.notify(i, j);
+                }
+
+                public void created()
+                {
+                    bSlidingNotify = true;
+                }
+
+            }
+);
+            wValue.toolTip = com.maddox.il2.builder.Plugin.i18n("TIPDestValue");
+            wValue.resized();
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            resized();
+            close(false);
+        }
+
+        public com.maddox.gwindow.GWindowHSliderInt wLight;
+        public com.maddox.gwindow.GWindowHSliderInt wSize;
+        public com.maddox.gwindow.GWindowHSliderInt wValue;
+
+
+        public WDialog()
+        {
+            doNew(com.maddox.il2.builder.Plugin.builder.clientWindow, 2.0F, 2.0F, 25F, 9F, true);
+            bSizable = false;
+        }
+    }
+
+    class SelectFilter
+        implements com.maddox.il2.engine.ActorFilter
     {
-      PlMisDestruction.this.mDialog.bChecked = true;
-      if (PlMisDestruction.this.tiles == null)
-        PlMisDestruction.this.tilesNew();
-      super.windowShown();
-    }
-    public void windowHidden() {
-      PlMisDestruction.this.mDialog.bChecked = false;
-      super.windowHidden();
-    }
-    public void created() {
-      this.bAlwaysOnTop = true;
-      super.created();
-      this.title = Plugin.i18n("Destruction");
-      GWindowDialogClient localGWindowDialogClient;
-      this.clientWindow = create(localGWindowDialogClient = new GWindowDialogClient());
-      GWindowLabel localGWindowLabel;
-      localGWindowDialogClient.addLabel(localGWindowLabel = new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 11.0F, 1.3F, Plugin.i18n("DestLight"), null));
-      localGWindowLabel.align = 2;
-      localGWindowDialogClient.addLabel(localGWindowLabel = new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 11.0F, 1.3F, Plugin.i18n("DestSize"), null));
-      localGWindowLabel.align = 2;
-      localGWindowDialogClient.addLabel(localGWindowLabel = new GWindowLabel(localGWindowDialogClient, 1.0F, 5.0F, 11.0F, 1.3F, Plugin.i18n("DestValue"), null));
-      localGWindowLabel.align = 2;
-      if (Plugin.builder.conf.iLightDestruction < 0) Plugin.builder.conf.iLightDestruction = 0;
-      if (Plugin.builder.conf.iLightDestruction > 255) Plugin.builder.conf.iLightDestruction = 255;
-      localGWindowDialogClient.addControl(this.wLight = new GWindowHSliderInt(localGWindowDialogClient, 0, 256, Plugin.builder.conf.iLightDestruction, 13.0F, 1.0F, 10.0F) {
-        public boolean notify(int paramInt1, int paramInt2) {
-          Plugin.builder.conf.iLightDestruction = pos();
-          return super.notify(paramInt1, paramInt2);
-        }
-        public void created() { this.bSlidingNotify = true;
-        }
-      });
-      this.wLight.toolTip = Plugin.i18n("TIPDestLight");
-      this.wLight.resized();
 
-      localGWindowDialogClient.addControl(this.wSize = new GWindowHSliderInt(localGWindowDialogClient, 0, 7, 0, 13.0F, 3.0F, 10.0F) {
-        public boolean notify(int paramInt1, int paramInt2) {
-          PlMisDestruction.access$402(PlMisDestruction.this, (int)Math.pow(2.0D, pos()));
-          return super.notify(paramInt1, paramInt2);
+        public void reset(double d)
+        {
+            _Actor = null;
+            _maxLen2 = d;
         }
-        public void created() { this.bSlidingNotify = true;
+
+        public com.maddox.il2.engine.Actor get()
+        {
+            return _Actor;
         }
-      });
-      this.wSize.toolTip = Plugin.i18n("TIPDestSize");
-      this.wSize.resized();
 
-      localGWindowDialogClient.addControl(this.wValue = new GWindowHSliderInt(localGWindowDialogClient, 0, 256, PlMisDestruction.this.fillValue, 13.0F, 5.0F, 10.0F) {
-        public boolean notify(int paramInt1, int paramInt2) {
-          PlMisDestruction.access$502(PlMisDestruction.this, pos());
-          return super.notify(paramInt1, paramInt2);
-        }
-        public void created() { this.bSlidingNotify = true;
-        }
-      });
-      this.wValue.toolTip = Plugin.i18n("TIPDestValue");
-      this.wValue.resized();
-    }
-    public void afterCreated() {
-      super.afterCreated();
-      resized();
-      close(false);
-    }
-    public WDialog() {
-      doNew(Plugin.builder.clientWindow, 2.0F, 2.0F, 25.0F, 9.0F, true);
-      this.bSizable = false;
-    }
-  }
-
-  class SelectFilter
-    implements ActorFilter
-  {
-    private Actor _Actor = null;
-    private double _Len2;
-    private double _maxLen2;
-
-    SelectFilter()
-    {
-    }
-
-    public void reset(double paramDouble)
-    {
-      this._Actor = null; this._maxLen2 = paramDouble; } 
-    public Actor get() { return this._Actor; } 
-    public boolean isUse(Actor paramActor, double paramDouble) {
-      if (paramDouble <= this._maxLen2) {
-        if ((paramActor instanceof BridgeSegment)) {
-          if (Plugin.builder.conf.bViewBridge)
-            paramActor = paramActor.getOwner();
-          else
+        public boolean isUse(com.maddox.il2.engine.Actor actor, double d)
+        {
+            if(d <= _maxLen2)
+            {
+                if(actor instanceof com.maddox.il2.objects.bridges.BridgeSegment)
+                    if(com.maddox.il2.builder.Plugin.builder.conf.bViewBridge)
+                        actor = actor.getOwner();
+                    else
+                        return true;
+                if(actor instanceof com.maddox.il2.objects.bridges.Bridge)
+                {
+                    if(!com.maddox.il2.builder.Plugin.builder.conf.bViewBridge)
+                        return true;
+                } else
+                if(!(actor instanceof com.maddox.il2.objects.buildings.House))
+                    return true;
+                if(_Actor == null)
+                {
+                    _Actor = actor;
+                    _Len2 = d;
+                } else
+                if(d < _Len2)
+                {
+                    _Actor = actor;
+                    _Len2 = d;
+                }
+            }
             return true;
         }
-        if ((paramActor instanceof Bridge)) {
-          if (!Plugin.builder.conf.bViewBridge)
-            return true;
-        } else if (!(paramActor instanceof House)) {
-          return true;
-        }
-        if (this._Actor == null) {
-          this._Actor = paramActor;
-          this._Len2 = paramDouble;
-        }
-        else if (paramDouble < this._Len2) {
-          this._Actor = paramActor;
-          this._Len2 = paramDouble;
-        }
-      }
 
-      return true;
+        private com.maddox.il2.engine.Actor _Actor;
+        private double _Len2;
+        private double _maxLen2;
+
+        SelectFilter()
+        {
+            _Actor = null;
+        }
     }
-  }
 
-  class Tile
-  {
-    public boolean bChanged = true;
-    public int x0;
-    public int y0;
-    public Mat mat;
-
-    public void setPix(int paramInt1, int paramInt2, int paramInt3)
+    class Tile
     {
-      int i = (paramInt2 * 64 + paramInt1) * 4;
-      paramInt3 &= 255;
-      PlMisDestruction.this.buf[(i + 0)] = (byte)paramInt3;
-      PlMisDestruction.this.buf[(i + 1)] = (byte)(255 - paramInt3);
-      PlMisDestruction.this.buf[(i + 3)] = -1;
-      PlMisDestruction.this.bufEmpty = false;
-      this.bChanged = true;
-      PlMisDestruction.this.tilesChanged = true;
-    }
 
-    public boolean fillFromStatic(boolean paramBoolean) {
-      Statics localStatics = World.cur().statics;
-      HashMapInt localHashMapInt = localStatics.allBlocks();
-      if ((!PlMisDestruction.this.bufEmpty) && (!paramBoolean)) {
-        for (i = 0; i < PlMisDestruction.this.buf.length; i++)
-          PlMisDestruction.this.buf[i] = 0;
-        PlMisDestruction.this.bufEmpty = true;
-      }
-      for (int i = 0; i < 64; i++) {
-        for (int j = 0; j < 64; j++) {
-          int k = localStatics.key(i + this.y0, j + this.x0);
-          Statics.Block localBlock = (Statics.Block)localHashMapInt.get(k);
-          if (localBlock != null) {
-            if (paramBoolean) return true;
-            float f = localBlock.getDestruction();
-            setPix(j, i, (int)(f * 255.0F));
-          }
+        public void setPix(int i, int j, int k)
+        {
+            int l = (j * 64 + i) * 4;
+            k &= 0xff;
+            buf[l + 0] = (byte)k;
+            buf[l + 1] = (byte)(255 - k);
+            buf[l + 3] = -1;
+            bufEmpty = false;
+            bChanged = true;
+            tilesChanged = true;
         }
-      }
-      return false;
+
+        public boolean fillFromStatic(boolean flag)
+        {
+            com.maddox.il2.objects.Statics statics = com.maddox.il2.ai.World.cur().statics;
+            com.maddox.util.HashMapInt hashmapint = statics.allBlocks();
+            if(!bufEmpty && !flag)
+            {
+                for(int i = 0; i < buf.length; i++)
+                    buf[i] = 0;
+
+                bufEmpty = true;
+            }
+            for(int j = 0; j < 64; j++)
+            {
+                for(int k = 0; k < 64; k++)
+                {
+                    int l = statics.key(j + y0, k + x0);
+                    com.maddox.il2.objects.Statics.Block block = (com.maddox.il2.objects.Statics.Block)hashmapint.get(l);
+                    if(block == null)
+                        continue;
+                    if(flag)
+                        return true;
+                    float f = block.getDestruction();
+                    setPix(k, j, (int)(f * 255F));
+                }
+
+            }
+
+            return false;
+        }
+
+        public void updateImage()
+        {
+            if(mat == null)
+            {
+                mat = (com.maddox.il2.engine.Mat)baseTileMat.Clone();
+                mat.Rename(null);
+                mat.setLayer(0);
+            }
+            fillFromStatic(false);
+            mat.updateImage(64, 64, 0x380004, buf);
+            bChanged = false;
+        }
+
+        public boolean bChanged;
+        public int x0;
+        public int y0;
+        public com.maddox.il2.engine.Mat mat;
+
+        public Tile(int i, int j)
+        {
+            bChanged = true;
+            x0 = i;
+            y0 = j;
+        }
     }
 
-    public void updateImage() {
-      if (this.mat == null) {
-        this.mat = ((Mat)PlMisDestruction.this.baseTileMat.Clone());
-        this.mat.Rename(null);
-        this.mat.setLayer(0);
-      }
-      fillFromStatic(false);
-      this.mat.updateImage(64, 64, 3670020, PlMisDestruction.this.buf);
 
-      this.bChanged = false;
+    public PlMisDestruction()
+    {
+        fillSize = 1;
+        fillValue = 127;
+        tilesChanged = false;
+        buf = new byte[16384];
+        bufEmpty = true;
+        _startFill = new Point3d();
+        _endFill = new Point3d();
+        _stepFill = new Point3d();
+        _selectFilter = new SelectFilter();
+        findedActor = null;
     }
 
-    public Tile(int paramInt1, int arg3) {
-      this.x0 = paramInt1;
-      int i;
-      this.y0 = i;
+    public boolean isActive()
+    {
+        if(builder.isFreeView())
+            return false;
+        if(tiles == null)
+            return false;
+        else
+            return mDialog.bChecked;
     }
-  }
+
+    private void tilesDel()
+    {
+        if(tiles == null)
+        {
+            return;
+        } else
+        {
+            tiles = (com.maddox.il2.builder.Tile[][])null;
+            return;
+        }
+    }
+
+    private void tilesNew()
+    {
+        tilesDel();
+        int i = com.maddox.il2.engine.Landscape.getSizeXpix();
+        int j = com.maddox.il2.engine.Landscape.getSizeYpix();
+        int k = ((i + 64) - 1) / 64;
+        int l = ((j + 64) - 1) / 64;
+        tiles = new com.maddox.il2.builder.Tile[l][k];
+        com.maddox.il2.builder.Tile tile = null;
+        for(int i1 = 0; i1 < l; i1++)
+        {
+            for(int j1 = 0; j1 < k; j1++)
+            {
+                if(tile == null)
+                {
+                    tile = new Tile(j1 * 64, i1 * 64);
+                } else
+                {
+                    tile.x0 = j1 * 64;
+                    tile.y0 = i1 * 64;
+                }
+                if(tile.fillFromStatic(true))
+                {
+                    tiles[i1][j1] = tile;
+                    tile = null;
+                    tilesChanged = true;
+                }
+            }
+
+        }
+
+    }
+
+    public void preRenderMap2D()
+    {
+        if(!isActive())
+            return;
+        if(!tilesChanged)
+            return;
+        int i = tiles[0].length;
+        int j = tiles.length;
+        for(int k = 0; k < j; k++)
+        {
+            for(int l = 0; l < i; l++)
+            {
+                com.maddox.il2.builder.Tile tile = tiles[k][l];
+                if(tile != null && tile.bChanged)
+                    tile.updateImage();
+            }
+
+        }
+
+        tilesChanged = false;
+    }
+
+    public void renderMap2D()
+    {
+        if(!isActive())
+            return;
+        com.maddox.il2.engine.CameraOrtho2D cameraortho2d = (com.maddox.il2.engine.CameraOrtho2D)com.maddox.il2.engine.Render.currentCamera();
+        int i = tiles[0].length;
+        int j = tiles.length;
+        float f = 12800F;
+        float f1 = (float)((double)f * cameraortho2d.worldScale);
+        int k = builder.conf.iLightDestruction << 24 | 0xffffff;
+        for(int l = 0; l < j; l++)
+        {
+            float f2 = (float)(((double)((float)l * f) - cameraortho2d.worldYOffset) * cameraortho2d.worldScale);
+            if(f2 > cameraortho2d.top)
+                break;
+            if(f2 + f1 < cameraortho2d.bottom)
+                continue;
+            for(int i1 = 0; i1 < i; i1++)
+            {
+                float f3 = (float)(((double)((float)i1 * f) - cameraortho2d.worldXOffset) * cameraortho2d.worldScale);
+                if(f3 > cameraortho2d.right)
+                    break;
+                if(f3 + f1 < cameraortho2d.left)
+                    continue;
+                com.maddox.il2.builder.Tile tile = tiles[l][i1];
+                if(tile != null && tile.mat != null)
+                    com.maddox.il2.engine.Render.drawTile(f3, f2, f1, f1, 0.0F, tile.mat, k, 0.0F, 0.0F, 1.0F, 1.0F);
+            }
+
+        }
+
+    }
+
+    public void mapLoaded()
+    {
+        tilesDel();
+        if(mDialog.bChecked)
+            wDialog.hideWindow();
+    }
+
+    public void load(com.maddox.rts.SectFile sectfile)
+    {
+        com.maddox.il2.ai.World.cur().statics.restoreAllBridges();
+        com.maddox.il2.ai.World.cur().statics.restoreAllHouses();
+        com.maddox.il2.ai.World.cur().statics.loadStateBridges(sectfile, false);
+        com.maddox.il2.ai.World.cur().statics.loadStateHouses(sectfile, false);
+        if(tiles == null)
+            return;
+        int i = tiles[0].length;
+        int j = tiles.length;
+        for(int k = 0; k < j; k++)
+        {
+            for(int l = 0; l < i; l++)
+            {
+                com.maddox.il2.builder.Tile tile = tiles[k][l];
+                if(tile != null)
+                    tile.bChanged = true;
+            }
+
+        }
+
+        tilesChanged = true;
+    }
+
+    public boolean save(com.maddox.rts.SectFile sectfile)
+    {
+        int i = sectfile.sectionAdd("Bridge");
+        com.maddox.il2.ai.World.cur().statics.saveStateBridges(sectfile, i);
+        i = sectfile.sectionAdd("House");
+        com.maddox.il2.ai.World.cur().statics.saveStateHouses(sectfile, i);
+        return true;
+    }
+
+    private void fill(com.maddox.JGP.Point3d point3d, int i)
+    {
+        com.maddox.il2.objects.Statics statics = com.maddox.il2.ai.World.cur().statics;
+        com.maddox.util.HashMapInt hashmapint = statics.allBlocks();
+        int j = (int)(point3d.x / 200D);
+        int k = (int)(point3d.y / 200D);
+        i |= 1;
+        int l = j - i / 2;
+        int i1 = k - i / 2;
+        for(int j1 = i1; j1 < i1 + i; j1++)
+        {
+            for(int k1 = l; k1 < l + i; k1++)
+            {
+                int l1 = statics.key(j1, k1);
+                com.maddox.il2.objects.Statics.Block block = (com.maddox.il2.objects.Statics.Block)hashmapint.get(l1);
+                if(block != null)
+                {
+                    int i2 = k1 / 64;
+                    int j2 = j1 / 64;
+                    tiles[j2][i2].bChanged = true;
+                    tilesChanged = true;
+                    block.setDestruction((float)fillValue / 255F);
+                    com.maddox.il2.builder.PlMission.setChanged();
+                }
+            }
+
+        }
+
+    }
+
+    private void _doFill()
+    {
+        double d = _endFill.distance(_startFill);
+        int i = (int)java.lang.Math.round(d / 200D) + 1;
+        float f = 1.0F / (float)i;
+        for(int j = 0; j <= i; j++)
+        {
+            _stepFill.interpolate(_startFill, _endFill, (float)j * f);
+            fill(_stepFill, fillSize);
+        }
+
+    }
+
+    public void beginFill(com.maddox.JGP.Point3d point3d)
+    {
+        if(!isActive())
+        {
+            return;
+        } else
+        {
+            _startFill.set(point3d);
+            return;
+        }
+    }
+
+    public void fill(com.maddox.JGP.Point3d point3d)
+    {
+        if(!isActive())
+        {
+            return;
+        } else
+        {
+            _endFill.set(point3d);
+            _doFill();
+            _startFill.set(point3d);
+            return;
+        }
+    }
+
+    public void endFill(com.maddox.JGP.Point3d point3d)
+    {
+    }
+
+    public void configure()
+    {
+        if(com.maddox.il2.builder.PlMisDestruction.getPlugin("Mission") == null)
+        {
+            throw new RuntimeException("PlMisDestruction: plugin 'Mission' not found");
+        } else
+        {
+            pluginMission = (com.maddox.il2.builder.PlMission)com.maddox.il2.builder.PlMisDestruction.getPlugin("Mission");
+            return;
+        }
+    }
+
+    public com.maddox.il2.engine.Actor selectNear(com.maddox.JGP.Point3d point3d, double d)
+    {
+        _selectFilter.reset(d * d);
+        com.maddox.il2.engine.Engine.drawEnv().getFiltered((java.util.AbstractCollection)null, point3d.x - d, point3d.y - d, point3d.x + d, point3d.y + d, 15, _selectFilter);
+        return _selectFilter.get();
+    }
+
+    public void fillPopUpMenu(com.maddox.gwindow.GWindowMenuPopUp gwindowmenupopup, com.maddox.JGP.Point3d point3d)
+    {
+        if(!isActive())
+            return;
+        findedActor = selectNear(point3d, 100D);
+        if(findedActor == null)
+            return;
+        if(findedActor instanceof com.maddox.il2.objects.bridges.Bridge)
+        {
+            if(com.maddox.il2.engine.Actor.isAlive(findedActor))
+                gwindowmenupopup.addItem(new com.maddox.gwindow.GWindowMenuItem(gwindowmenupopup, com.maddox.il2.builder.PlMisDestruction.i18n("De&stroyBridge"), com.maddox.il2.builder.PlMisDestruction.i18n("TIPDestroyBridge")) {
+
+                    public void execute()
+                    {
+                        doBridge(true);
+                    }
+
+                }
+);
+            else
+                gwindowmenupopup.addItem(new com.maddox.gwindow.GWindowMenuItem(gwindowmenupopup, com.maddox.il2.builder.PlMisDestruction.i18n("Re&storeBridge"), com.maddox.il2.builder.PlMisDestruction.i18n("TIPRestoreBridge")) {
+
+                    public void execute()
+                    {
+                        doBridge(false);
+                    }
+
+                }
+);
+        } else
+        if(com.maddox.il2.engine.Actor.isAlive(findedActor))
+            gwindowmenupopup.addItem(new com.maddox.gwindow.GWindowMenuItem(gwindowmenupopup, com.maddox.il2.builder.PlMisDestruction.i18n("De&stroyObject"), com.maddox.il2.builder.PlMisDestruction.i18n("TIPDestroyObject")) {
+
+                public void execute()
+                {
+                    doHouse(true);
+                }
+
+            }
+);
+        else
+            gwindowmenupopup.addItem(new com.maddox.gwindow.GWindowMenuItem(gwindowmenupopup, com.maddox.il2.builder.PlMisDestruction.i18n("Re&storeObject"), com.maddox.il2.builder.PlMisDestruction.i18n("TIPRestoreObject")) {
+
+                public void execute()
+                {
+                    doHouse(false);
+                }
+
+            }
+);
+    }
+
+    private void doHouse(boolean flag)
+    {
+        com.maddox.JGP.Point3d point3d = findedActor.pos.getAbsPoint();
+        int i = (int)(point3d.x / 64D / 200D);
+        int j = (int)(point3d.y / 64D / 200D);
+        com.maddox.il2.builder.Tile tile = tiles[j][i];
+        if(tile == null)
+        {
+            return;
+        } else
+        {
+            tile.bChanged = true;
+            tilesChanged = true;
+            findedActor.setDiedFlag(flag);
+            com.maddox.il2.builder.PlMission.setChanged();
+            return;
+        }
+    }
+
+    private void doBridge(boolean flag)
+    {
+        com.maddox.il2.objects.bridges.LongBridge longbridge = (com.maddox.il2.objects.bridges.LongBridge)findedActor;
+        if(flag)
+        {
+            int i = longbridge.NumStateBits();
+            java.util.BitSet bitset = new BitSet(i);
+            int j = (int)((float)(fillValue * i) / 255F);
+            if(j == 0)
+                j = 1;
+            if(j > i)
+                j = i;
+            int k = j;
+            do
+            {
+                if(k <= 0)
+                    break;
+                int l = (int)(java.lang.Math.random() * (double)j);
+                if(!bitset.get(l))
+                {
+                    bitset.set(l);
+                    k--;
+                }
+            } while(true);
+            longbridge.SetStateOfSegments(bitset);
+        } else
+        {
+            longbridge.BeLive();
+        }
+        com.maddox.il2.builder.PlMission.setChanged();
+    }
+
+    public void createGUI()
+    {
+        baseTileMat = com.maddox.il2.engine.Mat.New("3do/builder/tile.mat");
+        mDialog = builder.mView.subMenu.addItem(2, new com.maddox.gwindow.GWindowMenuItem(builder.mView.subMenu, com.maddox.il2.builder.PlMisDestruction.i18n("De&struction"), com.maddox.il2.builder.PlMisDestruction.i18n("TIPDestruction")) {
+
+            public void execute()
+            {
+                if(wDialog.isVisible())
+                    wDialog.hideWindow();
+                else
+                if(com.maddox.il2.builder.PlMapLoad.getLandLoaded() != null)
+                    wDialog.showWindow();
+            }
+
+        }
+);
+        wDialog = new WDialog();
+    }
+
+    public void freeResources()
+    {
+        findedActor = null;
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    public static final int TILE_SIZE = 64;
+    com.maddox.gwindow.GWindowMenuItem mDialog;
+    com.maddox.il2.builder.WDialog wDialog;
+    private int fillSize;
+    private int fillValue;
+    com.maddox.il2.builder.Tile tiles[][];
+    boolean tilesChanged;
+    com.maddox.il2.engine.Mat baseTileMat;
+    byte buf[];
+    boolean bufEmpty;
+    private com.maddox.JGP.Point3d _startFill;
+    private com.maddox.JGP.Point3d _endFill;
+    private com.maddox.JGP.Point3d _stepFill;
+    private com.maddox.il2.builder.PlMission pluginMission;
+    private com.maddox.il2.builder.SelectFilter _selectFilter;
+    com.maddox.il2.engine.Actor findedActor;
+
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.il2.builder.PlMisDestruction.class, "name", "MisDestruction");
+    }
+
+
+
+
+
+
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   AutopilotAI.java
+
 package com.maddox.il2.ai.air;
 
 import com.maddox.JGP.Point3d;
@@ -20,382 +25,449 @@ import com.maddox.il2.fm.FMMath;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Mass;
 import com.maddox.il2.fm.Wind;
-import com.maddox.il2.game.Main;
-import com.maddox.il2.game.Mission;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.TypeBomber;
 import com.maddox.il2.objects.sounds.Voice;
 
-public class AutopilotAI extends Autopilotage
+// Referenced classes of package com.maddox.il2.ai.air:
+//            Pilot, Maneuver
+
+public class AutopilotAI extends com.maddox.il2.fm.Autopilotage
 {
-  public boolean bWayPoint;
-  public boolean bStabAltitude;
-  public boolean bStabSpeed;
-  public boolean bStabDirection;
-  protected double StabAltitude;
-  protected double StabSpeed;
-  protected double StabDirection;
-  protected Pilot FM;
-  protected WayPoint WWPoint;
-  protected Point3d WPoint = new Point3d();
 
-  private static Point3d P = new Point3d();
-  private static Point3d PlLoc = new Point3d();
-  private static Orientation O = new Orientation();
-
-  protected Vector3d courseV = new Vector3d();
-  protected Vector3d windV = new Vector3d();
-  private float Ail;
-  private float Pw;
-  private float Ru;
-  private float Ev;
-  private float SA;
-  private Vector3d Ve = new Vector3d();
-
-  public AutopilotAI(FlightModel paramFlightModel)
-  {
-    this.FM = ((Pilot)paramFlightModel);
-  }
-  public boolean getWayPoint() {
-    return this.bWayPoint; } 
-  public boolean getStabAltitude() { return this.bStabAltitude; } 
-  public boolean getStabSpeed() { return this.bStabSpeed; } 
-  public boolean getStabDirection() { return this.bStabDirection;
-  }
-
-  public void setWayPoint(boolean paramBoolean)
-  {
-    this.bWayPoint = paramBoolean;
-    if (!paramBoolean) return;
-    this.bStabSpeed = false;
-    this.bStabAltitude = false;
-    this.bStabDirection = false;
-
-    if (this.WWPoint != null) {
-      this.WWPoint.getP(this.WPoint);
-      this.StabSpeed = this.WWPoint.Speed;
-      this.StabAltitude = this.WPoint.z;
-    } else {
-      this.StabAltitude = 1000.0D;
-      this.StabSpeed = 80.0D;
-    }
-    this.StabDirection = O.getAzimut();
-  }
-
-  public void setStabAltitude(boolean paramBoolean) {
-    this.bStabAltitude = paramBoolean;
-    if (!paramBoolean) return;
-    this.bWayPoint = false;
-    this.FM.getLoc(P);
-    this.StabAltitude = P.z;
-
-    if (!this.bStabSpeed) this.StabSpeed = this.FM.getSpeed();
-
-    this.Pw = this.FM.CT.PowerControl;
-  }
-
-  public void setStabAltitude(float paramFloat)
-  {
-    this.bStabAltitude = true;
-    this.bWayPoint = false;
-    this.FM.getLoc(P);
-    this.StabAltitude = paramFloat;
-
-    if (!this.bStabSpeed) this.StabSpeed = this.FM.getSpeed();
-
-    this.Pw = this.FM.CT.PowerControl;
-  }
-
-  public void setStabSpeed(boolean paramBoolean)
-  {
-    this.bStabSpeed = paramBoolean;
-    if (!paramBoolean) return;
-    this.bWayPoint = false;
-    this.StabSpeed = this.FM.getSpeed();
-  }
-
-  public void setStabSpeed(float paramFloat)
-  {
-    this.bStabSpeed = true;
-    this.bWayPoint = false;
-    this.StabSpeed = (paramFloat / 3.6F);
-  }
-
-  public void setStabDirection(boolean paramBoolean)
-  {
-    this.bStabDirection = paramBoolean;
-    if (!paramBoolean) return;
-    this.bWayPoint = false;
-    O.set(this.FM.Or);
-    this.StabDirection = O.getAzimut();
-    this.Ail = this.FM.CT.AileronControl;
-  }
-
-  public void setStabDirection(float paramFloat) {
-    this.bStabDirection = true;
-    this.bWayPoint = false;
-    this.StabDirection = ((paramFloat + 3600.0F) % 360.0F);
-    this.Ail = this.FM.CT.AileronControl;
-  }
-
-  public void setStabAll(boolean paramBoolean) {
-    this.bWayPoint = false;
-    setStabDirection(paramBoolean);
-    setStabAltitude(paramBoolean);
-    setStabSpeed(paramBoolean);
-    setStabDirection(paramBoolean);
-  }
-
-  public float getWayPointDistance()
-  {
-    if (this.WPoint == null) return 1000000.0F;
-    this.way.curr().getP(P); P.sub(this.FM.Loc);
-    return (float)Math.sqrt(P.x * P.x + P.y * P.y);
-  }
-
-  private void voiceCommand(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    this.Ve.sub(paramPoint3d2, paramPoint3d1);
-    float f = 57.324841F * (float)Math.atan2(this.Ve.x, this.Ve.y);
-    int i = (int)f;
-    i = (i + 180) % 360;
-    Voice.speakHeading((Aircraft)this.FM.actor, i);
-    Voice.speakAltitude((Aircraft)this.FM.actor, (int)paramPoint3d1.z);
-  }
-
-  public void update(float paramFloat) {
-    this.FM.getLoc(PlLoc);
-    this.SA = (float)Math.max(this.StabAltitude, Engine.land().HQ_Air(PlLoc.x, PlLoc.y) + 5.0D);
-
-    if (this.bWayPoint) {
-      if ((this.WWPoint != this.way.auto(PlLoc)) || (this.way.isReached(PlLoc))) {
-        this.WWPoint = this.way.auto(PlLoc);
-        this.WWPoint.getP(this.WPoint);
-        if ((((Aircraft)this.FM.actor).aircIndex() == 0) && (!this.way.isLanding())) voiceCommand(this.WPoint, PlLoc);
-
-        this.StabSpeed = (this.WWPoint.Speed - 2.0F * ((Aircraft)this.FM.actor).aircIndex());
-        this.StabAltitude = this.WPoint.z;
-        Object localObject;
-        if (this.WWPoint.Action == 3) {
-          localObject = this.WWPoint.getTarget();
-          if (localObject != null) {
-            this.FM.target_ground = null;
-          }
-          else if ((((Aircraft)this.FM.actor instanceof TypeBomber)) && (this.FM.CT.Weapons[3] != null) && (this.FM.CT.Weapons[3][0] != null) && (this.FM.CT.Weapons[3][(this.FM.CT.Weapons[3].length - 1)].haveBullets()))
-          {
-            this.FM.CT.BayDoorControl = 1.0F;
-            Pilot localPilot = this.FM;
-            while (localPilot.Wingman != null) {
-              localPilot = (Pilot)localPilot.Wingman;
-              localPilot.CT.BayDoorControl = 1.0F;
-            }
-          }
-        }
-        else {
-          if (((Aircraft)this.FM.actor instanceof TypeBomber)) {
-            this.FM.CT.BayDoorControl = 0.0F;
-            localObject = this.FM;
-            while (((Pilot)localObject).Wingman != null) {
-              localObject = (Pilot)((Pilot)localObject).Wingman;
-              ((Pilot)localObject).CT.BayDoorControl = 0.0F;
-            }
-          }
-          localObject = this.WWPoint.getTarget();
-          if ((localObject instanceof Aircraft)) {
-            if (((Actor)localObject).getArmy() == this.FM.actor.getArmy()) this.FM.airClient = ((Maneuver)((Aircraft)localObject).FM); else {
-              this.FM.target = ((Aircraft)localObject).FM;
-            }
-          }
-        }
-
-        if (this.way.isLanding()) {
-          this.FM.getLoc(P);
-          if ((this.way.Cur() > 3) && (P.z > this.WPoint.z + 500.0D)) this.way.setCur(1);
-          if ((this.way.Cur() == 5) && (
-            (!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))) {
-            Voice.speakLanding((Aircraft)this.FM.actor);
-          }
-          if ((this.way.Cur() == 6) || (this.way.Cur() == 7)) {
-            int i = 0;
-            if (Actor.isAlive(this.way.landingAirport)) {
-              i = this.way.landingAirport.landingFeedback(this.WPoint, (Aircraft)this.FM.actor);
-            }
-            if ((i == 0) && (
-              (!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))) {
-              Voice.speakLandingPermited((Aircraft)this.FM.actor);
-            }
-            if (i == 1) {
-              if ((!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-                Voice.speakLandingDenied((Aircraft)this.FM.actor);
-              this.way.first();
-              this.FM.push(2);
-              this.FM.push(2);
-              this.FM.push(2);
-              this.FM.push(2);
-              this.FM.pop();
-              if ((!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-                Voice.speakGoAround((Aircraft)this.FM.actor);
-              this.FM.CT.FlapsControl = 0.4F;
-              this.FM.CT.GearControl = 0.0F;
-              return;
-            }
-            if (i == 2) {
-              if ((!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-                Voice.speakWaveOff((Aircraft)this.FM.actor);
-              if (this.FM.isReadyToReturn()) {
-                if ((!Mission.isDogfight()) || (!Main.cur().mission.zutiMisc_DisableAIRadioChatter))
-                  Voice.speakGoingIn((Aircraft)this.FM.actor);
-                this.FM.AS.setCockpitDoor(this.FM.actor, 1);
-                this.FM.CT.GearControl = 1.0F;
-                return;
-              }
-              this.way.first();
-              this.FM.push(2);
-              this.FM.push(2);
-              this.FM.push(2);
-              this.FM.push(2);
-              this.FM.pop();
-              this.FM.CT.FlapsControl = 0.4F;
-              this.FM.CT.GearControl = 0.0F;
-              Aircraft.debugprintln(this.FM.actor, "Going around!.");
-              return;
-            }
-            this.FM.CT.GearControl = 1.0F;
-          }
-        }
-      }
-
-      if ((this.way.isLanding()) && (this.way.Cur() < 6) && (this.way.getCurDist() < 800.0D)) this.way.next();
-
-      if (((this.way.Cur() == this.way.size() - 1) && (getWayPointDistance() < 2000.0F) && (this.way.curr().getTarget() == null) && (this.FM.M.fuel < 0.2F * this.FM.M.maxFuel)) || ((this.way.curr().Action == 2) && (!this.way.isLanding())))
-      {
-        Airport localAirport = Airport.makeLandWay(this.FM);
-        if (localAirport != null) {
-          this.WWPoint = null;
-          this.way.first();
-          update(paramFloat);
-          return;
-        }
-        this.FM.set_task(3);
-        this.FM.set_maneuver(49);
-        this.FM.setBusy(true);
-      }
-
-      if (World.cur().diffCur.Wind_N_Turbulence) { World.cur(); if ((!World.wind().noWind) && (this.FM.Skill > 0))
-        {
-          World.cur(); World.wind().getVectorAI(this.WPoint, this.windV);
-          this.windV.scale(-1.0D);
-
-          if (this.FM.Skill == 1) {
-            this.windV.scale(0.75D);
-          }
-          this.courseV.set(this.WPoint.x - PlLoc.x, this.WPoint.y - PlLoc.y, 0.0D);
-          this.courseV.normalize();
-
-          this.courseV.scale(this.FM.getSpeed());
-          this.courseV.add(this.windV);
-          this.StabDirection = (-FMMath.RAD2DEG((float)Math.atan2(this.courseV.y, this.courseV.x))); break label1470;
-        }
-      }
-      this.StabDirection = (-FMMath.RAD2DEG((float)Math.atan2(this.WPoint.y - PlLoc.y, this.WPoint.x - PlLoc.x)));
-    }
-
-    label1470: if ((this.bStabSpeed) || (this.bWayPoint)) {
-      this.Pw = (0.3F - 0.04F * (this.FM.getSpeed() - (float)this.StabSpeed));
-      if (this.Pw > 1.0F) this.Pw = 1.0F; else if (this.Pw < 0.0F) this.Pw = 0.0F;
-
-    }
-
-    if ((this.bStabAltitude) || (this.bWayPoint)) {
-      this.Ev = this.FM.CT.ElevatorControl;
-
-      double d1 = this.SA - this.FM.getAltitude();
-      double d2 = 0.0D;
-      double d3 = 0.0D;
-      float f4;
-      if (d1 > -50.0D)
-      {
-        f4 = 5.0F + 0.00025F * this.FM.getAltitude();
-        f4 = (float)(f4 + 0.02D * (250.0D - this.FM.Vmax));
-        if (f4 > 14.0F) f4 = 14.0F;
-        d2 = Math.min(this.FM.getAOA() - f4, this.FM.Or.getTangage() - 1.0F) * 1.0F * paramFloat + 0.5F * this.FM.getForwAccel();
-      }
-
-      if (d1 < 50.0D)
-      {
-        f4 = -15.0F + this.FM.M.mass * 0.00033F;
-        if (f4 < -4.0F) f4 = -4.0F;
-        d3 = (this.FM.Or.getTangage() - f4) * 0.8F * paramFloat;
-      }
-      double d4 = 0.01D * (d1 + 50.0D);
-      if (d4 > 1.0D) d4 = 1.0D;
-      if (d4 < 0.0D) d4 = 0.0D;
-      this.Ev = (float)(this.Ev - (d4 * d2 + (1.0D - d4) * d3));
-
-      this.Ev = (float)(this.Ev + (1.0D * this.FM.getW().y + 0.5D * this.FM.getAW().y));
-      if (this.FM.getSpeed() < 1.3F * this.FM.VminFLAPS) this.Ev -= 0.004F * paramFloat;
-
-      float f5 = 9.0F * this.FM.getSpeed() / this.FM.VminFLAPS;
-      if (this.FM.VminFLAPS < 28.0F) f5 = 10.0F;
-      if (f5 > 25.0F) f5 = 25.0F;
-      float f6 = (f5 - this.FM.Or.getTangage()) * 0.1F;
-      float f7 = -15.0F + this.FM.M.mass * 0.00033F;
-      if (f7 < -4.0F) f7 = -4.0F;
-      float f8 = (f7 - this.FM.Or.getTangage()) * 0.2F;
-
-      if (this.Ev > f6) this.Ev = f6;
-      if (this.Ev < f8) this.Ev = f8;
-
-      this.FM.CT.ElevatorControl = (0.8F * this.FM.CT.ElevatorControl + 0.2F * this.Ev);
-    }
-
-    float f1 = 0.0F;
-
-    if ((this.bStabDirection) || (this.bWayPoint))
+    public AutopilotAI(com.maddox.il2.fm.FlightModel flightmodel)
     {
-      f1 = this.FM.Or.getAzimut();
-      float f2 = this.FM.Or.getKren();
-      f1 = (float)(f1 - this.StabDirection);
-
-      f1 = (f1 + 3600.0F) % 360.0F;
-      f2 = (f2 + 3600.0F) % 360.0F;
-      if (f1 > 180.0F) f1 -= 360.0F;
-      if (f2 > 180.0F) f2 -= 360.0F;
-
-      float f3 = ((this.FM.getSpeed() - this.FM.VminFLAPS) * 3.6F + this.FM.getVertSpeed() * 40.0F) * 0.25F;
-      if (this.way.isLanding()) f3 = 65.0F;
-      if (f3 < 15.0F) f3 = 15.0F; else if (f3 > 65.0F) f3 = 65.0F;
-      if (f1 < -f3) f1 = -f3; else if (f1 > f3) f1 = f3;
-
-      this.Ail = (-0.01F * (f1 + f2 + 3.0F * (float)this.FM.getW().x + 0.5F * (float)this.FM.getAW().x));
-      if (this.Ail > 1.0F) this.Ail = 1.0F; else if (this.Ail < -1.0F) this.Ail = -1.0F;
-      this.WPoint.get(this.Ve);
-      this.Ve.sub(this.FM.Loc);
-      this.FM.Or.transformInv(this.Ve);
-      if ((Math.abs(this.Ve.y) < 25.0D) && (Math.abs(this.Ve.x) < 150.0D))
-        this.FM.CT.AileronControl = (-0.01F * this.FM.Or.getKren());
-      else
-        this.FM.CT.AileronControl = this.Ail;
-      this.FM.CT.ElevatorControl += Math.abs(f2) * 0.004F * paramFloat;
-
-      this.FM.CT.RudderControl -= this.FM.getAOS() * 0.04F * paramFloat;
+        WPoint = new Point3d();
+        courseV = new Vector3d();
+        windV = new Vector3d();
+        Ve = new Vector3d();
+        FM = (com.maddox.il2.ai.air.Pilot)flightmodel;
     }
 
-    if ((this.bWayPoint) && (this.way.isLanding())) {
-      if (World.Rnd().nextFloat() < 0.01F) this.FM.doDumpBombsPassively();
-      if (this.way.Cur() > 5) this.FM.set_maneuver(25);
-      this.FM.CT.RudderControl -= f1 * 0.04F * paramFloat;
-      landUpdate(paramFloat);
+    public boolean getWayPoint()
+    {
+        return bWayPoint;
     }
-  }
 
-  private void landUpdate(float paramFloat)
-  {
-    if (this.FM.getAltitude() - 10.0F + this.FM.getVertSpeed() * 5.0F - this.SA > 0.0F) {
-      if (this.FM.Vwld.z > -10.0D) this.FM.Vwld.z -= 1.0F * paramFloat;
+    public boolean getStabAltitude()
+    {
+        return bStabAltitude;
     }
-    else if (this.FM.Vwld.z < 10.0D) this.FM.Vwld.z += 1.0F * paramFloat;
 
-    if ((this.FM.getAOA() > 11.0F) && (this.FM.CT.ElevatorControl > -0.3F))
-      this.FM.CT.ElevatorControl -= 0.3F * paramFloat;
-  }
+    public boolean getStabSpeed()
+    {
+        return bStabSpeed;
+    }
+
+    public boolean getStabDirection()
+    {
+        return bStabDirection;
+    }
+
+    public void setWayPoint(boolean flag)
+    {
+        bWayPoint = flag;
+        if(!flag)
+            return;
+        bStabSpeed = false;
+        bStabAltitude = false;
+        bStabDirection = false;
+        if(WWPoint != null)
+        {
+            WWPoint.getP(WPoint);
+            StabSpeed = WWPoint.Speed;
+            StabAltitude = WPoint.z;
+        } else
+        {
+            StabAltitude = 1000D;
+            StabSpeed = 80D;
+        }
+        StabDirection = O.getAzimut();
+    }
+
+    public void setStabAltitude(boolean flag)
+    {
+        bStabAltitude = flag;
+        if(!flag)
+            return;
+        bWayPoint = false;
+        FM.getLoc(P);
+        StabAltitude = P.z;
+        if(!bStabSpeed)
+            StabSpeed = FM.getSpeed();
+        Pw = FM.CT.PowerControl;
+    }
+
+    public void setStabAltitude(float f)
+    {
+        bStabAltitude = true;
+        bWayPoint = false;
+        FM.getLoc(P);
+        StabAltitude = f;
+        if(!bStabSpeed)
+            StabSpeed = FM.getSpeed();
+        Pw = FM.CT.PowerControl;
+    }
+
+    public void setStabSpeed(boolean flag)
+    {
+        bStabSpeed = flag;
+        if(!flag)
+        {
+            return;
+        } else
+        {
+            bWayPoint = false;
+            StabSpeed = FM.getSpeed();
+            return;
+        }
+    }
+
+    public void setStabSpeed(float f)
+    {
+        bStabSpeed = true;
+        bWayPoint = false;
+        StabSpeed = f / 3.6F;
+    }
+
+    public void setStabDirection(boolean flag)
+    {
+        bStabDirection = flag;
+        if(!flag)
+        {
+            return;
+        } else
+        {
+            bWayPoint = false;
+            O.set(FM.Or);
+            StabDirection = O.getAzimut();
+            Ail = FM.CT.AileronControl;
+            return;
+        }
+    }
+
+    public void setStabDirection(float f)
+    {
+        bStabDirection = true;
+        bWayPoint = false;
+        StabDirection = (f + 3600F) % 360F;
+        Ail = FM.CT.AileronControl;
+    }
+
+    public void setStabAll(boolean flag)
+    {
+        bWayPoint = false;
+        setStabDirection(flag);
+        setStabAltitude(flag);
+        setStabSpeed(flag);
+        setStabDirection(flag);
+    }
+
+    public float getWayPointDistance()
+    {
+        if(WPoint == null)
+        {
+            return 1000000F;
+        } else
+        {
+            way.curr().getP(P);
+            P.sub(FM.Loc);
+            return (float)java.lang.Math.sqrt(P.x * P.x + P.y * P.y);
+        }
+    }
+
+    private void voiceCommand(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        Ve.sub(point3d1, point3d);
+        float f = 57.32484F * (float)java.lang.Math.atan2(Ve.x, Ve.y);
+        int i = (int)f;
+        i = (i + 180) % 360;
+        com.maddox.il2.objects.sounds.Voice.speakHeading((com.maddox.il2.objects.air.Aircraft)FM.actor, i);
+        com.maddox.il2.objects.sounds.Voice.speakAltitude((com.maddox.il2.objects.air.Aircraft)FM.actor, (int)point3d.z);
+    }
+
+    public void update(float f)
+    {
+label0:
+        {
+            FM.getLoc(PlLoc);
+            SA = (float)java.lang.Math.max(StabAltitude, com.maddox.il2.engine.Engine.land().HQ_Air(PlLoc.x, PlLoc.y) + 5D);
+            if(!bWayPoint)
+                break label0;
+            if(WWPoint != way.auto(PlLoc) || way.isReached(PlLoc))
+            {
+                WWPoint = way.auto(PlLoc);
+                WWPoint.getP(WPoint);
+                if(((com.maddox.il2.objects.air.Aircraft)FM.actor).aircIndex() == 0 && !way.isLanding())
+                    voiceCommand(WPoint, PlLoc);
+                StabSpeed = WWPoint.Speed - 2.0F * (float)((com.maddox.il2.objects.air.Aircraft)FM.actor).aircIndex();
+                StabAltitude = WPoint.z;
+                if(WWPoint.Action == 3)
+                {
+                    com.maddox.il2.engine.Actor actor = WWPoint.getTarget();
+                    if(actor != null)
+                        FM.target_ground = null;
+                    else
+                    if(((com.maddox.il2.objects.air.Aircraft)FM.actor instanceof com.maddox.il2.objects.air.TypeBomber) && FM.CT.Weapons[3] != null && FM.CT.Weapons[3][0] != null && FM.CT.Weapons[3][FM.CT.Weapons[3].length - 1].haveBullets())
+                    {
+                        FM.CT.BayDoorControl = 1.0F;
+                        for(com.maddox.il2.ai.air.Pilot pilot1 = FM; pilot1.Wingman != null;)
+                        {
+                            pilot1 = (com.maddox.il2.ai.air.Pilot)pilot1.Wingman;
+                            pilot1.CT.BayDoorControl = 1.0F;
+                        }
+
+                    }
+                } else
+                {
+                    if((com.maddox.il2.objects.air.Aircraft)FM.actor instanceof com.maddox.il2.objects.air.TypeBomber)
+                    {
+                        FM.CT.BayDoorControl = 0.0F;
+                        for(com.maddox.il2.ai.air.Pilot pilot = FM; pilot.Wingman != null;)
+                        {
+                            pilot = (com.maddox.il2.ai.air.Pilot)pilot.Wingman;
+                            pilot.CT.BayDoorControl = 0.0F;
+                        }
+
+                    }
+                    com.maddox.il2.engine.Actor actor1 = WWPoint.getTarget();
+                    if(actor1 instanceof com.maddox.il2.objects.air.Aircraft)
+                        if(actor1.getArmy() == FM.actor.getArmy())
+                            FM.airClient = (com.maddox.il2.ai.air.Maneuver)((com.maddox.il2.objects.air.Aircraft)actor1).FM;
+                        else
+                            FM.target = ((com.maddox.il2.objects.air.Aircraft)actor1).FM;
+                }
+                if(way.isLanding())
+                {
+                    FM.getLoc(P);
+                    if(way.Cur() > 3 && P.z > WPoint.z + 500D)
+                        way.setCur(1);
+                    if(way.Cur() == 5)
+                        com.maddox.il2.objects.sounds.Voice.speakLanding((com.maddox.il2.objects.air.Aircraft)FM.actor);
+                    if(way.Cur() == 6 || way.Cur() == 7)
+                    {
+                        int i = 0;
+                        if(com.maddox.il2.engine.Actor.isAlive(way.landingAirport))
+                            i = way.landingAirport.landingFeedback(WPoint, (com.maddox.il2.objects.air.Aircraft)FM.actor);
+                        if(i == 0)
+                            com.maddox.il2.objects.sounds.Voice.speakLandingPermited((com.maddox.il2.objects.air.Aircraft)FM.actor);
+                        if(i == 1)
+                        {
+                            com.maddox.il2.objects.sounds.Voice.speakLandingDenied((com.maddox.il2.objects.air.Aircraft)FM.actor);
+                            way.first();
+                            FM.push(2);
+                            FM.push(2);
+                            FM.push(2);
+                            FM.push(2);
+                            FM.pop();
+                            com.maddox.il2.objects.sounds.Voice.speakGoAround((com.maddox.il2.objects.air.Aircraft)FM.actor);
+                            FM.CT.FlapsControl = 0.4F;
+                            FM.CT.GearControl = 0.0F;
+                            return;
+                        }
+                        if(i == 2)
+                        {
+                            com.maddox.il2.objects.sounds.Voice.speakWaveOff((com.maddox.il2.objects.air.Aircraft)FM.actor);
+                            if(FM.isReadyToReturn())
+                            {
+                                com.maddox.il2.objects.sounds.Voice.speakGoingIn((com.maddox.il2.objects.air.Aircraft)FM.actor);
+                                FM.AS.setCockpitDoor(FM.actor, 1);
+                                FM.CT.GearControl = 1.0F;
+                                return;
+                            } else
+                            {
+                                way.first();
+                                FM.push(2);
+                                FM.push(2);
+                                FM.push(2);
+                                FM.push(2);
+                                FM.pop();
+                                FM.CT.FlapsControl = 0.4F;
+                                FM.CT.GearControl = 0.0F;
+                                com.maddox.il2.objects.air.Aircraft.debugprintln(FM.actor, "Going around!.");
+                                return;
+                            }
+                        }
+                        FM.CT.GearControl = 1.0F;
+                    }
+                }
+            }
+            if(way.isLanding() && way.Cur() < 6 && way.getCurDist() < 800D)
+                way.next();
+            if((way.Cur() == way.size() - 1 && getWayPointDistance() < 2000F && way.curr().getTarget() == null && FM.M.fuel < 0.2F * FM.M.maxFuel || way.curr().Action == 2) && !way.isLanding())
+            {
+                com.maddox.il2.ai.Airport airport = com.maddox.il2.ai.Airport.makeLandWay(FM);
+                if(airport != null)
+                {
+                    WWPoint = null;
+                    way.first();
+                    update(f);
+                    return;
+                }
+                FM.set_task(3);
+                FM.set_maneuver(49);
+                FM.setBusy(true);
+            }
+            if(com.maddox.il2.ai.World.cur().diffCur.Wind_N_Turbulence)
+            {
+                com.maddox.il2.ai.World.cur();
+                if(!com.maddox.il2.ai.World.wind().noWind && FM.Skill > 0)
+                {
+                    com.maddox.il2.ai.World.cur();
+                    com.maddox.il2.ai.World.wind().getVectorAI(WPoint, windV);
+                    windV.scale(-1D);
+                    if(FM.Skill == 1)
+                        windV.scale(0.75D);
+                    courseV.set(WPoint.x - PlLoc.x, WPoint.y - PlLoc.y, 0.0D);
+                    courseV.normalize();
+                    courseV.scale(FM.getSpeed());
+                    courseV.add(windV);
+                    StabDirection = -com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(courseV.y, courseV.x));
+                    break label0;
+                }
+            }
+            StabDirection = -com.maddox.il2.fm.FMMath.RAD2DEG((float)java.lang.Math.atan2(WPoint.y - PlLoc.y, WPoint.x - PlLoc.x));
+        }
+        if(bStabSpeed || bWayPoint)
+        {
+            Pw = 0.3F - 0.04F * (FM.getSpeed() - (float)StabSpeed);
+            if(Pw > 1.0F)
+                Pw = 1.0F;
+            else
+            if(Pw < 0.0F)
+                Pw = 0.0F;
+        }
+        if(bStabAltitude || bWayPoint)
+        {
+            Ev = FM.CT.ElevatorControl;
+            double d = SA - FM.getAltitude();
+            double d1 = 0.0D;
+            double d2 = 0.0D;
+            if(d > -50D)
+            {
+                float f4 = 5F + 0.00025F * FM.getAltitude();
+                f4 = (float)((double)f4 + 0.02D * (250D - (double)FM.Vmax));
+                if(f4 > 14F)
+                    f4 = 14F;
+                d1 = java.lang.Math.min(FM.getAOA() - f4, FM.Or.getTangage() - 1.0F) * 1.0F * f + 0.5F * FM.getForwAccel();
+            }
+            if(d < 50D)
+            {
+                float f5 = -15F + FM.M.mass * 0.00033F;
+                if(f5 < -4F)
+                    f5 = -4F;
+                d2 = (FM.Or.getTangage() - f5) * 0.8F * f;
+            }
+            double d3 = 0.01D * (d + 50D);
+            if(d3 > 1.0D)
+                d3 = 1.0D;
+            if(d3 < 0.0D)
+                d3 = 0.0D;
+            Ev -= d3 * d1 + (1.0D - d3) * d2;
+            Ev += 1.0D * FM.getW().y + 0.5D * FM.getAW().y;
+            if(FM.getSpeed() < 1.3F * FM.VminFLAPS)
+                Ev -= 0.004F * f;
+            float f6 = (9F * FM.getSpeed()) / FM.VminFLAPS;
+            if(FM.VminFLAPS < 28F)
+                f6 = 10F;
+            if(f6 > 25F)
+                f6 = 25F;
+            float f7 = (f6 - FM.Or.getTangage()) * 0.1F;
+            float f8 = -15F + FM.M.mass * 0.00033F;
+            if(f8 < -4F)
+                f8 = -4F;
+            float f9 = (f8 - FM.Or.getTangage()) * 0.2F;
+            if(Ev > f7)
+                Ev = f7;
+            if(Ev < f9)
+                Ev = f9;
+            FM.CT.ElevatorControl = 0.8F * FM.CT.ElevatorControl + 0.2F * Ev;
+        }
+        float f1 = 0.0F;
+        if(bStabDirection || bWayPoint)
+        {
+            f1 = FM.Or.getAzimut();
+            float f2 = FM.Or.getKren();
+            f1 = (float)((double)f1 - StabDirection);
+            f1 = (f1 + 3600F) % 360F;
+            f2 = (f2 + 3600F) % 360F;
+            if(f1 > 180F)
+                f1 -= 360F;
+            if(f2 > 180F)
+                f2 -= 360F;
+            float f3 = ((FM.getSpeed() - FM.VminFLAPS) * 3.6F + FM.getVertSpeed() * 40F) * 0.25F;
+            if(way.isLanding())
+                f3 = 65F;
+            if(f3 < 15F)
+                f3 = 15F;
+            else
+            if(f3 > 65F)
+                f3 = 65F;
+            if(f1 < -f3)
+                f1 = -f3;
+            else
+            if(f1 > f3)
+                f1 = f3;
+            Ail = -0.01F * (f1 + f2 + 3F * (float)FM.getW().x + 0.5F * (float)FM.getAW().x);
+            if(Ail > 1.0F)
+                Ail = 1.0F;
+            else
+            if(Ail < -1F)
+                Ail = -1F;
+            WPoint.get(Ve);
+            Ve.sub(FM.Loc);
+            FM.Or.transformInv(Ve);
+            if(java.lang.Math.abs(Ve.y) < 25D && java.lang.Math.abs(Ve.x) < 150D)
+                FM.CT.AileronControl = -0.01F * FM.Or.getKren();
+            else
+                FM.CT.AileronControl = Ail;
+            FM.CT.ElevatorControl += java.lang.Math.abs(f2) * 0.004F * f;
+            FM.CT.RudderControl -= FM.getAOS() * 0.04F * f;
+        }
+        if(bWayPoint && way.isLanding())
+        {
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.01F)
+                FM.doDumpBombsPassively();
+            if(way.Cur() > 5)
+                FM.set_maneuver(25);
+            FM.CT.RudderControl -= f1 * 0.04F * f;
+            landUpdate(f);
+        }
+    }
+
+    private void landUpdate(float f)
+    {
+        if(((FM.getAltitude() - 10F) + FM.getVertSpeed() * 5F) - SA > 0.0F)
+        {
+            if(FM.Vwld.z > -10D)
+                FM.Vwld.z -= 1.0F * f;
+        } else
+        if(FM.Vwld.z < 10D)
+            FM.Vwld.z += 1.0F * f;
+        if(FM.getAOA() > 11F && FM.CT.ElevatorControl > -0.3F)
+            FM.CT.ElevatorControl -= 0.3F * f;
+    }
+
+    public boolean bWayPoint;
+    public boolean bStabAltitude;
+    public boolean bStabSpeed;
+    public boolean bStabDirection;
+    protected double StabAltitude;
+    protected double StabSpeed;
+    protected double StabDirection;
+    protected com.maddox.il2.ai.air.Pilot FM;
+    protected com.maddox.il2.ai.WayPoint WWPoint;
+    protected com.maddox.JGP.Point3d WPoint;
+    private static com.maddox.JGP.Point3d P = new Point3d();
+    private static com.maddox.JGP.Point3d PlLoc = new Point3d();
+    private static com.maddox.il2.engine.Orientation O = new Orientation();
+    protected com.maddox.JGP.Vector3d courseV;
+    protected com.maddox.JGP.Vector3d windV;
+    private float Ail;
+    private float Pw;
+    private float Ru;
+    private float Ev;
+    private float SA;
+    private com.maddox.JGP.Vector3d Ve;
+
 }

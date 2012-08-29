@@ -1,40 +1,50 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GTreeModel.java
+
 package com.maddox.gwindow;
 
-public abstract interface GTreeModel
+
+// Referenced classes of package com.maddox.gwindow:
+//            GTreePath, GTreeModelListener, GTexRegion, GWindowCellEdit
+
+public interface GTreeModel
 {
-  public abstract GTreePath getRoot();
 
-  public abstract String pathToStr(GTreePath paramGTreePath, boolean paramBoolean);
+    public abstract com.maddox.gwindow.GTreePath getRoot();
 
-  public abstract GTreePath strToPath(String paramString, boolean paramBoolean);
+    public abstract java.lang.String pathToStr(com.maddox.gwindow.GTreePath gtreepath, boolean flag);
 
-  public abstract void addExcludePath(GTreePath paramGTreePath);
+    public abstract com.maddox.gwindow.GTreePath strToPath(java.lang.String s, boolean flag);
 
-  public abstract Object getChild(GTreePath paramGTreePath, int paramInt);
+    public abstract void addExcludePath(com.maddox.gwindow.GTreePath gtreepath);
 
-  public abstract int getChildCount(GTreePath paramGTreePath);
+    public abstract java.lang.Object getChild(com.maddox.gwindow.GTreePath gtreepath, int i);
 
-  public abstract boolean isLeaf(GTreePath paramGTreePath);
+    public abstract int getChildCount(com.maddox.gwindow.GTreePath gtreepath);
 
-  public abstract void addListener(GTreeModelListener paramGTreeModelListener);
+    public abstract boolean isLeaf(com.maddox.gwindow.GTreePath gtreepath);
 
-  public abstract void removeListener(GTreeModelListener paramGTreeModelListener);
+    public abstract void addListener(com.maddox.gwindow.GTreeModelListener gtreemodellistener);
 
-  public abstract GTexRegion getIcon(GTreePath paramGTreePath, boolean paramBoolean1, boolean paramBoolean2);
+    public abstract void removeListener(com.maddox.gwindow.GTreeModelListener gtreemodellistener);
 
-  public abstract String getString(GTreePath paramGTreePath, boolean paramBoolean1, boolean paramBoolean2);
+    public abstract com.maddox.gwindow.GTexRegion getIcon(com.maddox.gwindow.GTreePath gtreepath, boolean flag, boolean flag1);
 
-  public abstract float getRenderWidth(GTreePath paramGTreePath, boolean paramBoolean1, boolean paramBoolean2);
+    public abstract java.lang.String getString(com.maddox.gwindow.GTreePath gtreepath, boolean flag, boolean flag1);
 
-  public abstract float getRenderHeight(GTreePath paramGTreePath, boolean paramBoolean1, boolean paramBoolean2);
+    public abstract float getRenderWidth(com.maddox.gwindow.GTreePath gtreepath, boolean flag, boolean flag1);
 
-  public abstract boolean render(GTreePath paramGTreePath, boolean paramBoolean1, boolean paramBoolean2, float paramFloat1, float paramFloat2);
+    public abstract float getRenderHeight(com.maddox.gwindow.GTreePath gtreepath, boolean flag, boolean flag1);
 
-  public abstract boolean isEditable(GTreePath paramGTreePath);
+    public abstract boolean render(com.maddox.gwindow.GTreePath gtreepath, boolean flag, boolean flag1, float f, float f1);
 
-  public abstract GWindowCellEdit getEdit(GTreePath paramGTreePath, boolean paramBoolean);
+    public abstract boolean isEditable(com.maddox.gwindow.GTreePath gtreepath);
 
-  public abstract Object getValueAt(GTreePath paramGTreePath);
+    public abstract com.maddox.gwindow.GWindowCellEdit getEdit(com.maddox.gwindow.GTreePath gtreepath, boolean flag);
 
-  public abstract void setValueAt(Object paramObject, GTreePath paramGTreePath);
+    public abstract java.lang.Object getValueAt(com.maddox.gwindow.GTreePath gtreepath);
+
+    public abstract void setValueAt(java.lang.Object obj, com.maddox.gwindow.GTreePath gtreepath);
 }

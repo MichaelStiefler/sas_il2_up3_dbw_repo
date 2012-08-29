@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HookGunner.java
+
 package com.maddox.il2.engine.hotkey;
 
 import com.maddox.JGP.Vector3d;
@@ -18,298 +23,402 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class HookGunner extends HookRender
+// Referenced classes of package com.maddox.il2.engine.hotkey:
+//            HookView
+
+public class HookGunner extends com.maddox.il2.engine.HookRender
 {
-  private float stepAzimut = 45.0F;
-  private float stepTangage = 30.0F;
-  private float maxAzimut = 135.0F;
-  private float maxTangage = 89.0F;
-  private float minTangage = -60.0F;
-  private float Azimut = 0.0F;
-  private float Tangage = 0.0F;
-  private float _Azimut = 0.0F;
-  private float _Tangage = 0.0F;
-  private long prevTime = 0L;
-  private float Px;
-  private float Py;
-  private float Pz;
-  private long tstamp = -1L;
-  private long roolTime = -1L;
-  private Move mover;
-  private Actor target;
-  private Actor target2;
-  private boolean bUse = false;
-  private Orient oGunMove = new Orient();
-
-  private Loc L = new Loc();
-
-  private Orient o = new Orient();
-
-  private static float save_Azimut = 0.0F;
-  private static float save_Tangage = 0.0F;
-  private static float save__Azimut = 0.0F;
-  private static float save__Tangage = 0.0F;
-  private static HookGunner current;
-  private static ArrayList all = new ArrayList();
-
-  public static void resetGame()
-  {
-    for (int i = 0; i < all.size(); i++) {
-      HookGunner localHookGunner = (HookGunner)all.get(i);
-      localHookGunner.mover = null;
-      localHookGunner.target = null;
-      localHookGunner.target2 = null;
-      localHookGunner.bUse = false;
-      localHookGunner.oGunMove.set(0.0F, 0.0F, 0.0F);
-    }
-    all.clear();
-    current = null;
-  }
-
-  public Orient getGunMove()
-  {
-    return this.oGunMove;
-  }
-  public void resetMove(float paramFloat1, float paramFloat2) {
-    this.oGunMove.set(paramFloat1, paramFloat2, 0.0F);
-    if (this.mover != null) {
-      this.mover.clipAnglesGun(this.oGunMove);
-      this.mover.moveGun(this.oGunMove);
-    }
-  }
-
-  public void setMover(Move paramMove) {
-    this.mover = paramMove;
-  }
-  private void _reset() {
-    if (!AircraftHotKeys.bFirstHotCmd) {
-      this._Azimut = (this.Azimut = 0.0F);
-      this._Tangage = (this.Tangage = 0.0F);
-    }
-    this.Px = (this.Py = this.Pz = 0.0F);
-    this.L.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-    this.tstamp = -1L;
-    this.roolTime = -1L;
-  }
-  public void reset() {
-    _reset();
-  }
-
-  private void headRoll(Aircraft paramAircraft) {
-    long l = this.roolTime - this.tstamp;
-    if ((l >= 0L) && (l < 50L))
-      return;
-    this.roolTime = this.tstamp;
-    float f1 = (float)(-(paramAircraft.FM.getAccel().y + paramAircraft.FM.getRollAcceleration()) * 0.0500000007450581D);
-    float f2 = (float)(-paramAircraft.FM.getAccel().x * 0.1000000014901161D);
-    float f3 = (float)(-paramAircraft.FM.getAccel().z * 0.01999999955296516D);
-    if ((f2 >= 1.0F) || (f2 <= -1.0F))
+    public static interface Move
     {
-      if (f2 < -1.0F) f2 = -1.0F; else if (f2 > 1.0F) f2 = 1.0F; else
-        f2 = 0.0F;
-    }
-    if ((f1 >= 1.0F) || (f1 <= -1.0F))
-    {
-      if (f1 < -1.0F) f1 = -1.0F; else if (f1 > 1.0F) f1 = 1.0F; else
-        f1 = 0.0F;
-    }
-    if ((f3 >= 1.0F) || (f3 <= -1.0F))
-    {
-      if (f3 < -1.0F) f3 = -1.0F; else if (f3 > 1.0F) f3 = 1.0F; else {
-        f3 = 0.0F;
-      }
-    }
-    this.L.set(this.Px += (f2 * 0.015F - this.Px) * 0.4F, this.Py += (f1 * 0.015F - this.Py) * 0.4F, this.Pz += (f3 * 0.015F - this.Pz) * 0.4F, 0.0F, 0.0F, 0.0F);
-  }
 
-  private float bvalue(float paramFloat1, float paramFloat2, long paramLong)
-  {
-    float f = HookView.koofSpeed * (float)paramLong / 30.0F;
-    if (paramFloat1 == paramFloat2) return paramFloat1;
-    if (paramFloat1 > paramFloat2) {
-      if (paramFloat1 < paramFloat2 + f) return paramFloat1;
-      return paramFloat2 + f;
-    }
-    if (paramFloat1 > paramFloat2 - f) return paramFloat1;
-    return paramFloat2 - f;
-  }
+        public abstract void moveGun(com.maddox.il2.engine.Orient orient);
 
-  public boolean computeRenderPos(Actor paramActor, Loc paramLoc1, Loc paramLoc2) {
-    long l1 = Time.currentReal();
-    if (l1 != this.prevTime) {
-      long l2 = l1 - this.prevTime;
-      this.prevTime = l1;
-      if ((this._Azimut != this.Azimut) || (this._Tangage != this.Tangage)) {
-        this.Azimut = bvalue(this._Azimut, this.Azimut, l2);
-        this.Tangage = bvalue(this._Tangage, this.Tangage, l2);
-      }
+        public abstract void clipAnglesGun(com.maddox.il2.engine.Orient orient);
+
+        public abstract com.maddox.il2.engine.Hook getHookCameraGun();
+
+        public abstract void doGunFire(boolean flag);
     }
-    computePos(paramActor, paramLoc1, paramLoc2);
-    return true;
-  }
-  public void computePos(Actor paramActor, Loc paramLoc1, Loc paramLoc2) {
-    if ((this.bUse) && (this.mover != null)) {
-      if (World.cur().diffCur.Head_Shake) {
-        Aircraft localAircraft = World.getPlayerAircraft();
-        if (Actor.isValid(localAircraft)) {
-          long l = Time.current();
-          if ((l != this.tstamp) && (!localAircraft.FM.Gears.onGround())) {
-            this.tstamp = l;
-            headRoll(localAircraft);
-          }
+
+
+    public static void resetGame()
+    {
+        for(int i = 0; i < all.size(); i++)
+        {
+            com.maddox.il2.engine.hotkey.HookGunner hookgunner = (com.maddox.il2.engine.hotkey.HookGunner)all.get(i);
+            hookgunner.mover = null;
+            hookgunner.target = null;
+            hookgunner.target2 = null;
+            hookgunner.bUse = false;
+            hookgunner.oGunMove.set(0.0F, 0.0F, 0.0F);
         }
-      }
-      paramLoc2.add(this.L, paramLoc2);
-      this.o.set(this.Azimut, this.Tangage, 0.0F);
-      paramLoc2.getOrient().add(this.o);
-      this.mover.getHookCameraGun().computePos(paramActor, paramLoc1, paramLoc2);
-    } else {
-      paramLoc2.set(paramLoc1);
+
+        all.clear();
+        current = null;
     }
-  }
 
-  public void setTarget(Actor paramActor) {
-    this.target = paramActor; } 
-  public void setTarget2(Actor paramActor) { this.target2 = paramActor; } 
-  public boolean use(boolean paramBoolean) {
-    boolean bool = this.bUse;
-    this.bUse = paramBoolean;
-    if (Actor.isValid(this.target))
-      this.target.pos.inValidate(true);
-    if (Actor.isValid(this.target2))
-      this.target2.pos.inValidate(true);
-    if (this.bUse) current = this; else
-      current = null;
-    return bool;
-  }
-
-  public void gunFire(boolean paramBoolean) {
-    if (this.mover == null) return;
-    this.mover.doGunFire(paramBoolean);
-  }
-
-  public void mouseMove(int paramInt1, int paramInt2, int paramInt3) {
-    if (this.mover == null) return;
-    this.oGunMove.set(this.oGunMove.azimut() - paramInt1 * HookView.koofAzimut, this.oGunMove.tangage() + paramInt2 * HookView.koofTangage, 0.0F);
-    this.oGunMove.wrap();
-    this.mover.clipAnglesGun(this.oGunMove);
-    this.mover.moveGun(this.oGunMove);
-    if (Actor.isValid(this.target))
-      this.target.pos.inValidate(true);
-    if (Actor.isValid(this.target2))
-      this.target2.pos.inValidate(true);
-  }
-
-  public static void doSnapSet(float paramFloat1, float paramFloat2) {
-    for (int i = 0; i < all.size(); i++) {
-      HookGunner localHookGunner = (HookGunner)all.get(i);
-      localHookGunner.snapSet(paramFloat1, paramFloat2);
+    public com.maddox.il2.engine.Orient getGunMove()
+    {
+        return oGunMove;
     }
-  }
 
-  public void snapSet(float paramFloat1, float paramFloat2) {
-    if (!this.bUse) return;
-    this._Azimut = (45.0F * paramFloat1);
-    this._Tangage = (44.0F * paramFloat2);
-    if (Actor.isValid(this.target))
-      this.target.pos.inValidate(true);
-    if (Actor.isValid(this.target2))
-      this.target2.pos.inValidate(true);
-  }
-
-  public static void doPanSet(int paramInt1, int paramInt2) {
-    for (int i = 0; i < all.size(); i++) {
-      HookGunner localHookGunner = (HookGunner)all.get(i);
-      localHookGunner.panSet(paramInt1, paramInt2);
+    public void resetMove(float f, float f1)
+    {
+        oGunMove.set(f, f1, 0.0F);
+        if(mover != null)
+        {
+            mover.clipAnglesGun(oGunMove);
+            mover.moveGun(oGunMove);
+        }
     }
-  }
 
-  public void panSet(int paramInt1, int paramInt2) {
-    if (!this.bUse) return;
-    if ((paramInt1 == 0) && (paramInt2 == 0)) {
-      this._Azimut = 0.0F;
-      this._Tangage = 0.0F;
+    public void setMover(com.maddox.il2.engine.hotkey.Move move)
+    {
+        mover = move;
     }
-    this._Azimut = (paramInt1 * this.stepAzimut + this._Azimut);
-    if (this._Azimut < -this.maxAzimut) this._Azimut = (-this.maxAzimut);
-    if (this._Azimut > this.maxAzimut) this._Azimut = this.maxAzimut;
-    this._Tangage = (paramInt2 * this.stepTangage + this._Tangage);
-    if (this._Tangage < this.minTangage) this._Tangage = this.minTangage;
-    if (this._Tangage > this.maxTangage) this._Tangage = this.maxTangage;
-    if (Actor.isValid(this.target))
-      this.target.pos.inValidate(true);
-    if (Actor.isValid(this.target2))
-      this.target2.pos.inValidate(true);
-  }
 
-  public void viewSet(float paramFloat1, float paramFloat2) {
-    if (!this.bUse) return;
-
-    paramFloat1 %= 360.0F;
-    if (paramFloat1 > 180.0F) paramFloat1 -= 360.0F;
-    else if (paramFloat1 < -180.0F) paramFloat1 += 360.0F;
-    paramFloat2 %= 360.0F;
-    if (paramFloat2 > 180.0F) paramFloat2 -= 360.0F;
-    else if (paramFloat2 < -180.0F) paramFloat2 += 360.0F;
-
-    if (paramFloat1 < -this.maxAzimut) paramFloat1 = -this.maxAzimut;
-    else if (paramFloat1 > this.maxAzimut) paramFloat1 = this.maxAzimut;
-    if (paramFloat2 > this.maxTangage) paramFloat2 = this.maxTangage;
-    else if (paramFloat2 < this.minTangage) paramFloat2 = this.minTangage;
-
-    this._Azimut = (this.Azimut = paramFloat1);
-    this._Tangage = (this.Tangage = paramFloat2);
-    if (Actor.isValid(this.target))
-      this.target.pos.inValidate(true);
-    if (Actor.isValid(this.target2))
-      this.target2.pos.inValidate(true);
-  }
-
-  public static void saveRecordedStates(PrintWriter paramPrintWriter) throws Exception {
-    if (current == null) {
-      paramPrintWriter.println(0);
-      paramPrintWriter.println(0);
-      paramPrintWriter.println(0);
-      paramPrintWriter.println(0);
-    } else {
-      paramPrintWriter.println(current.Azimut);
-      paramPrintWriter.println(current._Azimut);
-      paramPrintWriter.println(current.Tangage);
-      paramPrintWriter.println(current._Tangage);
+    private void _reset()
+    {
+        if(!com.maddox.il2.game.AircraftHotKeys.bFirstHotCmd)
+        {
+            _Azimut = Azimut = 0.0F;
+            _Tangage = Tangage = 0.0F;
+        }
+        Px = Py = Pz = 0.0F;
+        L.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+        tstamp = -1L;
+        roolTime = -1L;
     }
-  }
 
-  public static void loadRecordedStates(BufferedReader paramBufferedReader) throws Exception {
-    save_Azimut = Float.parseFloat(paramBufferedReader.readLine());
-    save__Azimut = Float.parseFloat(paramBufferedReader.readLine());
-    save_Tangage = Float.parseFloat(paramBufferedReader.readLine());
-    save__Tangage = Float.parseFloat(paramBufferedReader.readLine());
-  }
+    public void reset()
+    {
+        _reset();
+    }
 
-  public HookGunner(Actor paramActor1, Actor paramActor2)
-  {
-    this.Azimut = save_Azimut;
-    this.Tangage = save_Tangage;
-    this._Azimut = save__Azimut;
-    this._Tangage = save__Tangage;
-    setTarget(paramActor1);
-    setTarget2(paramActor2);
-    all.add(this);
-  }
+    private void headRoll(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        long l = roolTime - tstamp;
+        if(l >= 0L && l < 50L)
+            return;
+        roolTime = tstamp;
+        float f = (float)(-(aircraft.FM.getAccel().y + (double)aircraft.FM.getRollAcceleration()) * 0.05000000074505806D);
+        float f1 = (float)(-aircraft.FM.getAccel().x * 0.10000000149011612D);
+        float f2 = (float)(-aircraft.FM.getAccel().z * 0.019999999552965164D);
+        if(f1 >= 1.0F || f1 <= -1F)
+            if(f1 < -1F)
+                f1 = -1F;
+            else
+            if(f1 > 1.0F)
+                f1 = 1.0F;
+            else
+                f1 = 0.0F;
+        if(f >= 1.0F || f <= -1F)
+            if(f < -1F)
+                f = -1F;
+            else
+            if(f > 1.0F)
+                f = 1.0F;
+            else
+                f = 0.0F;
+        if(f2 >= 1.0F || f2 <= -1F)
+            if(f2 < -1F)
+                f2 = -1F;
+            else
+            if(f2 > 1.0F)
+                f2 = 1.0F;
+            else
+                f2 = 0.0F;
+        L.set(Px += (f1 * 0.015F - Px) * 0.4F, Py += (f * 0.015F - Py) * 0.4F, Pz += (f2 * 0.015F - Pz) * 0.4F, 0.0F, 0.0F, 0.0F);
+    }
 
-  public static HookGunner current()
-  {
-    return current;
-  }
+    private float bvalue(float f, float f1, long l)
+    {
+        float f2 = (com.maddox.il2.engine.hotkey.HookView.koofSpeed * (float)l) / 30F;
+        if(f == f1)
+            return f;
+        if(f > f1)
+            if(f < f1 + f2)
+                return f;
+            else
+                return f1 + f2;
+        if(f > f1 - f2)
+            return f;
+        else
+            return f1 - f2;
+    }
 
-  public static abstract interface Move
-  {
-    public abstract void moveGun(Orient paramOrient);
+    public boolean computeRenderPos(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1)
+    {
+        long l = com.maddox.rts.Time.currentReal();
+        if(l != prevTime)
+        {
+            long l1 = l - prevTime;
+            prevTime = l;
+            if(_Azimut != Azimut || _Tangage != Tangage)
+            {
+                Azimut = bvalue(_Azimut, Azimut, l1);
+                Tangage = bvalue(_Tangage, Tangage, l1);
+            }
+        }
+        computePos(actor, loc, loc1);
+        return true;
+    }
 
-    public abstract void clipAnglesGun(Orient paramOrient);
+    public void computePos(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1)
+    {
+        if(bUse && mover != null)
+        {
+            if(com.maddox.il2.ai.World.cur().diffCur.Head_Shake)
+            {
+                com.maddox.il2.objects.air.Aircraft aircraft = com.maddox.il2.ai.World.getPlayerAircraft();
+                if(com.maddox.il2.engine.Actor.isValid(aircraft))
+                {
+                    long l = com.maddox.rts.Time.current();
+                    if(l != tstamp && !aircraft.FM.Gears.onGround())
+                    {
+                        tstamp = l;
+                        headRoll(aircraft);
+                    }
+                }
+            }
+            loc1.add(L, loc1);
+            o.set(Azimut, Tangage, 0.0F);
+            loc1.getOrient().add(o);
+            mover.getHookCameraGun().computePos(actor, loc, loc1);
+        } else
+        {
+            loc1.set(loc);
+        }
+    }
 
-    public abstract Hook getHookCameraGun();
+    public void setTarget(com.maddox.il2.engine.Actor actor)
+    {
+        target = actor;
+    }
 
-    public abstract void doGunFire(boolean paramBoolean);
-  }
+    public void setTarget2(com.maddox.il2.engine.Actor actor)
+    {
+        target2 = actor;
+    }
+
+    public boolean use(boolean flag)
+    {
+        boolean flag1 = bUse;
+        bUse = flag;
+        if(com.maddox.il2.engine.Actor.isValid(target))
+            target.pos.inValidate(true);
+        if(com.maddox.il2.engine.Actor.isValid(target2))
+            target2.pos.inValidate(true);
+        if(bUse)
+            current = this;
+        else
+            current = null;
+        return flag1;
+    }
+
+    public void gunFire(boolean flag)
+    {
+        if(mover == null)
+        {
+            return;
+        } else
+        {
+            mover.doGunFire(flag);
+            return;
+        }
+    }
+
+    public void mouseMove(int i, int j, int k)
+    {
+        if(mover == null)
+            return;
+        oGunMove.set(oGunMove.azimut() - (float)i * com.maddox.il2.engine.hotkey.HookView.koofAzimut, oGunMove.tangage() + (float)j * com.maddox.il2.engine.hotkey.HookView.koofTangage, 0.0F);
+        oGunMove.wrap();
+        mover.clipAnglesGun(oGunMove);
+        mover.moveGun(oGunMove);
+        if(com.maddox.il2.engine.Actor.isValid(target))
+            target.pos.inValidate(true);
+        if(com.maddox.il2.engine.Actor.isValid(target2))
+            target2.pos.inValidate(true);
+    }
+
+    public static void doSnapSet(float f, float f1)
+    {
+        for(int i = 0; i < all.size(); i++)
+        {
+            com.maddox.il2.engine.hotkey.HookGunner hookgunner = (com.maddox.il2.engine.hotkey.HookGunner)all.get(i);
+            hookgunner.snapSet(f, f1);
+        }
+
+    }
+
+    public void snapSet(float f, float f1)
+    {
+        if(!bUse)
+            return;
+        _Azimut = 45F * f;
+        _Tangage = 44F * f1;
+        if(com.maddox.il2.engine.Actor.isValid(target))
+            target.pos.inValidate(true);
+        if(com.maddox.il2.engine.Actor.isValid(target2))
+            target2.pos.inValidate(true);
+    }
+
+    public static void doPanSet(int i, int j)
+    {
+        for(int k = 0; k < all.size(); k++)
+        {
+            com.maddox.il2.engine.hotkey.HookGunner hookgunner = (com.maddox.il2.engine.hotkey.HookGunner)all.get(k);
+            hookgunner.panSet(i, j);
+        }
+
+    }
+
+    public void panSet(int i, int j)
+    {
+        if(!bUse)
+            return;
+        if(i == 0 && j == 0)
+        {
+            _Azimut = 0.0F;
+            _Tangage = 0.0F;
+        }
+        _Azimut = (float)i * stepAzimut + _Azimut;
+        if(_Azimut < -maxAzimut)
+            _Azimut = -maxAzimut;
+        if(_Azimut > maxAzimut)
+            _Azimut = maxAzimut;
+        _Tangage = (float)j * stepTangage + _Tangage;
+        if(_Tangage < minTangage)
+            _Tangage = minTangage;
+        if(_Tangage > maxTangage)
+            _Tangage = maxTangage;
+        if(com.maddox.il2.engine.Actor.isValid(target))
+            target.pos.inValidate(true);
+        if(com.maddox.il2.engine.Actor.isValid(target2))
+            target2.pos.inValidate(true);
+    }
+
+    public void viewSet(float f, float f1)
+    {
+        if(!bUse)
+            return;
+        f %= 360F;
+        if(f > 180F)
+            f -= 360F;
+        else
+        if(f < -180F)
+            f += 360F;
+        f1 %= 360F;
+        if(f1 > 180F)
+            f1 -= 360F;
+        else
+        if(f1 < -180F)
+            f1 += 360F;
+        if(f < -maxAzimut)
+            f = -maxAzimut;
+        else
+        if(f > maxAzimut)
+            f = maxAzimut;
+        if(f1 > maxTangage)
+            f1 = maxTangage;
+        else
+        if(f1 < minTangage)
+            f1 = minTangage;
+        _Azimut = Azimut = f;
+        _Tangage = Tangage = f1;
+        if(com.maddox.il2.engine.Actor.isValid(target))
+            target.pos.inValidate(true);
+        if(com.maddox.il2.engine.Actor.isValid(target2))
+            target2.pos.inValidate(true);
+    }
+
+    public static void saveRecordedStates(java.io.PrintWriter printwriter)
+        throws java.lang.Exception
+    {
+        if(current == null)
+        {
+            printwriter.println(0);
+            printwriter.println(0);
+            printwriter.println(0);
+            printwriter.println(0);
+        } else
+        {
+            printwriter.println(current.Azimut);
+            printwriter.println(current._Azimut);
+            printwriter.println(current.Tangage);
+            printwriter.println(current._Tangage);
+        }
+    }
+
+    public static void loadRecordedStates(java.io.BufferedReader bufferedreader)
+        throws java.lang.Exception
+    {
+        save_Azimut = java.lang.Float.parseFloat(bufferedreader.readLine());
+        save__Azimut = java.lang.Float.parseFloat(bufferedreader.readLine());
+        save_Tangage = java.lang.Float.parseFloat(bufferedreader.readLine());
+        save__Tangage = java.lang.Float.parseFloat(bufferedreader.readLine());
+    }
+
+    public HookGunner(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        stepAzimut = 45F;
+        stepTangage = 30F;
+        maxAzimut = 135F;
+        maxTangage = 89F;
+        minTangage = -60F;
+        Azimut = 0.0F;
+        Tangage = 0.0F;
+        _Azimut = 0.0F;
+        _Tangage = 0.0F;
+        prevTime = 0L;
+        tstamp = -1L;
+        roolTime = -1L;
+        bUse = false;
+        oGunMove = new Orient();
+        L = new Loc();
+        o = new Orient();
+        Azimut = save_Azimut;
+        Tangage = save_Tangage;
+        _Azimut = save__Azimut;
+        _Tangage = save__Tangage;
+        setTarget(actor);
+        setTarget2(actor1);
+        all.add(this);
+    }
+
+    public static com.maddox.il2.engine.hotkey.HookGunner current()
+    {
+        return current;
+    }
+
+    private float stepAzimut;
+    private float stepTangage;
+    private float maxAzimut;
+    private float maxTangage;
+    private float minTangage;
+    private float Azimut;
+    private float Tangage;
+    private float _Azimut;
+    private float _Tangage;
+    private long prevTime;
+    private float Px;
+    private float Py;
+    private float Pz;
+    private long tstamp;
+    private long roolTime;
+    private com.maddox.il2.engine.hotkey.Move mover;
+    private com.maddox.il2.engine.Actor target;
+    private com.maddox.il2.engine.Actor target2;
+    private boolean bUse;
+    private com.maddox.il2.engine.Orient oGunMove;
+    private com.maddox.il2.engine.Loc L;
+    private com.maddox.il2.engine.Orient o;
+    private static float save_Azimut = 0.0F;
+    private static float save_Tangage = 0.0F;
+    private static float save__Azimut = 0.0F;
+    private static float save__Tangage = 0.0F;
+    private static com.maddox.il2.engine.hotkey.HookGunner current;
+    private static java.util.ArrayList all = new ArrayList();
+
 }

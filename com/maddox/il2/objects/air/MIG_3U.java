@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MIG_3U.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.RangeRandom;
@@ -6,91 +11,113 @@ import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.AircraftState;
+import com.maddox.il2.fm.EnginesInterface;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Motor;
 import com.maddox.rts.Property;
 
-public class MIG_3U extends MIG_3
+// Referenced classes of package com.maddox.il2.objects.air:
+//            MIG_3, PaintSchemeFMPar02, NetAircraft
+
+public class MIG_3U extends com.maddox.il2.objects.air.MIG_3
 {
-  private float kangle = 0.0F;
 
-  public void update(float paramFloat) { hierMesh().chunkSetAngles("FlapWater_D0", 0.0F, 0.0F, 40.5F * this.kangle);
-    hierMesh().chunkSetAngles("FlapOil_D0", 0.0F, 0.0F, 12.5F * this.kangle);
-
-    this.kangle = (0.95F * this.kangle + 0.05F * this.FM.EI.engines[0].getControlRadiator());
-    super.update(paramFloat);
-  }
-
-  public static void moveGear(HierMesh paramHierMesh, float paramFloat)
-  {
-    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, 88.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, -88.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, 70.0F * paramFloat, 0.0F);
-
-    paramHierMesh.chunkSetAngles("GearL3_D0", 0.0F, 93.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR3_D0", 0.0F, -93.0F * paramFloat, 0.0F);
-
-    float f = Math.max(-paramFloat * 1500.0F, -90.0F);
-    paramHierMesh.chunkSetAngles("GearL4_D0", 0.0F, f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR4_D0", 0.0F, -f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC3_D0", 0.0F, f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC4_D0", 0.0F, -f, 0.0F);
-  }
-  protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat);
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    setShot(paramShot);
-
-    if (((paramShot.chunkName.startsWith("CF")) || (paramShot.chunkName.startsWith("Tail"))) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 0, 2);
-    if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
-      this.FM.AS.hitTank(paramShot.initiator, 1, 1);
-    if ((paramShot.chunkName.startsWith("WingLIn")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 2, 1);
-    if ((paramShot.chunkName.startsWith("WingRIn")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F))
-      this.FM.AS.hitTank(paramShot.initiator, 3, 1);
-    if ((paramShot.chunkName.startsWith("Engine1")) && 
-      (World.Rnd().nextFloat(0.0F, 1.0F) < 0.2F)) {
-      this.FM.AS.hitEngine(paramShot.initiator, 0, 2);
+    public MIG_3U()
+    {
+        kangle = 0.0F;
     }
-    super.msgShot(paramShot);
-  }
 
-  protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
-  {
-    switch (paramInt1) { case 33:
-      this.FM.AS.hitTank(this, 2, 7); return super.cutFM(34, paramInt2, paramActor);
-    case 36:
-      this.FM.AS.hitTank(this, 3, 7); return super.cutFM(37, paramInt2, paramActor);
+    public void update(float f)
+    {
+        hierMesh().chunkSetAngles("FlapWater_D0", 0.0F, 0.0F, 40.5F * kangle);
+        hierMesh().chunkSetAngles("FlapOil_D0", 0.0F, 0.0F, 12.5F * kangle);
+        kangle = 0.95F * kangle + 0.05F * FM.EI.engines[0].getControlRadiator();
+        super.update(f);
     }
-    return super.cutFM(paramInt1, paramInt2, paramActor);
-  }
 
-  static
-  {
-    Class localClass = MIG_3U.class;
-    new NetAircraft.SPAWN(localClass);
-    Property.set(localClass, "iconFar_shortClassName", "MiG");
-    Property.set(localClass, "meshName", "3DO/Plane/MIG-3U(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar02());
+    public static void moveGear(com.maddox.il2.engine.HierMesh hiermesh, float f)
+    {
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 88F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, -88F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 70F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearL3_D0", 0.0F, 93F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, -93F * f, 0.0F);
+        float f1 = java.lang.Math.max(-f * 1500F, -90F);
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, -f1, 0.0F);
+        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, -f1, 0.0F);
+    }
 
-    Property.set(localClass, "yearService", 1942.0F);
-    Property.set(localClass, "yearExpired", 1943.0F);
+    protected void moveGear(float f)
+    {
+        com.maddox.il2.objects.air.MIG_3U.moveGear(hierMesh(), f);
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/MiG-3U.fmd");
-    Property.set(localClass, "cockpitClass", CockpitMIG_3U.class);
-    Property.set(localClass, "LOSElevation", 0.906F);
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        setShot(shot);
+        if((shot.chunkName.startsWith("CF") || shot.chunkName.startsWith("Tail")) && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitTank(shot.initiator, 0, 2);
+        if(com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitTank(shot.initiator, 1, 1);
+        if(shot.chunkName.startsWith("WingLIn") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitTank(shot.initiator, 2, 1);
+        if(shot.chunkName.startsWith("WingRIn") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+            FM.AS.hitTank(shot.initiator, 3, 1);
+        if(shot.chunkName.startsWith("Engine1") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.2F)
+            FM.AS.hitEngine(shot.initiator, 0, 2);
+        super.msgShot(shot);
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02" });
+    protected boolean cutFM(int i, int j, com.maddox.il2.engine.Actor actor)
+    {
+        switch(i)
+        {
+        case 33: // '!'
+            FM.AS.hitTank(this, 2, 7);
+            return super.cutFM(34, j, actor);
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShVAKs 150", "MGunShVAKs 150" });
+        case 36: // '$'
+            FM.AS.hitTank(this, 3, 7);
+            return super.cutFM(37, j, actor);
+        }
+        return super.cutFM(i, j, actor);
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null, null });
-  }
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private float kangle;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.MIG_3U.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "MiG");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/MIG-3U(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar02());
+        com.maddox.rts.Property.set(class1, "yearService", 1942F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1943F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/MiG-3U.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitMIG_3U.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.906F);
+        com.maddox.il2.objects.air.MIG_3U.weaponTriggersRegister(class1, new int[] {
+            0, 0
+        });
+        com.maddox.il2.objects.air.MIG_3U.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02"
+        });
+        com.maddox.il2.objects.air.MIG_3U.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunShVAKs 150", "MGunShVAKs 150"
+        });
+        com.maddox.il2.objects.air.MIG_3U.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null
+        });
+    }
 }

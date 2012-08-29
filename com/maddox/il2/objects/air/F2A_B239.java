@@ -1,32 +1,55 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   F2A_B239.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class F2A_B239 extends F2A
+// Referenced classes of package com.maddox.il2.objects.air:
+//            F2A, PaintSchemeBMPar01, NetAircraft, PaintScheme
+
+public class F2A_B239 extends com.maddox.il2.objects.air.F2A
 {
-  static
-  {
-    Class localClass = F2A_B239.class;
-    new NetAircraft.SPAWN(localClass);
 
-    Property.set(localClass, "iconFar_shortClassName", "B-239");
-    Property.set(localClass, "meshNameDemo", "3DO/Plane/B-239/hier.him");
-    Property.set(localClass, "meshName", "3DO/Plane/B-239/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar01());
-    Property.set(localClass, "originCountry", PaintScheme.countryFinland);
+    public F2A_B239()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1939.0F);
-    Property.set(localClass, "yearExpired", 1948.5F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/F2A-1.fmd");
-    Property.set(localClass, "cockpitClass", CockpitF2A1.class);
-    Property.set(localClass, "LOSElevation", 1.032F);
-
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning50k 250", "MGunBrowning50k 250" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.F2A_B239.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "B-239");
+        com.maddox.rts.Property.set(class1, "meshNameDemo", "3DO/Plane/B-239/hier.him");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/B-239/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeBMPar01());
+        com.maddox.rts.Property.set(class1, "originCountry", com.maddox.il2.objects.air.PaintScheme.countryFinland);
+        com.maddox.rts.Property.set(class1, "yearService", 1939F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1948.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/F2A-1.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitF2A1.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 1.032F);
+        com.maddox.il2.objects.air.F2A_B239.weaponTriggersRegister(class1, new int[] {
+            0, 0, 1, 1
+        });
+        com.maddox.il2.objects.air.F2A_B239.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04"
+        });
+        com.maddox.il2.objects.air.F2A_B239.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning50si 250", "MGunBrowning50si 250", "MGunBrowning50k 250", "MGunBrowning50k 250"
+        });
+        com.maddox.il2.objects.air.F2A_B239.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null
+        });
+    }
 }

@@ -1,255 +1,324 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Interpolators.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.rts.Message;
 import com.maddox.rts.Time;
 
+// Referenced classes of package com.maddox.il2.engine:
+//            InterpolateRef, Interpolate, ActorException, ArrayInterpolators, 
+//            InterpolateAdapter, Actor
+
 public final class Interpolators
 {
-  private long timeSleep;
-  private ArrayInterpolators interp;
-  private int stepStamp = -1;
-  private boolean bForceRef = false;
 
-  private boolean bDoTick = false;
-
-  private void checkFlagForceRef() {
-    this.bForceRef = false;
-    int i = this.interp.size();
-    for (int j = 0; j < i; j++)
-      if ((this.interp.get(j) instanceof InterpolateRef)) {
-        this.bForceRef = true;
-        break;
-      }
-  }
-
-  public boolean isSleep()
-  {
-    return this.timeSleep != 0L;
-  }
-
-  public boolean sleep()
-  {
-    if (isSleep())
-      return false;
-    int i = this.interp.modCount();
-    int j = this.interp.size();
-    for (int k = 0; k < j; k++) {
-      Interpolate localInterpolate = (Interpolate)this.interp.get(k);
-      localInterpolate.sleep();
-      if (i != this.interp.modCount())
-        throw new ActorException("Interpolators changed in 'sleep'");
+    private void checkFlagForceRef()
+    {
+        bForceRef = false;
+        int i = interp.size();
+        int j = 0;
+        do
+        {
+            if(j >= i)
+                break;
+            if(interp.get(j) instanceof com.maddox.il2.engine.InterpolateRef)
+            {
+                bForceRef = true;
+                break;
+            }
+            j++;
+        } while(true);
     }
-    this.timeSleep = Time.current();
-    return true;
-  }
 
-  public boolean wakeup()
-  {
-    if (!isSleep())
-      return false;
-    int i = this.interp.modCount();
-    int j = this.interp.size();
-    for (int k = 0; k < j; k++) {
-      Interpolate localInterpolate = (Interpolate)this.interp.get(k);
-      localInterpolate.wakeup(this.timeSleep);
-      if (i != this.interp.modCount())
-        throw new ActorException("Interpolators changed in 'wakeup'");
+    public boolean isSleep()
+    {
+        return timeSleep != 0L;
     }
-    this.timeSleep = 0L;
-    return true;
-  }
 
-  public Interpolate get(Object paramObject)
-  {
-    int i = this.interp.size();
-    for (int j = 0; j < i; j++) {
-      Interpolate localInterpolate = (Interpolate)this.interp.get(j);
-      if ((localInterpolate.id == paramObject) || ((paramObject != null) && (paramObject.equals(localInterpolate.id))))
-        return localInterpolate;
-    }
-    return null;
-  }
-
-  public boolean end(Object paramObject)
-  {
-    int i = this.interp.size();
-    for (int j = 0; j < i; j++) {
-      Interpolate localInterpolate = (Interpolate)this.interp.get(j);
-      if ((localInterpolate.id == paramObject) || ((paramObject != null) && (paramObject.equals(localInterpolate.id)))) {
-        this.interp.remove(j);
-        if (localInterpolate.bExecuted)
-          localInterpolate.end();
-        interplateClean(localInterpolate);
-        checkFlagForceRef();
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public boolean end(Interpolate paramInterpolate)
-  {
-    int i = this.interp.indexOf(paramInterpolate);
-    if (i >= 0) {
-      this.interp.remove(i);
-      if (paramInterpolate.bExecuted)
-        paramInterpolate.end();
-      interplateClean(paramInterpolate);
-      checkFlagForceRef();
-      return true;
-    }
-    return false;
-  }
-
-  public void endAll()
-  {
-    while (this.interp.size() > 0) {
-      Interpolate localInterpolate = (Interpolate)this.interp.get(0);
-      this.interp.remove(0);
-      if (localInterpolate.bExecuted)
-        localInterpolate.end();
-      interplateClean(localInterpolate);
-    }
-    checkFlagForceRef();
-  }
-
-  public boolean cancel(Object paramObject)
-  {
-    int i = this.interp.size();
-    for (int j = 0; j < i; j++) {
-      Interpolate localInterpolate = (Interpolate)this.interp.get(j);
-      if ((localInterpolate.id == paramObject) || ((paramObject != null) && (paramObject.equals(localInterpolate.id)))) {
-        this.interp.remove(j);
-        if (localInterpolate.bExecuted)
-          localInterpolate.cancel();
-        interplateClean(localInterpolate);
-        checkFlagForceRef();
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public boolean cancel(Interpolate paramInterpolate)
-  {
-    int i = this.interp.indexOf(paramInterpolate);
-    if (i >= 0) {
-      this.interp.remove(i);
-      if (paramInterpolate.bExecuted)
-        paramInterpolate.cancel();
-      interplateClean(paramInterpolate);
-      checkFlagForceRef();
-      return true;
-    }
-    return false;
-  }
-
-  public void cancelAll()
-  {
-    while (this.interp.size() > 0) {
-      Interpolate localInterpolate = (Interpolate)this.interp.get(0);
-      this.interp.remove(0);
-      if (localInterpolate.bExecuted)
-        localInterpolate.cancel();
-      interplateClean(localInterpolate);
-    }
-    checkFlagForceRef();
-  }
-
-  public void put(Interpolate paramInterpolate, Object paramObject, long paramLong, Message paramMessage, Actor paramActor)
-  {
-    if ((paramObject != null) && (get(paramObject) != null)) {
-      throw new ActorException("Interpolator: '" + paramObject + "' alredy exist");
-    }
-    paramInterpolate.actor = paramActor;
-    paramInterpolate.timeBegin = paramLong;
-    paramInterpolate.id = paramObject;
-    paramInterpolate.msgEnd = paramMessage;
-    paramInterpolate.bExecuted = false;
-    this.interp.add(paramInterpolate);
-    checkFlagForceRef();
-  }
-
-  public int size()
-  {
-    return this.interp.size();
-  }
-
-  public void tick(long paramLong)
-  {
-    if (this.timeSleep == 0L) {
-      if (this.stepStamp == InterpolateAdapter.step()) return;
-      this.bDoTick = true;
-      int i = this.interp.size();
-      if (this.bForceRef) {
-        for (j = 0; j < i; j++) {
-          Interpolate localInterpolate1 = (Interpolate)this.interp.get(j);
-          if ((localInterpolate1 instanceof InterpolateRef))
-            ((InterpolateRef)localInterpolate1).invokeRef();
-        }
-      }
-      int j = this.interp.modCount();
-      for (int k = 0; k < i; ) {
-        Interpolate localInterpolate2 = (Interpolate)this.interp.get(k);
-        if ((!localInterpolate2.bExecuted) && 
-          (localInterpolate2.timeBegin != -1L) && (localInterpolate2.timeBegin <= paramLong)) {
-          localInterpolate2.bExecuted = true;
-          localInterpolate2.begin();
-          if (j != this.interp.modCount()) {
-            this.bDoTick = false;
-            throw new ActorException("Interpolators changed in 'begin'");
-          }
+    public boolean sleep()
+    {
+        if(isSleep())
+            return false;
+        int i = interp.modCount();
+        int j = interp.size();
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.engine.Interpolate interpolate = (com.maddox.il2.engine.Interpolate)interp.get(k);
+            interpolate.sleep();
+            if(i != interp.modCount())
+                throw new ActorException("Interpolators changed in 'sleep'");
         }
 
-        if (localInterpolate2.bExecuted) {
-          if (!localInterpolate2.tick()) {
-            if (j != this.interp.modCount()) {
-              this.bDoTick = false;
-              throw new ActorException("Interpolators changed in 'tick'");
+        timeSleep = com.maddox.rts.Time.current();
+        return true;
+    }
+
+    public boolean wakeup()
+    {
+        if(!isSleep())
+            return false;
+        int i = interp.modCount();
+        int j = interp.size();
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.engine.Interpolate interpolate = (com.maddox.il2.engine.Interpolate)interp.get(k);
+            interpolate.wakeup(timeSleep);
+            if(i != interp.modCount())
+                throw new ActorException("Interpolators changed in 'wakeup'");
+        }
+
+        timeSleep = 0L;
+        return true;
+    }
+
+    public com.maddox.il2.engine.Interpolate get(java.lang.Object obj)
+    {
+        int i = interp.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.engine.Interpolate interpolate = (com.maddox.il2.engine.Interpolate)interp.get(j);
+            if(interpolate.id == obj || obj != null && obj.equals(interpolate.id))
+                return interpolate;
+        }
+
+        return null;
+    }
+
+    public boolean end(java.lang.Object obj)
+    {
+        int i = interp.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.engine.Interpolate interpolate = (com.maddox.il2.engine.Interpolate)interp.get(j);
+            if(interpolate.id == obj || obj != null && obj.equals(interpolate.id))
+            {
+                interp.remove(j);
+                if(interpolate.bExecuted)
+                    interpolate.end();
+                interplateClean(interpolate);
+                checkFlagForceRef();
+                return true;
             }
-            this.interp.remove(k);
-            j = this.interp.modCount();
-            localInterpolate2.end();
-            if (j != this.interp.modCount()) {
-              this.bDoTick = false;
-              throw new ActorException("Interpolators changed in 'end'");
-            }
-            interplateClean(localInterpolate2);
+        }
+
+        return false;
+    }
+
+    public boolean end(com.maddox.il2.engine.Interpolate interpolate)
+    {
+        int i = interp.indexOf(interpolate);
+        if(i >= 0)
+        {
+            interp.remove(i);
+            if(interpolate.bExecuted)
+                interpolate.end();
+            interplateClean(interpolate);
             checkFlagForceRef();
-            k--;
-            i--;
-          }
-          else if (j != this.interp.modCount()) {
-            this.bDoTick = false;
-            throw new ActorException("Interpolators changed in 'tick'");
-          }
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    public void endAll()
+    {
+        com.maddox.il2.engine.Interpolate interpolate;
+        for(; interp.size() > 0; interplateClean(interpolate))
+        {
+            interpolate = (com.maddox.il2.engine.Interpolate)interp.get(0);
+            interp.remove(0);
+            if(interpolate.bExecuted)
+                interpolate.end();
         }
 
-        k++;
-      }
-      this.stepStamp = InterpolateAdapter.step();
-      this.bDoTick = false;
+        checkFlagForceRef();
     }
-  }
 
-  private void interplateClean(Interpolate paramInterpolate) {
-    if (paramInterpolate.actor == null)
-      return;
-    paramInterpolate.doDestroy();
-    paramInterpolate.actor = null;
-    paramInterpolate.id = null;
-    paramInterpolate.msgEnd = null;
-  }
+    public boolean cancel(java.lang.Object obj)
+    {
+        int i = interp.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.engine.Interpolate interpolate = (com.maddox.il2.engine.Interpolate)interp.get(j);
+            if(interpolate.id == obj || obj != null && obj.equals(interpolate.id))
+            {
+                interp.remove(j);
+                if(interpolate.bExecuted)
+                    interpolate.cancel();
+                interplateClean(interpolate);
+                checkFlagForceRef();
+                return true;
+            }
+        }
 
-  public void destroy() {
-    if (this.bDoTick)
-      throw new ActorException("Interpolators destroying in invoked method 'tick' ");
-    cancelAll();
-    this.interp = null;
-  }
+        return false;
+    }
 
-  public Interpolators() {
-    this.timeSleep = 0L;
-    this.interp = new ArrayInterpolators(2);
-  }
+    public boolean cancel(com.maddox.il2.engine.Interpolate interpolate)
+    {
+        int i = interp.indexOf(interpolate);
+        if(i >= 0)
+        {
+            interp.remove(i);
+            if(interpolate.bExecuted)
+                interpolate.cancel();
+            interplateClean(interpolate);
+            checkFlagForceRef();
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    public void cancelAll()
+    {
+        com.maddox.il2.engine.Interpolate interpolate;
+        for(; interp.size() > 0; interplateClean(interpolate))
+        {
+            interpolate = (com.maddox.il2.engine.Interpolate)interp.get(0);
+            interp.remove(0);
+            if(interpolate.bExecuted)
+                interpolate.cancel();
+        }
+
+        checkFlagForceRef();
+    }
+
+    public void put(com.maddox.il2.engine.Interpolate interpolate, java.lang.Object obj, long l, com.maddox.rts.Message message, com.maddox.il2.engine.Actor actor)
+    {
+        if(obj != null && get(obj) != null)
+        {
+            throw new ActorException("Interpolator: '" + obj + "' alredy exist");
+        } else
+        {
+            interpolate.actor = actor;
+            interpolate.timeBegin = l;
+            interpolate.id = obj;
+            interpolate.msgEnd = message;
+            interpolate.bExecuted = false;
+            interp.add(interpolate);
+            checkFlagForceRef();
+            return;
+        }
+    }
+
+    public int size()
+    {
+        return interp.size();
+    }
+
+    public void tick(long l)
+    {
+        if(timeSleep == 0L)
+        {
+            if(stepStamp == com.maddox.il2.engine.InterpolateAdapter.step())
+                return;
+            bDoTick = true;
+            int i = interp.size();
+            if(bForceRef)
+            {
+                for(int j = 0; j < i; j++)
+                {
+                    com.maddox.il2.engine.Interpolate interpolate = (com.maddox.il2.engine.Interpolate)interp.get(j);
+                    if(interpolate instanceof com.maddox.il2.engine.InterpolateRef)
+                        ((com.maddox.il2.engine.InterpolateRef)interpolate).invokeRef();
+                }
+
+            }
+            int k = interp.modCount();
+            for(int i1 = 0; i1 < i; i1++)
+            {
+                com.maddox.il2.engine.Interpolate interpolate1 = (com.maddox.il2.engine.Interpolate)interp.get(i1);
+                if(!interpolate1.bExecuted && interpolate1.timeBegin != -1L && interpolate1.timeBegin <= l)
+                {
+                    interpolate1.bExecuted = true;
+                    interpolate1.begin();
+                    if(k != interp.modCount())
+                    {
+                        bDoTick = false;
+                        throw new ActorException("Interpolators changed in 'begin'");
+                    }
+                }
+                if(!interpolate1.bExecuted)
+                    continue;
+                if(!interpolate1.tick())
+                {
+                    if(k != interp.modCount())
+                    {
+                        bDoTick = false;
+                        throw new ActorException("Interpolators changed in 'tick'");
+                    }
+                    interp.remove(i1);
+                    k = interp.modCount();
+                    interpolate1.end();
+                    if(k != interp.modCount())
+                    {
+                        bDoTick = false;
+                        throw new ActorException("Interpolators changed in 'end'");
+                    }
+                    interplateClean(interpolate1);
+                    checkFlagForceRef();
+                    i1--;
+                    i--;
+                    continue;
+                }
+                if(k != interp.modCount())
+                {
+                    bDoTick = false;
+                    throw new ActorException("Interpolators changed in 'tick'");
+                }
+            }
+
+            stepStamp = com.maddox.il2.engine.InterpolateAdapter.step();
+            bDoTick = false;
+        }
+    }
+
+    private void interplateClean(com.maddox.il2.engine.Interpolate interpolate)
+    {
+        if(interpolate.actor == null)
+        {
+            return;
+        } else
+        {
+            interpolate.doDestroy();
+            interpolate.actor = null;
+            interpolate.id = null;
+            interpolate.msgEnd = null;
+            return;
+        }
+    }
+
+    public void destroy()
+    {
+        if(bDoTick)
+        {
+            throw new ActorException("Interpolators destroying in invoked method 'tick' ");
+        } else
+        {
+            cancelAll();
+            interp = null;
+            return;
+        }
+    }
+
+    public Interpolators()
+    {
+        stepStamp = -1;
+        bForceRef = false;
+        bDoTick = false;
+        timeSleep = 0L;
+        interp = new ArrayInterpolators(2);
+    }
+
+    private long timeSleep;
+    private com.maddox.il2.engine.ArrayInterpolators interp;
+    private int stepStamp;
+    private boolean bForceRef;
+    private boolean bDoTick;
 }

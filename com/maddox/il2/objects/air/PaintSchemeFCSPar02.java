@@ -1,116 +1,111 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PaintSchemeFCSPar02.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.HierMesh;
 
-public class PaintSchemeFCSPar02 extends PaintSchemeFMPar02
+// Referenced classes of package com.maddox.il2.objects.air:
+//            PaintSchemeFMPar02
+
+public class PaintSchemeFCSPar02 extends com.maddox.il2.objects.air.PaintSchemeFMPar02
 {
-  public String typedNameNum(Class paramClass, Regiment paramRegiment, int paramInt1, int paramInt2, int paramInt3)
-  {
-    int i = paramRegiment.gruppeNumber() - 1;
 
-    if (paramRegiment.country() == countryFrance) {
-      return "" + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString()) + " *";
+    public PaintSchemeFCSPar02()
+    {
     }
 
-    return super.typedNameNum(paramClass, paramRegiment, paramInt1, paramInt2, paramInt3);
-  }
-
-  public void prepareNum(Class paramClass, HierMesh paramHierMesh, Regiment paramRegiment, int paramInt1, int paramInt2, int paramInt3)
-  {
-    super.prepareNum(paramClass, paramHierMesh, paramRegiment, paramInt1, paramInt2, paramInt3);
-    int i = paramRegiment.gruppeNumber() - 1;
-
-    if (paramRegiment.country() == countryFinland) {
-      char c = (char)(48 + paramInt3 % 10);
-      changeMat(paramClass, paramHierMesh, "Overlay6", "FAFhaken", "Finnish/" + (World.cur().isHakenAllowed() ? "FAFhaken.tga" : "FAFroundel.tga"), 1.0F, 1.0F, 1.0F);
-
-      changeMat(paramClass, paramHierMesh, "Overlay7", "FAFhaken", "Finnish/" + (World.cur().isHakenAllowed() ? "FAFhaken.tga" : "FAFroundel.tga"), 1.0F, 1.0F, 1.0F);
-
-      if (paramInt1 == 3) {
-        changeMat(paramClass, paramHierMesh, "Overlay1", "psFCS02FINCNUM" + i + paramInt1 + "_" + (char)(65 + (paramInt3 % 10 - 1)), "Finnish/" + (char)(65 + (paramInt3 % 10 - 1)) + ".tga", psFinnishFighterColor[paramInt1][0], psFinnishFighterColor[paramInt1][1], psFinnishFighterColor[paramInt1][2]);
-
-        changeMat(paramClass, paramHierMesh, "Overlay4", "psFCS02FINCNUM" + i + paramInt1 + "_" + (char)(65 + (paramInt3 % 10 - 1)), "Finnish/" + (char)(65 + (paramInt3 % 10 - 1)) + ".tga", psFinnishFighterColor[paramInt1][0], psFinnishFighterColor[paramInt1][1], psFinnishFighterColor[paramInt1][2]);
-      }
-      else if (paramInt3 < 10) {
-        changeMat(paramHierMesh, "Overlay1", "psFCS02FINLNUM" + i + paramInt1 + "0" + paramInt3, "null.tga", psFinnishFighterPrefix[0][paramInt1] + paramInt3 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
-
-        changeMat(paramHierMesh, "Overlay4", "psFCS02FINRNUM" + i + paramInt1 + "0" + paramInt3, psFinnishFighterPrefix[0][paramInt1] + paramInt3 + ".tga", "null.tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
-      }
-      else
-      {
-        changeMat(paramHierMesh, "Overlay1", "psFCS02FINCNUM" + i + paramInt1 + paramInt3, psFinnishFighterPrefix[0][paramInt1] + paramInt3 / 10 + ".tga", psFinnishFighterPrefix[0][paramInt1] + paramInt3 % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
-
-        changeMat(paramHierMesh, "Overlay4", "psFCS02FINCNUM" + i + paramInt1 + paramInt3, psFinnishFighterPrefix[0][paramInt1] + paramInt3 / 10 + ".tga", psFinnishFighterPrefix[0][paramInt1] + paramInt3 % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
-      }
-
-      String str = getFAFACCode(paramClass, paramInt1);
-      changeMat(paramHierMesh, "Overlay2", "psFM05FINACID" + str + c, "Finnish/" + str + ".tga", "Finnish/sn" + c + ".tga", 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-
-      changeMat(paramHierMesh, "Overlay3", "psFM05FINACID" + str + c, "Finnish/" + str + ".tga", "Finnish/sn" + c + ".tga", 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-
-      return;
+    public java.lang.String typedNameNum(java.lang.Class class1, com.maddox.il2.ai.Regiment regiment, int i, int j, int k)
+    {
+        int l = regiment.gruppeNumber() - 1;
+        if(regiment.country() == countryFrance)
+            return "" + (k >= 10 ? "" + k : "0" + k) + " *";
+        else
+            return super.typedNameNum(class1, regiment, i, j, k);
     }
 
-    if (paramRegiment.country() == countryFrance) {
-      changeMat(paramHierMesh, "Overlay1", "psFCS02FRACNUM" + i + paramInt1 + paramInt3, "Russian/0" + paramInt3 / 10 + ".tga", "Russian/0" + paramInt3 % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
-
-      changeMat(paramClass, paramHierMesh, "Overlay6", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay7", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay8", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay2", "psAVGRUSMARKcolor" + paramInt1, "mark.tga", psRussianBomberColor[paramInt1][0], psRussianBomberColor[paramInt1][1], psRussianBomberColor[paramInt1][2]);
-
-      return;
+    public void prepareNum(java.lang.Class class1, com.maddox.il2.engine.HierMesh hiermesh, com.maddox.il2.ai.Regiment regiment, int i, int j, int k)
+    {
+        super.prepareNum(class1, hiermesh, regiment, i, j, k);
+        int l = regiment.gruppeNumber() - 1;
+        if(regiment.country() == countryFinland)
+        {
+            char c = (char)(48 + k % 10);
+            changeMat(class1, hiermesh, "Overlay6", "FAFhaken", "Finnish/" + (com.maddox.il2.ai.World.cur().isHakenAllowed() ? "FAFhaken.tga" : "FAFroundel.tga"), 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay7", "FAFhaken", "Finnish/" + (com.maddox.il2.ai.World.cur().isHakenAllowed() ? "FAFhaken.tga" : "FAFroundel.tga"), 1.0F, 1.0F, 1.0F);
+            if(i == 3)
+            {
+                changeMat(class1, hiermesh, "Overlay1", "psFCS02FINCNUM" + l + i + "_" + (char)(65 + (k % 10 - 1)), "Finnish/" + (char)(65 + (k % 10 - 1)) + ".tga", psFinnishFighterColor[i][0], psFinnishFighterColor[i][1], psFinnishFighterColor[i][2]);
+                changeMat(class1, hiermesh, "Overlay4", "psFCS02FINCNUM" + l + i + "_" + (char)(65 + (k % 10 - 1)), "Finnish/" + (char)(65 + (k % 10 - 1)) + ".tga", psFinnishFighterColor[i][0], psFinnishFighterColor[i][1], psFinnishFighterColor[i][2]);
+            } else
+            if(k < 10)
+            {
+                changeMat(hiermesh, "Overlay1", "psFCS02FINLNUM" + l + i + "0" + k, "null.tga", psFinnishFighterPrefix[0][i] + k + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
+                changeMat(hiermesh, "Overlay4", "psFCS02FINRNUM" + l + i + "0" + k, psFinnishFighterPrefix[0][i] + k + ".tga", "null.tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
+            } else
+            {
+                changeMat(hiermesh, "Overlay1", "psFCS02FINCNUM" + l + i + k, psFinnishFighterPrefix[0][i] + k / 10 + ".tga", psFinnishFighterPrefix[0][i] + k % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
+                changeMat(hiermesh, "Overlay4", "psFCS02FINCNUM" + l + i + k, psFinnishFighterPrefix[0][i] + k / 10 + ".tga", psFinnishFighterPrefix[0][i] + k % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
+            }
+            java.lang.String s = getFAFACCode(class1, i);
+            changeMat(hiermesh, "Overlay2", "psFM05FINACID" + s + c, "Finnish/" + s + ".tga", "Finnish/sn" + c + ".tga", 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+            changeMat(hiermesh, "Overlay3", "psFM05FINACID" + s + c, "Finnish/" + s + ".tga", "Finnish/sn" + c + ".tga", 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+            return;
+        }
+        if(regiment.country() == countryFrance)
+        {
+            changeMat(hiermesh, "Overlay1", "psFCS02FRACNUM" + l + i + k, "Russian/0" + k / 10 + ".tga", "Russian/0" + k % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay6", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay7", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay8", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay2", "psAVGRUSMARKcolor" + i, "mark.tga", psRussianBomberColor[i][0], psRussianBomberColor[i][1], psRussianBomberColor[i][2]);
+            return;
+        }
+        if(regiment.country() == countryItaly)
+        {
+            if(k < 10)
+            {
+                changeMat(class1, hiermesh, "Overlay2", "psFCS02ITALNUM" + l + i + k, "Russian/1" + k % 10 + ".tga", psGermanBomberColor[1][0], psGermanBomberColor[1][1], psGermanBomberColor[1][2]);
+                changeMat(hiermesh, "Overlay3", "psFCS02ITARNUM" + l + i + k, "null.tga", "Russian/1" + k % 10 + ".tga", 1.0F, 1.0F, 1.0F, psGermanBomberColor[1][0], psGermanBomberColor[1][1], psGermanBomberColor[1][2]);
+            } else
+            {
+                changeMat(hiermesh, "Overlay2", "psFCS02ITACNUM" + l + i + k, "Russian/1" + k / 10 + ".tga", "Russian/1" + k % 10 + ".tga", psGermanBomberColor[1][0], psGermanBomberColor[1][1], psGermanBomberColor[1][2], psGermanBomberColor[1][0], psGermanBomberColor[1][1], psGermanBomberColor[1][2]);
+                changeMat(hiermesh, "Overlay3", "psFCS02ITACNUM" + l + i + k, "Russian/1" + k / 10 + ".tga", "Russian/1" + k % 10 + ".tga", psGermanBomberColor[1][0], psGermanBomberColor[1][1], psGermanBomberColor[1][2], psGermanBomberColor[1][0], psGermanBomberColor[1][1], psGermanBomberColor[1][2]);
+            }
+            changeMat(class1, hiermesh, "Overlay6", "italian3", "Italian/roundel0.tga", 0.1F, 0.1F, 0.1F);
+            changeMat(class1, hiermesh, "Overlay7", "italian3", "Italian/roundel0.tga", 0.1F, 0.1F, 0.1F);
+            changeMat(class1, hiermesh, "Overlay8", "italian1", "Italian/roundel1.tga", 1.0F, 1.0F, 1.0F);
+        }
+        if(regiment.country() == countryJapan)
+        {
+            changeMat(hiermesh, "Overlay1", "psFCS02JAPCNUM" + l + i + (k >= 10 ? "" + k : "0" + k), "Russian/1" + k / 10 + ".tga", "Russian/1" + k % 10 + ".tga", psRussianBomberColor[1][0], psRussianBomberColor[1][1], psRussianBomberColor[1][2], psRussianBomberColor[1][0], psRussianBomberColor[1][1], psRussianBomberColor[1][2]);
+            changeMat(hiermesh, "Overlay4", "psFCS02JAPCNUM" + l + i + (k >= 10 ? "" + k : "0" + k), "Russian/1" + k / 10 + ".tga", "Russian/1" + k % 10 + ".tga", psRussianBomberColor[1][0], psRussianBomberColor[1][1], psRussianBomberColor[1][2], psRussianBomberColor[1][0], psRussianBomberColor[1][1], psRussianBomberColor[1][2]);
+            changeMat(class1, hiermesh, "Overlay6", "JAR2", "Japanese/JAR2.tga", 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay7", "JAR1", "Japanese/JAR.tga", 1.0F, 1.0F, 1.0F);
+            return;
+        }
+        if(regiment.country() == countryRussia)
+        {
+            changeMat(hiermesh, "Overlay1", "psFCS02RUSCNUM" + l + i + k, "Russian/1" + k / 10 + ".tga", "Russian/1" + k % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay6", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay7", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay8", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay2", "psAVGRUSMARKcolor" + i, "mark.tga", psRussianBomberColor[i][0], psRussianBomberColor[i][1], psRussianBomberColor[i][2]);
+            return;
+        }
+        if(regiment.country() == countryUSA)
+        {
+            changeMat(hiermesh, "Overlay2", "psFCS02USABLNUM" + l + i + (k >= 10 ? "" + k : "0" + k), "States/" + k / 10 + ".tga", "States/" + k % 10 + ".tga", 0.1F, 0.1F, 0.1F, 0.1F, 0.1F, 0.1F);
+            changeMat(hiermesh, "Overlay3", "psFCS02USAYELNUM" + l + i + (k >= 10 ? "" + k : "0" + k), "States/" + k / 10 + ".tga", "States/" + k % 10 + ".tga", 0.960784F, 0.745098F, 0.145098F, 0.960784F, 0.745098F, 0.145098F);
+            changeMat(hiermesh, "Overlay4", "psFCS02USARUSNUM" + (k >= 10 ? "" + k : "0" + k), "Russian/1" + k / 10 + ".tga", "Russian/1" + k % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
+            return;
+        } else
+        {
+            return;
+        }
     }
-
-    if (paramRegiment.country() == countryItaly) {
-      if (paramInt3 < 10) {
-        changeMat(paramClass, paramHierMesh, "Overlay2", "psFCS02ITALNUM" + i + paramInt1 + paramInt3, "Russian/1" + paramInt3 % 10 + ".tga", psGermanBomberColor[1][0], psGermanBomberColor[1][1], psGermanBomberColor[1][2]);
-
-        changeMat(paramHierMesh, "Overlay3", "psFCS02ITARNUM" + i + paramInt1 + paramInt3, "null.tga", "Russian/1" + paramInt3 % 10 + ".tga", 1.0F, 1.0F, 1.0F, psGermanBomberColor[1][0], psGermanBomberColor[1][1], psGermanBomberColor[1][2]);
-      }
-      else
-      {
-        changeMat(paramHierMesh, "Overlay2", "psFCS02ITACNUM" + i + paramInt1 + paramInt3, "Russian/1" + paramInt3 / 10 + ".tga", "Russian/1" + paramInt3 % 10 + ".tga", psGermanBomberColor[1][0], psGermanBomberColor[1][1], psGermanBomberColor[1][2], psGermanBomberColor[1][0], psGermanBomberColor[1][1], psGermanBomberColor[1][2]);
-
-        changeMat(paramHierMesh, "Overlay3", "psFCS02ITACNUM" + i + paramInt1 + paramInt3, "Russian/1" + paramInt3 / 10 + ".tga", "Russian/1" + paramInt3 % 10 + ".tga", psGermanBomberColor[1][0], psGermanBomberColor[1][1], psGermanBomberColor[1][2], psGermanBomberColor[1][0], psGermanBomberColor[1][1], psGermanBomberColor[1][2]);
-      }
-
-      changeMat(paramClass, paramHierMesh, "Overlay6", "italian3", "Italian/roundel0.tga", 0.1F, 0.1F, 0.1F);
-      changeMat(paramClass, paramHierMesh, "Overlay7", "italian3", "Italian/roundel0.tga", 0.1F, 0.1F, 0.1F);
-      changeMat(paramClass, paramHierMesh, "Overlay8", "italian1", "Italian/roundel1.tga", 1.0F, 1.0F, 1.0F);
-    }
-
-    if (paramRegiment.country() == countryJapan) {
-      changeMat(paramHierMesh, "Overlay1", "psFCS02JAPCNUM" + i + paramInt1 + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString()), "Russian/1" + paramInt3 / 10 + ".tga", "Russian/1" + paramInt3 % 10 + ".tga", psRussianBomberColor[1][0], psRussianBomberColor[1][1], psRussianBomberColor[1][2], psRussianBomberColor[1][0], psRussianBomberColor[1][1], psRussianBomberColor[1][2]);
-
-      changeMat(paramHierMesh, "Overlay4", "psFCS02JAPCNUM" + i + paramInt1 + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString()), "Russian/1" + paramInt3 / 10 + ".tga", "Russian/1" + paramInt3 % 10 + ".tga", psRussianBomberColor[1][0], psRussianBomberColor[1][1], psRussianBomberColor[1][2], psRussianBomberColor[1][0], psRussianBomberColor[1][1], psRussianBomberColor[1][2]);
-
-      changeMat(paramClass, paramHierMesh, "Overlay6", "JAR2", "Japanese/JAR2.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay7", "JAR1", "Japanese/JAR.tga", 1.0F, 1.0F, 1.0F);
-      return;
-    }
-
-    if (paramRegiment.country() == countryRussia) {
-      changeMat(paramHierMesh, "Overlay1", "psFCS02RUSCNUM" + i + paramInt1 + paramInt3, "Russian/1" + paramInt3 / 10 + ".tga", "Russian/1" + paramInt3 % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
-
-      changeMat(paramClass, paramHierMesh, "Overlay6", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay7", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay8", "redstar2", "Russian/redstar2.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay2", "psAVGRUSMARKcolor" + paramInt1, "mark.tga", psRussianBomberColor[paramInt1][0], psRussianBomberColor[paramInt1][1], psRussianBomberColor[paramInt1][2]);
-
-      return;
-    }
-
-    if (paramRegiment.country() == countryUSA) {
-      changeMat(paramHierMesh, "Overlay2", "psFCS02USABLNUM" + i + paramInt1 + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString()), "States/" + paramInt3 / 10 + ".tga", "States/" + paramInt3 % 10 + ".tga", 0.1F, 0.1F, 0.1F, 0.1F, 0.1F, 0.1F);
-
-      changeMat(paramHierMesh, "Overlay3", "psFCS02USAYELNUM" + i + paramInt1 + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString()), "States/" + paramInt3 / 10 + ".tga", "States/" + paramInt3 % 10 + ".tga", 0.960784F, 0.745098F, 0.145098F, 0.960784F, 0.745098F, 0.145098F);
-
-      changeMat(paramHierMesh, "Overlay4", "psFCS02USARUSNUM" + (paramInt3 < 10 ? "0" + paramInt3 : new StringBuffer().append("").append(paramInt3).toString()), "Russian/1" + paramInt3 / 10 + ".tga", "Russian/1" + paramInt3 % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
-
-      return;
-    }
-  }
 }

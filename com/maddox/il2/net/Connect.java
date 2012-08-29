@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Connect.java
+
 package com.maddox.il2.net;
 
 import com.maddox.il2.game.Main;
@@ -23,478 +28,539 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.StringTokenizer;
 
+// Referenced classes of package com.maddox.il2.net:
+//            NetBanned, NetServerParams, NetChannelListener
+
 public class Connect
-  implements NetConnect, MsgNetExtListener, MsgTimeOutListener
+    implements com.maddox.rts.NetConnect, com.maddox.rts.MsgNetExtListener, com.maddox.rts.MsgTimeOutListener
 {
-  static final boolean bLog = false;
-  static final long TIME_OUT = 500L;
-  static final long FULL_TIME_OUT = 30000L;
-  public static final String PROMPT = "socket";
-  public static final String VERSION = "FB_PF_v_4.10.1m";
-  static final String CONNECT = "connect";
-  static final String CONNECTED = "connected";
-  static final String REJECT = "reject";
-  static final String REQUESTINFO = "rinfo";
-  static final String ANSWERINFO = "ainfo";
-  public NetBanned banned = new NetBanned();
 
-  boolean bBindEnable = false;
-
-  boolean bJoin = false;
-  int joinId;
-  long joinTimeOut;
-  NetSocket joinSocket;
-  NetAddress joinAddr;
-  int joinPort;
-  int joinStamp;
-  private static NetMsgInput _netMsgInput = new NetMsgInput();
-  private MsgTimeOut ticker;
-
-  public void bindEnable(boolean paramBoolean)
-  {
-    this.bBindEnable = paramBoolean;
-  }
-
-  public boolean isBindEnable()
-  {
-    return this.bBindEnable;
-  }
-
-  private static String badVersionMessage() {
-    return "Server uses a different version of the game (4.10.1m).";
-  }
-
-  private void bindReceiveConnect(StringTokenizer paramStringTokenizer, NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt)
-  {
-    if (Main.cur().netServerParams == null) return;
-    if (!paramStringTokenizer.hasMoreTokens()) return;
-    String str1 = paramStringTokenizer.nextToken();
-    if (!paramStringTokenizer.hasMoreTokens()) return;
-    String str2 = paramStringTokenizer.nextToken();
-    if (!paramStringTokenizer.hasMoreTokens()) return;
-    String str3 = paramStringTokenizer.nextToken();
-
-    if ((!"FB_PF_v_4.10.1m".equals(str1)) && 
-      (!"il2_r01_0f".equals(str1)))
+    public void bindEnable(boolean flag)
     {
-      String str4 = "reject " + str2 + " " + str3 + " " + badVersionMessage();
-
-      NetEnv.cur().postExtUTF(32, str4, paramNetSocket, paramNetAddress, paramInt);
-      return;
+        bBindEnable = flag;
     }
 
-    if (this.banned.isExist(paramNetAddress)) {
-      return;
-    }
-    int i = 0;
-    try { i = Integer.parseInt(str2); } catch (Exception localException1) {
-      return;
-    }
-    int j = 0;
-    try { j = Integer.parseInt(str3); } catch (Exception localException2) {
-      return;
-    }
-    Object localObject1 = null;
-
-    List localList = NetEnv.channels();
-    int k = localList.size();
-    Object localObject2;
-    for (int m = 0; m < k; m++) {
-      localObject2 = (NetChannel)localList.get(m);
-      if ((!((NetChannel)localObject2).socket().equals(paramNetSocket)) || (((NetChannel)localObject2).remoteId() != i) || (!((NetChannel)localObject2).remoteAddress().equals(paramNetAddress)) || (((NetChannel)localObject2).remotePort() != paramInt))
-      {
-        continue;
-      }
-      if ((((NetChannel)localObject2).state() == 1) && (((NetChannel)localObject2).getInitStamp() == j)) {
-        localObject1 = localObject2;
-      }
-      else
-      {
-        ((NetChannel)localObject2).destroy("Reconnect user");
-
-        return;
-      }
-
-    }
-
-    if (localObject1 == null)
+    public boolean isBindEnable()
     {
-      String str5;
-      if ((!isBindEnable()) || (paramNetSocket.maxChannels == 0)) {
-        str5 = "reject " + str2 + " " + j + " connect disabled";
-
-        NetEnv.cur().postExtUTF(32, str5, paramNetSocket, paramNetAddress, paramInt);
-        return;
-      }
-      if (paramNetSocket.maxChannels <= paramNetSocket.countChannels) {
-        str5 = "reject " + str2 + " " + j + " limit connections = " + paramNetSocket.maxChannels;
-
-        NetEnv.cur().postExtUTF(32, str5, paramNetSocket, paramNetAddress, paramInt);
-        return;
-      }
-      int n = NetEnv.hosts().size();
-      if (!Main.cur().netServerParams.isDedicated())
-        n++;
-      if (n >= Main.cur().netServerParams.getMaxUsers()) {
-        localObject2 = "reject " + str2 + " " + j + " limit users = " + Main.cur().netServerParams.getMaxUsers();
-
-        NetEnv.cur().postExtUTF(32, (String)localObject2, paramNetSocket, paramNetAddress, paramInt);
-        return;
-      }
-
-      int i1 = NetEnv.cur().nextIdChannel(true);
-      localObject1 = NetEnv.cur().createChannel(1, i1, i, paramNetSocket, paramNetAddress, paramInt, this);
-      ((NetChannel)localObject1).setInitStamp(j);
-      setChannel((NetChannel)localObject1, i1, i, j);
-      paramNetSocket.countChannels += 1;
-      if (!"FB_PF_v_4.10.1m".equals(str1)) {
-        kickChannel(localObject1);
-      }
+        return bBindEnable;
     }
 
-    String str6 = "connected " + str1 + " " + i + " " + j + " " + ((NetChannel)localObject1).id();
-
-    NetEnv.cur().postExtUTF(32, str6, paramNetSocket, paramNetAddress, paramInt);
-  }
-
-  private void kickChannel(Object paramObject) {
-    if (!(paramObject instanceof NetChannel)) return;
-    NetChannel localNetChannel = (NetChannel)paramObject;
-    if (localNetChannel.isDestroying()) return;
-    if (localNetChannel.isReady()) {
-      localNetChannel.destroy(badVersionMessage());
-      return;
+    private static java.lang.String badVersionMessage()
+    {
+        return "Server uses a different version of the game (4.10m).";
     }
-    if (localNetChannel.isIniting())
-      new MsgAction(64, 0.5D, localNetChannel) {
-        public void doAction(Object paramObject) {
-          Connect.this.kickChannel(paramObject);
+
+    private void bindReceiveConnect(java.util.StringTokenizer stringtokenizer, com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetAddress netaddress, int i)
+    {
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return;
+        if(!stringtokenizer.hasMoreTokens())
+            return;
+        java.lang.String s = stringtokenizer.nextToken();
+        if(!stringtokenizer.hasMoreTokens())
+            return;
+        java.lang.String s1 = stringtokenizer.nextToken();
+        if(!stringtokenizer.hasMoreTokens())
+            return;
+        java.lang.String s2 = stringtokenizer.nextToken();
+        if(!"FB_PF_v_4.10m".equals(s) && !"il2_r01_0f".equals(s))
+        {
+            java.lang.String s3 = "reject " + s1 + " " + s2 + " " + com.maddox.il2.net.Connect.badVersionMessage();
+            com.maddox.rts.NetEnv.cur().postExtUTF((byte)32, s3, netsocket, netaddress, i);
+            return;
         }
-      };
-  }
-
-  public void join(NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt)
-  {
-    if (this.bJoin) return;
-    this.joinSocket = paramNetSocket;
-    this.joinAddr = paramNetAddress;
-    this.joinPort = paramInt;
-    this.joinTimeOut = 30000L;
-    this.joinId = NetEnv.cur().nextIdChannel(false);
-    this.joinStamp = Time.raw();
-
-    this.joinSocket.countChannels += 1;
-    joinSend();
-
-    this.bJoin = true;
-    if (!this.ticker.busy())
-      this.ticker.post(Time.currentReal() + 500L); 
-  }
-
-  public void msgTimeOut(Object paramObject) {
-    if ((paramObject != null) && ((paramObject instanceof NetChannel))) {
-      msgTimeOutStep((NetChannel)paramObject);
-      return;
-    }
-    if (this.bJoin) {
-      this.joinTimeOut -= 500L;
-      if (this.joinTimeOut < 0L)
-      {
-        System.out.println("socket join to " + this.joinAddr.getHostAddress() + ":" + this.joinPort + " failed: timeout");
-
-        if (Main.cur().netChannelListener != null) {
-          Main.cur().netChannelListener.netChannelCanceled("Connection attempt to remote host failed.  Reason: Timeout.");
+        if(banned.isExist(netaddress))
+            return;
+        int j = 0;
+        try
+        {
+            j = java.lang.Integer.parseInt(s1);
+        }
+        catch(java.lang.Exception exception)
+        {
+            return;
+        }
+        int k = 0;
+        try
+        {
+            k = java.lang.Integer.parseInt(s2);
+        }
+        catch(java.lang.Exception exception1)
+        {
+            return;
+        }
+        com.maddox.rts.NetChannel netchannel = null;
+        java.util.List list = com.maddox.rts.NetEnv.channels();
+        int l = list.size();
+        for(int i1 = 0; i1 < l; i1++)
+        {
+            com.maddox.rts.NetChannel netchannel1 = (com.maddox.rts.NetChannel)list.get(i1);
+            if(!netchannel1.socket().equals(netsocket) || netchannel1.remoteId() != j || !netchannel1.remoteAddress().equals(netaddress) || netchannel1.remotePort() != i)
+                continue;
+            if(netchannel1.state() == 1 && netchannel1.getInitStamp() == k)
+            {
+                netchannel = netchannel1;
+            } else
+            {
+                netchannel1.destroy("Reconnect user");
+                return;
+            }
         }
 
-        this.joinSocket.countChannels -= 1;
-        this.bJoin = false;
-        return;
-      }
-      joinSend();
-      this.ticker.post(Time.currentReal() + 500L);
+        if(netchannel == null)
+        {
+            if(!isBindEnable() || netsocket.maxChannels == 0)
+            {
+                java.lang.String s4 = "reject " + s1 + " " + k + " connect disabled";
+                com.maddox.rts.NetEnv.cur().postExtUTF((byte)32, s4, netsocket, netaddress, i);
+                return;
+            }
+            if(netsocket.maxChannels <= netsocket.countChannels)
+            {
+                java.lang.String s5 = "reject " + s1 + " " + k + " limit connections = " + netsocket.maxChannels;
+                com.maddox.rts.NetEnv.cur().postExtUTF((byte)32, s5, netsocket, netaddress, i);
+                return;
+            }
+            int j1 = com.maddox.rts.NetEnv.hosts().size();
+            if(!com.maddox.il2.game.Main.cur().netServerParams.isDedicated())
+                j1++;
+            if(j1 >= com.maddox.il2.game.Main.cur().netServerParams.getMaxUsers())
+            {
+                java.lang.String s7 = "reject " + s1 + " " + k + " limit users = " + com.maddox.il2.game.Main.cur().netServerParams.getMaxUsers();
+                com.maddox.rts.NetEnv.cur().postExtUTF((byte)32, s7, netsocket, netaddress, i);
+                return;
+            }
+            int k1 = com.maddox.rts.NetEnv.cur().nextIdChannel(true);
+            netchannel = com.maddox.rts.NetEnv.cur().createChannel(1, k1, j, netsocket, netaddress, i, this);
+            netchannel.setInitStamp(k);
+            setChannel(netchannel, k1, j, k);
+            netsocket.countChannels++;
+            if(!"FB_PF_v_4.10m".equals(s))
+                kickChannel(netchannel);
+        }
+        java.lang.String s6 = "connected " + s + " " + j + " " + k + " " + netchannel.id();
+        com.maddox.rts.NetEnv.cur().postExtUTF((byte)32, s6, netsocket, netaddress, i);
     }
-  }
 
-  public void joinBreak()
-  {
-    if (this.bJoin)
+    private void kickChannel(java.lang.Object obj)
     {
-      System.out.println("socket join to " + this.joinAddr.getHostAddress() + ":" + this.joinPort + " breaked");
+        if(!(obj instanceof com.maddox.rts.NetChannel))
+            return;
+        com.maddox.rts.NetChannel netchannel = (com.maddox.rts.NetChannel)obj;
+        if(netchannel.isDestroying())
+            return;
+        if(netchannel.isReady())
+        {
+            netchannel.destroy(com.maddox.il2.net.Connect.badVersionMessage());
+            return;
+        }
+        if(netchannel.isIniting())
+            new com.maddox.rts.MsgAction(64, 0.5D, netchannel) {
 
-      if (Main.cur().netChannelListener != null) {
-        Main.cur().netChannelListener.netChannelCanceled("Connection attempt to remote host failed.  Reason: User Cancel.");
-      }
+                public void doAction(java.lang.Object obj1)
+                {
+                    kickChannel(obj1);
+                }
 
-      this.joinSocket.countChannels -= 1;
-      this.bJoin = false;
-    }
-  }
-
-  public boolean isJoinProcess()
-  {
-    return this.bJoin;
-  }
-
-  private void joinSend() {
-    String str = "connect FB_PF_v_4.10.1m " + this.joinId + " " + this.joinStamp;
-
-    NetEnv.cur().postExtUTF(32, str, this.joinSocket, this.joinAddr, this.joinPort);
-  }
-
-  private void joinReceiveConnected(StringTokenizer paramStringTokenizer, NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt)
-  {
-    if (!this.bJoin) return;
-    if (!paramNetSocket.equals(this.joinSocket)) return;
-    if (!paramNetAddress.equals(this.joinAddr)) return;
-    if (paramInt != this.joinPort) return;
-
-    if (!paramStringTokenizer.hasMoreTokens()) return;
-    String str1 = paramStringTokenizer.nextToken();
-    if (!"FB_PF_v_4.10.1m".equals(str1)) return;
-
-    if (!paramStringTokenizer.hasMoreTokens()) return;
-    String str2 = paramStringTokenizer.nextToken();
-    int i = 0;
-    try { i = Integer.parseInt(str2); } catch (Exception localException1) {
-      return;
-    }if (i != this.joinId) return;
-
-    if (!paramStringTokenizer.hasMoreTokens()) return;
-    String str3 = paramStringTokenizer.nextToken();
-    int j = 0;
-    try { j = Integer.parseInt(str3); } catch (Exception localException2) {
-      return;
-    }if (j != this.joinStamp) return;
-
-    if (!paramStringTokenizer.hasMoreTokens()) return;
-    String str4 = paramStringTokenizer.nextToken();
-    int k = 0;
-    try { k = Integer.parseInt(str4); } catch (Exception localException3) {
-      return;
+            }
+;
     }
 
-    System.out.println("socket start connecting to " + this.joinAddr.getHostAddress() + ":" + this.joinPort);
-
-    NetChannel localNetChannel = NetEnv.cur().createChannel(7, this.joinId, k, this.joinSocket, this.joinAddr, this.joinPort, this);
-
-    localNetChannel.setInitStamp(j);
-    setChannel(localNetChannel, k, this.joinId, j);
-    this.bJoin = false;
-  }
-
-  private void joinReceiveReject(StringTokenizer paramStringTokenizer, NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt)
-  {
-    if (!this.bJoin) return;
-    if (!paramNetSocket.equals(this.joinSocket)) return;
-    if (!paramNetAddress.equals(this.joinAddr)) return;
-    if (paramInt != this.joinPort) return;
-
-    if (!paramStringTokenizer.hasMoreTokens()) return;
-    String str1 = paramStringTokenizer.nextToken();
-    int i = 0;
-    try { i = Integer.parseInt(str1); } catch (Exception localException1) {
-      return;
-    }if (i != this.joinId) return;
-
-    if (!paramStringTokenizer.hasMoreTokens()) return;
-    String str2 = paramStringTokenizer.nextToken();
-    String str3 = "???";
-    StringBuffer localStringBuffer = new StringBuffer();
-
-    int j = 0;
-    try { j = Integer.parseInt(str2);
-      if (j != this.joinStamp) return; 
-    } catch (Exception localException2)
+    public void join(com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetAddress netaddress, int i)
     {
-      localStringBuffer.append(str2);
-      localStringBuffer.append(' ');
-      str3 = str2;
+        if(bJoin)
+            return;
+        joinSocket = netsocket;
+        joinAddr = netaddress;
+        joinPort = i;
+        joinTimeOut = 30000L;
+        joinId = com.maddox.rts.NetEnv.cur().nextIdChannel(false);
+        joinStamp = com.maddox.rts.Time.raw();
+        joinSocket.countChannels++;
+        joinSend();
+        bJoin = true;
+        if(!ticker.busy())
+            ticker.post(com.maddox.rts.Time.currentReal() + 500L);
     }
 
-    if (paramStringTokenizer.hasMoreTokens()) {
-      while (paramStringTokenizer.hasMoreTokens()) {
-        localStringBuffer.append(paramStringTokenizer.nextToken());
-        localStringBuffer.append(' ');
-      }
-      str3 = localStringBuffer.toString();
-    }
-
-    System.out.println("socket join to " + this.joinAddr.getHostAddress() + ":" + this.joinPort + " regect (" + str3 + ")");
-
-    if (Main.cur().netChannelListener != null) {
-      Main.cur().netChannelListener.netChannelCanceled("Connection attempt to remote host rejected.  Reason: " + str3);
-    }
-
-    this.joinSocket.countChannels -= 1;
-    this.bJoin = false;
-  }
-
-  public void msgNetExt(byte[] paramArrayOfByte, NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt)
-  {
-    if ((paramArrayOfByte == null) || (paramArrayOfByte.length < 2)) return;
-    if (paramArrayOfByte[0] != 32) return;
-    String str1 = "";
-    try {
-      _netMsgInput.setData(null, false, paramArrayOfByte, 1, paramArrayOfByte.length - 1);
-      str1 = _netMsgInput.readUTF();
-    } catch (Exception localException) {
-      return;
-    }
-
-    StringTokenizer localStringTokenizer = new StringTokenizer(str1, " ");
-    if (localStringTokenizer.hasMoreTokens()) {
-      String str2 = localStringTokenizer.nextToken();
-
-      if (str2.equals("connect"))
-        bindReceiveConnect(localStringTokenizer, paramNetSocket, paramNetAddress, paramInt);
-      else if (str2.equals("connected"))
-        joinReceiveConnected(localStringTokenizer, paramNetSocket, paramNetAddress, paramInt);
-      else if (str2.equals("reject"))
-        joinReceiveReject(localStringTokenizer, paramNetSocket, paramNetAddress, paramInt);
-      else if (str2.equals("rinfo"))
-        receiveRequestInfo(localStringTokenizer, paramNetSocket, paramNetAddress, paramInt);
-    }
-  }
-
-  public void msgRequest(String paramString)
-  {
-    if (Main.cur().netChannelListener != null)
-      Main.cur().netChannelListener.netChannelRequest(paramString);
-  }
-
-  public void channelCreated(NetChannel paramNetChannel)
-  {
-    if (!paramNetChannel.isPublic())
+    public void msgTimeOut(java.lang.Object obj)
     {
-      System.out.println("socket channel '" + paramNetChannel.id() + "' created: " + paramNetChannel.remoteAddress().getHostAddress() + ":" + paramNetChannel.remotePort());
-
-      return;
+        if(obj != null && (obj instanceof com.maddox.rts.NetChannel))
+        {
+            msgTimeOutStep((com.maddox.rts.NetChannel)obj);
+            return;
+        }
+        if(bJoin)
+        {
+            joinTimeOut -= 500L;
+            if(joinTimeOut < 0L)
+            {
+                java.lang.System.out.println("socket join to " + joinAddr.getHostAddress() + ":" + joinPort + " failed: timeout");
+                if(com.maddox.il2.game.Main.cur().netChannelListener != null)
+                    com.maddox.il2.game.Main.cur().netChannelListener.netChannelCanceled("Connection attempt to remote host failed.  Reason: Timeout.");
+                joinSocket.countChannels--;
+                bJoin = false;
+                return;
+            }
+            joinSend();
+            ticker.post(com.maddox.rts.Time.currentReal() + 500L);
+        }
     }
 
-    System.out.println("socket channel '" + paramNetChannel.id() + "' start creating: " + paramNetChannel.remoteAddress().getHostAddress() + ":" + paramNetChannel.remotePort());
-
-    paramNetChannel.startSortGuaranted();
-    HashMapInt localHashMapInt = NetEnv.cur().objects;
-    HashMapIntEntry localHashMapIntEntry = localHashMapInt.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      NetObj localNetObj = (NetObj)localHashMapIntEntry.getValue();
-      if (!paramNetChannel.isMirrored(localNetObj))
-        MsgNet.postRealNewChannel(localNetObj, paramNetChannel);
-      localHashMapIntEntry = localHashMapInt.nextEntry(localHashMapIntEntry);
-    }
-    paramNetChannel.setStateInit(2);
-    MsgTimeOut.post(64, Time.currentReal() + 1L, this, paramNetChannel);
-  }
-
-  private void msgTimeOutStep(NetChannel paramNetChannel) {
-    if (paramNetChannel.isDestroying()) return;
-    int i = paramNetChannel.state();
-    switch (i) {
-    case 2:
-      try {
-        paramNetChannel.stopSortGuaranted();
-      } catch (Exception localException) {
-        paramNetChannel.destroy("Cycle inits");
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        return;
-      }
-      paramNetChannel.setStateInit(3);
-    case 3:
-      if (Main.cur().netServerParams == null)
-      {
-        MsgTimeOut.post(64, Time.currentReal() + 200L, this, paramNetChannel);
-        return;
-      }
-      paramNetChannel.setStateInit(0);
-
-      if (!NetEnv.isServer()) {
-        System.out.println("socket channel '" + paramNetChannel.id() + "', ip " + paramNetChannel.remoteAddress().getHostAddress() + ":" + paramNetChannel.remotePort() + ", is complete created");
-      }
-
-      if (Main.cur().netChannelListener != null)
-        Main.cur().netChannelListener.netChannelCreated(paramNetChannel);
-      return;
-    }
-  }
-
-  public void channelNotCreated(NetChannel paramNetChannel, String paramString)
-  {
-    System.out.println("socket channel NOT created (" + paramString + "): " + paramNetChannel.remoteAddress().getHostAddress() + ":" + paramNetChannel.remotePort());
-
-    if (Main.cur().netChannelListener != null)
-      Main.cur().netChannelListener.netChannelCanceled("Connection attempt to remote host failed.  Reason: " + paramString);
-  }
-
-  public void channelDestroying(NetChannel paramNetChannel, String paramString)
-  {
-    System.out.println("socketConnection with " + paramNetChannel.remoteAddress() + ":" + paramNetChannel.remotePort() + " on channel " + paramNetChannel.id() + " lost.  Reason: " + paramString);
-
-    if (Main.cur().netChannelListener != null)
-      Main.cur().netChannelListener.netChannelDestroying(paramNetChannel, "The communication with the remote host is lost. Reason: " + paramString);
-  }
-
-  private void receiveRequestInfo(StringTokenizer paramStringTokenizer, NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt)
-  {
-    if (!paramStringTokenizer.hasMoreTokens()) return;
-    if (Main.cur().netServerParams == null) return;
-    if (!isBindEnable()) return;
-    if (this.banned.isExist(paramNetAddress))
-      return;
-    if ((!Main.cur().netServerParams.isMaster()) && (Main.cur().netServerParams.masterChannel().userState == -1))
+    public void joinBreak()
     {
-      return;
-    }String str1 = paramStringTokenizer.nextToken();
-    StringBuffer localStringBuffer = new StringBuffer();
-    localStringBuffer.append("ainfo"); localStringBuffer.append(' ');
-    localStringBuffer.append(str1); localStringBuffer.append(' ');
-    localStringBuffer.append("FB_PF_v_4.10.1m"); localStringBuffer.append(' ');
-    localStringBuffer.append(Main.cur().netServerParams.isMaster() ? "1 " : "0 ");
-    localStringBuffer.append("" + (Main.cur().netServerParams.getType() >> 4 & 0x7) + " ");
-    localStringBuffer.append(Main.cur().netServerParams.isProtected() ? "1 " : "0 ");
-    localStringBuffer.append(Main.cur().netServerParams.isDedicated() ? "1 " : "0 ");
-    localStringBuffer.append(Main.cur().netServerParams.isCoop() ? "1 " : "0 ");
-    localStringBuffer.append(Mission.isPlaying() ? "1 " : "0 ");
-    localStringBuffer.append(paramNetSocket.maxChannels); localStringBuffer.append(' ');
-    localStringBuffer.append(paramNetSocket.countChannels); localStringBuffer.append(' ');
-    localStringBuffer.append(Main.cur().netServerParams.getMaxUsers()); localStringBuffer.append(' ');
-    int i = NetEnv.hosts().size();
-    if (!Main.cur().netServerParams.isDedicated())
-      i++;
-    localStringBuffer.append(i); localStringBuffer.append(' ');
-    localStringBuffer.append(Main.cur().netServerParams.serverName());
+        if(bJoin)
+        {
+            java.lang.System.out.println("socket join to " + joinAddr.getHostAddress() + ":" + joinPort + " breaked");
+            if(com.maddox.il2.game.Main.cur().netChannelListener != null)
+                com.maddox.il2.game.Main.cur().netChannelListener.netChannelCanceled("Connection attempt to remote host failed.  Reason: User Cancel.");
+            joinSocket.countChannels--;
+            bJoin = false;
+        }
+    }
 
-    String str2 = localStringBuffer.toString();
+    public boolean isJoinProcess()
+    {
+        return bJoin;
+    }
 
-    NetEnv.cur().postExtUTF(32, str2, paramNetSocket, paramNetAddress, paramInt);
-  }
+    private void joinSend()
+    {
+        java.lang.String s = "connect FB_PF_v_4.10m " + joinId + " " + joinStamp;
+        com.maddox.rts.NetEnv.cur().postExtUTF((byte)32, s, joinSocket, joinAddr, joinPort);
+    }
 
-  public Connect()
-  {
-    MsgAddListener.post(64, NetEnv.cur(), this, null);
-    this.ticker = new MsgTimeOut();
-    this.ticker.setNotCleanAfterSend();
-    this.ticker.setFlags(64);
-    this.ticker.setListener(this);
-  }
+    private void joinReceiveConnected(java.util.StringTokenizer stringtokenizer, com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetAddress netaddress, int i)
+    {
+        if(!bJoin)
+            return;
+        if(!netsocket.equals(joinSocket))
+            return;
+        if(!netaddress.equals(joinAddr))
+            return;
+        if(i != joinPort)
+            return;
+        if(!stringtokenizer.hasMoreTokens())
+            return;
+        java.lang.String s = stringtokenizer.nextToken();
+        if(!"FB_PF_v_4.10m".equals(s))
+            return;
+        if(!stringtokenizer.hasMoreTokens())
+            return;
+        java.lang.String s1 = stringtokenizer.nextToken();
+        int j = 0;
+        try
+        {
+            j = java.lang.Integer.parseInt(s1);
+        }
+        catch(java.lang.Exception exception)
+        {
+            return;
+        }
+        if(j != joinId)
+            return;
+        if(!stringtokenizer.hasMoreTokens())
+            return;
+        java.lang.String s2 = stringtokenizer.nextToken();
+        int k = 0;
+        try
+        {
+            k = java.lang.Integer.parseInt(s2);
+        }
+        catch(java.lang.Exception exception1)
+        {
+            return;
+        }
+        if(k != joinStamp)
+            return;
+        if(!stringtokenizer.hasMoreTokens())
+            return;
+        java.lang.String s3 = stringtokenizer.nextToken();
+        int l = 0;
+        try
+        {
+            l = java.lang.Integer.parseInt(s3);
+        }
+        catch(java.lang.Exception exception2)
+        {
+            return;
+        }
+        java.lang.System.out.println("socket start connecting to " + joinAddr.getHostAddress() + ":" + joinPort);
+        com.maddox.rts.NetChannel netchannel = com.maddox.rts.NetEnv.cur().createChannel(7, joinId, l, joinSocket, joinAddr, joinPort, this);
+        netchannel.setInitStamp(k);
+        setChannel(netchannel, l, joinId, k);
+        bJoin = false;
+    }
 
-  private void setChannel(NetChannel paramNetChannel, int paramInt1, int paramInt2, int paramInt3)
-  {
-    int i = paramInt3 + paramInt1 + paramInt2;
-    if (i < 0) i = -i;
-    int j = i % 16 + 12;
-    int k = i % Finger.kTable.length;
-    if (j < 0)
-      j = -j % 16;
-    if (j < 10)
-      j = 10;
-    if (k < 0)
-      k = -k % Finger.kTable.length;
-    byte[] arrayOfByte = new byte[j];
-    for (int m = 0; m < j; m++)
-      arrayOfByte[m] = Finger.kTable[((k + m) % Finger.kTable.length)];
-    paramNetChannel.swTbl = arrayOfByte;
-    for (m = 0; m < 2; m++)
-      paramNetChannel.crcInit[m] = Finger.kTable[((k + j + m) % Finger.kTable.length)];
-  }
+    private void joinReceiveReject(java.util.StringTokenizer stringtokenizer, com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetAddress netaddress, int i)
+    {
+        if(!bJoin)
+            return;
+        if(!netsocket.equals(joinSocket))
+            return;
+        if(!netaddress.equals(joinAddr))
+            return;
+        if(i != joinPort)
+            return;
+        if(!stringtokenizer.hasMoreTokens())
+            return;
+        java.lang.String s = stringtokenizer.nextToken();
+        int j = 0;
+        try
+        {
+            j = java.lang.Integer.parseInt(s);
+        }
+        catch(java.lang.Exception exception)
+        {
+            return;
+        }
+        if(j != joinId)
+            return;
+        if(!stringtokenizer.hasMoreTokens())
+            return;
+        java.lang.String s1 = stringtokenizer.nextToken();
+        java.lang.String s2 = "???";
+        java.lang.StringBuffer stringbuffer = new StringBuffer();
+        boolean flag = false;
+        try
+        {
+            int k = java.lang.Integer.parseInt(s1);
+            if(k != joinStamp)
+                return;
+        }
+        catch(java.lang.Exception exception1)
+        {
+            stringbuffer.append(s1);
+            stringbuffer.append(' ');
+            s2 = s1;
+        }
+        if(stringtokenizer.hasMoreTokens())
+        {
+            for(; stringtokenizer.hasMoreTokens(); stringbuffer.append(' '))
+                stringbuffer.append(stringtokenizer.nextToken());
+
+            s2 = stringbuffer.toString();
+        }
+        java.lang.System.out.println("socket join to " + joinAddr.getHostAddress() + ":" + joinPort + " regect (" + s2 + ")");
+        if(com.maddox.il2.game.Main.cur().netChannelListener != null)
+            com.maddox.il2.game.Main.cur().netChannelListener.netChannelCanceled("Connection attempt to remote host rejected.  Reason: " + s2);
+        joinSocket.countChannels--;
+        bJoin = false;
+    }
+
+    public void msgNetExt(byte abyte0[], com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetAddress netaddress, int i)
+    {
+        if(abyte0 == null || abyte0.length < 2)
+            return;
+        if(abyte0[0] != 32)
+            return;
+        java.lang.String s = "";
+        try
+        {
+            _netMsgInput.setData(null, false, abyte0, 1, abyte0.length - 1);
+            s = _netMsgInput.readUTF();
+        }
+        catch(java.lang.Exception exception)
+        {
+            return;
+        }
+        java.util.StringTokenizer stringtokenizer = new StringTokenizer(s, " ");
+        if(stringtokenizer.hasMoreTokens())
+        {
+            java.lang.String s1 = stringtokenizer.nextToken();
+            if(s1.equals("connect"))
+                bindReceiveConnect(stringtokenizer, netsocket, netaddress, i);
+            else
+            if(s1.equals("connected"))
+                joinReceiveConnected(stringtokenizer, netsocket, netaddress, i);
+            else
+            if(s1.equals("reject"))
+                joinReceiveReject(stringtokenizer, netsocket, netaddress, i);
+            else
+            if(s1.equals("rinfo"))
+                receiveRequestInfo(stringtokenizer, netsocket, netaddress, i);
+        }
+    }
+
+    public void msgRequest(java.lang.String s)
+    {
+        if(com.maddox.il2.game.Main.cur().netChannelListener != null)
+            com.maddox.il2.game.Main.cur().netChannelListener.netChannelRequest(s);
+    }
+
+    public void channelCreated(com.maddox.rts.NetChannel netchannel)
+    {
+        if(!netchannel.isPublic())
+        {
+            java.lang.System.out.println("socket channel '" + netchannel.id() + "' created: " + netchannel.remoteAddress().getHostAddress() + ":" + netchannel.remotePort());
+            return;
+        }
+        java.lang.System.out.println("socket channel '" + netchannel.id() + "' start creating: " + netchannel.remoteAddress().getHostAddress() + ":" + netchannel.remotePort());
+        netchannel.startSortGuaranted();
+        com.maddox.util.HashMapInt hashmapint = com.maddox.rts.NetEnv.cur().objects;
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = hashmapint.nextEntry(null); hashmapintentry != null; hashmapintentry = hashmapint.nextEntry(hashmapintentry))
+        {
+            com.maddox.rts.NetObj netobj = (com.maddox.rts.NetObj)hashmapintentry.getValue();
+            if(!netchannel.isMirrored(netobj))
+                com.maddox.rts.MsgNet.postRealNewChannel(netobj, netchannel);
+        }
+
+        netchannel.setStateInit(2);
+        com.maddox.rts.MsgTimeOut.post(64, com.maddox.rts.Time.currentReal() + 1L, this, netchannel);
+    }
+
+    private void msgTimeOutStep(com.maddox.rts.NetChannel netchannel)
+    {
+        if(netchannel.isDestroying())
+            return;
+        int i = netchannel.state();
+        switch(i)
+        {
+        case 2: // '\002'
+            try
+            {
+                netchannel.stopSortGuaranted();
+            }
+            catch(java.lang.Exception exception)
+            {
+                netchannel.destroy("Cycle inits");
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                return;
+            }
+            netchannel.setStateInit(3);
+            // fall through
+
+        case 3: // '\003'
+            if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            {
+                com.maddox.rts.MsgTimeOut.post(64, com.maddox.rts.Time.currentReal() + 200L, this, netchannel);
+                return;
+            }
+            netchannel.setStateInit(0);
+            if(!com.maddox.rts.NetEnv.isServer())
+                java.lang.System.out.println("socket channel '" + netchannel.id() + "', ip " + netchannel.remoteAddress().getHostAddress() + ":" + netchannel.remotePort() + ", is complete created");
+            if(com.maddox.il2.game.Main.cur().netChannelListener != null)
+                com.maddox.il2.game.Main.cur().netChannelListener.netChannelCreated(netchannel);
+            return;
+
+        default:
+            return;
+        }
+    }
+
+    public void channelNotCreated(com.maddox.rts.NetChannel netchannel, java.lang.String s)
+    {
+        java.lang.System.out.println("socket channel NOT created (" + s + "): " + netchannel.remoteAddress().getHostAddress() + ":" + netchannel.remotePort());
+        if(com.maddox.il2.game.Main.cur().netChannelListener != null)
+            com.maddox.il2.game.Main.cur().netChannelListener.netChannelCanceled("Connection attempt to remote host failed.  Reason: " + s);
+    }
+
+    public void channelDestroying(com.maddox.rts.NetChannel netchannel, java.lang.String s)
+    {
+        java.lang.System.out.println("socketConnection with " + netchannel.remoteAddress() + ":" + netchannel.remotePort() + " on channel " + netchannel.id() + " lost.  Reason: " + s);
+        if(com.maddox.il2.game.Main.cur().netChannelListener != null)
+            com.maddox.il2.game.Main.cur().netChannelListener.netChannelDestroying(netchannel, "The communication with the remote host is lost. Reason: " + s);
+    }
+
+    private void receiveRequestInfo(java.util.StringTokenizer stringtokenizer, com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetAddress netaddress, int i)
+    {
+        if(!stringtokenizer.hasMoreTokens())
+            return;
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return;
+        if(!isBindEnable())
+            return;
+        if(banned.isExist(netaddress))
+            return;
+        if(!com.maddox.il2.game.Main.cur().netServerParams.isMaster() && com.maddox.il2.game.Main.cur().netServerParams.masterChannel().userState == -1)
+            return;
+        java.lang.String s = stringtokenizer.nextToken();
+        java.lang.StringBuffer stringbuffer = new StringBuffer();
+        stringbuffer.append("ainfo");
+        stringbuffer.append(' ');
+        stringbuffer.append(s);
+        stringbuffer.append(' ');
+        stringbuffer.append("FB_PF_v_4.10m");
+        stringbuffer.append(' ');
+        stringbuffer.append(com.maddox.il2.game.Main.cur().netServerParams.isMaster() ? "1 " : "0 ");
+        stringbuffer.append("" + (com.maddox.il2.game.Main.cur().netServerParams.getType() >> 4 & 7) + " ");
+        stringbuffer.append(com.maddox.il2.game.Main.cur().netServerParams.isProtected() ? "1 " : "0 ");
+        stringbuffer.append(com.maddox.il2.game.Main.cur().netServerParams.isDedicated() ? "1 " : "0 ");
+        stringbuffer.append(com.maddox.il2.game.Main.cur().netServerParams.isCoop() ? "1 " : "0 ");
+        stringbuffer.append(com.maddox.il2.game.Mission.isPlaying() ? "1 " : "0 ");
+        stringbuffer.append(netsocket.maxChannels);
+        stringbuffer.append(' ');
+        stringbuffer.append(netsocket.countChannels);
+        stringbuffer.append(' ');
+        stringbuffer.append(com.maddox.il2.game.Main.cur().netServerParams.getMaxUsers());
+        stringbuffer.append(' ');
+        int j = com.maddox.rts.NetEnv.hosts().size();
+        if(!com.maddox.il2.game.Main.cur().netServerParams.isDedicated())
+            j++;
+        stringbuffer.append(j);
+        stringbuffer.append(' ');
+        stringbuffer.append(com.maddox.il2.game.Main.cur().netServerParams.serverName());
+        java.lang.String s1 = stringbuffer.toString();
+        com.maddox.rts.NetEnv.cur().postExtUTF((byte)32, s1, netsocket, netaddress, i);
+    }
+
+    public Connect()
+    {
+        banned = new NetBanned();
+        bBindEnable = false;
+        bJoin = false;
+        com.maddox.rts.MsgAddListener.post(64, com.maddox.rts.NetEnv.cur(), this, null);
+        ticker = new MsgTimeOut();
+        ticker.setNotCleanAfterSend();
+        ticker.setFlags(64);
+        ticker.setListener(this);
+    }
+
+    private void setChannel(com.maddox.rts.NetChannel netchannel, int i, int j, int k)
+    {
+        int l = k + i + j;
+        if(l < 0)
+            l = -l;
+        int i1 = l % 16 + 12;
+        int j1 = l % com.maddox.rts.Finger.kTable.length;
+        if(i1 < 0)
+            i1 = -i1 % 16;
+        if(i1 < 10)
+            i1 = 10;
+        if(j1 < 0)
+            j1 = -j1 % com.maddox.rts.Finger.kTable.length;
+        byte abyte0[] = new byte[i1];
+        for(int k1 = 0; k1 < i1; k1++)
+            abyte0[k1] = com.maddox.rts.Finger.kTable[(j1 + k1) % com.maddox.rts.Finger.kTable.length];
+
+        netchannel.swTbl = abyte0;
+        for(int l1 = 0; l1 < 2; l1++)
+            netchannel.crcInit[l1] = com.maddox.rts.Finger.kTable[(j1 + i1 + l1) % com.maddox.rts.Finger.kTable.length];
+
+    }
+
+    static final boolean bLog = false;
+    static final long TIME_OUT = 500L;
+    static final long FULL_TIME_OUT = 30000L;
+    public static final java.lang.String PROMPT = "socket";
+    public static final java.lang.String VERSION = "FB_PF_v_4.10m";
+    static final java.lang.String CONNECT = "connect";
+    static final java.lang.String CONNECTED = "connected";
+    static final java.lang.String REJECT = "reject";
+    static final java.lang.String REQUESTINFO = "rinfo";
+    static final java.lang.String ANSWERINFO = "ainfo";
+    public com.maddox.il2.net.NetBanned banned;
+    boolean bBindEnable;
+    boolean bJoin;
+    int joinId;
+    long joinTimeOut;
+    com.maddox.rts.NetSocket joinSocket;
+    com.maddox.rts.NetAddress joinAddr;
+    int joinPort;
+    int joinStamp;
+    private static com.maddox.rts.NetMsgInput _netMsgInput = new NetMsgInput();
+    private com.maddox.rts.MsgTimeOut ticker;
+
+
 }

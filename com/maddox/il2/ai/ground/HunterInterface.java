@@ -1,32 +1,41 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HunterInterface.java
+
 package com.maddox.il2.ai.ground;
 
 import com.maddox.il2.engine.Actor;
 
-public abstract interface HunterInterface
+// Referenced classes of package com.maddox.il2.ai.ground:
+//            Aim
+
+public interface HunterInterface
 {
-  public abstract float getReloadingTime(Aim paramAim);
 
-  public abstract float chainFireTime(Aim paramAim);
+    public abstract float getReloadingTime(com.maddox.il2.ai.ground.Aim aim);
 
-  public abstract float probabKeepSameEnemy(Actor paramActor);
+    public abstract float chainFireTime(com.maddox.il2.ai.ground.Aim aim);
 
-  public abstract float minTimeRelaxAfterFight();
+    public abstract float probabKeepSameEnemy(com.maddox.il2.engine.Actor actor);
 
-  public abstract boolean enterToFireMode(int paramInt, Actor paramActor, float paramFloat, Aim paramAim);
+    public abstract float minTimeRelaxAfterFight();
 
-  public abstract void gunStartParking(Aim paramAim);
+    public abstract boolean enterToFireMode(int i, com.maddox.il2.engine.Actor actor, float f, com.maddox.il2.ai.ground.Aim aim);
 
-  public abstract void gunInMove(boolean paramBoolean, Aim paramAim);
+    public abstract void gunStartParking(com.maddox.il2.ai.ground.Aim aim);
 
-  public abstract Actor findEnemy(Aim paramAim);
+    public abstract void gunInMove(boolean flag, com.maddox.il2.ai.ground.Aim aim);
 
-  public abstract int targetGun(Aim paramAim, Actor paramActor, float paramFloat, boolean paramBoolean);
+    public abstract com.maddox.il2.engine.Actor findEnemy(com.maddox.il2.ai.ground.Aim aim);
 
-  public abstract void singleShot(Aim paramAim);
+    public abstract int targetGun(com.maddox.il2.ai.ground.Aim aim, com.maddox.il2.engine.Actor actor, float f, boolean flag);
 
-  public abstract void startFire(Aim paramAim);
+    public abstract void singleShot(com.maddox.il2.ai.ground.Aim aim);
 
-  public abstract void continueFire(Aim paramAim);
+    public abstract void startFire(com.maddox.il2.ai.ground.Aim aim);
 
-  public abstract void stopFire(Aim paramAim);
+    public abstract void continueFire(com.maddox.il2.ai.ground.Aim aim);
+
+    public abstract void stopFire(com.maddox.il2.ai.ground.Aim aim);
 }

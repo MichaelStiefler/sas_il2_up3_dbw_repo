@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   TargetsGuard.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.il2.engine.Actor;
@@ -14,238 +19,291 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+// Referenced classes of package com.maddox.il2.ai:
+//            Target, World, ScoreCounter, EventLog
+
 public class TargetsGuard
-  implements MsgTimeOutListener
+    implements com.maddox.rts.MsgTimeOutListener
 {
-  public static final long TIME_STEP = 1000L;
-  private boolean bActive = false;
-  private MsgTimeOut ticker;
-  private boolean bDead = true;
-  private boolean bTaskComplete = false;
-  private int checkType;
-  private ArrayList targets = new ArrayList();
-  public ArrayList zutiTargetNamesToRemove;
-  public ArrayList zutiTargetPosToRemove;
 
-  public boolean isAlive()
-  {
-    return !this.bDead; } 
-  public boolean isTaskComplete() { return this.bTaskComplete;
-  }
+    public boolean isAlive()
+    {
+        return !bDead;
+    }
 
-  private void checkTask()
-  {
-    if (this.bDead) return;
-    int i = 1;
-    if (this.checkType == 2)
-      i = 0;
-    int j = 0;
-    int k = 1;
-    int m = this.targets.size();
-    for (int n = 0; n < m; n++) {
-      Target localTarget = (Target)this.targets.get(n);
-      switch (this.checkType) {
-      case 0:
-        if ((localTarget.importance() != 0) || 
-          (localTarget.isTaskComplete())) continue;
-        if (!localTarget.isAlive()) {
-          j = 1;
+    public boolean isTaskComplete()
+    {
+        return bTaskComplete;
+    }
+
+    private void checkTask()
+    {
+        if(bDead)
+            return;
+        boolean flag = true;
+        if(checkType == 2)
+            flag = false;
+        boolean flag1 = false;
+        boolean flag2 = true;
+        int i = targets.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Target target = (com.maddox.il2.ai.Target)targets.get(j);
+            switch(checkType)
+            {
+            default:
+                break;
+
+            case 0: // '\0'
+                if(target.importance() != 0 || target.isTaskComplete())
+                    break;
+                if(!target.isAlive())
+                    flag1 = true;
+                flag = false;
+                break;
+
+            case 1: // '\001'
+                if(target.importance() != 1 || target.isTaskComplete())
+                    break;
+                if(!target.isAlive())
+                    flag1 = true;
+                flag = false;
+                break;
+
+            case 2: // '\002'
+                if(target.importance() != 2)
+                    break;
+                if(target.isAlive())
+                {
+                    flag2 = false;
+                    break;
+                }
+                if(target.isTaskComplete())
+                    flag = true;
+                else
+                    flag1 = true;
+                break;
+            }
         }
-        i = 0; break;
-      case 1:
-        if ((localTarget.importance() != 1) || 
-          (localTarget.isTaskComplete())) continue;
-        if (!localTarget.isAlive()) {
-          j = 1;
+
+        if(checkType == 2)
+            if(flag)
+                flag1 = false;
+            else
+            if(!flag2)
+                return;
+        if(flag1)
+        {
+            bTaskComplete = false;
+            bDead = true;
+            doMissionComplete();
+            return;
         }
-        i = 0; break;
-      case 2:
-        if (localTarget.importance() != 2) continue;
-        if (localTarget.isAlive()) {
-          k = 0;
+        if(flag)
+        {
+            bTaskComplete = true;
+            bDead = true;
+            doMissionComplete();
         }
-        else if (localTarget.isTaskComplete())
-          i = 1;
-        else {
-          j = 1;
+    }
+
+    private void doScores(com.maddox.il2.ai.Target target, int i)
+    {
+        com.maddox.il2.ai.World.cur().scoreCounter.targetOn(target, target.isTaskComplete());
+        com.maddox.il2.ai.EventLog.type("Target " + i + (target.isTaskComplete() ? " Complete" : " Failed"));
+    }
+
+    public void msgTimeOut(java.lang.Object obj)
+    {
+        if(!bActive)
+            return;
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        ticker.setTime(com.maddox.rts.Time.current() + 1000L);
+        ticker.post();
+        long l = com.maddox.rts.Time.current();
+        boolean flag = false;
+        int i = targets.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Target target = (com.maddox.il2.ai.Target)targets.get(j);
+            if(!target.isAlive())
+                continue;
+            if(target.checkPeriodic())
+            {
+                flag = true;
+                doScores(target, j);
+            }
+            if(target.timeout <= 0L || l <= target.timeout)
+                continue;
+            target.timeout = -target.timeout;
+            if(target.checkTimeoutOff())
+            {
+                doScores(target, j);
+                flag = true;
+            }
         }
 
-      }
-
+        if(flag)
+            checkTask();
     }
 
-    if (this.checkType == 2) {
-      if (i != 0)
-        j = 0;
-      else if (k == 0) {
-        return;
-      }
-    }
-    if (j != 0) {
-      this.bTaskComplete = false;
-      this.bDead = true;
-      doMissionComplete();
-      return;
-    }
-    if (i != 0) {
-      this.bTaskComplete = true;
-      this.bDead = true;
-      doMissionComplete();
-    }
-  }
-
-  private void doScores(Target paramTarget, int paramInt) {
-    World.cur().scoreCounter.targetOn(paramTarget, paramTarget.isTaskComplete());
-    EventLog.type("Target " + paramInt + (paramTarget.isTaskComplete() ? " Complete" : " Failed"));
-  }
-
-  public void msgTimeOut(Object paramObject) {
-    if (!this.bActive) return;
-    if (!Mission.isPlaying()) return;
-    this.ticker.setTime(Time.current() + 1000L);
-    this.ticker.post();
-    long l = Time.current();
-    int i = 0;
-    int j = this.targets.size();
-    for (int k = 0; k < j; k++) {
-      Target localTarget = (Target)this.targets.get(k);
-      if (localTarget.isAlive()) {
-        if (localTarget.checkPeriodic()) {
-          i = 1;
-          doScores(localTarget, k);
+    protected void checkActorDied(com.maddox.il2.engine.Actor actor)
+    {
+        if(!bActive)
+            return;
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        boolean flag = false;
+        int i = targets.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Target target = (com.maddox.il2.ai.Target)targets.get(j);
+            if(target.isAlive() && target.checkActorDied(actor))
+            {
+                flag = true;
+                doScores(target, j);
+            }
         }
-        if ((localTarget.timeout > 0L) && (l > localTarget.timeout)) {
-          localTarget.timeout = (-localTarget.timeout);
-          if (localTarget.checkTimeoutOff()) {
-            doScores(localTarget, k);
-            i = 1;
-          }
+
+        if(actor == com.maddox.il2.ai.World.getPlayerAircraft() && !com.maddox.il2.ai.World.isPlayerRemoved() && !bDead && com.maddox.il2.game.Mission.isSingle())
+        {
+            bTaskComplete = false;
+            bDead = true;
+            doMissionComplete();
+        } else
+        if(flag)
+            checkTask();
+    }
+
+    protected void checkTaskComplete(com.maddox.il2.engine.Actor actor)
+    {
+        if(!bActive)
+            return;
+        if(!com.maddox.il2.game.Mission.isPlaying())
+            return;
+        boolean flag = false;
+        int i = targets.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Target target = (com.maddox.il2.ai.Target)targets.get(j);
+            if(target.isAlive() && target.checkTaskComplete(actor))
+            {
+                flag = true;
+                doScores(target, j);
+            }
         }
-      }
-    }
-    if (i != 0)
-      checkTask();
-  }
 
-  protected void checkActorDied(Actor paramActor) {
-    if (!this.bActive) return;
-    if (!Mission.isPlaying()) return;
-    int i = 0;
-    int j = this.targets.size();
-    for (int k = 0; k < j; k++) {
-      Target localTarget = (Target)this.targets.get(k);
-      if ((!localTarget.isAlive()) || 
-        (!localTarget.checkActorDied(paramActor))) continue;
-      i = 1;
-      doScores(localTarget, k);
+        if(flag)
+            checkTask();
     }
 
-    if ((paramActor == World.getPlayerAircraft()) && (!World.isPlayerRemoved()) && (!this.bDead) && (Mission.isSingle())) {
-      this.bTaskComplete = false;
-      this.bDead = true;
-      doMissionComplete();
-    } else if (i != 0) {
-      checkTask();
-    }
-  }
-
-  protected void checkTaskComplete(Actor paramActor) {
-    if (!this.bActive) return;
-    if (!Mission.isPlaying()) return;
-    int i = 0;
-    int j = this.targets.size();
-    for (int k = 0; k < j; k++) {
-      Target localTarget = (Target)this.targets.get(k);
-      if ((!localTarget.isAlive()) || 
-        (!localTarget.checkTaskComplete(paramActor))) continue;
-      i = 1;
-      doScores(localTarget, k);
+    protected void addTarget(com.maddox.il2.ai.Target target)
+    {
+        targets.add(target);
     }
 
-    if (i != 0)
-      checkTask();
-  }
-
-  protected void addTarget(Target paramTarget) {
-    this.targets.add(paramTarget);
-  }
-
-  public void doMissionComplete() {
-    if (Mission.isNet()) {
-      if ((Main.cur().netServerParams.isCoop()) || (Main.cur().netServerParams.isDogfight())) {
-        if (Main.cur().netServerParams.isMaster())
-          ((NetUser)NetEnv.host()).coopMissionComplete(this.bTaskComplete);
-        if (NetUser.getArmyCoopWinner() == 1) {
-          HUD.logCenter("RedWon");
-          System.out.println("-------------------------------- RED WON ---------------------");
-          EventLog.type(true, "Mission: RED WON");
-        } else {
-          HUD.logCenter("BlueWon");
-          System.out.println("-------------------------------- BLUE WON ---------------------");
-          EventLog.type(true, "Mission: BLUE WON");
+    public void doMissionComplete()
+    {
+        if(com.maddox.il2.game.Mission.isNet())
+        {
+            if(com.maddox.il2.game.Main.cur().netServerParams.isCoop() || com.maddox.il2.game.Main.cur().netServerParams.isDogfight())
+            {
+                if(com.maddox.il2.game.Main.cur().netServerParams.isMaster())
+                    ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).coopMissionComplete(bTaskComplete);
+                if(com.maddox.il2.net.NetUser.getArmyCoopWinner() == 1)
+                {
+                    com.maddox.il2.game.HUD.logCenter("RedWon");
+                    java.lang.System.out.println("-------------------------------- RED WON ---------------------");
+                    com.maddox.il2.ai.EventLog.type(true, "Mission: RED WON");
+                } else
+                {
+                    com.maddox.il2.game.HUD.logCenter("BlueWon");
+                    java.lang.System.out.println("-------------------------------- BLUE WON ---------------------");
+                    com.maddox.il2.ai.EventLog.type(true, "Mission: BLUE WON");
+                }
+            }
+        } else
+        if(bTaskComplete)
+        {
+            com.maddox.il2.game.HUD.logCenter("MissionComplete");
+            java.lang.System.out.println("-------------------------------- MISSION COMPLETE ---------------------");
+            com.maddox.il2.ai.EventLog.type(true, "Mission: COMPLETE");
+        } else
+        {
+            com.maddox.il2.game.HUD.logCenter("MissionFailed");
+            java.lang.System.out.println("-------------------------------- MISSION FAILED ---------------------");
+            com.maddox.il2.ai.EventLog.type(true, "Mission: FAILED");
         }
-      }
     }
-    else if (this.bTaskComplete) {
-      HUD.logCenter("MissionComplete");
-      System.out.println("-------------------------------- MISSION COMPLETE ---------------------");
-      EventLog.type(true, "Mission: COMPLETE");
-    } else {
-      HUD.logCenter("MissionFailed");
-      System.out.println("-------------------------------- MISSION FAILED ---------------------");
-      EventLog.type(true, "Mission: FAILED");
+
+    public void activate()
+    {
+        if(bActive)
+            return;
+        bActive = true;
+        bDead = false;
+        bTaskComplete = false;
+        if(ticker.busy())
+            ticker.remove();
+        if(targets.size() == 0)
+            return;
+        checkType = 2;
+        int i = targets.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Target target = (com.maddox.il2.ai.Target)targets.get(j);
+            if(target.importance() < checkType)
+                checkType = target.importance();
+        }
+
+        ticker.setTime(com.maddox.rts.Time.current() + 1000L);
+        ticker.post();
     }
-  }
 
-  public void activate()
-  {
-    if (this.bActive) return;
-    this.bActive = true;
-    this.bDead = false;
-    this.bTaskComplete = false;
-    if (this.ticker.busy())
-      this.ticker.remove();
-    if (this.targets.size() == 0)
-      return;
-    this.checkType = 2;
-    int i = this.targets.size();
-    for (int j = 0; j < i; j++) {
-      Target localTarget = (Target)this.targets.get(j);
-      if (localTarget.importance() < this.checkType) {
-        this.checkType = localTarget.importance();
-      }
+    public void resetGame()
+    {
+        bActive = false;
+        bDead = true;
+        bTaskComplete = false;
+        int i = targets.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Target target = (com.maddox.il2.ai.Target)targets.get(j);
+            if(com.maddox.il2.engine.Actor.isValid(target))
+                target.destroy();
+        }
+
+        targets.clear();
     }
-    this.ticker.setTime(Time.current() + 1000L);
-    this.ticker.post();
-  }
 
-  public void resetGame() {
-    this.bActive = false;
-    this.bDead = true;
-    this.bTaskComplete = false;
-    int i = this.targets.size();
-    for (int j = 0; j < i; j++) {
-      Target localTarget = (Target)this.targets.get(j);
-      if (Actor.isValid(localTarget))
-        localTarget.destroy();
+    protected TargetsGuard()
+    {
+        bActive = false;
+        bDead = true;
+        bTaskComplete = false;
+        targets = new ArrayList();
+        ticker = new MsgTimeOut(null);
+        ticker.setNotCleanAfterSend();
+        ticker.setListener(this);
+        zutiTargetNamesToRemove = new ArrayList();
+        zutiTargetPosToRemove = new ArrayList();
     }
-    this.targets.clear();
-  }
 
-  protected TargetsGuard() {
-    this.ticker = new MsgTimeOut(null);
-    this.ticker.setNotCleanAfterSend();
-    this.ticker.setListener(this);
-
-    this.zutiTargetNamesToRemove = new ArrayList();
-    this.zutiTargetPosToRemove = new ArrayList();
-  }
-
-  public List zutiGetTargets()
-  {
-    if (this.targets == null) {
-      this.targets = new ArrayList();
+    public java.util.List zutiGetTargets()
+    {
+        if(targets == null)
+            targets = new ArrayList();
+        return targets;
     }
-    return this.targets;
-  }
+
+    public static final long TIME_STEP = 1000L;
+    private boolean bActive;
+    private com.maddox.rts.MsgTimeOut ticker;
+    private boolean bDead;
+    private boolean bTaskComplete;
+    private int checkType;
+    private java.util.ArrayList targets;
+    public java.util.ArrayList zutiTargetNamesToRemove;
+    public java.util.ArrayList zutiTargetPosToRemove;
 }

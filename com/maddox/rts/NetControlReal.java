@@ -1,8 +1,18 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetControlReal.java
+
 package com.maddox.rts;
 
-public abstract interface NetControlReal
-{
-  public abstract void msgNewClient(NetObj paramNetObj, int paramInt1, String paramString, int paramInt2);
 
-  public abstract void msgAnswer(NetObj paramNetObj, int paramInt, String paramString);
+// Referenced classes of package com.maddox.rts:
+//            NetObj
+
+public interface NetControlReal
+{
+
+    public abstract void msgNewClient(com.maddox.rts.NetObj netobj, int i, java.lang.String s, int j);
+
+    public abstract void msgAnswer(com.maddox.rts.NetObj netobj, int i, java.lang.String s);
 }

@@ -1,8 +1,12 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIDGenNew.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
 import com.maddox.gwindow.GFont;
-import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowCellEdit;
 import com.maddox.gwindow.GWindowComboControl;
@@ -11,8 +15,7 @@ import com.maddox.gwindow.GWindowLookAndFeel;
 import com.maddox.gwindow.GWindowMessageBox;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
-import com.maddox.gwindow.GWindowTable.Client;
-import com.maddox.gwindow.GWindowTable.Column;
+import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.ai.UserCfg;
 import com.maddox.il2.ai.World;
@@ -24,7 +27,6 @@ import com.maddox.il2.game.I18N;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.campaign.Awards;
-import com.maddox.il2.game.campaign.AwardsRUfighter;
 import com.maddox.il2.game.campaign.Campaign;
 import com.maddox.il2.game.campaign.CampaignDGen;
 import com.maddox.rts.HomePath;
@@ -46,529 +48,684 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class GUIDGenNew extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUILookAndFeel, 
+//            GUIButton, GUIBWDemoPlay, GUIDialogClient, GUISeparate
+
+public class GUIDGenNew extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GWindowEditControl wPBirth;
-  public GWindowEditControl wYBirth;
-  public GWindowComboControl wSquadron;
-  public Table wTable;
-  public GUIButton bBack;
-  public GUIButton bStart;
-  private CampaignDGen cdgen;
-  private ArrayList campaigns = new ArrayList();
-  private ArrayList regimentList = new ArrayList();
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
+    {
 
-  public void enterPop(GameState paramGameState) {
-    if (paramGameState.id() == 58) {
-      Main.cur().currentMissionFile = Main.cur().campaign.nextMission();
-      if (Main.cur().currentMissionFile == null) {
-        new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
         {
-          public void result(int paramInt)
-          {
-          }
-        };
-        return;
-      }
-      Main.stateStack().change(62);
-      return;
-    }
-    this.client.activateWindow();
-  }
-
-  public void _enter() {
-    this.cdgen = ((CampaignDGen)Main.cur().campaign);
-    if (!fillTable()) {
-      Main.stateStack().pop();
-      return;
-    }
-    fillSquadrons();
-    if (World.cur().userCfg.placeBirth != null)
-      this.wPBirth.setValue(World.cur().userCfg.placeBirth, false);
-    this.wYBirth.setValue("" + World.cur().userCfg.yearBirth, false);
-    this.client.activateWindow();
-  }
-  public void _leave() {
-    this.client.hideWindow();
-  }
-
-  private boolean exestFile(String paramString) {
-    try {
-      SFSInputStream localSFSInputStream = new SFSInputStream(paramString);
-      localSFSInputStream.close();
-    } catch (Exception localException) {
-      return false;
-    }
-    return true;
-  }
-
-  private boolean fillTable() {
-    this.campaigns.clear();
-    String str1 = "dgen/" + this.cdgen.dgenFileName();
-    if (!exestFile(str1))
-      return false; BufferedReader localBufferedReader = null;
-    int k;
-    Camp localCamp;
-    try { localBufferedReader = new BufferedReader(new SFSReader(str1, RTSConf.charEncoding));
-      localBufferedReader.readLine();
-      localBufferedReader.readLine();
-
-      while (localBufferedReader.ready())
-      {
-        String str2 = localBufferedReader.readLine();
-        if (str2 == null)
-          break;
-        str2 = str2.trim();
-        int j = str2.length();
-        if (j == 0)
-          continue;
-        str2 = UnicodeTo8bit.load(str2, false);
-        k = str2.indexOf(" ");
-        if ((k <= 0) || (k == str2.length() - 1))
-          continue;
-        localCamp = new Camp(null);
-        localCamp.key = str2.substring(0, k);
-        localCamp.info = str2.substring(k + 1);
-        this.campaigns.add(localCamp);
-      }
-      localBufferedReader.close();
-    } catch (Exception localException1) {
-      if (localBufferedReader != null) try { localBufferedReader.close(); } catch (Exception localException2) {
-        } return false;
-    }
-    int i = this.campaigns.size();
-    if (i > 0) {
-      SectFile localSectFile = new SectFile("dgen/planes" + this.cdgen.branch() + this.cdgen.prefix() + ".dat", 0);
-      for (k = 0; k < i; k++) {
-        localCamp = (Camp)this.campaigns.get(k);
-        int m = localSectFile.sectionIndex(localCamp.key);
-        if (m >= 0) {
-          int n = localSectFile.vars(m);
-          for (int i1 = 0; i1 < n; i1++) {
-            String str3 = localSectFile.var(m, i1);
-            try {
-              Class localClass = ObjIO.classForName("air." + str3);
-              localCamp.air.add(str3);
-              String str4 = Property.stringValue(localClass, "keyName", null);
-              localCamp.airInfo.add(I18N.plane(str4));
-            } catch (Exception localException3) {
-              System.out.println("Section [" + localCamp.key + "] in a file " + localSectFile.fileName() + " contains unknown aircraft " + str3);
-            }
-          }
-        } else {
-          System.out.println("The Section [" + localCamp.key + "] in a file " + localSectFile.fileName() + " is NOT found");
-        }
-        if (localCamp.air.size() == 0)
-          return false;
-      }
-      this.wTable.setSelect(0, 0);
-      this.wTable.resolutionChanged();
-      return true;
-    }
-    return false; } 
-  private void fillSquadrons() { this.wSquadron.clear(false);
-    this.regimentList.clear();
-    BufferedReader localBufferedReader = null;
-    Object localObject;
-    try { localBufferedReader = new BufferedReader(new SFSReader("dgen/squadrons" + this.cdgen.branch() + this.cdgen.prefix() + ".dat"));
-
-      while (localBufferedReader.ready())
-      {
-        String str = localBufferedReader.readLine();
-        if (str == null)
-          break;
-        str = str.trim();
-        int j = str.length();
-        if (j == 0)
-          continue;
-        localObject = Actor.getByName(str);
-        if ((localObject != null) && ((localObject instanceof Regiment)))
-          this.regimentList.add(localObject);
-      }
-      localBufferedReader.close();
-    } catch (Exception localException1) {
-      if (localBufferedReader != null) try { localBufferedReader.close();
-        } catch (Exception localException2) {
-        } 
-    }
-    this.wSquadron.clear(false);
-    this.wSquadron.setSelected(-1, false, false);
-    int i = this.regimentList.size();
-    for (int k = 0; k < i; k++) {
-      localObject = (Regiment)this.regimentList.get(k);
-      this.wSquadron.add(I18N.regimentShort(((Regiment)localObject).shortInfo()));
-    }
-    if (i > 0)
-      this.wSquadron.setSelected(0, true, false);
-    else
-      this.wSquadron.setSelected(-1, true, false); }
-
-  private String fullFileNameCampaignIni()
-  {
-    Camp localCamp = (Camp)this.campaigns.get(this.wTable.selectRow);
-    return "missions/campaign/" + this.cdgen.branch() + "/" + dirNameCampaign() + "/campaign.ini";
-  }
-  private String dirNameCampaign() {
-    Camp localCamp = (Camp)this.campaigns.get(this.wTable.selectRow);
-    String str = "DGen_" + this.cdgen.prefix() + "_" + localCamp.key + World.cur().userCfg.sId + this.cdgen.rank();
-    return str;
-  }
-
-  private String validString(String paramString)
-  {
-    if ((paramString == null) || (paramString.length() == 0) || (" ".equals(paramString)))
-      return "_";
-    while (true) {
-      int i = paramString.indexOf(",");
-      if (i < 0) break;
-      if (i + 1 <= paramString.length() - 1)
-        paramString = paramString.substring(0, i) + "_" + paramString.substring(i + 1);
-      else
-        paramString = paramString.substring(0, i) + "_";
-    }
-    return paramString;
-  }
-
-  private void doGenerateCampaign() {
-    String str1 = "dgen/conf" + this.cdgen.branch() + ".ini";
-    String str2 = validString(World.cur().userCfg.surname);
-    String str3 = validString(World.cur().userCfg.name);
-    String str4 = validString(this.wPBirth.getValue());
-    World.cur().userCfg.placeBirth = str4;
-    try {
-      World.cur().userCfg.yearBirth = Integer.parseInt(this.wYBirth.getValue());
-    } catch (Exception localException1) {
-      World.cur().userCfg.yearBirth = 1910;
-    }
-    if (World.cur().userCfg.yearBirth < 1850) World.cur().userCfg.yearBirth = 1850;
-    if (World.cur().userCfg.yearBirth > 2050) World.cur().userCfg.yearBirth = 2050; String str5;
-    Object localObject2;
-    try { PrintWriter localPrintWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(HomePath.toFileSystemName(str1, 0)), RTSConf.charEncoding)));
-
-      localPrintWriter.println(str2 + "," + str3 + "," + str4 + "," + World.cur().userCfg.yearBirth);
-
-      localPrintWriter.println(((Regiment)(Regiment)this.regimentList.get(this.wSquadron.getSelected())).name());
-      localObject1 = RTSConf.cur.locale.getLanguage();
-      str5 = "English";
-      if ("ru".equalsIgnoreCase((String)localObject1)) str5 = "Russian";
-      else if ("de".equalsIgnoreCase((String)localObject1)) str5 = "German";
-      else if ("fr".equalsIgnoreCase((String)localObject1)) str5 = "French";
-      else if ("cs".equalsIgnoreCase((String)localObject1)) str5 = "Czech";
-      else if ("pl".equalsIgnoreCase((String)localObject1)) str5 = "Polish";
-      else if ("hu".equalsIgnoreCase((String)localObject1)) str5 = "Hungarian";
-      else if ("lt".equalsIgnoreCase((String)localObject1)) str5 = "Lithuanian";
-      else if ("ja".equalsIgnoreCase((String)localObject1)) str5 = "Japanese";
-      localPrintWriter.println("dir=missions\\campaign\\" + this.cdgen.branch() + "\\" + dirNameCampaign());
-      localPrintWriter.println("Language=" + str5);
-      localPrintWriter.println("instant=false");
-      for (int i = this.wTable.selectRow; i < this.campaigns.size(); i++) {
-        localObject2 = (Camp)this.campaigns.get(i);
-        localPrintWriter.println(((Camp)localObject2).key + " " + ((Camp)localObject2).air.get(((Camp)localObject2).select));
-      }
-      localPrintWriter.close();
-    } catch (IOException localIOException) {
-      System.out.println("File: " + str1 + " save failed: " + localIOException.getMessage());
-      localIOException.printStackTrace();
-      return;
-    }
-
-    World.cur().userCfg.saveConf();
-
-    Camp localCamp = (Camp)this.campaigns.get(this.wTable.selectRow);
-    this.cdgen.doExternalCampaignGenerator(localCamp.key);
-
-    Object localObject1 = null;
-    try {
-      str5 = this.cdgen.branch() + dirNameCampaign();
-      String str7 = "users/" + World.cur().userCfg.sId + "/campaigns.ini";
-      localObject2 = new SectFile(str7, 1, false, World.cur().userCfg.krypto());
-      SectFile localSectFile = new SectFile(fullFileNameCampaignIni(), 0);
-      String str8 = localSectFile.get("Main", "Class", (String)null);
-      Class localClass = ObjIO.classForName(str8);
-      localObject1 = (Campaign)localClass.newInstance();
-      try
-      {
-        localClass = ObjIO.classForName(localSectFile.get("Main", "awardsClass", (String)null));
-      } catch (Exception localException3) {
-        localClass = AwardsRUfighter.class;
-      }
-      Awards localAwards = (Awards)localClass.newInstance();
-      ((Campaign)localObject1).init(localAwards, this.cdgen.branch(), dirNameCampaign(), this.cdgen.difficulty(), this.cdgen.rank());
-      ((Campaign)localObject1)._nawards = 0;
-      ((Campaign)localObject1)._epilogueTrack = localSectFile.get("Main", "EpilogueTrack", (String)null);
-      ((SectFile)localObject2).set("list", str5, localObject1, true);
-      ((Campaign)localObject1).clearSavedStatics((SectFile)localObject2);
-      ((SectFile)localObject2).saveFile();
-    } catch (Exception localException2) {
-      System.out.println(localException2.getMessage());
-      localException2.printStackTrace();
-      return;
-    }
-    Main.cur().campaign = ((Campaign)localObject1);
-
-    String str6 = Main.cur().campaign.nextIntro();
-    if (str6 != null) {
-      GUIBWDemoPlay.demoFile = str6;
-      GUIBWDemoPlay.soundFile = null;
-      Main.stateStack().push(58);
-      return;
-    }
-    Main.cur().currentMissionFile = ((Campaign)localObject1).nextMission();
-    if (Main.cur().currentMissionFile == null) {
-      new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
-      {
-        public void result(int paramInt)
-        {
-        }
-      };
-      return;
-    }
-    Main.stateStack().change(62);
-  }
-
-  private void delCampaign() {
-    try {
-      String str1 = "users/" + World.cur().userCfg.sId + "/campaigns.ini";
-      SectFile localSectFile = new SectFile(str1, 1, false, World.cur().userCfg.krypto());
-      int i = localSectFile.sectionIndex("list");
-      String str2 = this.cdgen.branch() + dirNameCampaign();
-      int j = localSectFile.varIndex(i, str2);
-      Campaign localCampaign = (Campaign)ObjIO.fromString(localSectFile.value(i, j));
-      String str3 = "missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir();
-      File localFile1 = new File(HomePath.toFileSystemName(str3, 0));
-      File[] arrayOfFile = localFile1.listFiles();
-      if (arrayOfFile != null) {
-        for (int k = 0; k < arrayOfFile.length; k++) {
-          File localFile2 = arrayOfFile[k];
-          String str4 = localFile2.getName();
-          if ((".".equals(str4)) || ("..".equals(str4)))
-            continue;
-          localFile2.delete();
-        }
-      }
-      localFile1.delete();
-      localCampaign.clearSavedStatics(localSectFile);
-      localSectFile.lineRemove(i, j);
-      localSectFile.saveFile();
-    }
-    catch (Exception localException)
-    {
-    }
-  }
-
-  public GUIDGenNew(GWindowRoot paramGWindowRoot)
-  {
-    super(61);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("dgennew.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.wPBirth = ((GWindowEditControl)this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
-    this.wPBirth.maxLength = 74;
-    if ("ja".equals(Locale.getDefault().getLanguage()))
-      this.wPBirth.maxLength /= 6;
-    this.wYBirth = ((GWindowEditControl)this.dialogClient.addControl(new GWindowEditControl(this.dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null)));
-    this.wYBirth.bNumericOnly = true;
-    this.wYBirth.maxLength = 4;
-    this.wSquadron = ((GWindowComboControl)this.dialogClient.addControl(new GWindowComboControl(this.dialogClient, 0.0F, 0.0F, 1.0F)));
-    this.wSquadron.setEditable(false);
-
-    this.wTable = new Table(this.dialogClient);
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-    this.bBack = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.bStart = ((GUIButton)this.dialogClient.addDefault(new GUIButton(this.dialogClient, localGTexture, 0.0F, 192.0F, 48.0F, 48.0F)));
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
-    {
-    }
-
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-
-      if (paramGWindow == GUIDGenNew.this.bBack) {
-        Main.cur().campaign = null;
-        Main.stateStack().pop();
-        return true;
-      }
-      if (paramGWindow == GUIDGenNew.this.bStart) {
-        String str = GUIDGenNew.this.fullFileNameCampaignIni();
-        if (GUIDGenNew.this.exestFile(str)) {
-          new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, GUIDGenNew.this.i18n("campnew.Confirm"), GUIDGenNew.this.i18n("campnew.Exist"), 1, 0.0F)
-          {
-            public void result(int paramInt)
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bBack)
             {
-              if (paramInt == 3) {
-                GUIDGenNew.this.delCampaign();
-                GUIDGenNew.this.doGenerateCampaign();
-              } else {
-                GUIDGenNew.this.client.activateWindow();
-              }
+                com.maddox.il2.game.Main.cur().campaign = null;
+                com.maddox.il2.game.Main.stateStack().pop();
+                return true;
             }
-          };
-          return true;
+            if(gwindow == bStart)
+            {
+                java.lang.String s = fullFileNameCampaignIni();
+                if(exestFile(s))
+                {
+                    new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("campnew.Confirm"), i18n("campnew.Exist"), 1, 0.0F) {
+
+                        public void result(int k)
+                        {
+                            if(k == 3)
+                            {
+                                delCampaign();
+                                doGenerateCampaign();
+                            } else
+                            {
+                                client.activateWindow();
+                            }
+                        }
+
+                    }
+;
+                    return true;
+                } else
+                {
+                    doGenerateCampaign();
+                    return true;
+                }
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
         }
-        GUIDGenNew.this.doGenerateCampaign();
-        return true;
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
-    }
 
-    public void render() {
-      super.render();
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-
-      draw(x1024(96.0F), y1024(32.0F), x1024(224.0F), y1024(32.0F), 1, GUIDGenNew.this.i18n("dgennew.You"));
-      draw(x1024(64.0F), y1024(96.0F), x1024(306.0F), y1024(32.0F), 2, GUIDGenNew.this.i18n("dgennew.Place"));
-      draw(x1024(64.0F), y1024(144.0F), x1024(306.0F), y1024(32.0F), 2, GUIDGenNew.this.i18n("dgennew.Year"));
-      draw(x1024(64.0F), y1024(240.0F), x1024(306.0F), y1024(32.0F), 2, GUIDGenNew.this.i18n("dgennew.Squadron"));
-      draw(x1024(96.0F), y1024(658.0F), x1024(240.0F), y1024(48.0F), 0, GUIDGenNew.this.i18n("dgennew.MainMenu"));
-      draw(x1024(400.0F), y1024(658.0F), x1024(240.0F), y1024(48.0F), 2, GUIDGenNew.this.i18n("dgennew.Generate"));
-
-      if ((GUIDGenNew.this.campaigns.size() > 0) && (GUIDGenNew.this.wTable.selectRow >= 0)) {
-        draw(x1024(32.0F), y1024(576.0F), x1024(674.0F), y1024(32.0F), 0, GUIDGenNew.this.i18n("dgennew.First") + " " + ((GUIDGenNew.Camp)GUIDGenNew.this.campaigns.get(GUIDGenNew.this.wTable.selectRow)).info);
-      }
-
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(624.0F), x1024(674.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(48.0F), x1024(48.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(336.0F), y1024(48.0F), x1024(368.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(208.0F), x1024(674.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(48.0F), 2.0F, y1024(162.0F));
-      GUISeparate.draw(this, GColor.Gray, x1024(704.0F), y1024(48.0F), 2.0F, y1024(162.0F));
-    }
-
-    public void setPosSize() {
-      set1024PosSize(144.0F, 32.0F, 736.0F, 736.0F);
-      GUIDGenNew.this.wPBirth.set1024PosSize(384.0F, 96.0F, 288.0F, 32.0F);
-      GUIDGenNew.this.wYBirth.set1024PosSize(384.0F, 144.0F, 288.0F, 32.0F);
-      GUIDGenNew.this.wSquadron.set1024PosSize(384.0F, 240.0F, 288.0F, 32.0F);
-      GUIDGenNew.this.bBack.setPosC(x1024(56.0F), y1024(682.0F));
-      GUIDGenNew.this.bStart.setPosC(x1024(682.0F), y1024(682.0F));
-      GUIDGenNew.this.wTable.set1024PosSize(32.0F, 304.0F, 674.0F, 240.0F);
-    }
-  }
-
-  public class Table extends GWindowTable
-  {
-    public ArrayList campaignsList = GUIDGenNew.this.campaigns;
-    int indxCamp;
-
-    public int countRows()
-    {
-      return this.campaignsList != null ? GUIDGenNew.this.campaigns.size() : 0;
-    }
-    public boolean isCellEditable(int paramInt1, int paramInt2) {
-      return paramInt2 == 1;
-    }
-    public float rowHeight(int paramInt) { return (int)(this.root.textFonts[0].height * 1.6F); }
-
-    public GWindowCellEdit getCellEdit(int paramInt1, int paramInt2) {
-      if (!isCellEditable(paramInt1, paramInt2)) return null;
-
-      this.indxCamp = paramInt1;
-      1 local1;
-      GWindowCellEdit localGWindowCellEdit = (GWindowCellEdit)this.wClient.create(local1 = new GWindowComboControl() {
-        GUIDGenNew.Camp camp = (GUIDGenNew.Camp)GUIDGenNew.this.campaigns.get(GUIDGenNew.Table.this.indxCamp);
-
-        public boolean notify(int paramInt1, int paramInt2) { boolean bool = super.notify(paramInt1, paramInt2);
-          if (paramInt1 == 2)
-            this.camp.select = paramInt2;
-          return bool;
+        public void render()
+        {
+            super.render();
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(96F), y1024(32F), x1024(224F), y1024(32F), 1, i18n("dgennew.You"));
+            draw(x1024(64F), y1024(96F), x1024(306F), y1024(32F), 2, i18n("dgennew.Place"));
+            draw(x1024(64F), y1024(144F), x1024(306F), y1024(32F), 2, i18n("dgennew.Year"));
+            draw(x1024(64F), y1024(240F), x1024(306F), y1024(32F), 2, i18n("dgennew.Squadron"));
+            draw(x1024(96F), y1024(658F), x1024(240F), y1024(48F), 0, i18n("dgennew.MainMenu"));
+            draw(x1024(400F), y1024(658F), x1024(240F), y1024(48F), 2, i18n("dgennew.Generate"));
+            if(campaigns.size() > 0 && wTable.selectRow >= 0)
+                draw(x1024(32F), y1024(576F), x1024(674F), y1024(32F), 0, i18n("dgennew.First") + " " + ((com.maddox.il2.gui.Camp)campaigns.get(wTable.selectRow)).info);
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(624F), x1024(674F), 2.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(48F), x1024(48F), 2.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(336F), y1024(48F), x1024(368F), 2.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(208F), x1024(674F), 2.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(48F), 2.0F, y1024(162F));
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(704F), y1024(48F), 2.0F, y1024(162F));
         }
-      });
-      local1.setEditable(false);
-      GUIDGenNew.Camp localCamp = (GUIDGenNew.Camp)GUIDGenNew.this.campaigns.get(paramInt1);
-      for (int i = 0; i < localCamp.air.size(); i++)
-        local1.add((String)localCamp.airInfo.get(i));
-      local1.setSelected(localCamp.select, true, false);
-      return localGWindowCellEdit;
+
+        public void setPosSize()
+        {
+            set1024PosSize(144F, 32F, 736F, 736F);
+            wPBirth.set1024PosSize(384F, 96F, 288F, 32F);
+            wYBirth.set1024PosSize(384F, 144F, 288F, 32F);
+            wSquadron.set1024PosSize(384F, 240F, 288F, 32F);
+            bBack.setPosC(x1024(56F), y1024(682F));
+            bStart.setPosC(x1024(682F), y1024(682F));
+            wTable.set1024PosSize(32F, 304F, 674F, 240F);
+        }
+
+
+        public DialogClient()
+        {
+        }
     }
 
-    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-      setCanvasFont(0);
-      if (paramBoolean) {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, lookAndFeel().regionWhite);
-      }
-      GUIDGenNew.Camp localCamp = (GUIDGenNew.Camp)GUIDGenNew.this.campaigns.get(paramInt1);
-      String str = null;
-      int i = 0;
-      switch (paramInt2) { case 0:
-        str = localCamp.info;
-        i = 0;
-        break;
-      case 1:
-        str = (String)localCamp.airInfo.get(localCamp.select);
-        i = 0;
-      }
+    public class Table extends com.maddox.gwindow.GWindowTable
+    {
 
-      if (paramBoolean) {
-        setCanvasColorWHITE();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, i, str);
-      } else {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, i, str);
-      }
+        public int countRows()
+        {
+            return campaignsList == null ? 0 : campaigns.size();
+        }
+
+        public boolean isCellEditable(int i, int j)
+        {
+            return j == 1;
+        }
+
+        public float rowHeight(int i)
+        {
+            return (float)(int)(root.textFonts[0].height * 1.6F);
+        }
+
+        public com.maddox.gwindow.GWindowCellEdit getCellEdit(int i, int j)
+        {
+            if(!isCellEditable(i, j))
+                return null;
+            indxCamp = i;
+            com.maddox.gwindow.GWindowComboControl gwindowcombocontrol;
+            com.maddox.gwindow.GWindowCellEdit gwindowcelledit = (com.maddox.gwindow.GWindowCellEdit)wClient.create(gwindowcombocontrol = new com.maddox.gwindow.GWindowComboControl() {
+
+                public boolean notify(int l, int i1)
+                {
+                    boolean flag = super.notify(l, i1);
+                    if(l == 2)
+                        camp.select = i1;
+                    return flag;
+                }
+
+                com.maddox.il2.gui.Camp camp;
+
+                
+                {
+                    camp = (com.maddox.il2.gui.Camp)campaigns.get(indxCamp);
+                }
+            }
+);
+            gwindowcombocontrol.setEditable(false);
+            com.maddox.il2.gui.Camp camp = (com.maddox.il2.gui.Camp)campaigns.get(i);
+            for(int k = 0; k < camp.air.size(); k++)
+                gwindowcombocontrol.add((java.lang.String)camp.airInfo.get(k));
+
+            gwindowcombocontrol.setSelected(camp.select, true, false);
+            return gwindowcelledit;
+        }
+
+        public void renderCell(int i, int j, boolean flag, float f, float f1)
+        {
+            setCanvasFont(0);
+            if(flag)
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
+            }
+            com.maddox.il2.gui.Camp camp = (com.maddox.il2.gui.Camp)campaigns.get(i);
+            java.lang.String s = null;
+            int k = 0;
+            switch(j)
+            {
+            case 0: // '\0'
+                s = camp.info;
+                k = 0;
+                break;
+
+            case 1: // '\001'
+                s = (java.lang.String)camp.airInfo.get(camp.select);
+                k = 0;
+                break;
+            }
+            if(flag)
+            {
+                setCanvasColorWHITE();
+                draw(0.0F, 0.0F, f, f1, k, s);
+            } else
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, k, s);
+            }
+        }
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(super.notify(gwindow, i, j))
+            {
+                return true;
+            } else
+            {
+                notify(i, j);
+                return false;
+            }
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            bColumnsSizable = true;
+            bSelectRow = true;
+            addColumn(com.maddox.il2.game.I18N.gui("dgennew.Operation"), null);
+            addColumn(com.maddox.il2.game.I18N.gui("dgennew.Plane"), null);
+            vSB.scroll = rowHeight(0);
+            getColumn(0).setRelativeDx(20F);
+            getColumn(1).setRelativeDx(10F);
+            alignColumns();
+            bNotify = true;
+            wClient.bNotify = true;
+            resized();
+        }
+
+        public void resolutionChanged()
+        {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
+        }
+
+        public java.util.ArrayList campaignsList;
+        int indxCamp;
+
+
+        public Table(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+            campaignsList = campaigns;
+        }
     }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-      if (super.notify(paramGWindow, paramInt1, paramInt2))
+    private static class Camp
+    {
+
+        java.lang.String key;
+        java.lang.String info;
+        java.util.ArrayList air;
+        java.util.ArrayList airInfo;
+        int select;
+
+        private Camp()
+        {
+            air = new ArrayList();
+            airInfo = new ArrayList();
+            select = 0;
+        }
+
+    }
+
+
+    public void enterPop(com.maddox.il2.game.GameState gamestate)
+    {
+        if(gamestate.id() == 58)
+        {
+            com.maddox.il2.game.Main.cur().currentMissionFile = com.maddox.il2.game.Main.cur().campaign.nextMission();
+            if(com.maddox.il2.game.Main.cur().currentMissionFile == null)
+            {
+                new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F) {
+
+                    public void result(int i)
+                    {
+                    }
+
+                }
+;
+                return;
+            } else
+            {
+                com.maddox.il2.game.Main.stateStack().change(62);
+                return;
+            }
+        } else
+        {
+            client.activateWindow();
+            return;
+        }
+    }
+
+    public void _enter()
+    {
+        cdgen = (com.maddox.il2.game.campaign.CampaignDGen)com.maddox.il2.game.Main.cur().campaign;
+        if(!fillTable())
+        {
+            com.maddox.il2.game.Main.stateStack().pop();
+            return;
+        }
+        fillSquadrons();
+        if(com.maddox.il2.ai.World.cur().userCfg.placeBirth != null)
+            wPBirth.setValue(com.maddox.il2.ai.World.cur().userCfg.placeBirth, false);
+        wYBirth.setValue("" + com.maddox.il2.ai.World.cur().userCfg.yearBirth, false);
+        client.activateWindow();
+    }
+
+    public void _leave()
+    {
+        client.hideWindow();
+    }
+
+    private boolean exestFile(java.lang.String s)
+    {
+        try
+        {
+            com.maddox.rts.SFSInputStream sfsinputstream = new SFSInputStream(s);
+            sfsinputstream.close();
+        }
+        catch(java.lang.Exception exception)
+        {
+            return false;
+        }
         return true;
-      notify(paramInt1, paramInt2);
-      return false;
     }
-    public void afterCreated() {
-      super.afterCreated();
-      this.bColumnsSizable = true;
-      this.bSelectRow = true;
-      addColumn(I18N.gui("dgennew.Operation"), null);
-      addColumn(I18N.gui("dgennew.Plane"), null);
-      this.vSB.scroll = rowHeight(0);
-      getColumn(0).setRelativeDx(20.0F);
-      getColumn(1).setRelativeDx(10.0F);
-      alignColumns();
-      this.bNotify = true;
-      this.wClient.bNotify = true;
-      resized();
-    }
-    public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
-    }
-    public Table(GWindow arg2) {
-      super();
-    }
-  }
 
-  private static class Camp
-  {
-    String key;
-    String info;
-    ArrayList air = new ArrayList();
-    ArrayList airInfo = new ArrayList();
-    int select = 0;
-
-    private Camp()
+    private boolean fillTable()
     {
+        campaigns.clear();
+        java.lang.String s = "dgen/" + cdgen.dgenFileName();
+        if(!exestFile(s))
+            return false;
+        java.io.BufferedReader bufferedreader = null;
+        try
+        {
+            bufferedreader = new BufferedReader(new SFSReader(s, com.maddox.rts.RTSConf.charEncoding));
+            bufferedreader.readLine();
+            bufferedreader.readLine();
+            do
+            {
+                if(!bufferedreader.ready())
+                    break;
+                java.lang.String s1 = bufferedreader.readLine();
+                if(s1 == null)
+                    break;
+                s1 = s1.trim();
+                int j = s1.length();
+                if(j != 0)
+                {
+                    s1 = com.maddox.util.UnicodeTo8bit.load(s1, false);
+                    int k = s1.indexOf(" ");
+                    if(k > 0 && k != s1.length() - 1)
+                    {
+                        com.maddox.il2.gui.Camp camp = new Camp();
+                        camp.key = s1.substring(0, k);
+                        camp.info = s1.substring(k + 1);
+                        campaigns.add(camp);
+                    }
+                }
+            } while(true);
+            bufferedreader.close();
+        }
+        catch(java.lang.Exception exception)
+        {
+            if(bufferedreader != null)
+                try
+                {
+                    bufferedreader.close();
+                }
+                catch(java.lang.Exception exception1) { }
+            return false;
+        }
+        int i = campaigns.size();
+        if(i > 0)
+        {
+            com.maddox.rts.SectFile sectfile = new SectFile("dgen/planes" + cdgen.branch() + cdgen.prefix() + ".dat", 0);
+            for(int l = 0; l < i; l++)
+            {
+                com.maddox.il2.gui.Camp camp1 = (com.maddox.il2.gui.Camp)campaigns.get(l);
+                int i1 = sectfile.sectionIndex(camp1.key);
+                if(i1 >= 0)
+                {
+                    int j1 = sectfile.vars(i1);
+                    for(int k1 = 0; k1 < j1; k1++)
+                    {
+                        java.lang.String s2 = sectfile.var(i1, k1);
+                        try
+                        {
+                            java.lang.Class class1 = com.maddox.rts.ObjIO.classForName("air." + s2);
+                            camp1.air.add(s2);
+                            java.lang.String s3 = com.maddox.rts.Property.stringValue(class1, "keyName", null);
+                            camp1.airInfo.add(com.maddox.il2.game.I18N.plane(s3));
+                        }
+                        catch(java.lang.Exception exception2)
+                        {
+                            java.lang.System.out.println("Section [" + camp1.key + "] in a file " + sectfile.fileName() + " contains unknown aircraft " + s2);
+                        }
+                    }
+
+                } else
+                {
+                    java.lang.System.out.println("The Section [" + camp1.key + "] in a file " + sectfile.fileName() + " is NOT found");
+                }
+                if(camp1.air.size() == 0)
+                    return false;
+            }
+
+            wTable.setSelect(0, 0);
+            wTable.resolutionChanged();
+            return true;
+        } else
+        {
+            return false;
+        }
     }
 
-    Camp(GUIDGenNew.1 param1)
+    private void fillSquadrons()
     {
-      this();
+        wSquadron.clear(false);
+        regimentList.clear();
+        java.io.BufferedReader bufferedreader = null;
+        try
+        {
+            bufferedreader = new BufferedReader(new SFSReader("dgen/squadrons" + cdgen.branch() + cdgen.prefix() + ".dat"));
+            do
+            {
+                if(!bufferedreader.ready())
+                    break;
+                java.lang.String s = bufferedreader.readLine();
+                if(s == null)
+                    break;
+                s = s.trim();
+                int j = s.length();
+                if(j != 0)
+                {
+                    com.maddox.il2.engine.Actor actor = com.maddox.il2.engine.Actor.getByName(s);
+                    if(actor != null && (actor instanceof com.maddox.il2.ai.Regiment))
+                        regimentList.add(actor);
+                }
+            } while(true);
+            bufferedreader.close();
+        }
+        catch(java.lang.Exception exception)
+        {
+            if(bufferedreader != null)
+                try
+                {
+                    bufferedreader.close();
+                }
+                catch(java.lang.Exception exception1) { }
+        }
+        wSquadron.clear(false);
+        wSquadron.setSelected(-1, false, false);
+        int i = regimentList.size();
+        for(int k = 0; k < i; k++)
+        {
+            com.maddox.il2.ai.Regiment regiment = (com.maddox.il2.ai.Regiment)regimentList.get(k);
+            wSquadron.add(com.maddox.il2.game.I18N.regimentShort(regiment.shortInfo()));
+        }
+
+        if(i > 0)
+            wSquadron.setSelected(0, true, false);
+        else
+            wSquadron.setSelected(-1, true, false);
     }
-  }
+
+    private java.lang.String fullFileNameCampaignIni()
+    {
+        com.maddox.il2.gui.Camp camp = (com.maddox.il2.gui.Camp)campaigns.get(wTable.selectRow);
+        return "missions/campaign/" + cdgen.branch() + "/" + dirNameCampaign() + "/campaign.ini";
+    }
+
+    private java.lang.String dirNameCampaign()
+    {
+        com.maddox.il2.gui.Camp camp = (com.maddox.il2.gui.Camp)campaigns.get(wTable.selectRow);
+        java.lang.String s = "DGen_" + cdgen.prefix() + "_" + camp.key + com.maddox.il2.ai.World.cur().userCfg.sId + cdgen.rank();
+        return s;
+    }
+
+    private java.lang.String validString(java.lang.String s)
+    {
+        if(s == null || s.length() == 0 || " ".equals(s))
+            return "_";
+        do
+        {
+            int i = s.indexOf(",");
+            if(i >= 0)
+            {
+                if(i + 1 <= s.length() - 1)
+                    s = s.substring(0, i) + "_" + s.substring(i + 1);
+                else
+                    s = s.substring(0, i) + "_";
+            } else
+            {
+                return s;
+            }
+        } while(true);
+    }
+
+    private void doGenerateCampaign()
+    {
+        java.lang.String s = "dgen/conf" + cdgen.branch() + ".ini";
+        java.lang.String s1 = validString(com.maddox.il2.ai.World.cur().userCfg.surname);
+        java.lang.String s2 = validString(com.maddox.il2.ai.World.cur().userCfg.name);
+        java.lang.String s3 = validString(wPBirth.getValue());
+        com.maddox.il2.ai.World.cur().userCfg.placeBirth = s3;
+        try
+        {
+            com.maddox.il2.ai.World.cur().userCfg.yearBirth = java.lang.Integer.parseInt(wYBirth.getValue());
+        }
+        catch(java.lang.Exception exception)
+        {
+            com.maddox.il2.ai.World.cur().userCfg.yearBirth = 1910;
+        }
+        if(com.maddox.il2.ai.World.cur().userCfg.yearBirth < 1850)
+            com.maddox.il2.ai.World.cur().userCfg.yearBirth = 1850;
+        if(com.maddox.il2.ai.World.cur().userCfg.yearBirth > 2050)
+            com.maddox.il2.ai.World.cur().userCfg.yearBirth = 2050;
+        try
+        {
+            java.io.PrintWriter printwriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(com.maddox.rts.HomePath.toFileSystemName(s, 0)), com.maddox.rts.RTSConf.charEncoding)));
+            printwriter.println(s1 + "," + s2 + "," + s3 + "," + com.maddox.il2.ai.World.cur().userCfg.yearBirth);
+            printwriter.println(((com.maddox.il2.ai.Regiment)(com.maddox.il2.ai.Regiment)regimentList.get(wSquadron.getSelected())).name());
+            java.lang.String s4 = com.maddox.rts.RTSConf.cur.locale.getLanguage();
+            java.lang.String s5 = "English";
+            if("ru".equalsIgnoreCase(s4))
+                s5 = "Russian";
+            else
+            if("de".equalsIgnoreCase(s4))
+                s5 = "German";
+            else
+            if("fr".equalsIgnoreCase(s4))
+                s5 = "French";
+            else
+            if("cs".equalsIgnoreCase(s4))
+                s5 = "Czech";
+            else
+            if("pl".equalsIgnoreCase(s4))
+                s5 = "Polish";
+            else
+            if("hu".equalsIgnoreCase(s4))
+                s5 = "Hungarian";
+            else
+            if("lt".equalsIgnoreCase(s4))
+                s5 = "Lithuanian";
+            else
+            if("ja".equalsIgnoreCase(s4))
+                s5 = "Japanese";
+            printwriter.println("dir=missions\\campaign\\" + cdgen.branch() + "\\" + dirNameCampaign());
+            printwriter.println("Language=" + s5);
+            printwriter.println("instant=false");
+            for(int i = wTable.selectRow; i < campaigns.size(); i++)
+            {
+                com.maddox.il2.gui.Camp camp1 = (com.maddox.il2.gui.Camp)campaigns.get(i);
+                printwriter.println(camp1.key + " " + camp1.air.get(camp1.select));
+            }
+
+            printwriter.close();
+        }
+        catch(java.io.IOException ioexception)
+        {
+            java.lang.System.out.println("File: " + s + " save failed: " + ioexception.getMessage());
+            ioexception.printStackTrace();
+            return;
+        }
+        com.maddox.il2.ai.World.cur().userCfg.saveConf();
+        com.maddox.il2.gui.Camp camp = (com.maddox.il2.gui.Camp)campaigns.get(wTable.selectRow);
+        cdgen.doExternalCampaignGenerator(camp.key);
+        com.maddox.il2.game.campaign.Campaign campaign = null;
+        try
+        {
+            java.lang.String s6 = cdgen.branch() + dirNameCampaign();
+            java.lang.String s8 = "users/" + com.maddox.il2.ai.World.cur().userCfg.sId + "/campaigns.ini";
+            com.maddox.rts.SectFile sectfile = new SectFile(s8, 1, false, com.maddox.il2.ai.World.cur().userCfg.krypto());
+            com.maddox.rts.SectFile sectfile1 = new SectFile(fullFileNameCampaignIni(), 0);
+            java.lang.String s9 = sectfile1.get("Main", "Class", (java.lang.String)null);
+            java.lang.Class class1 = com.maddox.rts.ObjIO.classForName(s9);
+            campaign = (com.maddox.il2.game.campaign.Campaign)class1.newInstance();
+            try
+            {
+                class1 = com.maddox.rts.ObjIO.classForName(sectfile1.get("Main", "awardsClass", (java.lang.String)null));
+            }
+            catch(java.lang.Exception exception2)
+            {
+                class1 = com.maddox.il2.game.campaign.AwardsRUfighter.class;
+            }
+            com.maddox.il2.game.campaign.Awards awards = (com.maddox.il2.game.campaign.Awards)class1.newInstance();
+            campaign.init(awards, cdgen.branch(), dirNameCampaign(), cdgen.difficulty(), cdgen.rank());
+            campaign._nawards = 0;
+            campaign._epilogueTrack = sectfile1.get("Main", "EpilogueTrack", (java.lang.String)null);
+            sectfile.set("list", s6, campaign, true);
+            campaign.clearSavedStatics(sectfile);
+            sectfile.saveFile();
+        }
+        catch(java.lang.Exception exception1)
+        {
+            java.lang.System.out.println(exception1.getMessage());
+            exception1.printStackTrace();
+            return;
+        }
+        com.maddox.il2.game.Main.cur().campaign = campaign;
+        java.lang.String s7 = com.maddox.il2.game.Main.cur().campaign.nextIntro();
+        if(s7 != null)
+        {
+            com.maddox.il2.gui.GUIBWDemoPlay.demoFile = s7;
+            com.maddox.il2.gui.GUIBWDemoPlay.soundFile = null;
+            com.maddox.il2.game.Main.stateStack().push(58);
+            return;
+        }
+        com.maddox.il2.game.Main.cur().currentMissionFile = campaign.nextMission();
+        if(com.maddox.il2.game.Main.cur().currentMissionFile == null)
+        {
+            new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F) {
+
+                public void result(int j)
+                {
+                }
+
+            }
+;
+            return;
+        } else
+        {
+            com.maddox.il2.game.Main.stateStack().change(62);
+            return;
+        }
+    }
+
+    private void delCampaign()
+    {
+        try
+        {
+            java.lang.String s = "users/" + com.maddox.il2.ai.World.cur().userCfg.sId + "/campaigns.ini";
+            com.maddox.rts.SectFile sectfile = new SectFile(s, 1, false, com.maddox.il2.ai.World.cur().userCfg.krypto());
+            int i = sectfile.sectionIndex("list");
+            java.lang.String s1 = cdgen.branch() + dirNameCampaign();
+            int j = sectfile.varIndex(i, s1);
+            com.maddox.il2.game.campaign.Campaign campaign = (com.maddox.il2.game.campaign.Campaign)com.maddox.rts.ObjIO.fromString(sectfile.value(i, j));
+            java.lang.String s2 = "missions/campaign/" + campaign.branch() + "/" + campaign.missionsDir();
+            java.io.File file = new File(com.maddox.rts.HomePath.toFileSystemName(s2, 0));
+            java.io.File afile[] = file.listFiles();
+            if(afile != null)
+            {
+                for(int k = 0; k < afile.length; k++)
+                {
+                    java.io.File file1 = afile[k];
+                    java.lang.String s3 = file1.getName();
+                    if(!".".equals(s3) && !"..".equals(s3))
+                        file1.delete();
+                }
+
+            }
+            file.delete();
+            campaign.clearSavedStatics(sectfile);
+            sectfile.lineRemove(i, j);
+            sectfile.saveFile();
+        }
+        catch(java.lang.Exception exception) { }
+    }
+
+    public GUIDGenNew(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(61);
+        campaigns = new ArrayList();
+        regimentList = new ArrayList();
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("dgennew.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        wPBirth = (com.maddox.gwindow.GWindowEditControl)dialogClient.addControl(new GWindowEditControl(dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null));
+        wPBirth.maxLength = 74;
+        if("ja".equals(java.util.Locale.getDefault().getLanguage()))
+            wPBirth.maxLength /= 6;
+        wYBirth = (com.maddox.gwindow.GWindowEditControl)dialogClient.addControl(new GWindowEditControl(dialogClient, 0.0F, 0.0F, 1.0F, 2.0F, null));
+        wYBirth.bNumericOnly = true;
+        wYBirth.maxLength = 4;
+        wSquadron = (com.maddox.gwindow.GWindowComboControl)dialogClient.addControl(new GWindowComboControl(dialogClient, 0.0F, 0.0F, 1.0F));
+        wSquadron.setEditable(false);
+        wTable = new Table(dialogClient);
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bBack = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        bStart = (com.maddox.il2.gui.GUIButton)dialogClient.addDefault(new GUIButton(dialogClient, gtexture, 0.0F, 192F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
+    }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.gwindow.GWindowEditControl wPBirth;
+    public com.maddox.gwindow.GWindowEditControl wYBirth;
+    public com.maddox.gwindow.GWindowComboControl wSquadron;
+    public com.maddox.il2.gui.Table wTable;
+    public com.maddox.il2.gui.GUIButton bBack;
+    public com.maddox.il2.gui.GUIButton bStart;
+    private com.maddox.il2.game.campaign.CampaignDGen cdgen;
+    private java.util.ArrayList campaigns;
+    private java.util.ArrayList regimentList;
+
+
+
+
+
 }

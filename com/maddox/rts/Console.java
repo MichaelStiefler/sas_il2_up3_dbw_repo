@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Console.java
+
 package com.maddox.rts;
 
 import java.io.BufferedReader;
@@ -11,469 +16,628 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+// Referenced classes of package com.maddox.rts:
+//            ConsoleOut, ConsoleLogFile, SFSReader, MsgTimeOut, 
+//            CmdEnv, ConsoleOutPrint, ConsolePrintStream, MsgKeyboardListener, 
+//            MsgTimeOutListener, Time, HomePath, Keyboard, 
+//            MsgAddListener, ConsoleListener
+
 public class Console
-  implements MsgKeyboardListener, MsgTimeOutListener
+    implements com.maddox.rts.MsgKeyboardListener, com.maddox.rts.MsgTimeOutListener
 {
-  public Exec exec = null;
-  private static final boolean USE_REPEAT = false;
-  protected static boolean bTypeTimeInLogFile = false;
+    public static class Exec
+    {
 
-  public StringBuffer editBuf = new StringBuffer();
-
-  public int editPos = 0;
-
-  public boolean bWrap = true;
-  private ConsoleListener listenerChanges;
-  protected boolean bActive = false;
-  private boolean bStartTimePaused = false;
-
-  public boolean bEnableSetPause = true;
-  protected boolean bPaused = true;
-
-  protected ArrayList outTypes = new ArrayList();
-
-  protected ArrayList errTypes = new ArrayList();
-
-  private boolean bDisabledStdOuts = false;
-
-  private String nameLogFile = "log.lst";
-  private ConsoleLogFile log = null;
-  private boolean bLogKeep = true;
-
-  public long timeRepeat = 50L;
-
-  private int curNumPrompt = -1;
-  private String prompt = ">";
-
-  private int maxHistoryOut = 128;
-  private LinkedList bufHistoryOut = new LinkedList();
-  protected int startHistoryOut = 0;
-  protected int pageHistoryOut = 20;
-  protected boolean bShowHistoryOut = true;
-
-  private int maxHistoryCmd = 128;
-  private LinkedList bufHistoryCmd = new LinkedList();
-  public int curHistoryCmd = -1;
-  private CmdEnv env;
-  private StringBuffer outBuf = new StringBuffer();
-  private StringBuffer errBuf = new StringBuffer();
-
-  private int curKey = -1;
-  private long nextTime = 0L;
-  private MsgTimeOut ticker = new MsgTimeOut();
-
-  public static boolean isTypeTimeInLogFile()
-  {
-    return bTypeTimeInLogFile;
-  }
-  public static void setTypeTimeInLogFile(boolean paramBoolean) {
-    bTypeTimeInLogFile = paramBoolean;
-  }
-
-  public void setListenerChanges(ConsoleListener paramConsoleListener)
-  {
-    this.listenerChanges = paramConsoleListener;
-  }
-
-  public boolean isActive()
-  {
-    return this.bActive;
-  }
-  public void activate(boolean paramBoolean) { if (this.bActive != paramBoolean) {
-      if (paramBoolean) {
-        this.bStartTimePaused = Time.isPaused();
-        if ((this.bPaused) && (!this.bStartTimePaused) && (Time.isEnableChangePause()))
-          Time.setPause(true);
-      }
-      else if ((this.bPaused) && (!this.bStartTimePaused) && (Time.isEnableChangePause())) {
-        Time.setPause(false);
-      }
-      this.bActive = paramBoolean;
-    }
-  }
-
-  public boolean isPaused()
-  {
-    return this.bPaused;
-  }
-  public void setPause(boolean paramBoolean) { if ((this.bPaused != paramBoolean) && (this.bEnableSetPause)) {
-      if ((this.bActive) && (!this.bStartTimePaused) && (Time.isEnableChangePause())) {
-        Time.setPause(paramBoolean);
-      }
-      this.bPaused = paramBoolean;
-    } }
-
-  public String getPrompt()
-  {
-    if (this.exec != null) return this.exec.getPrompt();
-    return _getPrompt();
-  }
-
-  public String _getPrompt() {
-    if (getEnv().curNumCmd() + 1 != this.curNumPrompt) {
-      this.prompt = (getEnv().curNumCmd() + 1 + ">");
-      this.curNumPrompt = (getEnv().curNumCmd() + 1);
-    }
-    return this.prompt;
-  }
-  public int getNumPrompt() {
-    return getEnv().curNumCmd() + 1;
-  }
-  public int maxHistoryOut() { return this.maxHistoryOut; } 
-  public int maxHistoryCmd() { return this.maxHistoryCmd; } 
-  public List historyOut() { return this.bufHistoryOut; } 
-  public List historyCmd() { return this.bufHistoryCmd; } 
-  public void setMaxHistoryOut(int paramInt) {
-    if ((paramInt >= 0) && (paramInt != this.maxHistoryOut)) {
-      this.maxHistoryOut = paramInt;
-      int i = this.bufHistoryOut.size() - this.maxHistoryOut;
-      while (i > 0) {
-        this.bufHistoryOut.removeLast();
-        i--;
-      }
-      if (this.startHistoryOut >= this.maxHistoryOut)
-        this.startHistoryOut = 0; 
-    }
-  }
-
-  public void setMaxHistoryCmd(int paramInt) {
-    if ((paramInt >= 0) && (paramInt != this.maxHistoryCmd)) {
-      this.maxHistoryCmd = paramInt;
-      int i = this.bufHistoryCmd.size() - this.maxHistoryCmd;
-      while (i > 0) {
-        this.bufHistoryCmd.removeLast();
-        i--;
-      }
-    }
-  }
-
-  public void clear() {
-    this.bufHistoryOut.clear();
-    this.startHistoryOut = 0;
-  }
-  public boolean isShowHistoryOut() {
-    return this.bShowHistoryOut; } 
-  public int startHistoryOut() { return this.startHistoryOut; } 
-  public int pageHistoryOut() { return this.pageHistoryOut; } 
-  public void setPageHistoryOut(int paramInt) {
-    this.pageHistoryOut = paramInt;
-  }
-  public int startHistoryCmd() {
-    int i = this.curHistoryCmd;
-    if (i >= this.bufHistoryCmd.size()) i = this.bufHistoryCmd.size();
-    if (i < 0) i = 0;
-    return i;
-  }
-
-  public Object[] getTypes(boolean paramBoolean)
-  {
-    if (paramBoolean) return this.errTypes.toArray();
-    return this.outTypes.toArray();
-  }
-
-  public void addType(boolean paramBoolean, ConsoleOut paramConsoleOut)
-  {
-    ArrayList localArrayList = this.outTypes;
-    if (paramBoolean) localArrayList = this.errTypes;
-    if (!localArrayList.contains(paramConsoleOut))
-      localArrayList.add(paramConsoleOut);
-  }
-
-  public void removeType(boolean paramBoolean, ConsoleOut paramConsoleOut)
-  {
-    ArrayList localArrayList = this.outTypes;
-    if (paramBoolean) localArrayList = this.errTypes;
-    int i = localArrayList.indexOf(paramConsoleOut);
-    if (i >= 0)
-      localArrayList.remove(i);
-  }
-
-  public void disableStdOuts()
-  {
-    if (!this.bDisabledStdOuts) {
-      ConsoleOut localConsoleOut = (ConsoleOut)this.outTypes.get(0);
-      removeType(false, localConsoleOut);
-      localConsoleOut = (ConsoleOut)this.errTypes.get(0);
-      removeType(true, localConsoleOut);
-      this.bDisabledStdOuts = true;
-    }
-  }
-
-  public boolean isLogKeep()
-  {
-    return this.bLogKeep; } 
-  public void setLogKeep(boolean paramBoolean) { this.bLogKeep = paramBoolean; } 
-  public boolean isLog() { return this.log != null; } 
-  public void log(boolean paramBoolean) {
-    if (paramBoolean != isLog())
-      if (paramBoolean) {
-        if (!this.bLogKeep)
-          try {
-            File localFile = new File(HomePath.toFileSystemName(this.nameLogFile, 0));
-            localFile.delete();
-          } catch (Exception localException1) {
-          }
-        try {
-          this.log = new ConsoleLogFile(this.nameLogFile);
-          addType(true, this.log);
-          addType(false, this.log); } catch (Exception localException2) {
+        public void doExec(java.lang.String s)
+        {
         }
-      } else {
-        removeType(true, this.log);
-        removeType(false, this.log);
-        this.log.close();
-        this.log = null;
-      }
-  }
 
-  public String logFileName() {
-    return this.nameLogFile;
-  }
-  public void setLogFileName(String paramString) { this.nameLogFile = paramString;
-    if (isLog()) {
-      log(false);
-      log(true);
-    } }
+        public java.lang.String getPrompt()
+        {
+            return "";
+        }
 
-  public void logFilePrintln(String paramString) {
-    if (this.log != null)
-      this.log.println(paramString);
-  }
-
-  public void load(String paramString)
-  {
-    try {
-      BufferedReader localBufferedReader = new BufferedReader(new SFSReader(paramString));
-      String str = "";
-      while (true) {
-        str = localBufferedReader.readLine();
-        if (str == null)
-          break;
-        str = str.trim();
-        if (str.length() > 0)
-          addHistoryCmd(str);
-      }
-      localBufferedReader.close();
-    } catch (IOException localIOException) {
-      System.out.println("Console commands file: " + paramString + " load failed: " + localIOException.getMessage());
-    }
-  }
-
-  public void save(String paramString) {
-    try {
-      PrintWriter localPrintWriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(paramString, 0))));
-
-      int i = this.bufHistoryCmd.size();
-      while (true) { i--; if (i < 0) break;
-        String str = (String)this.bufHistoryCmd.get(i);
-        localPrintWriter.println(str);
-      }
-      localPrintWriter.close();
-    } catch (IOException localIOException) {
-      System.out.println("Console commands file: " + paramString + " create failed: " + localIOException.getMessage());
-    }
-  }
-
-  public CmdEnv getEnv() {
-    return this.env;
-  }
-  public Console(int paramInt) {
-    this.env = new CmdEnv(CmdEnv.top());
-    this.env.setLevelAccess(paramInt);
-
-    addType(false, new ConsoleOutPrint(System.out));
-    addType(true, new ConsoleOutPrint(System.err));
-    System.setErr(new ConsolePrintStream(true, this));
-    System.setOut(new ConsolePrintStream(false, this));
-    MsgAddListener.post(64, Keyboard.adapter(), this, null);
-    this.ticker.setListener(this);
-    this.ticker.setNotCleanAfterSend();
-    this.ticker.setFlags(72);
-  }
-
-  protected void outWrite(char paramChar) {
-    this.outBuf.append(paramChar);
-    if (paramChar == '\n') {
-      String str = this.outBuf.toString();
-      for (int i = 0; i < this.outTypes.size(); i++)
-        ((ConsoleOut)(ConsoleOut)this.outTypes.get(i)).type(str);
-      this.outBuf = new StringBuffer();
-
-      addHistoryOut(str);
-    }
-  }
-
-  protected void outFlush() {
-    if (this.outBuf.length() > 0) {
-      String str = this.outBuf.toString();
-      for (int j = 0; j < this.outTypes.size(); j++)
-        ((ConsoleOut)(ConsoleOut)this.outTypes.get(j)).type(str);
-      this.outBuf = new StringBuffer();
+        public Exec()
+        {
+        }
     }
 
-    for (int i = 0; i < this.outTypes.size(); i++)
-      ((ConsoleOut)(ConsoleOut)this.outTypes.get(i)).flush();
-  }
 
-  protected void errWrite(char paramChar) {
-    this.errBuf.append(paramChar);
-    if (paramChar == '\n') {
-      String str = this.errBuf.toString();
-      for (int i = 0; i < this.errTypes.size(); i++)
-        ((ConsoleOut)(ConsoleOut)this.errTypes.get(i)).type(str);
-      this.errBuf = new StringBuffer();
-
-      addHistoryOut(str);
-    }
-  }
-
-  protected void errFlush() {
-    if (this.errBuf.length() > 0) {
-      String str = this.errBuf.toString();
-      for (int j = 0; j < this.errTypes.size(); j++)
-        ((ConsoleOut)(ConsoleOut)this.errTypes.get(j)).type(str);
-      this.errBuf = new StringBuffer();
+    public static boolean isTypeTimeInLogFile()
+    {
+        return bTypeTimeInLogFile;
     }
 
-    for (int i = 0; i < this.errTypes.size(); i++)
-      ((ConsoleOut)(ConsoleOut)this.errTypes.get(i)).flush();
-  }
+    public static void setTypeTimeInLogFile(boolean flag)
+    {
+        bTypeTimeInLogFile = flag;
+    }
 
-  public void flush() {
-    outFlush();
-    errFlush();
-  }
+    public void setListenerChanges(com.maddox.rts.ConsoleListener consolelistener)
+    {
+        listenerChanges = consolelistener;
+    }
 
-  protected void addHistoryOut(String paramString) {
-    this.bufHistoryOut.addFirst(paramString);
-    while (this.bufHistoryOut.size() > this.maxHistoryOut)
-      this.bufHistoryOut.removeLast();
-    if (this.listenerChanges != null)
-      this.listenerChanges.consoleChanged();
-  }
+    public boolean isActive()
+    {
+        return bActive;
+    }
 
-  public void addHistoryCmd(String paramString) {
-    this.bufHistoryCmd.addFirst(paramString);
-    while (this.bufHistoryCmd.size() > this.maxHistoryCmd)
-      this.bufHistoryCmd.removeLast();
-  }
+    public void activate(boolean flag)
+    {
+        if(bActive != flag)
+        {
+            if(flag)
+            {
+                bStartTimePaused = com.maddox.rts.Time.isPaused();
+                if(bPaused && !bStartTimePaused && com.maddox.rts.Time.isEnableChangePause())
+                    com.maddox.rts.Time.setPause(true);
+            } else
+            if(bPaused && !bStartTimePaused && com.maddox.rts.Time.isEnableChangePause())
+                com.maddox.rts.Time.setPause(false);
+            bActive = flag;
+        }
+    }
 
-  public void msgKeyboardKey(int paramInt, boolean paramBoolean)
-  {
-    if ((paramBoolean) && (isActive())) {
-      int i = this.editBuf.length();
-      Object localObject;
-      switch (paramInt) {
-      case 17:
-        this.bShowHistoryOut = (!this.bShowHistoryOut);
-        break;
-      case 37:
-        if (this.editPos <= 0) break; this.editPos -= 1; break;
-      case 39:
-        if (this.editPos >= i) break; this.editPos += 1; break;
-      case 8:
-        if (this.editPos <= 0) break;
-        this.editPos -= 1;
-        this.editBuf.deleteCharAt(this.editPos); break;
-      case 127:
-        if (this.editPos >= i) break;
-        this.editBuf.deleteCharAt(this.editPos); break;
-      case 36:
-        this.editPos = 0;
-        break;
-      case 35:
-        this.editPos = i;
-        break;
-      case 33:
-        if (this.startHistoryOut + this.pageHistoryOut >= historyOut().size()) break;
-        this.startHistoryOut += this.pageHistoryOut; break;
-      case 34:
-        this.startHistoryOut -= this.pageHistoryOut;
-        if (this.startHistoryOut >= 0) break;
-        this.startHistoryOut = 0; break;
-      case 38:
-      case 40:
-        localObject = historyCmd();
-        if (((List)localObject).size() > 0) {
-          if (paramInt == 38) {
-            if (this.curHistoryCmd < ((List)localObject).size())
-              this.curHistoryCmd += 1;
-            else
-              this.curHistoryCmd = 0;
-          }
-          else if (this.curHistoryCmd >= 0)
-            this.curHistoryCmd -= 1;
-          else {
-            this.curHistoryCmd = (((List)localObject).size() - 1);
-          }
-          if ((this.curHistoryCmd < 0) || (this.curHistoryCmd >= ((List)localObject).size()))
-          {
-            this.editBuf.delete(0, i);
-            this.editPos = 0;
-          } else {
-            this.editBuf.delete(0, i);
-            this.editBuf.append((String)(String)((List)localObject).get(this.curHistoryCmd));
-            i = this.editBuf.length();
-            if (this.editPos > i) {
-              this.editPos = i;
+    public boolean isPaused()
+    {
+        return bPaused;
+    }
+
+    public void setPause(boolean flag)
+    {
+        if(bPaused != flag && bEnableSetPause)
+        {
+            if(bActive && !bStartTimePaused && com.maddox.rts.Time.isEnableChangePause())
+                com.maddox.rts.Time.setPause(flag);
+            bPaused = flag;
+        }
+    }
+
+    public java.lang.String getPrompt()
+    {
+        if(exec != null)
+            return exec.getPrompt();
+        else
+            return _getPrompt();
+    }
+
+    public java.lang.String _getPrompt()
+    {
+        if(getEnv().curNumCmd() + 1 != curNumPrompt)
+        {
+            prompt = (getEnv().curNumCmd() + 1) + ">";
+            curNumPrompt = getEnv().curNumCmd() + 1;
+        }
+        return prompt;
+    }
+
+    public int getNumPrompt()
+    {
+        return getEnv().curNumCmd() + 1;
+    }
+
+    public int maxHistoryOut()
+    {
+        return maxHistoryOut;
+    }
+
+    public int maxHistoryCmd()
+    {
+        return maxHistoryCmd;
+    }
+
+    public java.util.List historyOut()
+    {
+        return bufHistoryOut;
+    }
+
+    public java.util.List historyCmd()
+    {
+        return bufHistoryCmd;
+    }
+
+    public void setMaxHistoryOut(int i)
+    {
+        if(i >= 0 && i != maxHistoryOut)
+        {
+            maxHistoryOut = i;
+            for(int j = bufHistoryOut.size() - maxHistoryOut; j > 0; j--)
+                bufHistoryOut.removeLast();
+
+            if(startHistoryOut >= maxHistoryOut)
+                startHistoryOut = 0;
+        }
+    }
+
+    public void setMaxHistoryCmd(int i)
+    {
+        if(i >= 0 && i != maxHistoryCmd)
+        {
+            maxHistoryCmd = i;
+            for(int j = bufHistoryCmd.size() - maxHistoryCmd; j > 0; j--)
+                bufHistoryCmd.removeLast();
+
+        }
+    }
+
+    public void clear()
+    {
+        bufHistoryOut.clear();
+        startHistoryOut = 0;
+    }
+
+    public boolean isShowHistoryOut()
+    {
+        return bShowHistoryOut;
+    }
+
+    public int startHistoryOut()
+    {
+        return startHistoryOut;
+    }
+
+    public int pageHistoryOut()
+    {
+        return pageHistoryOut;
+    }
+
+    public void setPageHistoryOut(int i)
+    {
+        pageHistoryOut = i;
+    }
+
+    public int startHistoryCmd()
+    {
+        int i = curHistoryCmd;
+        if(i >= bufHistoryCmd.size())
+            i = bufHistoryCmd.size();
+        if(i < 0)
+            i = 0;
+        return i;
+    }
+
+    public java.lang.Object[] getTypes(boolean flag)
+    {
+        if(flag)
+            return errTypes.toArray();
+        else
+            return outTypes.toArray();
+    }
+
+    public void addType(boolean flag, com.maddox.rts.ConsoleOut consoleout)
+    {
+        java.util.ArrayList arraylist = outTypes;
+        if(flag)
+            arraylist = errTypes;
+        if(!arraylist.contains(consoleout))
+            arraylist.add(consoleout);
+    }
+
+    public void removeType(boolean flag, com.maddox.rts.ConsoleOut consoleout)
+    {
+        java.util.ArrayList arraylist = outTypes;
+        if(flag)
+            arraylist = errTypes;
+        int i = arraylist.indexOf(consoleout);
+        if(i >= 0)
+            arraylist.remove(i);
+    }
+
+    public void disableStdOuts()
+    {
+        if(!bDisabledStdOuts)
+        {
+            com.maddox.rts.ConsoleOut consoleout = (com.maddox.rts.ConsoleOut)outTypes.get(0);
+            removeType(false, consoleout);
+            consoleout = (com.maddox.rts.ConsoleOut)errTypes.get(0);
+            removeType(true, consoleout);
+            bDisabledStdOuts = true;
+        }
+    }
+
+    public boolean isLogKeep()
+    {
+        return bLogKeep;
+    }
+
+    public void setLogKeep(boolean flag)
+    {
+        bLogKeep = flag;
+    }
+
+    public boolean isLog()
+    {
+        return log != null;
+    }
+
+    public void log(boolean flag)
+    {
+        if(flag != isLog())
+            if(flag)
+            {
+                if(!bLogKeep)
+                    try
+                    {
+                        java.io.File file = new File(com.maddox.rts.HomePath.toFileSystemName(nameLogFile, 0));
+                        file.delete();
+                    }
+                    catch(java.lang.Exception exception) { }
+                try
+                {
+                    log = new ConsoleLogFile(nameLogFile);
+                    addType(true, log);
+                    addType(false, log);
+                }
+                catch(java.lang.Exception exception1) { }
+            } else
+            {
+                removeType(true, log);
+                removeType(false, log);
+                log.close();
+                log = null;
             }
-          }
+    }
+
+    public java.lang.String logFileName()
+    {
+        return nameLogFile;
+    }
+
+    public void setLogFileName(java.lang.String s)
+    {
+        nameLogFile = s;
+        if(isLog())
+        {
+            log(false);
+            log(true);
         }
-        break;
-      case 10:
-        System.out.print(getPrompt() + this.editBuf.toString() + '\n');
-        if (i > 0) {
-          localObject = this.editBuf.toString();
-          doExec((String)localObject);
-          addHistoryCmd((String)localObject);
-          this.curHistoryCmd = -1;
-          this.editPos = 0;
-          this.editBuf.delete(0, i); } else {
-          if (this.exec == null) break;
-          this.exec.doExec(""); } break;
-      default:
-        this.curKey = -1;
-        return;
-      }
-
     }
-    else
+
+    public void logFilePrintln(java.lang.String s)
     {
-      this.curKey = -1;
+        if(log != null)
+            log.println(s);
     }
-  }
 
-  public void doExec(String paramString) {
-    if (this.exec != null) this.exec.doExec(paramString); else
-      getEnv().exec(paramString);
-  }
-
-  public void msgKeyboardChar(char paramChar) {
-    if ((this.bActive) && 
-      (paramChar >= ' ')) {
-      this.editBuf.insert(this.editPos, paramChar);
-      this.editPos += 1;
-    }
-  }
-
-  public void msgTimeOut(Object paramObject)
-  {
-    if (this.curKey != -1) {
-      this.ticker.post();
-      if (Time.real() >= this.nextTime)
-        msgKeyboardKey(this.curKey, true);
-    }
-  }
-
-  public static class Exec
-  {
-    public void doExec(String paramString)
+    public void load(java.lang.String s)
     {
+        try
+        {
+            java.io.BufferedReader bufferedreader = new BufferedReader(new SFSReader(s));
+            java.lang.String s1 = "";
+            do
+            {
+                java.lang.String s2 = bufferedreader.readLine();
+                if(s2 == null)
+                    break;
+                s2 = s2.trim();
+                if(s2.length() > 0)
+                    addHistoryCmd(s2);
+            } while(true);
+            bufferedreader.close();
+        }
+        catch(java.io.IOException ioexception)
+        {
+            java.lang.System.out.println("Console commands file: " + s + " load failed: " + ioexception.getMessage());
+        }
     }
 
-    public String getPrompt()
+    public void save(java.lang.String s)
     {
-      return "";
+        try
+        {
+            java.io.PrintWriter printwriter = new PrintWriter(new BufferedWriter(new FileWriter(com.maddox.rts.HomePath.toFileSystemName(s, 0))));
+            for(int i = bufHistoryCmd.size(); --i >= 0;)
+            {
+                java.lang.String s1 = (java.lang.String)bufHistoryCmd.get(i);
+                printwriter.println(s1);
+            }
+
+            printwriter.close();
+        }
+        catch(java.io.IOException ioexception)
+        {
+            java.lang.System.out.println("Console commands file: " + s + " create failed: " + ioexception.getMessage());
+        }
     }
-  }
+
+    public com.maddox.rts.CmdEnv getEnv()
+    {
+        return env;
+    }
+
+    public Console(int i)
+    {
+        exec = null;
+        editBuf = new StringBuffer();
+        editPos = 0;
+        bWrap = true;
+        bActive = false;
+        bStartTimePaused = false;
+        bEnableSetPause = true;
+        bPaused = true;
+        outTypes = new ArrayList();
+        errTypes = new ArrayList();
+        bDisabledStdOuts = false;
+        nameLogFile = "log.lst";
+        log = null;
+        bLogKeep = true;
+        timeRepeat = 50L;
+        curNumPrompt = -1;
+        prompt = ">";
+        maxHistoryOut = 128;
+        bufHistoryOut = new LinkedList();
+        startHistoryOut = 0;
+        pageHistoryOut = 20;
+        bShowHistoryOut = true;
+        maxHistoryCmd = 128;
+        bufHistoryCmd = new LinkedList();
+        curHistoryCmd = -1;
+        outBuf = new StringBuffer();
+        errBuf = new StringBuffer();
+        curKey = -1;
+        nextTime = 0L;
+        ticker = new MsgTimeOut();
+        env = new CmdEnv(com.maddox.rts.CmdEnv.top());
+        env.setLevelAccess(i);
+        addType(false, new ConsoleOutPrint(java.lang.System.out));
+        addType(true, new ConsoleOutPrint(java.lang.System.err));
+        java.lang.System.setErr(new ConsolePrintStream(true, this));
+        java.lang.System.setOut(new ConsolePrintStream(false, this));
+        com.maddox.rts.MsgAddListener.post(64, com.maddox.rts.Keyboard.adapter(), this, null);
+        ticker.setListener(this);
+        ticker.setNotCleanAfterSend();
+        ticker.setFlags(72);
+    }
+
+    protected void outWrite(char c)
+    {
+        outBuf.append(c);
+        if(c == '\n')
+        {
+            java.lang.String s = outBuf.toString();
+            for(int i = 0; i < outTypes.size(); i++)
+                ((com.maddox.rts.ConsoleOut)(com.maddox.rts.ConsoleOut)outTypes.get(i)).type(s);
+
+            outBuf = new StringBuffer();
+            addHistoryOut(s);
+        }
+    }
+
+    protected void outFlush()
+    {
+        if(outBuf.length() > 0)
+        {
+            java.lang.String s = outBuf.toString();
+            for(int j = 0; j < outTypes.size(); j++)
+                ((com.maddox.rts.ConsoleOut)(com.maddox.rts.ConsoleOut)outTypes.get(j)).type(s);
+
+            outBuf = new StringBuffer();
+        }
+        for(int i = 0; i < outTypes.size(); i++)
+            ((com.maddox.rts.ConsoleOut)(com.maddox.rts.ConsoleOut)outTypes.get(i)).flush();
+
+    }
+
+    protected void errWrite(char c)
+    {
+        errBuf.append(c);
+        if(c == '\n')
+        {
+            java.lang.String s = errBuf.toString();
+            for(int i = 0; i < errTypes.size(); i++)
+                ((com.maddox.rts.ConsoleOut)(com.maddox.rts.ConsoleOut)errTypes.get(i)).type(s);
+
+            errBuf = new StringBuffer();
+            addHistoryOut(s);
+        }
+    }
+
+    protected void errFlush()
+    {
+        if(errBuf.length() > 0)
+        {
+            java.lang.String s = errBuf.toString();
+            for(int j = 0; j < errTypes.size(); j++)
+                ((com.maddox.rts.ConsoleOut)(com.maddox.rts.ConsoleOut)errTypes.get(j)).type(s);
+
+            errBuf = new StringBuffer();
+        }
+        for(int i = 0; i < errTypes.size(); i++)
+            ((com.maddox.rts.ConsoleOut)(com.maddox.rts.ConsoleOut)errTypes.get(i)).flush();
+
+    }
+
+    public void flush()
+    {
+        outFlush();
+        errFlush();
+    }
+
+    protected void addHistoryOut(java.lang.String s)
+    {
+        bufHistoryOut.addFirst(s);
+        for(; bufHistoryOut.size() > maxHistoryOut; bufHistoryOut.removeLast());
+        if(listenerChanges != null)
+            listenerChanges.consoleChanged();
+    }
+
+    public void addHistoryCmd(java.lang.String s)
+    {
+        bufHistoryCmd.addFirst(s);
+        for(; bufHistoryCmd.size() > maxHistoryCmd; bufHistoryCmd.removeLast());
+    }
+
+    public void msgKeyboardKey(int i, boolean flag)
+    {
+        if(flag && isActive())
+        {
+            int j = editBuf.length();
+            switch(i)
+            {
+            case 17: // '\021'
+                bShowHistoryOut = !bShowHistoryOut;
+                break;
+
+            case 37: // '%'
+                if(editPos > 0)
+                    editPos--;
+                break;
+
+            case 39: // '\''
+                if(editPos < j)
+                    editPos++;
+                break;
+
+            case 8: // '\b'
+                if(editPos > 0)
+                {
+                    editPos--;
+                    editBuf.deleteCharAt(editPos);
+                }
+                break;
+
+            case 127: // '\177'
+                if(editPos < j)
+                    editBuf.deleteCharAt(editPos);
+                break;
+
+            case 36: // '$'
+                editPos = 0;
+                break;
+
+            case 35: // '#'
+                editPos = j;
+                break;
+
+            case 33: // '!'
+                if(startHistoryOut + pageHistoryOut < historyOut().size())
+                    startHistoryOut += pageHistoryOut;
+                break;
+
+            case 34: // '"'
+                startHistoryOut -= pageHistoryOut;
+                if(startHistoryOut < 0)
+                    startHistoryOut = 0;
+                break;
+
+            case 38: // '&'
+            case 40: // '('
+                java.util.List list = historyCmd();
+                if(list.size() > 0)
+                {
+                    if(i == 38)
+                    {
+                        if(curHistoryCmd < list.size())
+                            curHistoryCmd++;
+                        else
+                            curHistoryCmd = 0;
+                    } else
+                    if(curHistoryCmd >= 0)
+                        curHistoryCmd--;
+                    else
+                        curHistoryCmd = list.size() - 1;
+                    if(curHistoryCmd < 0 || curHistoryCmd >= list.size())
+                    {
+                        editBuf.delete(0, j);
+                        editPos = 0;
+                    } else
+                    {
+                        editBuf.delete(0, j);
+                        editBuf.append((java.lang.String)(java.lang.String)list.get(curHistoryCmd));
+                        j = editBuf.length();
+                        if(editPos > j)
+                            editPos = j;
+                    }
+                }
+                break;
+
+            case 10: // '\n'
+                java.lang.System.out.print(getPrompt() + editBuf.toString() + '\n');
+                if(j > 0)
+                {
+                    java.lang.String s = editBuf.toString();
+                    doExec(s);
+                    addHistoryCmd(s);
+                    curHistoryCmd = -1;
+                    editPos = 0;
+                    editBuf.delete(0, j);
+                } else
+                if(exec != null)
+                    exec.doExec("");
+                break;
+
+            default:
+                curKey = -1;
+                return;
+            }
+        } else
+        {
+            curKey = -1;
+        }
+    }
+
+    public void doExec(java.lang.String s)
+    {
+        if(exec != null)
+            exec.doExec(s);
+        else
+            getEnv().exec(s);
+    }
+
+    public void msgKeyboardChar(char c)
+    {
+        if(bActive && c >= ' ')
+        {
+            editBuf.insert(editPos, c);
+            editPos++;
+        }
+    }
+
+    public void msgTimeOut(java.lang.Object obj)
+    {
+        if(curKey != -1)
+        {
+            ticker.post();
+            if(com.maddox.rts.Time.real() >= nextTime)
+                msgKeyboardKey(curKey, true);
+        }
+    }
+
+    public com.maddox.rts.Exec exec;
+    private static final boolean USE_REPEAT = false;
+    protected static boolean bTypeTimeInLogFile = false;
+    public java.lang.StringBuffer editBuf;
+    public int editPos;
+    public boolean bWrap;
+    private com.maddox.rts.ConsoleListener listenerChanges;
+    protected boolean bActive;
+    private boolean bStartTimePaused;
+    public boolean bEnableSetPause;
+    protected boolean bPaused;
+    protected java.util.ArrayList outTypes;
+    protected java.util.ArrayList errTypes;
+    private boolean bDisabledStdOuts;
+    private java.lang.String nameLogFile;
+    private com.maddox.rts.ConsoleLogFile log;
+    private boolean bLogKeep;
+    public long timeRepeat;
+    private int curNumPrompt;
+    private java.lang.String prompt;
+    private int maxHistoryOut;
+    private java.util.LinkedList bufHistoryOut;
+    protected int startHistoryOut;
+    protected int pageHistoryOut;
+    protected boolean bShowHistoryOut;
+    private int maxHistoryCmd;
+    private java.util.LinkedList bufHistoryCmd;
+    public int curHistoryCmd;
+    private com.maddox.rts.CmdEnv env;
+    private java.lang.StringBuffer outBuf;
+    private java.lang.StringBuffer errBuf;
+    private int curKey;
+    private long nextTime;
+    private com.maddox.rts.MsgTimeOut ticker;
+
 }

@@ -1,128 +1,191 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   JU_87D5.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Orientation;
+import com.maddox.il2.fm.EnginesInterface;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Motor;
 import com.maddox.il2.game.AircraftHotKeys;
 import com.maddox.il2.game.HUD;
 import com.maddox.rts.Property;
 
-public class JU_87D5 extends JU_87
-  implements TypeStormovik
+// Referenced classes of package com.maddox.il2.objects.air:
+//            JU_87, PaintSchemeBMPar02, TypeStormovik, NetAircraft
+
+public class JU_87D5 extends com.maddox.il2.objects.air.JU_87
+    implements com.maddox.il2.objects.air.TypeStormovik
 {
-  public float fDiveVelocity = 500.0F;
-  public float fDiveAngle = 70.0F;
 
-  protected void moveAirBrake(float paramFloat)
-  {
-    hierMesh().chunkSetAngles("Brake01_D0", 0.0F, 80.0F * paramFloat, 0.0F);
-    hierMesh().chunkSetAngles("Brake02_D0", 0.0F, 80.0F * paramFloat, 0.0F);
-  }
-
-  public void update(float paramFloat)
-  {
-    for (int i = 1; i < 5; i++) {
-      hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, 15.0F - 30.0F * this.FM.EI.engines[0].getControlRadiator(), 0.0F);
+    public JU_87D5()
+    {
+        fDiveVelocity = 500F;
+        fDiveAngle = 70F;
     }
 
-    this.fDiveAngle = (-this.FM.Or.getTangage());
-    if (this.fDiveAngle > 89.0F) {
-      this.fDiveAngle = 89.0F;
-    }
-    if (this.fDiveAngle < 10.0F) {
-      this.fDiveAngle = 10.0F;
+    protected void moveAirBrake(float f)
+    {
+        hierMesh().chunkSetAngles("Brake01_D0", 0.0F, 80F * f, 0.0F);
+        hierMesh().chunkSetAngles("Brake02_D0", 0.0F, 80F * f, 0.0F);
     }
 
-    super.update(paramFloat);
-  }
+    public void update(float f)
+    {
+        for(int i = 1; i < 5; i++)
+            hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, 15F - 30F * FM.EI.engines[0].getControlRadiator(), 0.0F);
 
-  public void typeDiveBomberAdjVelocityReset()
-  {
-  }
-
-  public void typeDiveBomberAdjVelocityPlus()
-  {
-    this.fDiveVelocity += 10.0F;
-    if (this.fDiveVelocity > 700.0F) {
-      this.fDiveVelocity = 700.0F;
+        fDiveAngle = -FM.Or.getTangage();
+        if(fDiveAngle > 89F)
+            fDiveAngle = 89F;
+        if(fDiveAngle < 10F)
+            fDiveAngle = 10F;
+        super.update(f);
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int)this.fDiveVelocity) });
-  }
 
-  public void typeDiveBomberAdjVelocityMinus() {
-    this.fDiveVelocity -= 10.0F;
-    if (this.fDiveVelocity < 150.0F) {
-      this.fDiveVelocity = 150.0F;
+    public void typeDiveBomberAdjVelocityReset()
+    {
     }
-    HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new Object[] { new Integer((int)this.fDiveVelocity) });
-  }
 
-  public void typeDiveBomberAdjDiveAngleReset()
-  {
-  }
+    public void typeDiveBomberAdjVelocityPlus()
+    {
+        fDiveVelocity += 10F;
+        if(fDiveVelocity > 700F)
+            fDiveVelocity = 700F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new java.lang.Object[] {
+            new Integer((int)fDiveVelocity)
+        });
+    }
 
-  public void typeDiveBomberAdjDiveAnglePlus()
-  {
-  }
+    public void typeDiveBomberAdjVelocityMinus()
+    {
+        fDiveVelocity -= 10F;
+        if(fDiveVelocity < 150F)
+            fDiveVelocity = 150F;
+        com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSpeed", new java.lang.Object[] {
+            new Integer((int)fDiveVelocity)
+        });
+    }
 
-  public void typeDiveBomberAdjDiveAngleMinus()
-  {
-  }
+    public void typeDiveBomberAdjDiveAngleReset()
+    {
+    }
 
-  static
-  {
-    Class localClass = JU_87D5.class;
-    new NetAircraft.SPAWN(localClass);
-    Property.set(localClass, "FlightModel", "FlightModels/Ju-87D-5.fmd");
-    Property.set(localClass, "meshName", "3DO/Plane/Ju-87D-5/hier.him");
-    Property.set(localClass, "iconFar_shortClassName", "Ju-87");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar02());
+    public void typeDiveBomberAdjDiveAnglePlus()
+    {
+    }
 
-    Property.set(localClass, "cockpitClass", new Class[] { CockpitJU_87D5.class, CockpitJU_87D3_Gunner.class });
+    public void typeDiveBomberAdjDiveAngleMinus()
+    {
+    }
 
-    Property.set(localClass, "LOSElevation", 0.8499F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "yearService", 1942.0F);
-    Property.set(localClass, "yearExpired", 1945.5F);
+    public float fDiveVelocity;
+    public float fDiveAngle;
 
-    weaponTriggersRegister(localClass, new int[] { 1, 1, 10, 10, 3, 3, 3, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "1xSC250", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, "BombGunSC250 1" });
-
-    weaponsRegister(localClass, "1xSC500", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, "BombGunSC500 1" });
-
-    weaponsRegister(localClass, "1xSC500_4xSC50", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", null, null, "BombGunSC500 1" });
-
-    weaponsRegister(localClass, "1xSC500_4xAB23", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", "BombGunAB23 1", "BombGunAB23 1", "BombGunAB23 1", "BombGunAB23 1", null, null, "BombGunSC500 1" });
-
-    weaponsRegister(localClass, "1xSC500_4xSC70", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", "BombGunSC70 1", "BombGunSC70 1", "BombGunSC70 1", "BombGunSC70 1", null, null, "BombGunSC500 1" });
-
-    weaponsRegister(localClass, "1xSC500_2xSC250", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, "BombGunSC250 1", "BombGunSC250 1", "BombGunSC500 1" });
-
-    weaponsRegister(localClass, "1xAB500", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, "BombGunAB500 1" });
-
-    weaponsRegister(localClass, "1xAB500_4xSC50", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", null, null, "BombGunAB500 1" });
-
-    weaponsRegister(localClass, "1xAB500_4xAB23", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", "BombGunAB23 1", "BombGunAB23 1", "BombGunAB23 1", "BombGunAB23 1", null, null, "BombGunAB500 1" });
-
-    weaponsRegister(localClass, "1xAB500_4xSC70", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", "BombGunSC70 1", "BombGunSC70 1", "BombGunSC70 1", "BombGunSC70 1", null, null, "BombGunAB500 1" });
-
-    weaponsRegister(localClass, "1xAB500_2xSC250", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, "BombGunSC250 1", "BombGunSC250 1", "BombGunAB500 1" });
-
-    weaponsRegister(localClass, "3xSC250", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, "BombGunSC250 1", "BombGunSC250 1", "BombGunSC250 1" });
-
-    weaponsRegister(localClass, "1xSC1000", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, "BombGunSC1000 1" });
-
-    weaponsRegister(localClass, "1xAB1000", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, "BombGunAB1000 1" });
-
-    weaponsRegister(localClass, "1xPC1600", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, "BombGunPC1600 1" });
-
-    weaponsRegister(localClass, "1xSC1800", new String[] { "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, "BombGunSC1800 1" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.JU_87D5.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/Ju-87D-5.fmd");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/Ju-87D-5/hier.him");
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "Ju-87");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
+        com.maddox.rts.Property.set(class1, "cockpitClass", new java.lang.Class[] {
+            com.maddox.il2.objects.air.CockpitJU_87D5.class, com.maddox.il2.objects.air.CockpitJU_87D3_Gunner.class
+        });
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.8499F);
+        com.maddox.rts.Property.set(class1, "yearService", 1942F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1945.5F);
+        com.maddox.il2.objects.air.JU_87D5.weaponTriggersRegister(class1, new int[] {
+            1, 1, 10, 10, 3, 3, 3, 3, 3, 3, 
+            3
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", 
+            "_ExternalBomb07"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, 
+            null
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xSC250", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, 
+            "BombGunSC250 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xSC500", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, 
+            "BombGunSC500 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xSC500_4xSC50", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", null, null, 
+            "BombGunSC500 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xSC500_4xAB23", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", "BombGunAB23 1", "BombGunAB23 1", "BombGunAB23 1", "BombGunAB23 1", null, null, 
+            "BombGunSC500 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xSC500_4xSC70", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", "BombGunSC70 1", "BombGunSC70 1", "BombGunSC70 1", "BombGunSC70 1", null, null, 
+            "BombGunSC500 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xSC500_2xSC250", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, "BombGunSC250 1", "BombGunSC250 1", 
+            "BombGunSC500 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xAB500", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, 
+            "BombGunAB500 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xAB500_4xSC50", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", "BombGunSC50 1", null, null, 
+            "BombGunAB500 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xAB500_4xAB23", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", "BombGunAB23 1", "BombGunAB23 1", "BombGunAB23 1", "BombGunAB23 1", null, null, 
+            "BombGunAB500 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xAB500_4xSC70", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", "BombGunSC70 1", "BombGunSC70 1", "BombGunSC70 1", "BombGunSC70 1", null, null, 
+            "BombGunAB500 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xAB500_2xSC250", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, "BombGunSC250 1", "BombGunSC250 1", 
+            "BombGunAB500 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "3xSC250", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, "BombGunSC250 1", "BombGunSC250 1", 
+            "BombGunSC250 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xSC1000", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, 
+            "BombGunSC1000 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xAB1000", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, 
+            "BombGunAB1000 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xPC1600", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, 
+            "BombGunPC1600 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "1xSC1800", new java.lang.String[] {
+            "MGunMG15120si 250", "MGunMG15120si 250", "MGunMG81t 750", "MGunMG81t 750", null, null, null, null, null, null, 
+            "BombGunSC1800 1"
+        });
+        com.maddox.il2.objects.air.JU_87D5.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null, 
+            null
+        });
+    }
 }

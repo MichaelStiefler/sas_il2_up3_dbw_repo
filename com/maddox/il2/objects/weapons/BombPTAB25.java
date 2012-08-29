@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BombPTAB25.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Point3d;
@@ -10,37 +15,52 @@ import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class BombPTAB25 extends Bomb
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Bomb
+
+public class BombPTAB25 extends com.maddox.il2.objects.weapons.Bomb
 {
-  protected boolean haveSound()
-  {
-    return this.index % 20 == 0;
-  }
 
-  protected void doExplosion(Actor paramActor, String paramString) {
-    Class localClass = getClass();
-    Point3d localPoint3d = new Point3d();
-    this.pos.getTime(Time.current(), localPoint3d);
-    float f1 = Property.floatValue(localClass, "power", 0.0F);
-    int i = Property.intValue(localClass, "powerType", 0);
-    float f2 = Property.floatValue(localClass, "radius", 0.0F);
+    public BombPTAB25()
+    {
+    }
 
-    MsgShot.send(paramActor, paramString, localPoint3d, new Vector3f(0.0F, 0.0F, -600.0F), this.M, getOwner(), f1, 1, 0.0D);
+    protected boolean haveSound()
+    {
+        return index % 20 == 0;
+    }
 
-    if (this.index % 20 == 0) Explosions.generate(paramActor, localPoint3d, f1, i, f2, !Mission.isNet());
+    protected void doExplosion(com.maddox.il2.engine.Actor actor, java.lang.String s)
+    {
+        java.lang.Class class1 = getClass();
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        pos.getTime(com.maddox.rts.Time.current(), point3d);
+        float f = com.maddox.rts.Property.floatValue(class1, "power", 0.0F);
+        int i = com.maddox.rts.Property.intValue(class1, "powerType", 0);
+        float f1 = com.maddox.rts.Property.floatValue(class1, "radius", 0.0F);
+        com.maddox.il2.ai.MsgShot.send(actor, s, point3d, new Vector3f(0.0F, 0.0F, -600F), M, getOwner(), f, 1, 0.0D);
+        if(index % 20 == 0)
+            com.maddox.il2.objects.effects.Explosions.generate(actor, point3d, f, i, f1, !com.maddox.il2.game.Mission.isNet());
+        destroy();
+    }
 
-    destroy();
-  }
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-  static
-  {
-    Class localClass = BombPTAB25.class;
-    Property.set(localClass, "mesh", "3do/arms/PTAB-25/mono.sim");
-    Property.set(localClass, "radius", 0.01F);
-    Property.set(localClass, "power", 1.9F);
-    Property.set(localClass, "powerType", 0);
-    Property.set(localClass, "kalibr", 0.1253F);
-    Property.set(localClass, "massa", 2.95F);
-    Property.set(localClass, "sound", "weapon.bomb_cassette");
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.BombPTAB25.class;
+        com.maddox.rts.Property.set(class1, "mesh", "3do/arms/PTAB-25/mono.sim");
+        com.maddox.rts.Property.set(class1, "radius", 0.01F);
+        com.maddox.rts.Property.set(class1, "power", 1.9F);
+        com.maddox.rts.Property.set(class1, "powerType", 0);
+        com.maddox.rts.Property.set(class1, "kalibr", 0.1253F);
+        com.maddox.rts.Property.set(class1, "massa", 2.95F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.bomb_cassette");
+    }
 }

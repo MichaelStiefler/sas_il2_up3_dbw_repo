@@ -1,29 +1,44 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BoundsControl.java
+
 package com.maddox.sound;
 
 import com.maddox.rts.SectFile;
 
-public class BoundsControl extends SoundControl
+// Referenced classes of package com.maddox.sound:
+//            SoundControl
+
+public class BoundsControl extends com.maddox.sound.SoundControl
 {
-  public void load(SectFile paramSectFile, String paramString)
-  {
-    boolean bool = this.handle != 0;
-    if (bool) {
-      float f1 = paramSectFile.get(paramString, "minlo", 0.0F);
-      float f2 = paramSectFile.get(paramString, "minhi", 0.0F);
-      float f3 = paramSectFile.get(paramString, "maxlo", 0.0F);
-      float f4 = paramSectFile.get(paramString, "maxhi", 0.0F);
-      float f5 = paramSectFile.get(paramString, "value", 0.0F);
-      float f6 = paramSectFile.get(paramString, "pmin", 0.0F);
-      float f7 = paramSectFile.get(paramString, "pmax", 0.0F);
-      bool = jniSet(this.handle, f1, f2, f3, f4, f5, f6, f7);
-      if (!bool) printf("ERROR loading sound control " + paramString);
+
+    protected BoundsControl()
+    {
     }
-  }
 
-  protected int getClassId()
-  {
-    return 1;
-  }
+    public void load(com.maddox.rts.SectFile sectfile, java.lang.String s)
+    {
+        boolean flag = handle != 0;
+        if(flag)
+        {
+            float f = sectfile.get(s, "minlo", 0.0F);
+            float f1 = sectfile.get(s, "minhi", 0.0F);
+            float f2 = sectfile.get(s, "maxlo", 0.0F);
+            float f3 = sectfile.get(s, "maxhi", 0.0F);
+            float f4 = sectfile.get(s, "value", 0.0F);
+            float f5 = sectfile.get(s, "pmin", 0.0F);
+            float f6 = sectfile.get(s, "pmax", 0.0F);
+            boolean flag1 = com.maddox.sound.BoundsControl.jniSet(handle, f, f1, f2, f3, f4, f5, f6);
+            if(!flag1)
+                com.maddox.sound.BoundsControl.printf("ERROR loading sound control " + s);
+        }
+    }
 
-  protected static native boolean jniSet(int paramInt, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6, float paramFloat7);
+    protected int getClassId()
+    {
+        return 1;
+    }
+
+    protected static native boolean jniSet(int i, float f, float f1, float f2, float f3, float f4, float f5, float f6);
 }

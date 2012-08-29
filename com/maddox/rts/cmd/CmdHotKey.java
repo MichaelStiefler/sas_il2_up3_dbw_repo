@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdHotKey.java
+
 package com.maddox.rts.cmd;
 
 import com.maddox.rts.Cmd;
@@ -14,86 +19,96 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdHotKey extends Cmd
+public class CmdHotKey extends com.maddox.rts.Cmd
 {
-  public static final String CMD = "CMD";
-  public static final String ENV = "ENV";
-  public static final String CMDRUN = "CMDRUN";
-  public static final String REALTIME = "REALTIME";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    if (exist(paramMap, "_$$")) {
-      int i = 0;
-
-      int k = 0;
-      if (nargs(paramMap, "_$$") > 1) {
-        i = VK.getKeyFromText(arg(paramMap, "_$$", 0));
-        k = 1;
-      }
-      int j = VK.getKeyFromText(arg(paramMap, "_$$", k));
-      if (j == 0) {
-        ERR_SOFT("unknown HotKey - " + arg(paramMap, "_$$", k));
-        return null;
-      }
-      String str1 = args(paramMap, "ENV");
-      if (str1 == null) str1 = "default";
-      if (nargs(paramMap, "CMD") > 0) {
-        HotKeyEnv.addHotKey(str1, i, j, args(paramMap, "CMD"));
-      } else if (nargs(paramMap, "CMDRUN") > 0) {
-        String str2 = args(paramMap, "CMDRUN");
-        HotKeyEnv.addHotKey(str1, i, j, str2);
-        HotKeyCmdEnv.addCmd("cmdrun", new HotKeyCmdRun(paramCmdEnv, exist(paramMap, "REALTIME"), str2));
-      } else {
-        ERR_SOFT("empty HotKey command name");
-        return null;
-      }
-    }
-    else
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
     {
-      Object localObject;
-      HotKeyEnv localHotKeyEnv;
-      if (((exist(paramMap, "ENV")) && (0 == nargs(paramMap, "ENV"))) || (!exist(paramMap, "ENV"))) {
-        localObject = HotKeyEnv.allEnv().iterator();
-        INFO_HARD("HotKey environments:");
-        while (((Iterator)localObject).hasNext()) {
-          localHotKeyEnv = (HotKeyEnv)((Iterator)localObject).next();
-          INFO_HARD(localHotKeyEnv.name() + (localHotKeyEnv.isEnabled() ? " ENABLED" : " DISABLED"));
-        }
-      } else {
-        localObject = args(paramMap, "ENV");
-        if (localObject == null) localObject = "default";
-        localHotKeyEnv = HotKeyEnv.env((String)localObject);
-        if (localHotKeyEnv == null) {
-          ERR_SOFT("environment '" + (String)localObject + "' not present");
-          return null;
-        }
-        INFO_HARD("HotKey environment: " + (String)localObject);
-        showHotKeys(localHotKeyEnv.all());
-      }
-    }
-    return CmdEnv.RETURN_OK;
-  }
+        if(com.maddox.rts.cmd.CmdHotKey.exist(map, "_$$"))
+        {
+            int i = 0;
+            int k = 0;
+            if(com.maddox.rts.cmd.CmdHotKey.nargs(map, "_$$") > 1)
+            {
+                i = com.maddox.rts.VK.getKeyFromText(com.maddox.rts.cmd.CmdHotKey.arg(map, "_$$", 0));
+                k = 1;
+            }
+            int j = com.maddox.rts.VK.getKeyFromText(com.maddox.rts.cmd.CmdHotKey.arg(map, "_$$", k));
+            if(j == 0)
+            {
+                ERR_SOFT("unknown HotKey - " + com.maddox.rts.cmd.CmdHotKey.arg(map, "_$$", k));
+                return null;
+            }
+            java.lang.String s1 = com.maddox.rts.cmd.CmdHotKey.args(map, "ENV");
+            if(s1 == null)
+                s1 = "default";
+            if(com.maddox.rts.cmd.CmdHotKey.nargs(map, "CMD") > 0)
+                com.maddox.rts.HotKeyEnv.addHotKey(s1, i, j, com.maddox.rts.cmd.CmdHotKey.args(map, "CMD"));
+            else
+            if(com.maddox.rts.cmd.CmdHotKey.nargs(map, "CMDRUN") > 0)
+            {
+                java.lang.String s2 = com.maddox.rts.cmd.CmdHotKey.args(map, "CMDRUN");
+                com.maddox.rts.HotKeyEnv.addHotKey(s1, i, j, s2);
+                com.maddox.rts.HotKeyCmdEnv.addCmd("cmdrun", new HotKeyCmdRun(cmdenv, com.maddox.rts.cmd.CmdHotKey.exist(map, "REALTIME"), s2));
+            } else
+            {
+                ERR_SOFT("empty HotKey command name");
+                return null;
+            }
+        } else
+        if(com.maddox.rts.cmd.CmdHotKey.exist(map, "ENV") && 0 == com.maddox.rts.cmd.CmdHotKey.nargs(map, "ENV") || !com.maddox.rts.cmd.CmdHotKey.exist(map, "ENV"))
+        {
+            java.util.Iterator iterator = com.maddox.rts.HotKeyEnv.allEnv().iterator();
+            INFO_HARD("HotKey environments:");
+            com.maddox.rts.HotKeyEnv hotkeyenv;
+            for(; iterator.hasNext(); INFO_HARD(hotkeyenv.name() + (hotkeyenv.isEnabled() ? " ENABLED" : " DISABLED")))
+                hotkeyenv = (com.maddox.rts.HotKeyEnv)iterator.next();
 
-  private void showHotKeys(HashMapInt paramHashMapInt) {
-    HashMapIntEntry localHashMapIntEntry = paramHashMapInt.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      int i = localHashMapIntEntry.getKey();
-      int j = i >> 16 & 0xFFFF;
-      int k = i & 0xFFFF;
-      String str = (String)localHashMapIntEntry.getValue();
-      if (j != 0) INFO_HARD(VK.getKeyText(j) + " " + VK.getKeyText(k) + " = " + str); else
-        INFO_HARD(VK.getKeyText(k) + " = " + str);
-      localHashMapIntEntry = paramHashMapInt.nextEntry(localHashMapIntEntry);
+        } else
+        {
+            java.lang.String s = com.maddox.rts.cmd.CmdHotKey.args(map, "ENV");
+            if(s == null)
+                s = "default";
+            com.maddox.rts.HotKeyEnv hotkeyenv1 = com.maddox.rts.HotKeyEnv.env(s);
+            if(hotkeyenv1 == null)
+            {
+                ERR_SOFT("environment '" + s + "' not present");
+                return null;
+            }
+            INFO_HARD("HotKey environment: " + s);
+            showHotKeys(hotkeyenv1.all());
+        }
+        return com.maddox.rts.CmdEnv.RETURN_OK;
     }
-  }
 
-  public CmdHotKey() {
-    this.param.put("CMD", null);
-    this.param.put("ENV", null);
-    this.param.put("CMDRUN", null);
-    this.param.put("REALTIME", null);
-    this._properties.put("NAME", "hotkey");
-    this._levelAccess = 1;
-  }
+    private void showHotKeys(com.maddox.util.HashMapInt hashmapint)
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = hashmapint.nextEntry(null); hashmapintentry != null; hashmapintentry = hashmapint.nextEntry(hashmapintentry))
+        {
+            int i = hashmapintentry.getKey();
+            int j = i >> 16 & 0xffff;
+            int k = i & 0xffff;
+            java.lang.String s = (java.lang.String)hashmapintentry.getValue();
+            if(j != 0)
+                INFO_HARD(com.maddox.rts.VK.getKeyText(j) + " " + com.maddox.rts.VK.getKeyText(k) + " = " + s);
+            else
+                INFO_HARD(com.maddox.rts.VK.getKeyText(k) + " = " + s);
+        }
+
+    }
+
+    public CmdHotKey()
+    {
+        param.put("CMD", null);
+        param.put("ENV", null);
+        param.put("CMDRUN", null);
+        param.put("REALTIME", null);
+        _properties.put("NAME", "hotkey");
+        _levelAccess = 1;
+    }
+
+    public static final java.lang.String CMD = "CMD";
+    public static final java.lang.String ENV = "ENV";
+    public static final java.lang.String CMDRUN = "CMDRUN";
+    public static final java.lang.String REALTIME = "REALTIME";
 }

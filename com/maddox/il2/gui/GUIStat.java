@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIStat.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GBevel;
@@ -16,287 +21,382 @@ import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.net.NetMissionTrack;
 
-public class GUIStat extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUILookAndFeel, 
+//            GUIButton, GUIDialogClient
+
+public class GUIStat extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GUIButton bSave;
-  public GUIButton bNext;
-  public GUIButton bRefly;
-  public GUIButton bExit;
-  GTexRegion texStat;
-  public FixedClient airFixed;
-  public FixedClient groundFixed;
-  public ScrollClient airScroll;
-  public ScrollClient groundScroll;
-  public int iArmy = 0;
-  GTexRegion[][] texAir = new GTexRegion[2][3];
-  GTexRegion texTank;
-  GTexRegion texCar;
-  GTexRegion texAAA;
-  GTexRegion texTrain;
-  GTexRegion texSub;
-  GTexRegion texShip;
-  GTexRegion texArtillery;
-  GTexRegion texBridge;
-  GTexRegion texAirStatic;
-  GTexRegion texRadarRadio;
-  private GRegion _clipReg = new GRegion();
-
-  protected void updateScrollSizes()
-  {
-    this.airFixed.draw(false);
-    this.airScroll.updateScrollsPos();
-    this.groundFixed.draw(false);
-    this.groundScroll.updateScrollsPos();
-  }
-
-  public void _enter() {
-    Scores.compute();
-    updateScrollSizes();
-    if (NetMissionTrack.countRecorded == 0)
-      this.bSave.showWindow();
-    else
-      this.bSave.hideWindow();
-    this.client.activateWindow();
-  }
-  public void _leave() {
-    this.client.hideWindow();
-  }
-
-  protected void tryShowCapturedMessage() {
-    if (!World.isPlayerCaptured()) return;
-    new GWindowMessageBox(this.client.root, 20.0F, true, i18n("warning.Warning"), i18n("warning.PlayerCaptured"), 3, -1.0F);
-  }
-
-  protected void doRecordSave()
-  {
-    Main.stateStack().push(9);
-  }
-
-  protected void doRefly()
-  {
-  }
-
-  protected void doNext()
-  {
-  }
-
-  protected void doExit()
-  {
-  }
-
-  protected void clientRender()
-  {
-  }
-
-  protected void clientSetPosSize()
-  {
-  }
-
-  protected void init(GWindowRoot paramGWindowRoot)
-  {
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = "Statistic";
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-
-    this.texStat = new GTexRegion("GUI/game/staticelements.mat", 0.0F, 112.0F, 64.0F, 80.0F);
-
-    this.airScroll = new ScrollClient(this.dialogClient);
-    this.airScroll.fixed = ((GWindowDialogClient)this.airScroll.create(this.airFixed = new FixedClient(true)));
-    this.groundScroll = new ScrollClient(this.dialogClient);
-    this.groundScroll.fixed = ((GWindowDialogClient)this.groundScroll.create(this.groundFixed = new FixedClient(false)));
-
-    this.bSave = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.bRefly = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.bExit = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.bNext = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 192.0F, 48.0F, 48.0F)));
-
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-
-    localGTexture = GTexture.New("GUI/game/score.mat");
-
-    this.texAir[0][0] = new GTexRegion(localGTexture, 0.0F, 0.0F, 48.0F, 48.0F);
-    this.texAir[0][1] = new GTexRegion(localGTexture, 48.0F, 0.0F, 48.0F, 48.0F);
-    this.texAir[0][2] = new GTexRegion(localGTexture, 96.0F, 0.0F, 48.0F, 48.0F);
-    this.texAir[1][0] = new GTexRegion(localGTexture, 0.0F, 48.0F, 48.0F, 48.0F);
-    this.texAir[1][1] = new GTexRegion(localGTexture, 48.0F, 48.0F, 48.0F, 48.0F);
-    this.texAir[1][2] = new GTexRegion(localGTexture, 96.0F, 48.0F, 48.0F, 48.0F);
-    this.texTrain = new GTexRegion(localGTexture, 208.0F, 0.0F, 48.0F, 32.0F);
-    this.texAAA = new GTexRegion(localGTexture, 208.0F, 32.0F, 48.0F, 32.0F);
-    this.texCar = new GTexRegion(localGTexture, 208.0F, 64.0F, 48.0F, 32.0F);
-    this.texTank = new GTexRegion(localGTexture, 208.0F, 96.0F, 48.0F, 32.0F);
-    this.texSub = new GTexRegion(localGTexture, 208.0F, 128.0F, 48.0F, 32.0F);
-    this.texShip = new GTexRegion(localGTexture, 208.0F, 160.0F, 48.0F, 32.0F);
-    this.texArtillery = new GTexRegion(localGTexture, 208.0F, 192.0F, 48.0F, 32.0F);
-    this.texBridge = new GTexRegion(localGTexture, 208.0F, 224.0F, 48.0F, 32.0F);
-    this.texAirStatic = new GTexRegion(localGTexture, 160.0F, 224.0F, 48.0F, 32.0F);
-    this.texRadarRadio = new GTexRegion(localGTexture, 160.0F, 192.0F, 48.0F, 32.0F);
-  }
-
-  public GUIStat(int paramInt) {
-    super(paramInt);
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-    }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-
-      if (paramGWindow == GUIStat.this.bSave) {
-        GUIStat.this.doRecordSave();
-        return true;
-      }if (paramGWindow == GUIStat.this.bRefly) {
-        GUIStat.this.doRefly();
-        return true;
-      }if (paramGWindow == GUIStat.this.bNext) {
-        GUIStat.this.doNext();
-        return true;
-      }if (paramGWindow == GUIStat.this.bExit) {
-        GUIStat.this.doExit();
-        return true;
-      }
-
-      return super.notify(paramGWindow, paramInt1, paramInt2);
-    }
-
-    public void render() {
-      super.render();
-      GUIStat.this.clientRender();
-    }
-    public void setPosSize() {
-      GUIStat.this.clientSetPosSize();
-    }
-  }
-
-  public class ScrollClient extends GWindowScrollingDialogClient
-  {
-    public void render()
-    {
-      GUILookAndFeel localGUILookAndFeel = (GUILookAndFeel)lookAndFeel();
-      setCanvasColorWHITE();
-      localGUILookAndFeel.drawBevel(this, 0.0F, 0.0F, this.win.dx, this.win.dy, localGUILookAndFeel.bevelComboDown, localGUILookAndFeel.basicelements);
-    }
-    public void doChildrensRender(boolean paramBoolean) {
-      GUILookAndFeel localGUILookAndFeel = (GUILookAndFeel)lookAndFeel();
-      GUIStat.this._clipReg.x = localGUILookAndFeel.bevelComboDown.L.dx;
-      GUIStat.this._clipReg.y = localGUILookAndFeel.bevelComboDown.T.dy;
-      GUIStat.this._clipReg.dx = (this.win.dx - localGUILookAndFeel.bevelComboDown.L.dx - localGUILookAndFeel.bevelComboDown.R.dx);
-      GUIStat.this._clipReg.dy = (this.win.dy - localGUILookAndFeel.bevelComboDown.T.dy - localGUILookAndFeel.bevelComboDown.B.dy);
-      if (pushClipRegion(GUIStat.this._clipReg)) {
-        super.doChildrensRender(paramBoolean);
-        popClip();
-      }
-    }
-
-    public ScrollClient(GWindow arg2) {
-      super();
-    }
-  }
-
-  public class FixedClient extends GWindowDialogClient
-  {
-    boolean bAir;
-
-    public void draw(boolean paramBoolean)
-    {
-      setCanvasColorWHITE();
-      float f1 = 16.0F;
-      float f2 = 8.0F;
-      float f3 = 16.0F;
-      float f4 = f1;
-      float f5 = f3;
-      int i;
-      int j;
-      if (this.bAir) {
-        i = Scores.enemyAirKill;
-        j = 0;
-        while (i >= 100) {
-          i -= 100;
-          if (paramBoolean) draw(x1024(f4), y1024(f5), x1024(48.0F), x1024(48.0F), GUIStat.this.texAir[GUIStat.this.iArmy][2]);
-          if (i <= 0) continue; j++;
-          if (j == 10) { f4 = f1; f5 += f3 + 48.0F; j = 0; continue; }
-          f4 += f2 + 48.0F;
-        }
-
-        while (i >= 10) {
-          i -= 10;
-          if (paramBoolean) draw(x1024(f4), y1024(f5), x1024(48.0F), x1024(48.0F), GUIStat.this.texAir[GUIStat.this.iArmy][1]);
-          if (i <= 0) continue; j++;
-          if (j == 10) { f4 = f1; f5 += f3 + 48.0F; j = 0; continue; }
-          f4 += f2 + 48.0F;
-        }
-
-        while (i > 0) {
-          i--;
-          if (paramBoolean) draw(x1024(f4), y1024(f5), x1024(48.0F), y1024(48.0F), GUIStat.this.texAir[GUIStat.this.iArmy][0]);
-          if (i <= 0) continue; j++;
-          if (j == 10) { f4 = f1; f5 += f3 + 48.0F; j = 0; continue; }
-          f4 += f2 + 48.0F;
-        }
-      }
-      else {
-        i = Scores.enemyGroundKill;
-        j = 0;
-        if (Scores.arrayEnemyGroundKill != null)
-          for (int k = 0; k < Scores.arrayEnemyGroundKill.length; k++) {
-            GTexRegion localGTexRegion = null;
-            switch (Scores.arrayEnemyGroundKill[k]) { case 1:
-              localGTexRegion = GUIStat.this.texTank; break;
-            case 2:
-              localGTexRegion = GUIStat.this.texCar; break;
-            case 3:
-              localGTexRegion = GUIStat.this.texArtillery; break;
-            case 4:
-              localGTexRegion = GUIStat.this.texAAA; break;
-            case 6:
-              localGTexRegion = GUIStat.this.texTrain; break;
-            case 7:
-              localGTexRegion = GUIStat.this.texShip; break;
-            case 5:
-              localGTexRegion = GUIStat.this.texBridge; break;
-            case 8:
-              localGTexRegion = GUIStat.this.texAirStatic; break;
-            case 9:
-              localGTexRegion = GUIStat.this.texRadarRadio;
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bSave)
+            {
+                doRecordSave();
+                return true;
             }
-            if (localGTexRegion != null) {
-              i--;
-              if (paramBoolean) draw(x1024(f4), y1024(f5), x1024(48.0F), y1024(32.0F), localGTexRegion);
-              if (i <= 0) continue; j++;
-              if (j == 10) { f4 = f1; f5 += f3 + 32.0F; j = 0; } else {
-                f4 += f2 + 48.0F;
-              }
+            if(gwindow == bRefly)
+            {
+                doRefly();
+                return true;
             }
-          }
-      }
-      if (!paramBoolean) {
-        if (this.bAir) setSize(x1024(f1 + 480.0F + 9.0F * f2), y1024(f5 + 48.0F + f3)); else
-          setSize(x1024(f1 + 480.0F + 9.0F * f2), y1024(f5 + 32.0F + f3));
-        this.parentWindow.resized();
-      }
+            if(gwindow == bNext)
+            {
+                doNext();
+                return true;
+            }
+            if(gwindow == bExit)
+            {
+                doExit();
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
+        }
+
+        public void render()
+        {
+            super.render();
+            clientRender();
+        }
+
+        public void setPosSize()
+        {
+            clientSetPosSize();
+        }
+
+        public DialogClient()
+        {
+        }
     }
 
-    public void render() {
-      draw(true);
-    }
-
-    public FixedClient(boolean arg2)
+    public class ScrollClient extends com.maddox.gwindow.GWindowScrollingDialogClient
     {
-      boolean bool;
-      this.bAir = bool;
+
+        public void render()
+        {
+            com.maddox.il2.gui.GUILookAndFeel guilookandfeel = (com.maddox.il2.gui.GUILookAndFeel)lookAndFeel();
+            setCanvasColorWHITE();
+            guilookandfeel.drawBevel(this, 0.0F, 0.0F, win.dx, win.dy, guilookandfeel.bevelComboDown, guilookandfeel.basicelements);
+        }
+
+        public void doChildrensRender(boolean flag)
+        {
+            com.maddox.il2.gui.GUILookAndFeel guilookandfeel = (com.maddox.il2.gui.GUILookAndFeel)lookAndFeel();
+            _clipReg.x = guilookandfeel.bevelComboDown.L.dx;
+            _clipReg.y = guilookandfeel.bevelComboDown.T.dy;
+            _clipReg.dx = win.dx - guilookandfeel.bevelComboDown.L.dx - guilookandfeel.bevelComboDown.R.dx;
+            _clipReg.dy = win.dy - guilookandfeel.bevelComboDown.T.dy - guilookandfeel.bevelComboDown.B.dy;
+            if(pushClipRegion(_clipReg))
+            {
+                super.doChildrensRender(flag);
+                popClip();
+            }
+        }
+
+        public ScrollClient(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+        }
     }
-  }
+
+    public class FixedClient extends com.maddox.gwindow.GWindowDialogClient
+    {
+
+        public void draw(boolean flag)
+        {
+            setCanvasColorWHITE();
+            float f = 16F;
+            float f1 = 8F;
+            float f2 = 16F;
+            float f3 = f;
+            float f4 = f2;
+            if(bAir)
+            {
+                int i = com.maddox.il2.ai.Scores.enemyAirKill;
+                int k = 0;
+                do
+                {
+                    if(i < 100)
+                        break;
+                    i -= 100;
+                    if(flag)
+                        draw(x1024(f3), y1024(f4), x1024(48F), x1024(48F), texAir[iArmy][2]);
+                    if(i > 0)
+                        if(++k == 10)
+                        {
+                            f3 = f;
+                            f4 += f2 + 48F;
+                            k = 0;
+                        } else
+                        {
+                            f3 += f1 + 48F;
+                        }
+                } while(true);
+                do
+                {
+                    if(i < 10)
+                        break;
+                    i -= 10;
+                    if(flag)
+                        draw(x1024(f3), y1024(f4), x1024(48F), x1024(48F), texAir[iArmy][1]);
+                    if(i > 0)
+                        if(++k == 10)
+                        {
+                            f3 = f;
+                            f4 += f2 + 48F;
+                            k = 0;
+                        } else
+                        {
+                            f3 += f1 + 48F;
+                        }
+                } while(true);
+                do
+                {
+                    if(i <= 0)
+                        break;
+                    i--;
+                    if(flag)
+                        draw(x1024(f3), y1024(f4), x1024(48F), y1024(48F), texAir[iArmy][0]);
+                    if(i > 0)
+                        if(++k == 10)
+                        {
+                            f3 = f;
+                            f4 += f2 + 48F;
+                            k = 0;
+                        } else
+                        {
+                            f3 += f1 + 48F;
+                        }
+                } while(true);
+            } else
+            {
+                int j = com.maddox.il2.ai.Scores.enemyGroundKill;
+                int l = 0;
+                if(com.maddox.il2.ai.Scores.arrayEnemyGroundKill != null)
+                {
+                    for(int i1 = 0; i1 < com.maddox.il2.ai.Scores.arrayEnemyGroundKill.length; i1++)
+                    {
+                        com.maddox.gwindow.GTexRegion gtexregion = null;
+                        switch(com.maddox.il2.ai.Scores.arrayEnemyGroundKill[i1])
+                        {
+                        case 1: // '\001'
+                            gtexregion = texTank;
+                            break;
+
+                        case 2: // '\002'
+                            gtexregion = texCar;
+                            break;
+
+                        case 3: // '\003'
+                            gtexregion = texArtillery;
+                            break;
+
+                        case 4: // '\004'
+                            gtexregion = texAAA;
+                            break;
+
+                        case 6: // '\006'
+                            gtexregion = texTrain;
+                            break;
+
+                        case 7: // '\007'
+                            gtexregion = texShip;
+                            break;
+
+                        case 5: // '\005'
+                            gtexregion = texBridge;
+                            break;
+
+                        case 8: // '\b'
+                            gtexregion = texAirStatic;
+                            break;
+
+                        case 9: // '\t'
+                            gtexregion = texRadarRadio;
+                            break;
+                        }
+                        if(gtexregion == null)
+                            continue;
+                        j--;
+                        if(flag)
+                            draw(x1024(f3), y1024(f4), x1024(48F), y1024(32F), gtexregion);
+                        if(j <= 0)
+                            continue;
+                        if(++l == 10)
+                        {
+                            f3 = f;
+                            f4 += f2 + 32F;
+                            l = 0;
+                        } else
+                        {
+                            f3 += f1 + 48F;
+                        }
+                    }
+
+                }
+            }
+            if(!flag)
+            {
+                if(bAir)
+                    setSize(x1024(f + 480F + 9F * f1), y1024(f4 + 48F + f2));
+                else
+                    setSize(x1024(f + 480F + 9F * f1), y1024(f4 + 32F + f2));
+                parentWindow.resized();
+            }
+        }
+
+        public void render()
+        {
+            draw(true);
+        }
+
+        boolean bAir;
+
+        public FixedClient(boolean flag)
+        {
+            bAir = flag;
+        }
+    }
+
+
+    protected void updateScrollSizes()
+    {
+        airFixed.draw(false);
+        airScroll.updateScrollsPos();
+        groundFixed.draw(false);
+        groundScroll.updateScrollsPos();
+    }
+
+    public void _enter()
+    {
+        com.maddox.il2.ai.Scores.compute();
+        updateScrollSizes();
+        if(com.maddox.il2.net.NetMissionTrack.countRecorded == 0)
+            bSave.showWindow();
+        else
+            bSave.hideWindow();
+        client.activateWindow();
+    }
+
+    public void _leave()
+    {
+        client.hideWindow();
+    }
+
+    protected void tryShowCapturedMessage()
+    {
+        if(!com.maddox.il2.ai.World.isPlayerCaptured())
+        {
+            return;
+        } else
+        {
+            new GWindowMessageBox(client.root, 20F, true, i18n("warning.Warning"), i18n("warning.PlayerCaptured"), 3, -1F);
+            return;
+        }
+    }
+
+    protected void doRecordSave()
+    {
+        com.maddox.il2.game.Main.stateStack().push(9);
+    }
+
+    protected void doRefly()
+    {
+    }
+
+    protected void doNext()
+    {
+    }
+
+    protected void doExit()
+    {
+    }
+
+    protected void clientRender()
+    {
+    }
+
+    protected void clientSetPosSize()
+    {
+    }
+
+    protected void init(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = "Statistic";
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        texStat = new GTexRegion("GUI/game/staticelements.mat", 0.0F, 112F, 64F, 80F);
+        airScroll = new ScrollClient(dialogClient);
+        airScroll.fixed = (com.maddox.gwindow.GWindowDialogClient)airScroll.create(airFixed = new FixedClient(true));
+        groundScroll = new ScrollClient(dialogClient);
+        groundScroll.fixed = (com.maddox.gwindow.GWindowDialogClient)groundScroll.create(groundFixed = new FixedClient(false));
+        bSave = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        bRefly = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        bExit = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        bNext = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 192F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
+        gtexture = com.maddox.gwindow.GTexture.New("GUI/game/score.mat");
+        texAir[0][0] = new GTexRegion(gtexture, 0.0F, 0.0F, 48F, 48F);
+        texAir[0][1] = new GTexRegion(gtexture, 48F, 0.0F, 48F, 48F);
+        texAir[0][2] = new GTexRegion(gtexture, 96F, 0.0F, 48F, 48F);
+        texAir[1][0] = new GTexRegion(gtexture, 0.0F, 48F, 48F, 48F);
+        texAir[1][1] = new GTexRegion(gtexture, 48F, 48F, 48F, 48F);
+        texAir[1][2] = new GTexRegion(gtexture, 96F, 48F, 48F, 48F);
+        texTrain = new GTexRegion(gtexture, 208F, 0.0F, 48F, 32F);
+        texAAA = new GTexRegion(gtexture, 208F, 32F, 48F, 32F);
+        texCar = new GTexRegion(gtexture, 208F, 64F, 48F, 32F);
+        texTank = new GTexRegion(gtexture, 208F, 96F, 48F, 32F);
+        texSub = new GTexRegion(gtexture, 208F, 128F, 48F, 32F);
+        texShip = new GTexRegion(gtexture, 208F, 160F, 48F, 32F);
+        texArtillery = new GTexRegion(gtexture, 208F, 192F, 48F, 32F);
+        texBridge = new GTexRegion(gtexture, 208F, 224F, 48F, 32F);
+        texAirStatic = new GTexRegion(gtexture, 160F, 224F, 48F, 32F);
+        texRadarRadio = new GTexRegion(gtexture, 160F, 192F, 48F, 32F);
+    }
+
+    public GUIStat(int i)
+    {
+        super(i);
+        iArmy = 0;
+        texAir = new com.maddox.gwindow.GTexRegion[2][3];
+        _clipReg = new GRegion();
+    }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.GUIButton bSave;
+    public com.maddox.il2.gui.GUIButton bNext;
+    public com.maddox.il2.gui.GUIButton bRefly;
+    public com.maddox.il2.gui.GUIButton bExit;
+    com.maddox.gwindow.GTexRegion texStat;
+    public com.maddox.il2.gui.FixedClient airFixed;
+    public com.maddox.il2.gui.FixedClient groundFixed;
+    public com.maddox.il2.gui.ScrollClient airScroll;
+    public com.maddox.il2.gui.ScrollClient groundScroll;
+    public int iArmy;
+    com.maddox.gwindow.GTexRegion texAir[][];
+    com.maddox.gwindow.GTexRegion texTank;
+    com.maddox.gwindow.GTexRegion texCar;
+    com.maddox.gwindow.GTexRegion texAAA;
+    com.maddox.gwindow.GTexRegion texTrain;
+    com.maddox.gwindow.GTexRegion texSub;
+    com.maddox.gwindow.GTexRegion texShip;
+    com.maddox.gwindow.GTexRegion texArtillery;
+    com.maddox.gwindow.GTexRegion texBridge;
+    com.maddox.gwindow.GTexRegion texAirStatic;
+    com.maddox.gwindow.GTexRegion texRadarRadio;
+    private com.maddox.gwindow.GRegion _clipReg;
+
 }

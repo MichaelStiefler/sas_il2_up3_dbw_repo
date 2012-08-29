@@ -1,51 +1,69 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GCaption.java
+
 package com.maddox.gwindow;
+
+
+// Referenced classes of package com.maddox.gwindow:
+//            GWindow, GWindowRoot, GCanvas, GFont, 
+//            GSize
 
 public class GCaption
 {
-  public String caption;
-  public int iHotKey;
-  public int offsetHotKey;
-  public char hotKey;
 
-  public void draw(GWindow paramGWindow, float paramFloat1, float paramFloat2, GFont paramGFont)
-  {
-    draw(paramGWindow, paramFloat1, paramFloat2, paramGFont, true);
-  }
-
-  public void draw(GWindow paramGWindow, float paramFloat1, float paramFloat2, GFont paramGFont, boolean paramBoolean) {
-    paramGWindow.root.C.font = paramGFont;
-    paramGWindow.draw(paramFloat1, paramFloat2, this.caption);
-    if ((this.hotKey != 0) && (paramBoolean))
-      paramGWindow.draw(paramFloat1 + offsetHotKey(paramGFont), paramFloat2, "_");
-  }
-
-  public int offsetHotKey(GFont paramGFont)
-  {
-    if (this.offsetHotKey < 0)
-      this.offsetHotKey = (int)paramGFont.size(this.caption, 0, this.iHotKey).dx;
-    return this.offsetHotKey;
-  }
-
-  public void set(String paramString) {
-    int i = paramString.indexOf('&');
-    if (i == 0) {
-      this.caption = paramString.substring(1);
-      this.iHotKey = 0;
-      this.hotKey = paramString.charAt(1);
-    } else if (i > 0) {
-      this.caption = (paramString.substring(0, i) + paramString.substring(i + 1));
-      this.iHotKey = i;
-      this.hotKey = paramString.charAt(i + 1);
-      this.offsetHotKey = -1;
-    } else {
-      this.caption = paramString;
-      this.iHotKey = 0;
-      this.hotKey = '\000';
-      this.offsetHotKey = 0;
+    public void draw(com.maddox.gwindow.GWindow gwindow, float f, float f1, com.maddox.gwindow.GFont gfont)
+    {
+        draw(gwindow, f, f1, gfont, true);
     }
-  }
 
-  public GCaption(String paramString) {
-    set(paramString);
-  }
+    public void draw(com.maddox.gwindow.GWindow gwindow, float f, float f1, com.maddox.gwindow.GFont gfont, boolean flag)
+    {
+        gwindow.root.C.font = gfont;
+        gwindow.draw(f, f1, caption);
+        if(hotKey != 0 && flag)
+            gwindow.draw(f + (float)offsetHotKey(gfont), f1, "_");
+    }
+
+    public int offsetHotKey(com.maddox.gwindow.GFont gfont)
+    {
+        if(offsetHotKey < 0)
+            offsetHotKey = (int)gfont.size(caption, 0, iHotKey).dx;
+        return offsetHotKey;
+    }
+
+    public void set(java.lang.String s)
+    {
+        int i = s.indexOf('&');
+        if(i == 0)
+        {
+            caption = s.substring(1);
+            iHotKey = 0;
+            hotKey = s.charAt(1);
+        } else
+        if(i > 0)
+        {
+            caption = s.substring(0, i) + s.substring(i + 1);
+            iHotKey = i;
+            hotKey = s.charAt(i + 1);
+            offsetHotKey = -1;
+        } else
+        {
+            caption = s;
+            iHotKey = 0;
+            hotKey = '\0';
+            offsetHotKey = 0;
+        }
+    }
+
+    public GCaption(java.lang.String s)
+    {
+        set(s);
+    }
+
+    public java.lang.String caption;
+    public int iHotKey;
+    public int offsetHotKey;
+    public char hotKey;
 }

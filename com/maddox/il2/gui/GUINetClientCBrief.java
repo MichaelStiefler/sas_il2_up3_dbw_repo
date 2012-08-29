@@ -1,8 +1,14 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUINetClientCBrief.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.il2.ai.Army;
+import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.game.GameState;
 import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.Main;
@@ -13,117 +19,165 @@ import com.maddox.rts.RTSConf;
 import com.maddox.rts.SectFile;
 import java.util.ResourceBundle;
 
-public class GUINetClientCBrief extends GUIBriefing
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIBriefing, GUINetClientGuard, GUINetAircraft, GUIButton, 
+//            GUIBriefingGeneric
+
+public class GUINetClientCBrief extends com.maddox.il2.gui.GUIBriefing
 {
-  private String _briefSound = null;
 
-  public void enter(GameState paramGameState) {
-    super.enter(paramGameState);
-    if ((paramGameState != null) && (this.briefSound != null))
-      if (paramGameState.id() == 36) {
-        CmdEnv.top().exec("music PUSH");
-        CmdEnv.top().exec("music LIST " + this.briefSound);
-        CmdEnv.top().exec("music PLAY");
-        this._briefSound = this.briefSound;
-      }
-      else if (paramGameState.id() == 44) {
-        String str = Main.cur().currentMissionFile.get("MAIN", "briefSound" + ((NetUser)NetEnv.host()).getArmy());
-        if (str == null) str = Main.cur().currentMissionFile.get("MAIN", "briefSound");
-        if ((str != null) && (!str.equals(this._briefSound))) {
-          this._briefSound = str;
-          CmdEnv.top().exec("music LIST " + this._briefSound);
-        }
-      }
-  }
-
-  public void leave(GameState paramGameState) {
-    if ((paramGameState != null) && (paramGameState.id() == 48))
+    public void enter(com.maddox.il2.game.GameState gamestate)
     {
-      if (this.briefSound != null) {
-        CmdEnv.top().exec("music POP");
-        CmdEnv.top().exec("music STOP");
-        this.briefSound = null;
-        this._briefSound = null;
-      }
+        super.enter(gamestate);
+        if(gamestate != null && briefSound != null)
+            if(gamestate.id() == 36)
+            {
+                com.maddox.rts.CmdEnv.top().exec("music PUSH");
+                com.maddox.rts.CmdEnv.top().exec("music LIST " + briefSound);
+                com.maddox.rts.CmdEnv.top().exec("music PLAY");
+                _briefSound = briefSound;
+            } else
+            if(gamestate.id() == 44)
+            {
+                java.lang.String s = com.maddox.il2.game.Main.cur().currentMissionFile.get("MAIN", "briefSound" + ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).getArmy());
+                if(s == null)
+                    s = com.maddox.il2.game.Main.cur().currentMissionFile.get("MAIN", "briefSound");
+                if(s != null && !s.equals(_briefSound))
+                {
+                    _briefSound = s;
+                    com.maddox.rts.CmdEnv.top().exec("music LIST " + _briefSound);
+                }
+            }
     }
-    super.leave(paramGameState);
-  }
-  public void leavePop(GameState paramGameState) {
-    if ((paramGameState != null) && (paramGameState.id() == 2) && 
-      (this.briefSound != null)) {
-      CmdEnv.top().exec("music POP");
-      CmdEnv.top().exec("music PLAY");
+
+    public void leave(com.maddox.il2.game.GameState gamestate)
+    {
+        if(gamestate != null && gamestate.id() == 48 && briefSound != null)
+        {
+            com.maddox.rts.CmdEnv.top().exec("music POP");
+            com.maddox.rts.CmdEnv.top().exec("music STOP");
+            briefSound = null;
+            _briefSound = null;
+        }
+        super.leave(gamestate);
     }
 
-    super.leavePop(paramGameState);
-  }
-  protected void fillTextDescription() {
-  }
-
-  public boolean isExistTextDescription() {
-    return this.textDescription != null;
-  }
-  public void clearTextDescription() {
-    this.textDescription = null;
-  }
-  public void setTextDescription(String paramString) {
-    try {
-      ResourceBundle localResourceBundle = ResourceBundle.getBundle(paramString, RTSConf.cur.locale);
-      this.textDescription = localResourceBundle.getString("Description");
-      prepareTextDescription(Army.amountSingle());
-    } catch (Exception localException) {
-      this.textDescription = null;
-      this.textArmyDescription = null;
+    public void leavePop(com.maddox.il2.game.GameState gamestate)
+    {
+        if(gamestate != null && gamestate.id() == 2 && briefSound != null)
+        {
+            com.maddox.rts.CmdEnv.top().exec("music POP");
+            com.maddox.rts.CmdEnv.top().exec("music PLAY");
+        }
+        super.leavePop(gamestate);
     }
-    this.wScrollDescription.resized();
-  }
-  protected String textDescription() {
-    if (this.textArmyDescription == null) return null;
-    if (GUINetAircraft.isSelectedValid()) {
-      return this.textArmyDescription[GUINetAircraft.selectedRegiment().getArmy()];
+
+    protected void fillTextDescription()
+    {
     }
-    return this.textArmyDescription[0];
-  }
 
-  private boolean isValidAircraft() {
-    return false;
-  }
-
-  protected void doNext() {
-    if (!GUINetAircraft.isSelectedValid()) {
-      Main.stateStack().change(44);
-      return;
+    public boolean isExistTextDescription()
+    {
+        return textDescription != null;
     }
-    GUINetAircraft.doFly();
-  }
-  protected void doLoodout() {
-    Main.stateStack().change(44);
-  }
-  protected void doDiff() {
-    Main.stateStack().push(41);
-  }
-  protected void doBack() {
-    GUINetClientGuard localGUINetClientGuard = (GUINetClientGuard)Main.cur().netChannelListener;
-    localGUINetClientGuard.dlgDestroy(new GUINetClientGuard.DestroyExec() {
-      public void destroy(GUINetClientGuard paramGUINetClientGuard) { paramGUINetClientGuard.destroy(true); } } );
-  }
 
-  protected void clientRender() {
-    GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
+    public void clearTextDescription()
+    {
+        textDescription = null;
+    }
 
-    localDialogClient.draw(localDialogClient.x1024(5.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(160.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Disconnect"));
-    localDialogClient.draw(localDialogClient.x1024(194.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Difficulty"));
-    localDialogClient.draw(localDialogClient.x1024(680.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(176.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Aircraft"));
-    super.clientRender();
-  }
-  protected void clientSetPosSize() {
-    GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
+    public void setTextDescription(java.lang.String s)
+    {
+        try
+        {
+            java.util.ResourceBundle resourcebundle = java.util.ResourceBundle.getBundle(s, com.maddox.rts.RTSConf.cur.locale);
+            textDescription = resourcebundle.getString("Description");
+            prepareTextDescription(com.maddox.il2.ai.Army.amountSingle());
+        }
+        catch(java.lang.Exception exception)
+        {
+            textDescription = null;
+            textArmyDescription = null;
+        }
+        wScrollDescription.resized();
+    }
 
-    this.bLoodout.setPosC(localDialogClient.x1024(768.0F), localDialogClient.y1024(689.0F));
-  }
+    protected java.lang.String textDescription()
+    {
+        if(textArmyDescription == null)
+            return null;
+        if(com.maddox.il2.gui.GUINetAircraft.isSelectedValid())
+            return textArmyDescription[com.maddox.il2.gui.GUINetAircraft.selectedRegiment().getArmy()];
+        else
+            return textArmyDescription[0];
+    }
 
-  public GUINetClientCBrief(GWindowRoot paramGWindowRoot) {
-    super(46);
-    init(paramGWindowRoot);
-  }
+    private boolean isValidAircraft()
+    {
+        return false;
+    }
+
+    protected void doNext()
+    {
+        if(!com.maddox.il2.gui.GUINetAircraft.isSelectedValid())
+        {
+            com.maddox.il2.game.Main.stateStack().change(44);
+            return;
+        } else
+        {
+            com.maddox.il2.gui.GUINetAircraft.doFly();
+            return;
+        }
+    }
+
+    protected void doLoodout()
+    {
+        com.maddox.il2.game.Main.stateStack().change(44);
+    }
+
+    protected void doDiff()
+    {
+        com.maddox.il2.game.Main.stateStack().push(41);
+    }
+
+    protected void doBack()
+    {
+        com.maddox.il2.gui.GUINetClientGuard guinetclientguard = (com.maddox.il2.gui.GUINetClientGuard)com.maddox.il2.game.Main.cur().netChannelListener;
+        guinetclientguard.dlgDestroy(new com.maddox.il2.gui.GUINetClientGuard.DestroyExec() {
+
+            public void destroy(com.maddox.il2.gui.GUINetClientGuard guinetclientguard1)
+            {
+                guinetclientguard1.destroy(true);
+            }
+
+        }
+);
+    }
+
+    protected void clientRender()
+    {
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient dialogclient = dialogClient;
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp = dialogclient;
+        dialogclient.draw(dialogclient.x1024(5F), dialogclient.y1024(633F), dialogclient.x1024(160F), dialogclient.y1024(48F), 1, i18n("brief.Disconnect"));
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp1 = dialogclient;
+        dialogclient.draw(dialogclient.x1024(194F), dialogclient.y1024(633F), dialogclient.x1024(208F), dialogclient.y1024(48F), 1, i18n("brief.Difficulty"));
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp2 = dialogclient;
+        dialogclient.draw(dialogclient.x1024(680F), dialogclient.y1024(633F), dialogclient.x1024(176F), dialogclient.y1024(48F), 1, i18n("brief.Aircraft"));
+        super.clientRender();
+    }
+
+    protected void clientSetPosSize()
+    {
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient dialogclient = dialogClient;
+        bLoodout.setPosC(dialogclient.x1024(768F), dialogclient.y1024(689F));
+    }
+
+    public GUINetClientCBrief(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(46);
+        _briefSound = null;
+        init(gwindowroot);
+    }
+
+    private java.lang.String _briefSound;
 }

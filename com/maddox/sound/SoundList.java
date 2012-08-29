@@ -1,26 +1,38 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SoundList.java
+
 package com.maddox.sound;
+
+
+// Referenced classes of package com.maddox.sound:
+//            SoundFX
 
 public class SoundList
 {
-  protected SoundFX first;
 
-  public SoundList()
-  {
-    this.first = null;
-  }
+    public SoundList()
+    {
+        first = null;
+    }
 
-  public SoundFX get()
-  {
-    return this.first;
-  }
+    public com.maddox.sound.SoundFX get()
+    {
+        return first;
+    }
 
-  public void clear()
-  {
-    while (this.first != null) this.first.remove();
-  }
+    public void clear()
+    {
+        while(first != null) 
+            first.remove();
+    }
 
-  public void destroy()
-  {
-    while (this.first != null) this.first.destroy();
-  }
+    public void destroy()
+    {
+        while(first != null) 
+            first.destroy();
+    }
+
+    protected com.maddox.sound.SoundFX first;
 }

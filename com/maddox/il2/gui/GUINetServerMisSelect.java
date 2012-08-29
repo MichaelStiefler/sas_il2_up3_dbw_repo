@@ -1,16 +1,21 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUINetServerMisSelect.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GCanvas;
 import com.maddox.gwindow.GColor;
 import com.maddox.gwindow.GFont;
 import com.maddox.gwindow.GRegion;
-import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowComboControl;
 import com.maddox.gwindow.GWindowLookAndFeel;
 import com.maddox.gwindow.GWindowMessageBox;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
+import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.UserCfg;
 import com.maddox.il2.ai.World;
@@ -41,391 +46,470 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class GUINetServerMisSelect extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUILookAndFeel, 
+//            GUIButton, GUIDialogClient, GUINetServer, GUISeparate, 
+//            GUINetAircraft
+
+public class GUINetServerMisSelect extends com.maddox.il2.game.GameState
 {
-  public static final String HOME_DIR = "missions/net";
-  public static final String HOME_DIR_DOGFIGHT = "missions/net/dogfight";
-  public static final String HOME_DIR_COOP = "missions/net/coop";
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GUIButton wPrev;
-  public GUIButton wDifficulty;
-  public GUIButton wNext;
-  public GWindowComboControl wDirs;
-  public Table wTable;
-  public WDescript wDescript;
-  private GWindowMessageBox loadMessageBox;
-  public TreeMap _scanMap = new TreeMap();
-
-  private void doLoadMission()
-  {
-    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("netsms.StandBy"), i18n("netsms.Loading_simulation"), 5, 0.0F)
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-      public void result(int paramInt)
-      {
-        if (paramInt == 1)
-          BackgroundTask.cancel(I18N.gui("miss.UserCancel"));
-      }
-    };
-    new MsgAction(72, 0.0D) {
-      public void doAction() { if (Mission.cur() != null) Mission.cur().destroy(); try
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
         {
-          new GUINetServerMisSelect.MissionListener(GUINetServerMisSelect.this);
-          Mission.loadFromSect(Main.cur().currentMissionFile, true);
-        } catch (Exception localException) {
-          System.out.println(localException.getMessage());
-          localException.printStackTrace();
-          GUINetServerMisSelect.this.missionBad(I18N.gui("miss.LoadBad"));
-        }
-      }
-    };
-  }
-
-  public void missionLoaded()
-  {
-    new MsgAction(72, 0.0D) {
-      public void doAction() { GUIWindowManager localGUIWindowManager = Main3D.cur3D().guiManager;
-        if (GUINetServerMisSelect.this.loadMessageBox != null) {
-          GUINetServerMisSelect.this.loadMessageBox.close(false);
-          GUINetServerMisSelect.access$102(GUINetServerMisSelect.this, null);
-        }
-        if (Main.cur().netServerParams.isDogfight()) {
-          ((NetUser)NetEnv.host()).setBornPlace(-1);
-          CmdEnv.top().exec("mission BEGIN");
-          Main.stateStack().change(39);
-        } else if (Main.cur().netServerParams.isCoop()) {
-          ((NetUser)NetEnv.host()).resetAllPlaces();
-          CmdEnv.top().exec("mission BEGIN");
-          int i = GUINetAircraft.serverPlace();
-          if (i != -1)
-            ((NetUser)NetEnv.host()).requestPlace(i);
-          Main.stateStack().change(45);
-        } } } ;
-  }
-
-  private void missionBad(String paramString) {
-    this.loadMessageBox.close(false);
-    this.loadMessageBox = null;
-    new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("netsms.Error"), paramString, 3, 0.0F) {
-      public void result(int paramInt) {
-      }
-    };
-  }
-
-  public String HOME_DIR() {
-    if (Main.cur().netServerParams.isCoop())
-      return "missions/net/coop";
-    if (Main.cur().netServerParams.isDogfight()) {
-      return "missions/net/dogfight";
-    }
-    return "missions/net";
-  }
-
-  public void enter(GameState paramGameState) {
-    World.cur().diffCur.set(World.cur().userCfg.netDifficulty);
-    Main.cur().netServerParams.setDifficulty(World.cur().diffCur.get());
-    if (paramGameState.id() == 35) {
-      _enter();
-    } else {
-      if (Main.cur().netServerParams.isCoop()) {
-        NetEnv.cur().connect.bindEnable(true);
-
-        Main.cur().netServerParams.USGSupdate();
-      }
-      this.client.activateWindow();
-    }
-  }
-
-  public void enterPop(GameState paramGameState) {
-    if (paramGameState.id() == 41) {
-      World.cur().userCfg.netDifficulty = World.cur().diffCur.get();
-      World.cur().userCfg.saveConf();
-      Main.cur().netServerParams.setDifficulty(World.cur().diffCur.get());
-    }
-    this.client.activateWindow();
-  }
-
-  public void _enter() {
-    fillDirs();
-    if (Main.cur().netServerParams.isCoop()) {
-      this.infoMenu.info = i18n("netsms.infoC");
-      NetEnv.cur().connect.bindEnable(true);
-
-      Main.cur().netServerParams.USGSupdate();
-    } else if (Main.cur().netServerParams.isDogfight()) {
-      this.infoMenu.info = i18n("netsms.infoD");
-    } else {
-      this.infoMenu.info = i18n("netsms.infoM");
-    }
-    this.client.activateWindow();
-  }
-  public void _leave() {
-    this.client.hideWindow();
-  }
-
-  public void fillDirs() {
-    File localFile = new File(HomePath.get(0), HOME_DIR());
-    File[] arrayOfFile = localFile.listFiles();
-    this.wDirs.clear(false);
-    if ((arrayOfFile == null) || (arrayOfFile.length == 0)) {
-      this.wTable.files.clear();
-      this.wTable.setSelect(-1, 0);
-      return;
-    }
-    for (int i = 0; i < arrayOfFile.length; i++) {
-      if ((!arrayOfFile[i].isDirectory()) || (arrayOfFile[i].isHidden()) || (".".equals(arrayOfFile[i].getName())) || ("..".equals(arrayOfFile[i].getName()))) {
-        continue;
-      }
-      this._scanMap.put(arrayOfFile[i].getName(), null);
-    }
-    Iterator localIterator = this._scanMap.keySet().iterator();
-    while (localIterator.hasNext())
-      this.wDirs.add((String)localIterator.next());
-    if (this._scanMap.size() > 0)
-      this.wDirs.setSelected(0, true, false);
-    this._scanMap.clear();
-    fillFiles();
-  }
-
-  public void fillFiles()
-  {
-    this.wTable.files.clear();
-    String str1 = this.wDirs.getValue();
-    if (str1 != null) {
-      String str2 = HOME_DIR() + "/" + str1;
-      File localFile = new File(HomePath.get(0), str2);
-      File[] arrayOfFile = localFile.listFiles();
-      if ((arrayOfFile != null) && (arrayOfFile.length > 0)) {
-        for (int i = 0; i < arrayOfFile.length; i++) {
-          if ((arrayOfFile[i].isDirectory()) || (arrayOfFile[i].isHidden()) || (arrayOfFile[i].getName().toLowerCase().lastIndexOf(".properties") >= 0)) {
-            continue;
-          }
-          FileMission localFileMission = new FileMission(str2, arrayOfFile[i].getName());
-          this._scanMap.put(localFileMission.fileName, localFileMission);
+            if(i != 2 || loadMessageBox != null)
+                return super.notify(gwindow, i, j);
+            if(gwindow == wPrev)
+            {
+                com.maddox.il2.gui.GUINetServer.exitServer(true);
+                return true;
+            }
+            if(gwindow == wDirs)
+            {
+                fillFiles();
+                return true;
+            }
+            if(gwindow == wDifficulty)
+            {
+                com.maddox.il2.game.Main.stateStack().push(41);
+                return true;
+            }
+            if(gwindow == wNext)
+            {
+                if(wDirs.getValue() == null)
+                    return true;
+                int k = wTable.selectRow;
+                if(k < 0 || k >= wTable.files.size())
+                {
+                    return true;
+                } else
+                {
+                    com.maddox.il2.gui.FileMission filemission = (com.maddox.il2.gui.FileMission)wTable.files.get(k);
+                    com.maddox.il2.game.Main.cur().currentMissionFile = new SectFile(HOME_DIR() + "/" + wDirs.getValue() + "/" + filemission.fileName, 0);
+                    doLoadMission();
+                    return true;
+                }
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
         }
 
-        Iterator localIterator = this._scanMap.keySet().iterator();
-        while (localIterator.hasNext())
-          this.wTable.files.add(this._scanMap.get(localIterator.next()));
-        if (this._scanMap.size() > 0)
-          this.wTable.setSelect(0, 0);
+        public void render()
+        {
+            super.render();
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(432F), y1024(546F), x1024(384F), 2.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(416F), y1024(32F), 2.0F, y1024(608F));
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(64F), y1024(156F), x1024(240F), y1024(32F), 0, i18n("netsms.MissionType"));
+            draw(x1024(64F), y1024(264F), x1024(240F), y1024(32F), 0, i18n("netsms.Missions"));
+            draw(x1024(464F), y1024(264F), x1024(248F), y1024(32F), 0, i18n("netsms.Description"));
+            draw(x1024(104F), y1024(592F), x1024(192F), y1024(48F), 0, !com.maddox.il2.net.USGS.isUsed() && com.maddox.il2.game.Main.cur().netGameSpy == null ? i18n("netsms.MainMenu") : i18n("main.Quit"));
+            draw(x1024(496F), y1024(592F), x1024(128F), y1024(48F), 0, i18n("brief.Difficulty"));
+            draw(x1024(528F), y1024(592F), x1024(216F), y1024(48F), 2, i18n("netsms.Load"));
+        }
+
+        public void setPosSize()
+        {
+            set1024PosSize(80F, 64F, 848F, 672F);
+            wPrev.setPosC(x1024(56F), y1024(616F));
+            wDifficulty.setPosC(x1024(456F), y1024(616F));
+            wNext.setPosC(x1024(792F), y1024(616F));
+            wDirs.setPosSize(x1024(48F), y1024(192F), x1024(336F), M(2.0F));
+            wTable.setPosSize(x1024(48F), y1024(304F), x1024(336F), y1024(256F));
+            wDescript.setPosSize(x1024(448F), y1024(312F), x1024(354F), y1024(212F));
+        }
+
+        public DialogClient()
+        {
+        }
+    }
+
+    public class WDescript extends com.maddox.gwindow.GWindow
+    {
+
+        public void render()
+        {
+            java.lang.String s = null;
+            if(wTable.selectRow >= 0)
+            {
+                s = ((com.maddox.il2.gui.FileMission)wTable.files.get(wTable.selectRow)).description;
+                if(s != null && s.length() == 0)
+                    s = null;
+            }
+            if(s != null)
+            {
+                setCanvasFont(0);
+                setCanvasColorBLACK();
+                drawLines(0.0F, -root.C.font.descender, s, 0, s.length(), win.dx, root.C.font.height);
+            }
+        }
+
+        public WDescript()
+        {
+        }
+    }
+
+    public class Table extends com.maddox.gwindow.GWindowTable
+    {
+
+        public int countRows()
+        {
+            return files == null ? 0 : files.size();
+        }
+
+        public void renderCell(int i, int j, boolean flag, float f, float f1)
+        {
+            setCanvasFont(0);
+            java.lang.String s = ((com.maddox.il2.gui.FileMission)files.get(i)).name;
+            if(flag)
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
+                setCanvasColorWHITE();
+                draw(0.0F, 0.0F, f, f1, 0, s);
+            } else
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, 0, s);
+            }
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            bColumnsSizable = false;
+            addColumn(com.maddox.il2.game.I18N.gui("netsms.Mission_files"), null);
+            vSB.scroll = rowHeight(0);
+            resized();
+        }
+
+        public void resolutionChanged()
+        {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
+        }
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(super.notify(gwindow, i, j))
+            {
+                return true;
+            } else
+            {
+                notify(i, j);
+                return false;
+            }
+        }
+
+        public java.util.ArrayList files;
+
+        public Table(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow, 2.0F, 4F, 20F, 16F);
+            files = new ArrayList();
+            bNotify = true;
+            wClient.bNotify = true;
+        }
+    }
+
+    static class FileMission
+    {
+
+        public java.lang.String fileName;
+        public java.lang.String name;
+        public java.lang.String description;
+
+        public FileMission(java.lang.String s, java.lang.String s1)
+        {
+            fileName = s1;
+            try
+            {
+                java.lang.String s2 = s1;
+                int i = s2.lastIndexOf(".");
+                if(i >= 0)
+                    s2 = s2.substring(0, i);
+                java.util.ResourceBundle resourcebundle = java.util.ResourceBundle.getBundle(s + "/" + s2, com.maddox.rts.RTSConf.cur.locale);
+                name = resourcebundle.getString("Name");
+                description = resourcebundle.getString("Short");
+            }
+            catch(java.lang.Exception exception)
+            {
+                name = s1;
+                description = null;
+            }
+        }
+    }
+
+    class MissionListener
+        implements com.maddox.rts.MsgBackgroundTaskListener
+    {
+
+        public void msgBackgroundTaskStarted(com.maddox.rts.BackgroundTask backgroundtask)
+        {
+        }
+
+        public void msgBackgroundTaskStep(com.maddox.rts.BackgroundTask backgroundtask)
+        {
+            loadMessageBox.message = (int)backgroundtask.percentComplete() + "% " + com.maddox.il2.game.I18N.gui(backgroundtask.messageComplete());
+        }
+
+        public void msgBackgroundTaskStoped(com.maddox.rts.BackgroundTask backgroundtask)
+        {
+            com.maddox.rts.BackgroundTask.removeListener(this);
+            if(backgroundtask.isComplete())
+                missionLoaded();
+            else
+                missionBad(com.maddox.il2.game.I18N.gui("miss.LoadBad") + " " + backgroundtask.messageCancel());
+        }
+
+        public MissionListener()
+        {
+            com.maddox.rts.BackgroundTask.addListener(this);
+        }
+    }
+
+
+    private void doLoadMission()
+    {
+        loadMessageBox = new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("netsms.StandBy"), i18n("netsms.Loading_simulation"), 5, 0.0F) {
+
+            public void result(int i)
+            {
+                if(i == 1)
+                    com.maddox.rts.BackgroundTask.cancel(com.maddox.il2.game.I18N.gui("miss.UserCancel"));
+            }
+
+        }
+;
+        new com.maddox.rts.MsgAction(72, 0.0D) {
+
+            public void doAction()
+            {
+                if(com.maddox.il2.game.Mission.cur() != null)
+                    com.maddox.il2.game.Mission.cur().destroy();
+                try
+                {
+                    new MissionListener();
+                    com.maddox.il2.game.Mission.loadFromSect(com.maddox.il2.game.Main.cur().currentMissionFile, true);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    java.lang.System.out.println(exception.getMessage());
+                    exception.printStackTrace();
+                    missionBad(com.maddox.il2.game.I18N.gui("miss.LoadBad"));
+                }
+            }
+
+        }
+;
+    }
+
+    public void missionLoaded()
+    {
+        new com.maddox.rts.MsgAction(72, 0.0D) {
+
+            public void doAction()
+            {
+                com.maddox.il2.engine.GUIWindowManager guiwindowmanager = com.maddox.il2.game.Main3D.cur3D().guiManager;
+                if(loadMessageBox != null)
+                {
+                    loadMessageBox.close(false);
+                    loadMessageBox = null;
+                }
+                if(com.maddox.il2.game.Main.cur().netServerParams.isDogfight())
+                {
+                    ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).setBornPlace(-1);
+                    com.maddox.rts.CmdEnv.top().exec("mission BEGIN");
+                    com.maddox.il2.game.Main.stateStack().change(39);
+                } else
+                if(com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+                {
+                    ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).resetAllPlaces();
+                    com.maddox.rts.CmdEnv.top().exec("mission BEGIN");
+                    int i = com.maddox.il2.gui.GUINetAircraft.serverPlace();
+                    if(i != -1)
+                        ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).requestPlace(i);
+                    com.maddox.il2.game.Main.stateStack().change(45);
+                }
+            }
+
+        }
+;
+    }
+
+    private void missionBad(java.lang.String s)
+    {
+        loadMessageBox.close(false);
+        loadMessageBox = null;
+        new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("netsms.Error"), s, 3, 0.0F) {
+
+            public void result(int i)
+            {
+            }
+
+        }
+;
+    }
+
+    public java.lang.String HOME_DIR()
+    {
+        if(com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+            return "missions/net/coop";
+        if(com.maddox.il2.game.Main.cur().netServerParams.isDogfight())
+            return "missions/net/dogfight";
         else
-          this.wTable.setSelect(-1, 0);
-        this._scanMap.clear();
-      } else {
-        this.wTable.setSelect(-1, 0);
-      }
-    } else {
-      this.wTable.setSelect(-1, 0);
+            return "missions/net";
     }
-    this.wTable.resized();
-  }
 
-  public GUINetServerMisSelect(GWindowRoot paramGWindowRoot)
-  {
-    super(38);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("netsms.infoM");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.wDirs = ((GWindowComboControl)this.dialogClient.addControl(new GWindowComboControl(this.dialogClient, 2.0F, 2.0F, 20.0F + paramGWindowRoot.lookAndFeel().getHScrollBarW() / paramGWindowRoot.lookAndFeel().metric())));
-
-    this.wDirs.setEditable(false);
-    this.wTable = new Table(this.dialogClient);
-
-    this.dialogClient.create(this.wDescript = new WDescript());
-    this.wDescript.bNotify = true;
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-
-    this.wPrev = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.wDifficulty = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.wNext = ((GUIButton)this.dialogClient.addDefault(new GUIButton(this.dialogClient, localGTexture, 0.0F, 192.0F, 48.0F, 48.0F)));
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
+    public void enter(com.maddox.il2.game.GameState gamestate)
     {
+        com.maddox.il2.ai.World.cur().diffCur.set(com.maddox.il2.ai.World.cur().userCfg.netDifficulty);
+        com.maddox.il2.game.Main.cur().netServerParams.setDifficulty(com.maddox.il2.ai.World.cur().diffCur.get());
+        if(gamestate.id() == 35)
+        {
+            _enter();
+        } else
+        {
+            if(com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+            {
+                com.maddox.rts.NetEnv.cur().connect.bindEnable(true);
+                com.maddox.il2.game.Main.cur().netServerParams.USGSupdate();
+            }
+            client.activateWindow();
+        }
     }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
+    public void enterPop(com.maddox.il2.game.GameState gamestate)
     {
-      if ((paramInt1 != 2) || (GUINetServerMisSelect.this.loadMessageBox != null)) {
-        return super.notify(paramGWindow, paramInt1, paramInt2);
-      }
-      if (paramGWindow == GUINetServerMisSelect.this.wPrev) {
-        GUINetServer.exitServer(true);
-        return true;
-      }if (paramGWindow == GUINetServerMisSelect.this.wDirs) {
-        GUINetServerMisSelect.this.fillFiles();
-        return true;
-      }if (paramGWindow == GUINetServerMisSelect.this.wDifficulty) {
-        Main.stateStack().push(41);
-        return true;
-      }if (paramGWindow == GUINetServerMisSelect.this.wNext) {
-        if (GUINetServerMisSelect.this.wDirs.getValue() == null) return true;
-        int i = GUINetServerMisSelect.this.wTable.selectRow;
-        if ((i < 0) || (i >= GUINetServerMisSelect.this.wTable.files.size())) return true;
-        GUINetServerMisSelect.FileMission localFileMission = (GUINetServerMisSelect.FileMission)GUINetServerMisSelect.this.wTable.files.get(i);
-
-        Main.cur().currentMissionFile = new SectFile(GUINetServerMisSelect.this.HOME_DIR() + "/" + GUINetServerMisSelect.this.wDirs.getValue() + "/" + localFileMission.fileName, 0);
-
-        GUINetServerMisSelect.this.doLoadMission();
-        return true;
-      }
-
-      return super.notify(paramGWindow, paramInt1, paramInt2);
+        if(gamestate.id() == 41)
+        {
+            com.maddox.il2.ai.World.cur().userCfg.netDifficulty = com.maddox.il2.ai.World.cur().diffCur.get();
+            com.maddox.il2.ai.World.cur().userCfg.saveConf();
+            com.maddox.il2.game.Main.cur().netServerParams.setDifficulty(com.maddox.il2.ai.World.cur().diffCur.get());
+        }
+        client.activateWindow();
     }
 
-    public void render() {
-      super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(432.0F), y1024(546.0F), x1024(384.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(416.0F), y1024(32.0F), 2.0F, y1024(608.0F));
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-      draw(x1024(64.0F), y1024(156.0F), x1024(240.0F), y1024(32.0F), 0, GUINetServerMisSelect.this.i18n("netsms.MissionType"));
-      draw(x1024(64.0F), y1024(264.0F), x1024(240.0F), y1024(32.0F), 0, GUINetServerMisSelect.this.i18n("netsms.Missions"));
-      draw(x1024(464.0F), y1024(264.0F), x1024(248.0F), y1024(32.0F), 0, GUINetServerMisSelect.this.i18n("netsms.Description"));
-
-      draw(x1024(104.0F), y1024(592.0F), x1024(192.0F), y1024(48.0F), 0, (USGS.isUsed()) || (Main.cur().netGameSpy != null) ? GUINetServerMisSelect.this.i18n("main.Quit") : GUINetServerMisSelect.this.i18n("netsms.MainMenu"));
-
-      draw(x1024(496.0F), y1024(592.0F), x1024(128.0F), y1024(48.0F), 0, GUINetServerMisSelect.this.i18n("brief.Difficulty"));
-      draw(x1024(528.0F), y1024(592.0F), x1024(216.0F), y1024(48.0F), 2, GUINetServerMisSelect.this.i18n("netsms.Load"));
-    }
-
-    public void setPosSize() {
-      set1024PosSize(80.0F, 64.0F, 848.0F, 672.0F);
-      GUINetServerMisSelect.this.wPrev.setPosC(x1024(56.0F), y1024(616.0F));
-      GUINetServerMisSelect.this.wDifficulty.setPosC(x1024(456.0F), y1024(616.0F));
-      GUINetServerMisSelect.this.wNext.setPosC(x1024(792.0F), y1024(616.0F));
-      GUINetServerMisSelect.this.wDirs.setPosSize(x1024(48.0F), y1024(192.0F), x1024(336.0F), M(2.0F));
-      GUINetServerMisSelect.this.wTable.setPosSize(x1024(48.0F), y1024(304.0F), x1024(336.0F), y1024(256.0F));
-      GUINetServerMisSelect.this.wDescript.setPosSize(x1024(448.0F), y1024(312.0F), x1024(354.0F), y1024(212.0F));
-    }
-  }
-
-  public class WDescript extends GWindow
-  {
-    public WDescript()
+    public void _enter()
     {
+        fillDirs();
+        if(com.maddox.il2.game.Main.cur().netServerParams.isCoop())
+        {
+            infoMenu.info = i18n("netsms.infoC");
+            com.maddox.rts.NetEnv.cur().connect.bindEnable(true);
+            com.maddox.il2.game.Main.cur().netServerParams.USGSupdate();
+        } else
+        if(com.maddox.il2.game.Main.cur().netServerParams.isDogfight())
+            infoMenu.info = i18n("netsms.infoD");
+        else
+            infoMenu.info = i18n("netsms.infoM");
+        client.activateWindow();
     }
 
-    public void render()
+    public void _leave()
     {
-      String str = null;
-      if (GUINetServerMisSelect.this.wTable.selectRow >= 0) {
-        str = ((GUINetServerMisSelect.FileMission)GUINetServerMisSelect.this.wTable.files.get(GUINetServerMisSelect.this.wTable.selectRow)).description;
-        if ((str != null) && (str.length() == 0)) str = null;
-      }
-      if (str != null) {
-        setCanvasFont(0);
-        setCanvasColorBLACK();
-        drawLines(0.0F, -this.root.C.font.descender, str, 0, str.length(), this.win.dx, this.root.C.font.height);
-      }
-    }
-  }
-
-  public class Table extends GWindowTable
-  {
-    public ArrayList files = new ArrayList();
-
-    public int countRows() { return this.files != null ? this.files.size() : 0; }
-
-    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-      setCanvasFont(0);
-      String str = ((GUINetServerMisSelect.FileMission)this.files.get(paramInt1)).name;
-      if (paramBoolean) {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, lookAndFeel().regionWhite);
-        setCanvasColorWHITE();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, 0, str);
-      }
-      else
-      {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, 0, str);
-      }
+        client.hideWindow();
     }
 
-    public void afterCreated() {
-      super.afterCreated();
-      this.bColumnsSizable = false;
-      addColumn(I18N.gui("netsms.Mission_files"), null);
-      this.vSB.scroll = rowHeight(0);
-      resized();
-    }
-
-    public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
-    }
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-      if (super.notify(paramGWindow, paramInt1, paramInt2))
-        return true;
-      notify(paramInt1, paramInt2);
-      return false;
-    }
-    public Table(GWindow arg2) {
-      super(2.0F, 4.0F, 20.0F, 16.0F);
-      this.bNotify = true;
-      this.wClient.bNotify = true;
-    }
-  }
-
-  static class FileMission
-  {
-    public String fileName;
-    public String name;
-    public String description;
-
-    public FileMission(String paramString1, String paramString2)
+    public void fillDirs()
     {
-      this.fileName = paramString2;
-      try {
-        String str = paramString2;
-        int i = str.lastIndexOf(".");
-        if (i >= 0)
-          str = str.substring(0, i);
-        ResourceBundle localResourceBundle = ResourceBundle.getBundle(paramString1 + "/" + str, RTSConf.cur.locale);
-        this.name = localResourceBundle.getString("Name");
-        this.description = localResourceBundle.getString("Short");
-      } catch (Exception localException) {
-        this.name = paramString2;
-        this.description = null;
-      }
-    }
-  }
+        java.io.File file = new File(com.maddox.rts.HomePath.get(0), HOME_DIR());
+        java.io.File afile[] = file.listFiles();
+        wDirs.clear(false);
+        if(afile == null || afile.length == 0)
+        {
+            wTable.files.clear();
+            wTable.setSelect(-1, 0);
+            return;
+        }
+        for(int i = 0; i < afile.length; i++)
+            if(afile[i].isDirectory() && !afile[i].isHidden() && !".".equals(afile[i].getName()) && !"..".equals(afile[i].getName()))
+                _scanMap.put(afile[i].getName(), null);
 
-  class MissionListener
-    implements MsgBackgroundTaskListener
-  {
-    public void msgBackgroundTaskStarted(BackgroundTask paramBackgroundTask)
+        for(java.util.Iterator iterator = _scanMap.keySet().iterator(); iterator.hasNext(); wDirs.add((java.lang.String)iterator.next()));
+        if(_scanMap.size() > 0)
+            wDirs.setSelected(0, true, false);
+        _scanMap.clear();
+        fillFiles();
+    }
+
+    public void fillFiles()
     {
+        wTable.files.clear();
+        java.lang.String s = wDirs.getValue();
+        if(s != null)
+        {
+            java.lang.String s1 = HOME_DIR() + "/" + s;
+            java.io.File file = new File(com.maddox.rts.HomePath.get(0), s1);
+            java.io.File afile[] = file.listFiles();
+            if(afile != null && afile.length > 0)
+            {
+                for(int i = 0; i < afile.length; i++)
+                    if(!afile[i].isDirectory() && !afile[i].isHidden() && afile[i].getName().toLowerCase().lastIndexOf(".properties") < 0)
+                    {
+                        com.maddox.il2.gui.FileMission filemission = new FileMission(s1, afile[i].getName());
+                        _scanMap.put(filemission.fileName, filemission);
+                    }
+
+                for(java.util.Iterator iterator = _scanMap.keySet().iterator(); iterator.hasNext(); wTable.files.add(_scanMap.get(iterator.next())));
+                if(_scanMap.size() > 0)
+                    wTable.setSelect(0, 0);
+                else
+                    wTable.setSelect(-1, 0);
+                _scanMap.clear();
+            } else
+            {
+                wTable.setSelect(-1, 0);
+            }
+        } else
+        {
+            wTable.setSelect(-1, 0);
+        }
+        wTable.resized();
     }
 
-    public void msgBackgroundTaskStep(BackgroundTask paramBackgroundTask)
+    public GUINetServerMisSelect(com.maddox.gwindow.GWindowRoot gwindowroot)
     {
-      GUINetServerMisSelect.this.loadMessageBox.message = ((int)paramBackgroundTask.percentComplete() + "% " + I18N.gui(paramBackgroundTask.messageComplete()));
+        super(38);
+        _scanMap = new TreeMap();
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("netsms.infoM");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        wDirs = (com.maddox.gwindow.GWindowComboControl)dialogClient.addControl(new GWindowComboControl(dialogClient, 2.0F, 2.0F, 20F + gwindowroot.lookAndFeel().getHScrollBarW() / gwindowroot.lookAndFeel().metric()));
+        wDirs.setEditable(false);
+        wTable = new Table(dialogClient);
+        dialogClient.create(wDescript = new WDescript());
+        wDescript.bNotify = true;
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        wPrev = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        wDifficulty = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        wNext = (com.maddox.il2.gui.GUIButton)dialogClient.addDefault(new GUIButton(dialogClient, gtexture, 0.0F, 192F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
     }
 
-    public void msgBackgroundTaskStoped(BackgroundTask paramBackgroundTask)
-    {
-      BackgroundTask.removeListener(this);
-      if (paramBackgroundTask.isComplete())
-        GUINetServerMisSelect.this.missionLoaded();
-      else
-        GUINetServerMisSelect.this.missionBad(I18N.gui("miss.LoadBad") + " " + paramBackgroundTask.messageCancel());
-    }
+    public static final java.lang.String HOME_DIR = "missions/net";
+    public static final java.lang.String HOME_DIR_DOGFIGHT = "missions/net/dogfight";
+    public static final java.lang.String HOME_DIR_COOP = "missions/net/coop";
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.GUIButton wPrev;
+    public com.maddox.il2.gui.GUIButton wDifficulty;
+    public com.maddox.il2.gui.GUIButton wNext;
+    public com.maddox.gwindow.GWindowComboControl wDirs;
+    public com.maddox.il2.gui.Table wTable;
+    public com.maddox.il2.gui.WDescript wDescript;
+    private com.maddox.gwindow.GWindowMessageBox loadMessageBox;
+    public java.util.TreeMap _scanMap;
 
-    public MissionListener() {
-      BackgroundTask.addListener(this);
-    }
-  }
+
+
+
 }

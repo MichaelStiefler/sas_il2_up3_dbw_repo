@@ -1,63 +1,92 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowCheckBox.java
+
 package com.maddox.gwindow;
 
-public class GWindowCheckBox extends GWindowDialogControl
+
+// Referenced classes of package com.maddox.gwindow:
+//            GWindowDialogControl, GWindowLookAndFeel, GSize, GRegion, 
+//            GWindow
+
+public class GWindowCheckBox extends com.maddox.gwindow.GWindowDialogControl
 {
-  public boolean bChecked = false;
 
-  public boolean isChecked() { return this.bChecked; }
-
-  public void setChecked(boolean paramBoolean1, boolean paramBoolean2) {
-    if (this.bChecked == paramBoolean1)
-      return;
-    if (paramBoolean2) _notify(2, 0); else
-      this.bChecked = paramBoolean1;
-  }
-
-  public boolean _notify(int paramInt1, int paramInt2) {
-    if (paramInt1 == 2) {
-      this.bChecked = (!this.bChecked);
+    public boolean isChecked()
+    {
+        return bChecked;
     }
-    return notify(paramInt1, paramInt2);
-  }
 
-  public boolean notify(int paramInt1, int paramInt2) {
-    if (paramInt1 == 2) {
-      lAF().soundPlay("clickCheckBox");
+    public void setChecked(boolean flag, boolean flag1)
+    {
+        if(bChecked == flag)
+            return;
+        if(flag1)
+            _notify(2, 0);
+        else
+            bChecked = flag;
     }
-    return super.notify(paramInt1, paramInt2);
-  }
 
-  public void render() {
-    lookAndFeel().render(this);
-  }
-  public GSize getMinSize(GSize paramGSize) {
-    return lookAndFeel().getMinSize(this, paramGSize);
-  }
-
-  public void resolutionChanged() {
-    _setSize();
-  }
-
-  private void _setSize() {
-    GSize localGSize = getMinSize();
-    this.win.dx = localGSize.dx;
-    this.win.dy = localGSize.dy;
-    if (this.metricWin != null) {
-      this.metricWin.dx = (this.win.dx / lookAndFeel().metric());
-      this.metricWin.dy = (this.win.dy / lookAndFeel().metric());
+    public boolean _notify(int i, int j)
+    {
+        if(i == 2)
+            bChecked = !bChecked;
+        return notify(i, j);
     }
-  }
 
-  public void created() {
-    super.created();
-    _setSize();
-  }
-  public GWindowCheckBox() {
-  }
+    public boolean notify(int i, int j)
+    {
+        if(i == 2)
+            lAF().soundPlay("clickCheckBox");
+        return super.notify(i, j);
+    }
 
-  public GWindowCheckBox(GWindow paramGWindow, float paramFloat1, float paramFloat2, String paramString) {
-    this.toolTip = paramString;
-    this.align = 0;
-    doNew(paramGWindow, paramFloat1, paramFloat2, 1.0F, 1.0F, true);
-  }
+    public void render()
+    {
+        lookAndFeel().render(this);
+    }
+
+    public com.maddox.gwindow.GSize getMinSize(com.maddox.gwindow.GSize gsize)
+    {
+        return lookAndFeel().getMinSize(this, gsize);
+    }
+
+    public void resolutionChanged()
+    {
+        _setSize();
+    }
+
+    private void _setSize()
+    {
+        com.maddox.gwindow.GSize gsize = getMinSize();
+        win.dx = gsize.dx;
+        win.dy = gsize.dy;
+        if(metricWin != null)
+        {
+            metricWin.dx = win.dx / lookAndFeel().metric();
+            metricWin.dy = win.dy / lookAndFeel().metric();
+        }
+    }
+
+    public void created()
+    {
+        super.created();
+        _setSize();
+    }
+
+    public GWindowCheckBox()
+    {
+        bChecked = false;
+    }
+
+    public GWindowCheckBox(com.maddox.gwindow.GWindow gwindow, float f, float f1, java.lang.String s)
+    {
+        bChecked = false;
+        toolTip = s;
+        align = 0;
+        doNew(gwindow, f, f1, 1.0F, 1.0F, true);
+    }
+
+    public boolean bChecked;
 }

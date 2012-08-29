@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CarGeneric.java
+
 package com.maddox.il2.objects.vehicles.cars;
 
 import com.maddox.JGP.Geom;
@@ -53,7 +58,6 @@ import com.maddox.rts.NetChannelInStream;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.NetObj;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Spawn;
@@ -63,1415 +67,1388 @@ import com.maddox.util.TableFunction2;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public abstract class CarGeneric extends ActorHMesh
-  implements MsgCollisionRequestListener, MsgCollisionListener, MsgExplosionListener, MsgShotListener, Coward, Prey, Obstacle, UnitInterface
+public abstract class CarGeneric extends com.maddox.il2.engine.ActorHMesh
+    implements com.maddox.il2.engine.MsgCollisionRequestListener, com.maddox.il2.engine.MsgCollisionListener, com.maddox.il2.ai.MsgExplosionListener, com.maddox.il2.ai.MsgShotListener, com.maddox.il2.ai.ground.Coward, com.maddox.il2.ai.ground.Prey, com.maddox.il2.ai.ground.Obstacle, com.maddox.il2.ai.ground.UnitInterface
 {
-  private CarProperties prop = null;
-  private int codeName;
-  private float heightAboveLandSurface;
-  public UnitData udata = new UnitData();
-
-  private Moving mov = new Moving();
-
-  protected SoundFX engineSFX = null;
-  protected int engineSTimer = 9999999;
-  protected int ticksIn8secs = (int)(8.0F / Time.tickConstLenFs());
-
-  private int collisionStage = 0;
-  static final int COLLIS_NO_COLLISION = 0;
-  static final int COLLIS_JUST_COLLIDED = 1;
-  static final int COLLIS_MOVING_FROM_COLLISION = 2;
-  private Vector2d collisVector = new Vector2d();
-  private Actor collidee;
-  private StaticObstacle obs = new StaticObstacle();
-  private long timeHumanLaunch;
-  private int dying = 0;
-  static final int DYING_NONE = 0;
-  static final int DYING_DEAD = 1;
-  private int codeOfUnderlyingBridgeSegment = -1;
-
-  private static CarProperties constr_arg1 = null;
-  private static Actor constr_arg2 = null;
-
-  private static Point3d p = new Point3d();
-  private static Orient o = new Orient();
-  private static Vector3f n = new Vector3f();
-
-  private NetMsgFiltered outCommand = new NetMsgFiltered();
-
-  public static final double Rnd(double paramDouble1, double paramDouble2)
-  {
-    return World.Rnd().nextDouble(paramDouble1, paramDouble2);
-  }
-  public static final float Rnd(float paramFloat1, float paramFloat2) {
-    return World.Rnd().nextFloat(paramFloat1, paramFloat2);
-  }
-  private boolean RndB(float paramFloat) {
-    return World.Rnd().nextFloat(0.0F, 1.0F) < paramFloat;
-  }
-
-  public static final float KmHourToMSec(float paramFloat) {
-    return paramFloat / 3.6F;
-  }
-  private static final float TicksToSecs(long paramLong) {
-    if (paramLong < 0L) paramLong = 0L;
-    return (float)paramLong * Time.tickLenFs();
-  }
-  private static final long SecsToTicks(float paramFloat) {
-    long l = ()(0.5D + paramFloat / Time.tickLenFs());
-    return l < 1L ? 1L : l;
-  }
-  public static final Vector2d Rotate(Vector2d paramVector2d, float paramFloat) {
-    float f1 = Geom.sinDeg(paramFloat);
-    float f2 = Geom.cosDeg(paramFloat);
-    return new Vector2d(f2 * paramVector2d.x - f1 * paramVector2d.y, f1 * paramVector2d.x + f2 * paramVector2d.y);
-  }
-
-  public void SetTimerToLaunchHumans()
-  {
-    if (this.timeHumanLaunch > 0L) {
-      return;
-    }
-    if ((this.timeHumanLaunch == 0L) || (-this.timeHumanLaunch <= Time.current()))
-      this.timeHumanLaunch = (Time.current() + (int)Rnd(500.0F, 1500.0F));
-  }
-
-  public void LaunchHumans()
-  {
-    if (this.prop.NUM_HUMANS == 0) {
-      return;
-    }
-
-    Object localObject = new Loc();
-    Loc localLoc1 = new Loc();
-    ((Loc)localObject).set(0.0D, 0.0D, 0.0D, 170.0F - Rnd(0.0F, 130.0F), Rnd(-5.0F, 2.0F), 0.0F);
-    localLoc1.set(0.0D, 0.0D, 0.0D, 190.0F + Rnd(0.0F, 130.0F), Rnd(-5.0F, 2.0F), 0.0F);
-
-    Loc localLoc2 = this.pos.getAbs();
-
-    ((Loc)localObject).add(localLoc2);
-    localLoc1.add(localLoc2);
-
-    if (this.prop.NUM_HUMANS == 1) {
-      if (RndB(0.5F)) {
-        localObject = localLoc1;
-      }
-      new Soldier(this, getArmy(), (Loc)localObject);
-    } else {
-      new Soldier(this, getArmy(), (Loc)localObject);
-      new Soldier(this, getArmy(), localLoc1);
-    }
-  }
-
-  public void msgCollisionRequest(Actor paramActor, boolean[] paramArrayOfBoolean)
-  {
-    if ((paramActor instanceof BridgeSegment))
-      paramArrayOfBoolean[0] = false;
-  }
-
-  public void msgCollision(Actor paramActor, String paramString1, String paramString2)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if ((paramActor instanceof Soldier)) {
-      return;
-    }
-
-    if (isNetMirror()) {
-      return;
-    }
-
-    if (this.collisionStage != 0) {
-      return;
-    }
-
-    this.mov.switchToAsk();
-
-    this.collisionStage = 1;
-    this.collidee = paramActor;
-
-    Point3d localPoint3d1 = this.pos.getAbsPoint();
-    Point3d localPoint3d2 = paramActor.pos.getAbsPoint();
-    this.collisVector.set(localPoint3d1.x - localPoint3d2.x, localPoint3d1.y - localPoint3d2.y);
-    if (this.collisVector.length() >= 1.0E-006D) {
-      this.collisVector.normalize();
-    } else {
-      float f = Rnd(0.0F, 359.98999F);
-      this.collisVector.set(Geom.sinDeg(f), Geom.cosDeg(f));
-    }
-
-    ((ChiefGround)getOwner()).CollisionOccured(this, paramActor);
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    paramShot.bodyMaterial = 2;
-
-    if (this.dying != 0) {
-      return;
-    }
-
-    if ((isNetMirror()) && (paramShot.isMirage())) {
-      SetTimerToLaunchHumans();
-      return;
-    }
-
-    if (paramShot.power <= 0.0F) {
-      SetTimerToLaunchHumans();
-      return;
-    }
-
-    if (paramShot.powerType == 1) {
-      if (RndB(0.05F)) {
-        SetTimerToLaunchHumans();
-        return;
-      }
-
-      Die(paramShot.initiator);
-      return;
-    }
-
-    float f1 = Shot.panzerThickness(this.pos.getAbsOrient(), paramShot.v, false, this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_TOP);
-
-    f1 *= Rnd(0.93F, 1.07F);
-
-    float f2 = this.prop.fnShotPanzer.Value(paramShot.power, f1);
-
-    if ((f2 < 1000.0F) && ((f2 <= 1.0F) || (RndB(1.0F / f2))))
-      Die(paramShot.initiator);
-    else
-      SetTimerToLaunchHumans();
-  }
-
-  public void msgExplosion(Explosion paramExplosion)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if ((isNetMirror()) && (paramExplosion.isMirage())) {
-      SetTimerToLaunchHumans();
-      return;
-    }
-
-    if (paramExplosion.power <= 0.0F) {
-      SetTimerToLaunchHumans();
-      return;
-    }
-
-    if (paramExplosion.powerType == 1) {
-      if (TankGeneric.splintersKill(paramExplosion, this.prop.fnShotPanzer, Rnd(0.0F, 1.0F), Rnd(0.0F, 1.0F), this, 0.7F, 0.0F, this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_TOP))
-      {
-        Die(paramExplosion.initiator);
-      }
-      else SetTimerToLaunchHumans();
-
-      return;
-    }
-
-    if ((paramExplosion.powerType == 2) && (paramExplosion.chunkName != null)) {
-      Die(paramExplosion.initiator);
-      return;
-    }
-    float f1;
-    if (paramExplosion.chunkName != null)
-      f1 = 0.5F * paramExplosion.power;
-    else {
-      f1 = paramExplosion.receivedTNTpower(this);
-    }
-    f1 *= Rnd(0.95F, 1.05F);
-
-    float f2 = this.prop.fnExplodePanzer.Value(f1, this.prop.PANZER_TNT_TYPE);
-
-    if ((f2 < 1000.0F) && ((f2 <= 1.0F) || (RndB(1.0F / f2))))
-      Die(paramExplosion.initiator);
-    else
-      SetTimerToLaunchHumans();
-  }
-
-  public void scare()
-  {
-    SetTimerToLaunchHumans();
-  }
-
-  private void ShowExplode(float paramFloat) {
-    if (paramFloat > 0.0F) {
-      paramFloat = Rnd(paramFloat, paramFloat * 1.6F);
-    }
-    Explosions.runByName(this.prop.explodeName, this, "Smoke", "", paramFloat);
-  }
-
-  private void ActivateMesh()
-  {
-    int i = this.dying == 1 ? 1 : 0;
-
-    if (i == 0) {
-      setMesh(this.prop.MESH0_NAME);
-    }
-    else if (this.prop.MESH1_NAME == null) {
-      setMesh(this.prop.MESH0_NAME);
-
-      mesh().makeAllMaterialsDarker(0.22F, 0.35F);
-    } else {
-      setMesh(this.prop.MESH1_NAME);
-    }
-
-    int j = mesh().hookFind("Ground_Level");
-
-    float f = this.heightAboveLandSurface;
-    Object localObject;
-    if (j != -1) {
-      localObject = new Matrix4d();
-      mesh().hookMatrix(j, (Matrix4d)localObject);
-      this.heightAboveLandSurface = (float)(-((Matrix4d)localObject).m23);
-    }
-    else {
-      localObject = new float[6];
-      mesh().getBoundBox(localObject);
-      this.heightAboveLandSurface = (-localObject[2]);
-    }
-
-    if (i != 0) {
-      localObject = this.pos.getAbsPoint();
-      localObject.z += this.heightAboveLandSurface - f;
-      this.pos.setAbs((Point3d)localObject);
-      this.pos.reset();
-    }
-  }
-
-  private void MakeCrush()
-  {
-    this.engineSFX = null;
-    this.engineSTimer = 99999999;
-    breakSounds();
-
-    this.dying = 1;
-
-    ActivateMesh();
-  }
-
-  private void Die(Actor paramActor)
-  {
-    if (isNetMirror()) {
-      send_DeathRequest(paramActor);
-      return;
-    }
-
-    this.collisionStage = 1;
-
-    int i = ((ChiefGround)getOwner()).getCodeOfBridgeSegment(this);
-    if (i >= 0)
+    public static class SPAWN
+        implements com.maddox.il2.ai.ground.UnitSpawn
     {
-      if (BridgeSegment.isEncodedSegmentDamaged(i)) {
-        absoluteDeath(paramActor);
-        return;
-      }
 
-      LongBridge.AddTraveller(i, this);
-      this.codeOfUnderlyingBridgeSegment = i;
-    }
-
-    ((ChiefGround)getOwner()).Detach(this, paramActor);
-
-    World.onActorDied(this, paramActor);
-
-    ShowExplode(16.0F);
-    if (isNetMaster()) {
-      send_DeathCommand(paramActor);
-
-      Point3d localPoint3d = simplifyPos(this.pos.getAbsPoint());
-      Orient localOrient = simplifyOri(this.pos.getAbsOrient());
-      setPosition(localPoint3d, localOrient);
-    }
-    MakeCrush();
-  }
-
-  private void DieMirror(Actor paramActor, boolean paramBoolean)
-  {
-    if (!isNetMirror()) {
-      System.out.println("Internal error in CarGeneric: DieMirror");
-    }
-
-    this.collisionStage = 1;
-
-    ((ChiefGround)getOwner()).Detach(this, paramActor);
-
-    World.onActorDied(this, paramActor);
-
-    if (paramBoolean) {
-      ShowExplode(16.0F);
-    }
-    MakeCrush();
-  }
-
-  public void destroy()
-  {
-    this.engineSFX = null;
-    this.engineSTimer = 99999999;
-    breakSounds();
-
-    if (this.codeOfUnderlyingBridgeSegment >= 0) {
-      LongBridge.DelTraveller(this.codeOfUnderlyingBridgeSegment, this);
-    }
-    super.destroy();
-  }
-
-  private void setPosition(Point3d paramPoint3d, Orient paramOrient)
-  {
-    this.pos.setAbs(paramPoint3d, paramOrient);
-    this.pos.reset();
-  }
-
-  public Object getSwitchListener(Message paramMessage) {
-    return this;
-  }
-
-  protected CarGeneric()
-  {
-    this(constr_arg1, constr_arg2);
-  }
-
-  public void setMesh(String paramString) {
-    super.setMesh(paramString);
-    if (Config.cur.b3dgunners) return;
-    mesh().materialReplaceToNull("Pilot1");
-  }
-
-  public CarGeneric(CarProperties paramCarProperties, Actor paramActor) {
-    super(paramCarProperties.MESH0_NAME);
-    this.prop = paramCarProperties;
-
-    this.timeHumanLaunch = (-(Time.current() + (int)Rnd(2000.0F, 8000.0F)));
-
-    collide(true);
-    drawing(true);
-    setOwner(paramActor);
-
-    this.codeName = paramCarProperties.codeName;
-    setName(paramActor.name() + this.codeName);
-
-    setArmy(paramActor.getArmy());
-
-    new HookNamed(this, "Smoke");
-
-    ActivateMesh();
-
-    int i = Mission.cur().getUnitNetIdRemote(this);
-    NetChannel localNetChannel = Mission.cur().getNetMasterChannel();
-    if (localNetChannel == null)
-      this.net = new Master(this);
-    else if (i != 0)
-      this.net = new Mirror(this, localNetChannel, i);
-  }
-
-  private void send_DeathRequest(Actor paramActor)
-  {
-    if (!isNetMirror()) {
-      return;
-    }
-
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
-      return;
-    try
-    {
-      NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
-      localNetMsgFiltered.writeByte(68);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
-      localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void send_CollisionDeathRequest()
-  {
-    if (!isNetMirror()) {
-      return;
-    }
-
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
-      return;
-    try
-    {
-      NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
-      localNetMsgFiltered.unLockAndClear();
-      localNetMsgFiltered.writeByte(67);
-      localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void send_AnByteAndPoseCommand(boolean paramBoolean, Actor paramActor, int paramInt)
-  {
-    if ((!isNetMaster()) || (!this.net.isMirrored())) {
-      return;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(paramInt);
-      sendPose(localNetMsgGuaranted);
-      if (paramBoolean) {
-        localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      }
-      this.net.post(localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void send_DeathCommand(Actor paramActor)
-  {
-    send_AnByteAndPoseCommand(true, paramActor, 68);
-  }
-  private void send_AbsoluteDeathCommand(Actor paramActor) {
-    send_AnByteAndPoseCommand(true, paramActor, 65);
-  }
-  private void send_CollisionDeathCommand() {
-    send_AnByteAndPoseCommand(false, null, 67);
-  }
-
-  private void send_MoveCommand(Moving paramMoving, float paramFloat)
-  {
-    if ((!isNetMaster()) || (!this.net.isMirrored())) {
-      return;
-    }
-
-    if ((paramMoving.moveCurTime < 0L) && (paramMoving.rotatCurTime < 0L))
-      return;
-    try
-    {
-      this.outCommand.unLockAndClear();
-
-      if ((paramMoving.dstPos == null) || (paramMoving.moveTotTime <= 0L) || (paramMoving.normal == null)) {
-        this.outCommand.writeByte(83);
-        this.outCommand.setIncludeTime(false);
-        this.net.post(Time.current(), this.outCommand);
-      } else {
-        if (paramFloat > 0.0F)
-          this.outCommand.writeByte(77);
-        else {
-          this.outCommand.writeByte(109);
-        }
-        this.outCommand.write(packPos(paramMoving.dstPos));
-        this.outCommand.writeByte(packNormal(paramMoving.normal.z));
-        if (paramMoving.normal.z >= 0.0F) {
-          this.outCommand.writeByte(packNormal(paramMoving.normal.x));
-          this.outCommand.writeByte(packNormal(paramMoving.normal.y));
-        }
-        int i = (int)(Time.tickLen() * paramMoving.moveTotTime);
-        if (i >= 65536) {
-          i = 65535;
-        }
-        this.outCommand.writeShort(i);
-        this.outCommand.setIncludeTime(true);
-        this.net.post(Time.current(), this.outCommand);
-      }
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  static int packNormal(float paramFloat)
-  {
-    paramFloat += 1.0F;
-    paramFloat *= 0.5F;
-    paramFloat *= 254.0F;
-    int i = (int)(paramFloat + 0.5F);
-    if (i < 0) i = 0;
-    if (i > 254) i = 254;
-    return i - 127;
-  }
-  static byte[] packPos(Point3d paramPoint3d) {
-    byte[] arrayOfByte = new byte[8];
-    int i = (int)(paramPoint3d.x * 20.0D + 0.5D);
-    int j = (int)(paramPoint3d.y * 20.0D + 0.5D);
-    int k = (int)(paramPoint3d.z * 10.0D + 0.5D);
-    arrayOfByte[0] = (byte)(i >> 0 & 0xFF);
-    arrayOfByte[1] = (byte)(i >> 8 & 0xFF);
-    arrayOfByte[2] = (byte)(i >> 16 & 0xFF);
-    arrayOfByte[3] = (byte)(j >> 0 & 0xFF);
-    arrayOfByte[4] = (byte)(j >> 8 & 0xFF);
-    arrayOfByte[5] = (byte)(j >> 16 & 0xFF);
-    arrayOfByte[6] = (byte)(k >> 0 & 0xFF);
-    arrayOfByte[7] = (byte)(k >> 8 & 0xFF);
-    return arrayOfByte;
-  }
-  static byte[] packOri(Orient paramOrient) {
-    byte[] arrayOfByte = new byte[3];
-    int i = (int)(paramOrient.getYaw() * 256.0F / 360.0F);
-    int j = (int)(paramOrient.getPitch() * 256.0F / 360.0F);
-    int k = (int)(paramOrient.getRoll() * 256.0F / 360.0F);
-    arrayOfByte[0] = (byte)(i & 0xFF);
-    arrayOfByte[1] = (byte)(j & 0xFF);
-    arrayOfByte[2] = (byte)(k & 0xFF);
-    return arrayOfByte;
-  }
-
-  static float unpackNormal(int paramInt) {
-    return paramInt / 127.0F;
-  }
-  static Point3d unpackPos(byte[] paramArrayOfByte) {
-    int i = ((paramArrayOfByte[2] & 0xFF) << 16) + ((paramArrayOfByte[1] & 0xFF) << 8) + ((paramArrayOfByte[0] & 0xFF) << 0);
-
-    int j = ((paramArrayOfByte[5] & 0xFF) << 16) + ((paramArrayOfByte[4] & 0xFF) << 8) + ((paramArrayOfByte[3] & 0xFF) << 0);
-
-    int k = ((paramArrayOfByte[7] & 0xFF) << 8) + ((paramArrayOfByte[6] & 0xFF) << 0);
-
-    return new Point3d(i * 0.05D, j * 0.05D, k * 0.1D);
-  }
-  static Orient unpackOri(byte[] paramArrayOfByte) {
-    int i = paramArrayOfByte[0] & 0xFF;
-    int j = paramArrayOfByte[1] & 0xFF;
-    int k = paramArrayOfByte[2] & 0xFF;
-    Orient localOrient = new Orient();
-    localOrient.setYPR(i * 360.0F / 256.0F, j * 360.0F / 256.0F, k * 360.0F / 256.0F);
-    return localOrient;
-  }
-
-  static Point3d simplifyPos(Point3d paramPoint3d) {
-    return unpackPos(packPos(paramPoint3d));
-  }
-  static Orient simplifyOri(Orient paramOrient) {
-    return unpackOri(packOri(paramOrient));
-  }
-
-  static float readPackedNormal(NetMsgInput paramNetMsgInput) throws IOException {
-    return unpackNormal(paramNetMsgInput.readByte());
-  }
-  static Point3d readPackedPos(NetMsgInput paramNetMsgInput) throws IOException {
-    byte[] arrayOfByte = new byte[8];
-    paramNetMsgInput.read(arrayOfByte);
-    return unpackPos(arrayOfByte);
-  }
-  static Orient readPackedOri(NetMsgInput paramNetMsgInput) throws IOException {
-    byte[] arrayOfByte = new byte[3];
-    paramNetMsgInput.read(arrayOfByte);
-    return unpackOri(arrayOfByte);
-  }
-
-  private void sendPose(NetMsgGuaranted paramNetMsgGuaranted)
-    throws IOException
-  {
-    paramNetMsgGuaranted.write(packPos(this.pos.getAbsPoint()));
-    paramNetMsgGuaranted.write(packOri(this.pos.getAbsOrient()));
-  }
-
-  public void netFirstUpdate(NetChannel paramNetChannel)
-    throws IOException
-  {
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-
-    int i = this.dying == 0 ? 73 : 105;
-
-    localNetMsgGuaranted.writeByte(i);
-    sendPose(localNetMsgGuaranted);
-
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-  }
-
-  public void startMove()
-  {
-    if (!interpEnd("move")) {
-      this.mov = new Moving();
-      this.collisionStage = 0;
-      interpPut(new Move(), "move", Time.current(), null);
-
-      this.engineSFX = newSound(this.prop.soundMove, true);
-      this.engineSTimer = (int)SecsToTicks(Rnd(5.0F, 7.0F));
-    }
-  }
-
-  public void forceReaskMove()
-  {
-    if (isNetMirror())
-      return;
-    if (this.collisionStage != 0)
-      return;
-    if (this.dying != 0)
-      return;
-    if ((this.mov == null) || (this.mov.normal == null))
-    {
-      return;
-    }this.mov.switchToAsk();
-  }
-
-  public UnitData GetUnitData()
-  {
-    return this.udata;
-  }
-
-  public float HeightAboveLandSurface() {
-    return this.heightAboveLandSurface;
-  }
-
-  public float SpeedAverage()
-  {
-    return this.prop.SPEED_AVERAGE;
-  }
-
-  public float BestSpace()
-  {
-    return this.prop.BEST_SPACE;
-  }
-
-  public float CommandInterval() {
-    return this.prop.COMMAND_INTERVAL;
-  }
-  public float StayInterval() {
-    return this.prop.STAY_INTERVAL;
-  }
-
-  public UnitInPackedForm Pack()
-  {
-    int i = Finger.Int(getClass().getName());
-    int j = 0;
-    return new UnitInPackedForm(this.codeName, i, j, SpeedAverage(), BestSpace(), 0, HitbyMask());
-  }
-
-  public int HitbyMask()
-  {
-    return this.prop.HITBY_MASK;
-  }
-
-  public int chooseBulletType(BulletProperties[] paramArrayOfBulletProperties)
-  {
-    if (this.dying != 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties.length == 1) {
-      return 0;
-    }
-
-    if (paramArrayOfBulletProperties.length <= 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties[0].power <= 0.0F)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].power <= 0.0F)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].cumulativePower > 0.0F)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].cumulativePower > 0.0F)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 1)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].powerType == 1)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 2)
-    {
-      return 1;
-    }
-
-    return 0;
-  }
-
-  public int chooseShotpoint(BulletProperties paramBulletProperties) {
-    if (this.dying != 0) {
-      return -1;
-    }
-    return 0;
-  }
-
-  public boolean getShotpointOffset(int paramInt, Point3d paramPoint3d) {
-    if (this.dying != 0) {
-      return false;
-    }
-
-    if (paramInt != 0) {
-      return false;
-    }
-
-    if (paramPoint3d != null) {
-      paramPoint3d.set(0.0D, 0.0D, 0.0D);
-    }
-    return true;
-  }
-
-  public void absoluteDeath(Actor paramActor)
-  {
-    if (isNetMirror())
-    {
-      return;
-    }
-
-    if (isNetMaster()) {
-      send_AbsoluteDeathCommand(paramActor);
-    }
-
-    doAbsoluteDeath(paramActor);
-  }
-
-  private void doAbsoluteDeath(Actor paramActor) {
-    ChiefGround localChiefGround = (ChiefGround)getOwner();
-    if (localChiefGround != null) {
-      localChiefGround.Detach(this, paramActor);
-    }
-
-    if (!getDiedFlag()) {
-      World.onActorDied(this, paramActor);
-    }
-
-    Explosions.Car_ExplodeCollapse(this.pos.getAbsPoint());
-
-    destroy();
-  }
-
-  public boolean unmovableInFuture()
-  {
-    return this.dying != 0;
-  }
-
-  public void collisionDeath()
-  {
-    if (isNetMirror()) {
-      send_CollisionDeathRequest();
-      return;
-    }
-
-    if (isNetMaster()) {
-      send_CollisionDeathCommand();
-    }
-
-    doCollisionDeath();
-  }
-
-  private void doCollisionDeath() {
-    ChiefGround localChiefGround = (ChiefGround)getOwner();
-    int i = ((localChiefGround == null) && (this.codeOfUnderlyingBridgeSegment >= 0)) || ((localChiefGround != null) && (localChiefGround.getCodeOfBridgeSegment(this) >= 0)) ? 1 : 0;
-
-    if (localChiefGround != null) {
-      localChiefGround.Detach(this, null);
-    }
-
-    if (i != 0)
-      Explosions.Car_ExplodeCollapse(this.pos.getAbsPoint());
-    else {
-      Explosions.Car_ExplodeCollapse(this.pos.getAbsPoint());
-    }
-
-    destroy();
-  }
-
-  public float futurePosition(float paramFloat, Point3d paramPoint3d)
-  {
-    this.pos.getAbs(paramPoint3d);
-    if (paramFloat <= 0.0F) return 0.0F;
-
-    if ((this.mov.moveCurTime < 0L) && (this.mov.rotatCurTime < 0L))
-      return 0.0F;
-    float f1 = TicksToSecs(this.mov.moveCurTime);
-
-    if (this.mov.dstPos == null) {
-      if (f1 >= paramFloat) return paramFloat;
-      return f1;
-    }
-
-    float f2 = 0.0F;
-    if (this.mov.rotatingInPlace) {
-      f2 = TicksToSecs(this.mov.rotatCurTime);
-      if (f2 >= paramFloat) return paramFloat;
-    }
-
-    if (f1 <= 0.0F) {
-      return f2;
-    }
-
-    if (f2 + f1 <= paramFloat) {
-      paramPoint3d.set(this.mov.dstPos);
-      return f2 + f1;
-    }
-
-    Point3d localPoint3d = new Point3d();
-    localPoint3d.set(this.mov.dstPos);
-    double d = (paramFloat - f2) / f1;
-
-    p.x = (paramPoint3d.x * (1.0D - d) + localPoint3d.x * d);
-    p.y = (paramPoint3d.y * (1.0D - d) + localPoint3d.y * d);
-
-    if (this.mov.normal.z < 0.0F) {
-      p.z = (Engine.land().HQ(p.x, p.y) + HeightAboveLandSurface());
-    }
-    else {
-      p.z = (paramPoint3d.z * (1.0D - d) + localPoint3d.z * d);
-    }
-
-    paramPoint3d.set(p);
-    return paramFloat;
-  }
-
-  public static class SPAWN
-    implements UnitSpawn
-  {
-    public Class cls;
-    public CarGeneric.CarProperties proper;
-
-    private static float getF(SectFile paramSectFile, String paramString1, String paramString2, float paramFloat1, float paramFloat2)
-    {
-      float f = paramSectFile.get(paramString1, paramString2, -9865.3447F);
-      if ((f == -9865.3447F) || (f < paramFloat1) || (f > paramFloat2)) {
-        if (f == -9865.3447F) {
-          System.out.println("Car: Parameter [" + paramString1 + "]:<" + paramString2 + "> " + "not found");
-        }
-        else {
-          System.out.println("Car: Value of [" + paramString1 + "]:<" + paramString2 + "> (" + f + ")" + " is out of range (" + paramFloat1 + ";" + paramFloat2 + ")");
-        }
-
-        throw new RuntimeException("Can't set property");
-      }
-      return f;
-    }
-
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2) {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        System.out.print("Car: Parameter [" + paramString1 + "]:<" + paramString2 + "> ");
-        System.out.println(str == null ? "not found" : "is empty");
-        throw new RuntimeException("Can't set property");
-      }
-      return str;
-    }
-
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2, String paramString3) {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        return paramString3;
-      }
-      return str;
-    }
-
-    private static CarGeneric.CarProperties LoadCarProperties(SectFile paramSectFile, String paramString, Class paramClass)
-    {
-      CarGeneric.CarProperties localCarProperties = new CarGeneric.CarProperties();
-
-      String str = getS(paramSectFile, paramString, "PanzerType", null);
-      if (str == null) {
-        str = "Tank";
-      }
-      localCarProperties.fnShotPanzer = TableFunctions.GetFunc2(str + "ShotPanzer");
-      localCarProperties.fnExplodePanzer = TableFunctions.GetFunc2(str + "ExplodePanzer");
-
-      localCarProperties.PANZER_TNT_TYPE = getF(paramSectFile, paramString, "PanzerSubtype", 0.0F, 100.0F);
-
-      localCarProperties.meshSummer = getS(paramSectFile, paramString, "MeshSummer");
-      localCarProperties.meshDesert = getS(paramSectFile, paramString, "MeshDesert", localCarProperties.meshSummer);
-      localCarProperties.meshWinter = getS(paramSectFile, paramString, "MeshWinter", localCarProperties.meshSummer);
-      localCarProperties.meshSummer1 = getS(paramSectFile, paramString, "MeshSummerDamage", null);
-      localCarProperties.meshDesert1 = getS(paramSectFile, paramString, "MeshDesertDamage", localCarProperties.meshSummer1);
-      localCarProperties.meshWinter1 = getS(paramSectFile, paramString, "MeshWinterDamage", localCarProperties.meshSummer1);
-
-      int i = (localCarProperties.meshSummer1 == null ? 1 : 0) + (localCarProperties.meshDesert1 == null ? 1 : 0) + (localCarProperties.meshWinter1 == null ? 1 : 0);
-
-      if ((i != 0) && (i != 3)) {
-        System.out.println("Car: Uncomplete set of damage meshes for '" + paramString + "'");
-
-        throw new RuntimeException("Can't register car object");
-      }
-
-      localCarProperties.PANZER_BODY_FRONT = getF(paramSectFile, paramString, "PanzerBodyFront", 0.001F, 9.999F);
-
-      if (paramSectFile.get(paramString, "PanzerBodyBack", -9865.3447F) == -9865.3447F) {
-        localCarProperties.PANZER_BODY_BACK = localCarProperties.PANZER_BODY_FRONT;
-        localCarProperties.PANZER_BODY_SIDE = localCarProperties.PANZER_BODY_FRONT;
-        localCarProperties.PANZER_BODY_TOP = localCarProperties.PANZER_BODY_FRONT;
-      } else {
-        localCarProperties.PANZER_BODY_BACK = getF(paramSectFile, paramString, "PanzerBodyBack", 0.001F, 9.999F);
-        localCarProperties.PANZER_BODY_SIDE = getF(paramSectFile, paramString, "PanzerBodySide", 0.001F, 9.999F);
-        localCarProperties.PANZER_BODY_TOP = getF(paramSectFile, paramString, "PanzerBodyTop", 0.001F, 9.999F);
-      }
-
-      localCarProperties.explodeName = getS(paramSectFile, paramString, "Explode", "Car");
-
-      float f = Math.min(Math.min(localCarProperties.PANZER_BODY_BACK, localCarProperties.PANZER_BODY_TOP), Math.min(localCarProperties.PANZER_BODY_SIDE, localCarProperties.PANZER_BODY_FRONT));
-
-      localCarProperties.HITBY_MASK = (f > 0.015F ? -2 : -1);
-
-      localCarProperties.SPEED_AVERAGE = CarGeneric.KmHourToMSec(getF(paramSectFile, paramString, "SpeedAverage", 1.0F, 100.0F));
-      localCarProperties.SPEED_MAX = CarGeneric.KmHourToMSec(getF(paramSectFile, paramString, "SpeedMax", 1.0F, 100.0F));
-      localCarProperties.SPEED_BACK = CarGeneric.KmHourToMSec(getF(paramSectFile, paramString, "SpeedBack", 0.5F, 100.0F));
-      localCarProperties.ROT_SPEED_MAX = getF(paramSectFile, paramString, "RotSpeedMax", 0.1F, 800.0F);
-      localCarProperties.ROT_INVIS_ANG = getF(paramSectFile, paramString, "RotInvisAng", 0.0F, 360.0F);
-
-      localCarProperties.BEST_SPACE = getF(paramSectFile, paramString, "BestSpace", 0.1F, 100.0F);
-      localCarProperties.AFTER_COLLISION_DIST = getF(paramSectFile, paramString, "AfterCollisionDist", 0.1F, 80.0F);
-
-      localCarProperties.COMMAND_INTERVAL = getF(paramSectFile, paramString, "CommandInterval", 0.5F, 100.0F);
-      localCarProperties.STAY_INTERVAL = getF(paramSectFile, paramString, "StayInterval", 0.1F, 200.0F);
-
-      localCarProperties.soundMove = getS(paramSectFile, paramString, "SoundMove");
-      if ("none".equals(localCarProperties.soundMove)) {
-        localCarProperties.soundMove = null;
-      }
-
-      Property.set(paramClass, "meshName", localCarProperties.meshSummer);
-      Property.set(paramClass, "speed", localCarProperties.SPEED_AVERAGE);
-
-      if (paramSectFile.get(paramString, "Soldiers", -9865.3447F) == -9865.3447F)
-        localCarProperties.NUM_HUMANS = 0;
-      else {
-        localCarProperties.NUM_HUMANS = (int)getF(paramSectFile, paramString, "Soldiers", 1.0F, 2.0F);
-      }
-
-      return localCarProperties;
-    }
-
-    public SPAWN(Class paramClass)
-    {
-      try
-      {
-        String str1 = paramClass.getName();
-        int i = str1.lastIndexOf('.');
-        int j = str1.lastIndexOf('$');
-        if (i < j) {
-          i = j;
-        }
-        String str2 = str1.substring(i + 1);
-        this.proper = LoadCarProperties(Statics.getTechnicsFile(), str2, paramClass);
-      }
-      catch (Exception localException)
-      {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("Problem in car spawn: " + paramClass.getName());
-      }
-
-      this.cls = paramClass;
-      Spawn.add(this.cls, this);
-    }
-
-    public Class unitClass() {
-      return this.cls;
-    }
-
-    public Actor unitSpawn(int paramInt1, int paramInt2, Actor paramActor)
-    {
-      this.proper.codeName = paramInt1;
-
-      switch (World.cur().camouflage) {
-      case 1:
-        this.proper.MESH0_NAME = this.proper.meshWinter;
-        this.proper.MESH1_NAME = this.proper.meshWinter1;
-        break;
-      case 2:
-        this.proper.MESH0_NAME = this.proper.meshDesert;
-        this.proper.MESH1_NAME = this.proper.meshDesert1;
-        break;
-      default:
-        this.proper.MESH0_NAME = this.proper.meshSummer;
-        this.proper.MESH1_NAME = this.proper.meshSummer1;
-      }
-
-      CarGeneric localCarGeneric = null;
-      try
-      {
-        CarGeneric.access$1802(this.proper);
-        CarGeneric.access$1902(paramActor);
-        localCarGeneric = (CarGeneric)this.cls.newInstance();
-        CarGeneric.access$1802(null);
-        CarGeneric.access$1902(null);
-      } catch (Exception localException) {
-        CarGeneric.access$1802(null);
-        CarGeneric.access$1902(null);
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("SPAWN: Can't create Car object [class:" + this.cls.getName() + "]");
-
-        return null;
-      }
-
-      return localCarGeneric;
-    }
-  }
-
-  class Move extends Interpolate
-  {
-    Move()
-    {
-    }
-
-    public boolean tick()
-    {
-      if (CarGeneric.this.dying != 0) {
-        return false;
-      }
-
-      if ((CarGeneric.this.timeHumanLaunch > 0L) && (Time.current() >= CarGeneric.this.timeHumanLaunch)) {
-        ChiefGround localChiefGround1 = (ChiefGround)this.actor.getOwner();
-        if (localChiefGround1.getCodeOfBridgeSegment((UnitInterface)this.actor) < 0) {
-          CarGeneric.this.LaunchHumans();
-          CarGeneric.access$802(CarGeneric.this, Time.current() + (int)CarGeneric.Rnd(12000.0F, 17000.0F));
-        } else {
-          CarGeneric.access$802(CarGeneric.this, Time.current() + (int)CarGeneric.Rnd(3000.0F, 5000.0F));
-        }
-        CarGeneric.access$802(CarGeneric.this, -CarGeneric.this.timeHumanLaunch);
-      }
-
-      int i = (CarGeneric.this.mov.moveCurTime < 0L) && (CarGeneric.this.mov.rotatCurTime < 0L) ? 1 : 0;
-      if ((CarGeneric.this.isNetMirror()) && (i != 0))
-      {
-        CarGeneric.this.mov.switchToStay(30.0F);
-        i = 0;
-      }
-      if (i != 0) {
-        ChiefGround localChiefGround2 = (ChiefGround)CarGeneric.this.getOwner();
-
-        float f2 = -1.0F;
-        UnitMove localUnitMove;
-        if (CarGeneric.this.collisionStage == 0) {
-          localUnitMove = localChiefGround2.AskMoveCommand(this.actor, null, CarGeneric.this.obs);
-        }
-        else
+        private static float getF(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, float f, float f1)
         {
-          float f3;
-          Vector2d localVector2d;
-          if (CarGeneric.this.collisionStage == 1)
-          {
-            CarGeneric.this.obs.collision(CarGeneric.this.collidee, localChiefGround2, CarGeneric.this.udata);
-            CarGeneric.access$1102(CarGeneric.this, null);
-
-            f3 = CarGeneric.Rnd(-70.0F, 70.0F);
-            localVector2d = CarGeneric.Rotate(CarGeneric.this.collisVector, f3);
-            localVector2d.scale(CarGeneric.this.prop.AFTER_COLLISION_DIST * CarGeneric.Rnd(0.87D, 1.75D));
-            CarGeneric.p.set(localVector2d.x, localVector2d.y, -1.0D);
-            localUnitMove = localChiefGround2.AskMoveCommand(this.actor, CarGeneric.p, CarGeneric.this.obs);
-            CarGeneric.access$902(CarGeneric.this, 2);
-            f2 = CarGeneric.this.prop.SPEED_BACK;
-          }
-          else {
-            f3 = CarGeneric.Rnd(0.0F, 359.98999F);
-            localVector2d = CarGeneric.Rotate(CarGeneric.this.collisVector, f3);
-            localVector2d.scale(CarGeneric.this.prop.AFTER_COLLISION_DIST * CarGeneric.Rnd(0.2D, 0.6D));
-            CarGeneric.p.set(localVector2d.x, localVector2d.y, 1.0D);
-            localUnitMove = localChiefGround2.AskMoveCommand(this.actor, CarGeneric.p, CarGeneric.this.obs);
-            CarGeneric.access$902(CarGeneric.this, 0);
-          }
+            float f2 = sectfile.get(s, s1, -9865.345F);
+            if(f2 == -9865.345F || f2 < f || f2 > f1)
+            {
+                if(f2 == -9865.345F)
+                    java.lang.System.out.println("Car: Parameter [" + s + "]:<" + s1 + "> " + "not found");
+                else
+                    java.lang.System.out.println("Car: Value of [" + s + "]:<" + s1 + "> (" + f2 + ")" + " is out of range (" + f + ";" + f1 + ")");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return f2;
+            }
         }
 
-        CarGeneric.this.mov.set(localUnitMove, this.actor, CarGeneric.this.prop.SPEED_MAX, f2, CarGeneric.this.prop.ROT_SPEED_MAX, CarGeneric.this.prop.ROT_INVIS_ANG);
-
-        if (CarGeneric.this.isNetMaster()) {
-          CarGeneric.this.send_MoveCommand(CarGeneric.this.mov, f2);
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1)
+        {
+            java.lang.String s2 = sectfile.get(s, s1);
+            if(s2 == null || s2.length() <= 0)
+            {
+                java.lang.System.out.print("Car: Parameter [" + s + "]:<" + s1 + "> ");
+                java.lang.System.out.println(s2 != null ? "is empty" : "not found");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return s2;
+            }
         }
 
-      }
-
-      if (CarGeneric.this.mov.dstPos == null) {
-        CarGeneric.this.mov.moveCurTime -= 1L;
-        if ((CarGeneric.this.engineSFX != null) && 
-          (CarGeneric.this.engineSTimer > 0)) {
-          if (--CarGeneric.this.engineSTimer == 0) {
-            CarGeneric.this.engineSFX.stop();
-          }
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, java.lang.String s2)
+        {
+            java.lang.String s3 = sectfile.get(s, s1);
+            if(s3 == null || s3.length() <= 0)
+                return s2;
+            else
+                return s3;
         }
 
-        return true;
-      }
-
-      if (CarGeneric.this.engineSFX != null) {
-        if (CarGeneric.this.engineSTimer == 0) {
-          CarGeneric.this.engineSFX.play();
-          CarGeneric.this.engineSTimer = (int)CarGeneric.access$1500(CarGeneric.Rnd(10.0F, 12.0F));
-        } else if (CarGeneric.this.engineSTimer < CarGeneric.this.ticksIn8secs) {
-          CarGeneric.this.engineSTimer = (int)CarGeneric.access$1500(CarGeneric.Rnd(10.0F, 12.0F));
+        private static com.maddox.il2.objects.vehicles.cars.CarProperties LoadCarProperties(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.Class class1)
+        {
+            com.maddox.il2.objects.vehicles.cars.CarProperties carproperties = new CarProperties();
+            java.lang.String s1 = com.maddox.il2.objects.vehicles.cars.SPAWN.getS(sectfile, s, "PanzerType", null);
+            if(s1 == null)
+                s1 = "Tank";
+            carproperties.fnShotPanzer = com.maddox.il2.ai.TableFunctions.GetFunc2(s1 + "ShotPanzer");
+            carproperties.fnExplodePanzer = com.maddox.il2.ai.TableFunctions.GetFunc2(s1 + "ExplodePanzer");
+            carproperties.PANZER_TNT_TYPE = com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "PanzerSubtype", 0.0F, 100F);
+            carproperties.meshSummer = com.maddox.il2.objects.vehicles.cars.SPAWN.getS(sectfile, s, "MeshSummer");
+            carproperties.meshDesert = com.maddox.il2.objects.vehicles.cars.SPAWN.getS(sectfile, s, "MeshDesert", carproperties.meshSummer);
+            carproperties.meshWinter = com.maddox.il2.objects.vehicles.cars.SPAWN.getS(sectfile, s, "MeshWinter", carproperties.meshSummer);
+            carproperties.meshSummer1 = com.maddox.il2.objects.vehicles.cars.SPAWN.getS(sectfile, s, "MeshSummerDamage", null);
+            carproperties.meshDesert1 = com.maddox.il2.objects.vehicles.cars.SPAWN.getS(sectfile, s, "MeshDesertDamage", carproperties.meshSummer1);
+            carproperties.meshWinter1 = com.maddox.il2.objects.vehicles.cars.SPAWN.getS(sectfile, s, "MeshWinterDamage", carproperties.meshSummer1);
+            float f = (carproperties.meshSummer1 != null ? 0 : 1) + (carproperties.meshDesert1 != null ? 0 : 1) + (carproperties.meshWinter1 != null ? 0 : 1);
+            if(f != 0 && f != 3)
+            {
+                java.lang.System.out.println("Car: Uncomplete set of damage meshes for '" + s + "'");
+                throw new RuntimeException("Can't register car object");
+            }
+            carproperties.PANZER_BODY_FRONT = com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "PanzerBodyFront", 0.001F, 9.999F);
+            if(sectfile.get(s, "PanzerBodyBack", -9865.345F) == -9865.345F)
+            {
+                carproperties.PANZER_BODY_BACK = carproperties.PANZER_BODY_FRONT;
+                carproperties.PANZER_BODY_SIDE = carproperties.PANZER_BODY_FRONT;
+                carproperties.PANZER_BODY_TOP = carproperties.PANZER_BODY_FRONT;
+            } else
+            {
+                carproperties.PANZER_BODY_BACK = com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "PanzerBodyBack", 0.001F, 9.999F);
+                carproperties.PANZER_BODY_SIDE = com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "PanzerBodySide", 0.001F, 9.999F);
+                carproperties.PANZER_BODY_TOP = com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "PanzerBodyTop", 0.001F, 9.999F);
+            }
+            carproperties.explodeName = com.maddox.il2.objects.vehicles.cars.SPAWN.getS(sectfile, s, "Explode", "Car");
+            f = java.lang.Math.min(java.lang.Math.min(carproperties.PANZER_BODY_BACK, carproperties.PANZER_BODY_TOP), java.lang.Math.min(carproperties.PANZER_BODY_SIDE, carproperties.PANZER_BODY_FRONT));
+            carproperties.HITBY_MASK = f <= 0.015F ? -1 : -2;
+            carproperties.SPEED_AVERAGE = com.maddox.il2.objects.vehicles.cars.CarGeneric.KmHourToMSec(com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "SpeedAverage", 1.0F, 100F));
+            carproperties.SPEED_MAX = com.maddox.il2.objects.vehicles.cars.CarGeneric.KmHourToMSec(com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "SpeedMax", 1.0F, 100F));
+            carproperties.SPEED_BACK = com.maddox.il2.objects.vehicles.cars.CarGeneric.KmHourToMSec(com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "SpeedBack", 0.5F, 100F));
+            carproperties.ROT_SPEED_MAX = com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "RotSpeedMax", 0.1F, 800F);
+            carproperties.ROT_INVIS_ANG = com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "RotInvisAng", 0.0F, 360F);
+            carproperties.BEST_SPACE = com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "BestSpace", 0.1F, 100F);
+            carproperties.AFTER_COLLISION_DIST = com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "AfterCollisionDist", 0.1F, 80F);
+            carproperties.COMMAND_INTERVAL = com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "CommandInterval", 0.5F, 100F);
+            carproperties.STAY_INTERVAL = com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "StayInterval", 0.1F, 200F);
+            carproperties.soundMove = com.maddox.il2.objects.vehicles.cars.SPAWN.getS(sectfile, s, "SoundMove");
+            if("none".equals(carproperties.soundMove))
+                carproperties.soundMove = null;
+            com.maddox.rts.Property.set(class1, "meshName", carproperties.meshSummer);
+            com.maddox.rts.Property.set(class1, "speed", carproperties.SPEED_AVERAGE);
+            if(sectfile.get(s, "Soldiers", -9865.345F) == -9865.345F)
+                carproperties.NUM_HUMANS = 0;
+            else
+                carproperties.NUM_HUMANS = (int)com.maddox.il2.objects.vehicles.cars.SPAWN.getF(sectfile, s, "Soldiers", 1.0F, 2.0F);
+            return carproperties;
         }
 
-      }
-
-      CarGeneric.this.pos.getAbs(CarGeneric.o);
-      int j = 0;
-
-      if (CarGeneric.this.mov.rotatCurTime > 0L) {
-        CarGeneric.this.mov.rotatCurTime -= 1L;
-
-        float f1 = 1.0F - (float)CarGeneric.this.mov.rotatCurTime / (float)CarGeneric.this.mov.rotatTotTime;
-        CarGeneric.o.setYaw(CarGeneric.this.mov.angles.getDeg(f1));
-        j = 1;
-        if (CarGeneric.this.mov.rotatCurTime <= 0L) {
-          CarGeneric.this.mov.rotatCurTime = -1L;
-          CarGeneric.this.mov.rotatingInPlace = false;
+        public java.lang.Class unitClass()
+        {
+            return cls;
         }
 
-      }
+        public com.maddox.il2.engine.Actor unitSpawn(int i, int j, com.maddox.il2.engine.Actor actor)
+        {
+            proper.codeName = i;
+            switch(com.maddox.il2.ai.World.cur().camouflage)
+            {
+            case 1: // '\001'
+                proper.MESH0_NAME = proper.meshWinter;
+                proper.MESH1_NAME = proper.meshWinter1;
+                break;
 
-      if ((!CarGeneric.this.mov.rotatingInPlace) && (CarGeneric.this.mov.moveCurTime > 0L)) {
-        CarGeneric.this.mov.moveCurTime -= 1L;
+            case 2: // '\002'
+                proper.MESH0_NAME = proper.meshDesert;
+                proper.MESH1_NAME = proper.meshDesert1;
+                break;
 
-        double d = 1.0D - CarGeneric.this.mov.moveCurTime / CarGeneric.this.mov.moveTotTime;
-
-        CarGeneric.p.x = (CarGeneric.this.mov.srcPos.x * (1.0D - d) + CarGeneric.this.mov.dstPos.x * d);
-        CarGeneric.p.y = (CarGeneric.this.mov.srcPos.y * (1.0D - d) + CarGeneric.this.mov.dstPos.y * d);
-
-        if (CarGeneric.this.mov.normal.z < 0.0F) {
-          CarGeneric.p.z = (Engine.land().HQ(CarGeneric.p.x, CarGeneric.p.y) + CarGeneric.this.HeightAboveLandSurface());
-          Engine.land().N(CarGeneric.p.x, CarGeneric.p.y, CarGeneric.n);
+            default:
+                proper.MESH0_NAME = proper.meshSummer;
+                proper.MESH1_NAME = proper.meshSummer1;
+                break;
+            }
+            com.maddox.il2.objects.vehicles.cars.CarGeneric cargeneric = null;
+            try
+            {
+                com.maddox.il2.objects.vehicles.cars.CarGeneric.constr_arg1 = proper;
+                com.maddox.il2.objects.vehicles.cars.CarGeneric.constr_arg2 = actor;
+                cargeneric = (com.maddox.il2.objects.vehicles.cars.CarGeneric)cls.newInstance();
+                com.maddox.il2.objects.vehicles.cars.CarGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.vehicles.cars.CarGeneric.constr_arg2 = null;
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.objects.vehicles.cars.CarGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.vehicles.cars.CarGeneric.constr_arg2 = null;
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("SPAWN: Can't create Car object [class:" + cls.getName() + "]");
+                return null;
+            }
+            return cargeneric;
         }
-        else {
-          CarGeneric.p.z = (CarGeneric.this.mov.srcPos.z * (1.0D - d) + CarGeneric.this.mov.dstPos.z * d);
-        }
-        j = 0;
-        CarGeneric.this.pos.setAbs(CarGeneric.p);
-        if (CarGeneric.this.mov.moveCurTime <= 0L) {
-          CarGeneric.this.mov.moveCurTime = -1L;
-        }
-      }
 
-      if (CarGeneric.this.mov.normal.z < 0.0F)
-      {
-        if (j != 0) Engine.land().N(CarGeneric.this.mov.srcPos.x, CarGeneric.this.mov.srcPos.y, CarGeneric.n);
+        public java.lang.Class cls;
+        public com.maddox.il2.objects.vehicles.cars.CarProperties proper;
 
-        CarGeneric.o.orient(CarGeneric.n);
-      }
-      else {
-        CarGeneric.o.orient(CarGeneric.this.mov.normal);
-      }
-      CarGeneric.this.pos.setAbs(CarGeneric.o);
-      return true;
+        public SPAWN(java.lang.Class class1)
+        {
+            try
+            {
+                java.lang.String s = class1.getName();
+                int i = s.lastIndexOf('.');
+                int j = s.lastIndexOf('$');
+                if(i < j)
+                    i = j;
+                java.lang.String s1 = s.substring(i + 1);
+                proper = com.maddox.il2.objects.vehicles.cars.SPAWN.LoadCarProperties(com.maddox.il2.objects.Statics.getTechnicsFile(), s1, class1);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("Problem in car spawn: " + class1.getName());
+            }
+            cls = class1;
+            com.maddox.rts.Spawn.add(cls, this);
+        }
     }
-  }
 
-  class Mirror extends ActorNet
-  {
-    NetMsgFiltered out = new NetMsgFiltered();
+    class Move extends com.maddox.il2.engine.Interpolate
+    {
 
-    private boolean handleGuaranted(NetMsgInput paramNetMsgInput) throws IOException {
-      int i = paramNetMsgInput.readByte();
+        public boolean tick()
+        {
+            if(dying != 0)
+                return false;
+            if(timeHumanLaunch > 0L && com.maddox.rts.Time.current() >= timeHumanLaunch)
+            {
+                com.maddox.il2.ai.ground.ChiefGround chiefground = (com.maddox.il2.ai.ground.ChiefGround)actor.getOwner();
+                if(chiefground.getCodeOfBridgeSegment((com.maddox.il2.ai.ground.UnitInterface)actor) < 0)
+                {
+                    LaunchHumans();
+                    timeHumanLaunch = com.maddox.rts.Time.current() + (long)(int)com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(12000F, 17000F);
+                } else
+                {
+                    timeHumanLaunch = com.maddox.rts.Time.current() + (long)(int)com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(3000F, 5000F);
+                }
+                timeHumanLaunch = -timeHumanLaunch;
+            }
+            boolean flag = mov.moveCurTime < 0L && mov.rotatCurTime < 0L;
+            if(isNetMirror() && flag)
+            {
+                mov.switchToStay(30F);
+                flag = false;
+            }
+            if(flag)
+            {
+                com.maddox.il2.ai.ground.ChiefGround chiefground1 = (com.maddox.il2.ai.ground.ChiefGround)getOwner();
+                float f1 = -1F;
+                com.maddox.il2.ai.ground.UnitMove unitmove;
+                if(collisionStage == 0)
+                    unitmove = chiefground1.AskMoveCommand(actor, null, obs);
+                else
+                if(collisionStage == 1)
+                {
+                    obs.collision(collidee, chiefground1, udata);
+                    collidee = null;
+                    float f2 = com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(-70F, 70F);
+                    com.maddox.JGP.Vector2d vector2d = com.maddox.il2.objects.vehicles.cars.CarGeneric.Rotate(collisVector, f2);
+                    vector2d.scale((double)prop.AFTER_COLLISION_DIST * com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(0.87D, 1.75D));
+                    com.maddox.il2.objects.vehicles.cars.CarGeneric.p.set(vector2d.x, vector2d.y, -1D);
+                    unitmove = chiefground1.AskMoveCommand(actor, com.maddox.il2.objects.vehicles.cars.CarGeneric.p, obs);
+                    collisionStage = 2;
+                    f1 = prop.SPEED_BACK;
+                } else
+                {
+                    float f3 = com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(0.0F, 359.99F);
+                    com.maddox.JGP.Vector2d vector2d1 = com.maddox.il2.objects.vehicles.cars.CarGeneric.Rotate(collisVector, f3);
+                    vector2d1.scale((double)prop.AFTER_COLLISION_DIST * com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(0.20000000000000001D, 0.59999999999999998D));
+                    com.maddox.il2.objects.vehicles.cars.CarGeneric.p.set(vector2d1.x, vector2d1.y, 1.0D);
+                    unitmove = chiefground1.AskMoveCommand(actor, com.maddox.il2.objects.vehicles.cars.CarGeneric.p, obs);
+                    collisionStage = 0;
+                }
+                mov.set(unitmove, actor, prop.SPEED_MAX, f1, prop.ROT_SPEED_MAX, prop.ROT_INVIS_ANG);
+                if(isNetMaster())
+                    send_MoveCommand(mov, f1);
+            }
+            if(mov.dstPos == null)
+            {
+                mov.moveCurTime--;
+                if(engineSFX != null && engineSTimer > 0 && --engineSTimer == 0)
+                    engineSFX.stop();
+                return true;
+            }
+            if(engineSFX != null)
+                if(engineSTimer == 0)
+                {
+                    engineSFX.play();
+                    engineSTimer = (int)com.maddox.il2.objects.vehicles.cars.CarGeneric.SecsToTicks(com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(10F, 12F));
+                } else
+                if(engineSTimer < ticksIn8secs)
+                    engineSTimer = (int)com.maddox.il2.objects.vehicles.cars.CarGeneric.SecsToTicks(com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(10F, 12F));
+            pos.getAbs(com.maddox.il2.objects.vehicles.cars.CarGeneric.o);
+            boolean flag1 = false;
+            if(mov.rotatCurTime > 0L)
+            {
+                mov.rotatCurTime--;
+                float f = 1.0F - (float)mov.rotatCurTime / (float)mov.rotatTotTime;
+                com.maddox.il2.objects.vehicles.cars.CarGeneric.o.setYaw(mov.angles.getDeg(f));
+                flag1 = true;
+                if(mov.rotatCurTime <= 0L)
+                {
+                    mov.rotatCurTime = -1L;
+                    mov.rotatingInPlace = false;
+                }
+            }
+            if(!mov.rotatingInPlace && mov.moveCurTime > 0L)
+            {
+                mov.moveCurTime--;
+                double d = 1.0D - (double)mov.moveCurTime / (double)mov.moveTotTime;
+                com.maddox.il2.objects.vehicles.cars.CarGeneric.p.x = mov.srcPos.x * (1.0D - d) + mov.dstPos.x * d;
+                com.maddox.il2.objects.vehicles.cars.CarGeneric.p.y = mov.srcPos.y * (1.0D - d) + mov.dstPos.y * d;
+                if(mov.normal.z < 0.0F)
+                {
+                    com.maddox.il2.objects.vehicles.cars.CarGeneric.p.z = com.maddox.il2.engine.Engine.land().HQ(com.maddox.il2.objects.vehicles.cars.CarGeneric.p.x, com.maddox.il2.objects.vehicles.cars.CarGeneric.p.y) + (double)HeightAboveLandSurface();
+                    com.maddox.il2.engine.Engine.land().N(com.maddox.il2.objects.vehicles.cars.CarGeneric.p.x, com.maddox.il2.objects.vehicles.cars.CarGeneric.p.y, com.maddox.il2.objects.vehicles.cars.CarGeneric.n);
+                } else
+                {
+                    com.maddox.il2.objects.vehicles.cars.CarGeneric.p.z = mov.srcPos.z * (1.0D - d) + mov.dstPos.z * d;
+                }
+                flag1 = false;
+                pos.setAbs(com.maddox.il2.objects.vehicles.cars.CarGeneric.p);
+                if(mov.moveCurTime <= 0L)
+                    mov.moveCurTime = -1L;
+            }
+            if(mov.normal.z < 0.0F)
+            {
+                if(flag1)
+                    com.maddox.il2.engine.Engine.land().N(mov.srcPos.x, mov.srcPos.y, com.maddox.il2.objects.vehicles.cars.CarGeneric.n);
+                com.maddox.il2.objects.vehicles.cars.CarGeneric.o.orient(com.maddox.il2.objects.vehicles.cars.CarGeneric.n);
+            } else
+            {
+                com.maddox.il2.objects.vehicles.cars.CarGeneric.o.orient(mov.normal);
+            }
+            pos.setAbs(com.maddox.il2.objects.vehicles.cars.CarGeneric.o);
+            return true;
+        }
 
-      if (isMirrored()) {
+        Move()
+        {
+        }
+    }
+
+    class Mirror extends com.maddox.il2.engine.ActorNet
+    {
+
+        private boolean handleGuaranted(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            byte byte0 = netmsginput.readByte();
+            if(isMirrored())
+            {
+                int i = 0;
+                if(byte0 == 68 || byte0 == 65)
+                    i = 1;
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(netmsginput, i);
+                post(netmsgguaranted);
+            }
+            com.maddox.JGP.Point3d point3d = com.maddox.il2.objects.vehicles.cars.CarGeneric.readPackedPos(netmsginput);
+            com.maddox.il2.engine.Orient orient = com.maddox.il2.objects.vehicles.cars.CarGeneric.readPackedOri(netmsginput);
+            setPosition(point3d, orient);
+            mov.switchToStay(20F);
+            switch(byte0)
+            {
+            case 73: // 'I'
+            case 105: // 'i'
+                if(dying != 0)
+                    java.lang.System.out.println("Car is dead at init stage");
+                if(byte0 == 105)
+                    DieMirror(null, false);
+                break;
+
+            case 67: // 'C'
+                doCollisionDeath();
+                break;
+
+            case 65: // 'A'
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                doAbsoluteDeath(actor);
+                break;
+
+            case 68: // 'D'
+                if(dying == 0)
+                {
+                    com.maddox.rts.NetObj netobj1 = netmsginput.readNetObj();
+                    com.maddox.il2.engine.Actor actor1 = netobj1 != null ? ((com.maddox.il2.engine.ActorNet)netobj1).actor() : null;
+                    DieMirror(actor1, true);
+                }
+                break;
+
+            default:
+                java.lang.System.out.println("CarGeneric: Unknown G message (" + byte0 + ")");
+                return false;
+            }
+            return true;
+        }
+
+        private boolean handleNonguaranted(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            byte byte0 = netmsginput.readByte();
+            switch(byte0)
+            {
+            case 68: // 'D'
+                out.unLockAndSet(netmsginput, 1);
+                out.setIncludeTime(false);
+                postRealTo(com.maddox.rts.Message.currentRealTime(), masterChannel(), out);
+                break;
+
+            case 83: // 'S'
+                if(isMirrored())
+                {
+                    out.unLockAndSet(netmsginput, 0);
+                    out.setIncludeTime(false);
+                    postReal(com.maddox.rts.Message.currentRealTime(), out);
+                }
+                mov.switchToStay(10F);
+                break;
+
+            case 77: // 'M'
+            case 109: // 'm'
+                boolean flag = byte0 == 77;
+                if(isMirrored())
+                {
+                    out.unLockAndSet(netmsginput, 0);
+                    out.setIncludeTime(true);
+                    postReal(com.maddox.rts.Message.currentRealTime(), out);
+                }
+                com.maddox.JGP.Point3d point3d = com.maddox.il2.objects.vehicles.cars.CarGeneric.readPackedPos(netmsginput);
+                com.maddox.JGP.Vector3f vector3f = new Vector3f(0.0F, 0.0F, 0.0F);
+                vector3f.z = com.maddox.il2.objects.vehicles.cars.CarGeneric.readPackedNormal(netmsginput);
+                if(vector3f.z >= 0.0F)
+                {
+                    vector3f.x = com.maddox.il2.objects.vehicles.cars.CarGeneric.readPackedNormal(netmsginput);
+                    vector3f.y = com.maddox.il2.objects.vehicles.cars.CarGeneric.readPackedNormal(netmsginput);
+                    float f = vector3f.length();
+                    if(f > 0.001F)
+                        vector3f.scale(1.0F / f);
+                    else
+                        vector3f.set(0.0F, 0.0F, 1.0F);
+                }
+                int i = netmsginput.readUnsignedShort();
+                float f1 = 0.001F * (float)((com.maddox.rts.Message.currentGameTime() - com.maddox.rts.Time.current()) + (long)i);
+                if(f1 <= 0.0F)
+                    f1 = 0.1F;
+                com.maddox.il2.ai.ground.UnitMove unitmove = new UnitMove(0.0F, point3d, f1, vector3f, -1F);
+                if(dying == 0)
+                    mov.set(unitmove, actor(), 2.0F * prop.SPEED_MAX, flag ? 2.0F * prop.SPEED_BACK : -1F, 1.3F * prop.ROT_SPEED_MAX, 1.1F * prop.ROT_INVIS_ANG);
+                break;
+
+            default:
+                java.lang.System.out.println("CarGeneric: Unknown NG message");
+                return false;
+            }
+            return true;
+        }
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+                return handleGuaranted(netmsginput);
+            else
+                return handleNonguaranted(netmsginput);
+        }
+
+        com.maddox.rts.NetMsgFiltered out;
+
+        public Mirror(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(actor, netchannel, i);
+            out = new NetMsgFiltered();
+        }
+    }
+
+    class Master extends com.maddox.il2.engine.ActorNet
+    {
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+                return false;
+            byte byte0 = netmsginput.readByte();
+            switch(byte0)
+            {
+            case 68: // 'D'
+                if(dying == 0)
+                {
+                    com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                    com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                    Die(actor);
+                }
+                break;
+
+            case 67: // 'C'
+                collisionDeath();
+                break;
+
+            default:
+                java.lang.System.out.println("CarGeneric: Unknown M message (" + byte0 + ")");
+                return false;
+            }
+            return true;
+        }
+
+        public Master(com.maddox.il2.engine.Actor actor)
+        {
+            super(actor);
+        }
+    }
+
+    protected static class CarProperties
+        implements java.lang.Cloneable
+    {
+
+        public java.lang.Object clone()
+        {
+            return super.clone();
+            java.lang.Exception exception;
+            exception;
+            return null;
+        }
+
+        public int codeName;
+        public java.lang.String MESH0_NAME;
+        public java.lang.String MESH1_NAME;
+        public java.lang.String meshSummer;
+        public java.lang.String meshDesert;
+        public java.lang.String meshWinter;
+        public java.lang.String meshSummer1;
+        public java.lang.String meshDesert1;
+        public java.lang.String meshWinter1;
+        public java.lang.String soundMove;
+        public com.maddox.util.TableFunction2 fnShotPanzer;
+        public com.maddox.util.TableFunction2 fnExplodePanzer;
+        public float PANZER_BODY_FRONT;
+        public float PANZER_BODY_BACK;
+        public float PANZER_BODY_SIDE;
+        public float PANZER_BODY_TOP;
+        public float PANZER_TNT_TYPE;
+        public java.lang.String explodeName;
+        public int HITBY_MASK;
+        public float SPEED_AVERAGE;
+        public float SPEED_MAX;
+        public float SPEED_BACK;
+        public float ROT_SPEED_MAX;
+        public float ROT_INVIS_ANG;
+        public float BEST_SPACE;
+        public float AFTER_COLLISION_DIST;
+        public float COMMAND_INTERVAL;
+        public float STAY_INTERVAL;
+        public int NUM_HUMANS;
+
+        protected CarProperties()
+        {
+            codeName = 0;
+            MESH0_NAME = "3do/cars/None.him";
+            MESH1_NAME = null;
+            meshSummer = null;
+            meshDesert = null;
+            meshWinter = null;
+            meshSummer1 = null;
+            meshDesert1 = null;
+            meshWinter1 = null;
+            soundMove = "models.Car";
+            fnShotPanzer = null;
+            fnExplodePanzer = null;
+            PANZER_BODY_FRONT = 0.001F;
+            PANZER_BODY_BACK = 0.001F;
+            PANZER_BODY_SIDE = 0.001F;
+            PANZER_BODY_TOP = 0.001F;
+            PANZER_TNT_TYPE = 1.0F;
+            explodeName = null;
+            HITBY_MASK = -1;
+            SPEED_AVERAGE = com.maddox.il2.objects.vehicles.cars.CarGeneric.KmHourToMSec(1.0F);
+            SPEED_MAX = com.maddox.il2.objects.vehicles.cars.CarGeneric.KmHourToMSec(2.0F);
+            SPEED_BACK = com.maddox.il2.objects.vehicles.cars.CarGeneric.KmHourToMSec(1.0F);
+            ROT_SPEED_MAX = 3.6F;
+            ROT_INVIS_ANG = 360F;
+            BEST_SPACE = 2.0F;
+            AFTER_COLLISION_DIST = 0.1F;
+            COMMAND_INTERVAL = 20F;
+            STAY_INTERVAL = 30F;
+            NUM_HUMANS = 0;
+        }
+    }
+
+
+    public static final double Rnd(double d, double d1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextDouble(d, d1);
+    }
+
+    public static final float Rnd(float f, float f1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(f, f1);
+    }
+
+    private boolean RndB(float f)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < f;
+    }
+
+    public static final float KmHourToMSec(float f)
+    {
+        return f / 3.6F;
+    }
+
+    private static final float TicksToSecs(long l)
+    {
+        if(l < 0L)
+            l = 0L;
+        return (float)l * com.maddox.rts.Time.tickLenFs();
+    }
+
+    private static final long SecsToTicks(float f)
+    {
+        long l = (long)(0.5D + (double)(f / com.maddox.rts.Time.tickLenFs()));
+        return l >= 1L ? l : 1L;
+    }
+
+    public static final com.maddox.JGP.Vector2d Rotate(com.maddox.JGP.Vector2d vector2d, float f)
+    {
+        float f1 = com.maddox.JGP.Geom.sinDeg(f);
+        float f2 = com.maddox.JGP.Geom.cosDeg(f);
+        return new Vector2d((double)f2 * vector2d.x - (double)f1 * vector2d.y, (double)f1 * vector2d.x + (double)f2 * vector2d.y);
+    }
+
+    public void SetTimerToLaunchHumans()
+    {
+        if(timeHumanLaunch > 0L)
+            return;
+        if(timeHumanLaunch == 0L || -timeHumanLaunch <= com.maddox.rts.Time.current())
+            timeHumanLaunch = com.maddox.rts.Time.current() + (long)(int)com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(500F, 1500F);
+    }
+
+    public void LaunchHumans()
+    {
+        if(prop.NUM_HUMANS == 0)
+            return;
+        com.maddox.il2.engine.Loc loc = new Loc();
+        com.maddox.il2.engine.Loc loc1 = new Loc();
+        loc.set(0.0D, 0.0D, 0.0D, 170F - com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(0.0F, 130F), com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(-5F, 2.0F), 0.0F);
+        loc1.set(0.0D, 0.0D, 0.0D, 190F + com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(0.0F, 130F), com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(-5F, 2.0F), 0.0F);
+        com.maddox.il2.engine.Loc loc2 = pos.getAbs();
+        loc.add(loc2);
+        loc1.add(loc2);
+        if(prop.NUM_HUMANS == 1)
+        {
+            if(RndB(0.5F))
+                loc = loc1;
+            new Soldier(this, getArmy(), loc);
+        } else
+        {
+            new Soldier(this, getArmy(), loc);
+            new Soldier(this, getArmy(), loc1);
+        }
+    }
+
+    public void msgCollisionRequest(com.maddox.il2.engine.Actor actor, boolean aflag[])
+    {
+        if(actor instanceof com.maddox.il2.objects.bridges.BridgeSegment)
+            aflag[0] = false;
+    }
+
+    public void msgCollision(com.maddox.il2.engine.Actor actor, java.lang.String s, java.lang.String s1)
+    {
+        if(dying != 0)
+            return;
+        if(actor instanceof com.maddox.il2.objects.humans.Soldier)
+            return;
+        if(isNetMirror())
+            return;
+        if(collisionStage != 0)
+            return;
+        mov.switchToAsk();
+        collisionStage = 1;
+        collidee = actor;
+        com.maddox.JGP.Point3d point3d = pos.getAbsPoint();
+        com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+        collisVector.set(point3d.x - point3d1.x, point3d.y - point3d1.y);
+        if(collisVector.length() >= 9.9999999999999995E-007D)
+        {
+            collisVector.normalize();
+        } else
+        {
+            float f = com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(0.0F, 359.99F);
+            collisVector.set(com.maddox.JGP.Geom.sinDeg(f), com.maddox.JGP.Geom.cosDeg(f));
+        }
+        ((com.maddox.il2.ai.ground.ChiefGround)getOwner()).CollisionOccured(this, actor);
+    }
+
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        shot.bodyMaterial = 2;
+        if(dying != 0)
+            return;
+        if(isNetMirror() && shot.isMirage())
+        {
+            SetTimerToLaunchHumans();
+            return;
+        }
+        if(shot.power <= 0.0F)
+        {
+            SetTimerToLaunchHumans();
+            return;
+        }
+        if(shot.powerType == 1)
+            if(RndB(0.05F))
+            {
+                SetTimerToLaunchHumans();
+                return;
+            } else
+            {
+                Die(shot.initiator);
+                return;
+            }
+        float f = com.maddox.il2.ai.Shot.panzerThickness(pos.getAbsOrient(), shot.v, false, prop.PANZER_BODY_FRONT, prop.PANZER_BODY_SIDE, prop.PANZER_BODY_BACK, prop.PANZER_BODY_TOP, prop.PANZER_BODY_FRONT, prop.PANZER_BODY_TOP);
+        f *= com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(0.93F, 1.07F);
+        float f1 = prop.fnShotPanzer.Value(shot.power, f);
+        if(f1 < 1000F && (f1 <= 1.0F || RndB(1.0F / f1)))
+            Die(shot.initiator);
+        else
+            SetTimerToLaunchHumans();
+    }
+
+    public void msgExplosion(com.maddox.il2.ai.Explosion explosion)
+    {
+        if(dying != 0)
+            return;
+        if(isNetMirror() && explosion.isMirage())
+        {
+            SetTimerToLaunchHumans();
+            return;
+        }
+        if(explosion.power <= 0.0F)
+        {
+            SetTimerToLaunchHumans();
+            return;
+        }
+        com.maddox.il2.ai.Explosion _tmp = explosion;
+        if(explosion.powerType == 1)
+        {
+            if(com.maddox.il2.objects.vehicles.tanks.TankGeneric.splintersKill(explosion, prop.fnShotPanzer, com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(0.0F, 1.0F), com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(0.0F, 1.0F), this, 0.7F, 0.0F, prop.PANZER_BODY_FRONT, prop.PANZER_BODY_SIDE, prop.PANZER_BODY_BACK, prop.PANZER_BODY_TOP, prop.PANZER_BODY_FRONT, prop.PANZER_BODY_TOP))
+                Die(explosion.initiator);
+            else
+                SetTimerToLaunchHumans();
+            return;
+        }
+        com.maddox.il2.ai.Explosion _tmp1 = explosion;
+        if(explosion.powerType == 2 && explosion.chunkName != null)
+        {
+            Die(explosion.initiator);
+            return;
+        }
+        float f;
+        if(explosion.chunkName != null)
+            f = 0.5F * explosion.power;
+        else
+            f = explosion.receivedTNTpower(this);
+        f *= com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(0.95F, 1.05F);
+        float f1 = prop.fnExplodePanzer.Value(f, prop.PANZER_TNT_TYPE);
+        if(f1 < 1000F && (f1 <= 1.0F || RndB(1.0F / f1)))
+            Die(explosion.initiator);
+        else
+            SetTimerToLaunchHumans();
+    }
+
+    public void scare()
+    {
+        SetTimerToLaunchHumans();
+    }
+
+    private void ShowExplode(float f)
+    {
+        if(f > 0.0F)
+            f = com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(f, f * 1.6F);
+        com.maddox.il2.objects.effects.Explosions.runByName(prop.explodeName, this, "Smoke", "", f);
+    }
+
+    private void ActivateMesh()
+    {
+        boolean flag = dying == 1;
+        if(!flag)
+            setMesh(prop.MESH0_NAME);
+        else
+        if(prop.MESH1_NAME == null)
+        {
+            setMesh(prop.MESH0_NAME);
+            mesh().makeAllMaterialsDarker(0.22F, 0.35F);
+        } else
+        {
+            setMesh(prop.MESH1_NAME);
+        }
+        int i = mesh().hookFind("Ground_Level");
+        float f = heightAboveLandSurface;
+        if(i != -1)
+        {
+            com.maddox.JGP.Matrix4d matrix4d = new Matrix4d();
+            mesh().hookMatrix(i, matrix4d);
+            heightAboveLandSurface = (float)(-matrix4d.m23);
+        } else
+        {
+            float af[] = new float[6];
+            mesh().getBoundBox(af);
+            heightAboveLandSurface = -af[2];
+        }
+        if(flag)
+        {
+            com.maddox.JGP.Point3d point3d = pos.getAbsPoint();
+            point3d.z += heightAboveLandSurface - f;
+            pos.setAbs(point3d);
+            pos.reset();
+        }
+    }
+
+    private void MakeCrush()
+    {
+        engineSFX = null;
+        engineSTimer = 0x5f5e0ff;
+        breakSounds();
+        dying = 1;
+        ActivateMesh();
+    }
+
+    private void Die(com.maddox.il2.engine.Actor actor)
+    {
+        if(isNetMirror())
+        {
+            send_DeathRequest(actor);
+            return;
+        }
+        collisionStage = 1;
+        int i = ((com.maddox.il2.ai.ground.ChiefGround)getOwner()).getCodeOfBridgeSegment(this);
+        if(i >= 0)
+        {
+            if(com.maddox.il2.objects.bridges.BridgeSegment.isEncodedSegmentDamaged(i))
+            {
+                absoluteDeath(actor);
+                return;
+            }
+            com.maddox.il2.objects.bridges.LongBridge.AddTraveller(i, this);
+            codeOfUnderlyingBridgeSegment = i;
+        }
+        ((com.maddox.il2.ai.ground.ChiefGround)getOwner()).Detach(this, actor);
+        com.maddox.il2.ai.World.onActorDied(this, actor);
+        ShowExplode(16F);
+        if(isNetMaster())
+        {
+            send_DeathCommand(actor);
+            com.maddox.JGP.Point3d point3d = com.maddox.il2.objects.vehicles.cars.CarGeneric.simplifyPos(pos.getAbsPoint());
+            com.maddox.il2.engine.Orient orient = com.maddox.il2.objects.vehicles.cars.CarGeneric.simplifyOri(pos.getAbsOrient());
+            setPosition(point3d, orient);
+        }
+        MakeCrush();
+    }
+
+    private void DieMirror(com.maddox.il2.engine.Actor actor, boolean flag)
+    {
+        if(!isNetMirror())
+            java.lang.System.out.println("Internal error in CarGeneric: DieMirror");
+        collisionStage = 1;
+        ((com.maddox.il2.ai.ground.ChiefGround)getOwner()).Detach(this, actor);
+        com.maddox.il2.ai.World.onActorDied(this, actor);
+        if(flag)
+            ShowExplode(16F);
+        MakeCrush();
+    }
+
+    public void destroy()
+    {
+        engineSFX = null;
+        engineSTimer = 0x5f5e0ff;
+        breakSounds();
+        if(codeOfUnderlyingBridgeSegment >= 0)
+            com.maddox.il2.objects.bridges.LongBridge.DelTraveller(codeOfUnderlyingBridgeSegment, this);
+        super.destroy();
+    }
+
+    private void setPosition(com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Orient orient)
+    {
+        pos.setAbs(point3d, orient);
+        pos.reset();
+    }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    protected CarGeneric()
+    {
+        this(constr_arg1, constr_arg2);
+    }
+
+    public void setMesh(java.lang.String s)
+    {
+        super.setMesh(s);
+        if(com.maddox.il2.engine.Config.cur.b3dgunners)
+        {
+            return;
+        } else
+        {
+            mesh().materialReplaceToNull("Pilot1");
+            return;
+        }
+    }
+
+    public CarGeneric(com.maddox.il2.objects.vehicles.cars.CarProperties carproperties, com.maddox.il2.engine.Actor actor)
+    {
+        super(carproperties.MESH0_NAME);
+        prop = null;
+        udata = new UnitData();
+        mov = new Moving();
+        engineSFX = null;
+        engineSTimer = 0x98967f;
+        ticksIn8secs = (int)(8F / com.maddox.rts.Time.tickConstLenFs());
+        collisionStage = 0;
+        collisVector = new Vector2d();
+        obs = new StaticObstacle();
+        dying = 0;
+        codeOfUnderlyingBridgeSegment = -1;
+        outCommand = new NetMsgFiltered();
+        prop = carproperties;
+        timeHumanLaunch = -(com.maddox.rts.Time.current() + (long)(int)com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(2000F, 8000F));
+        collide(true);
+        drawing(true);
+        setOwner(actor);
+        codeName = carproperties.codeName;
+        setName(actor.name() + codeName);
+        setArmy(actor.getArmy());
+        new HookNamed(this, "Smoke");
+        ActivateMesh();
+        int i = com.maddox.il2.game.Mission.cur().getUnitNetIdRemote(this);
+        com.maddox.rts.NetChannel netchannel = com.maddox.il2.game.Mission.cur().getNetMasterChannel();
+        if(netchannel == null)
+            net = new Master(this);
+        else
+        if(i != 0)
+            net = new Mirror(this, netchannel, i);
+    }
+
+    private void send_DeathRequest(com.maddox.il2.engine.Actor actor)
+    {
+        if(!isNetMirror())
+            return;
+        if(net.masterChannel() instanceof com.maddox.rts.NetChannelInStream)
+            return;
+        try
+        {
+            com.maddox.rts.NetMsgFiltered netmsgfiltered = new NetMsgFiltered();
+            netmsgfiltered.writeByte(68);
+            netmsgfiltered.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            netmsgfiltered.setIncludeTime(false);
+            net.postTo(com.maddox.rts.Time.current(), net.masterChannel(), netmsgfiltered);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void send_CollisionDeathRequest()
+    {
+        if(!isNetMirror())
+            return;
+        if(net.masterChannel() instanceof com.maddox.rts.NetChannelInStream)
+            return;
+        try
+        {
+            com.maddox.rts.NetMsgFiltered netmsgfiltered = new NetMsgFiltered();
+            netmsgfiltered.unLockAndClear();
+            netmsgfiltered.writeByte(67);
+            netmsgfiltered.setIncludeTime(false);
+            net.postTo(com.maddox.rts.Time.current(), net.masterChannel(), netmsgfiltered);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void send_AnByteAndPoseCommand(boolean flag, com.maddox.il2.engine.Actor actor, int i)
+    {
+        if(!isNetMaster() || !net.isMirrored())
+            return;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(i);
+            sendPose(netmsgguaranted);
+            if(flag)
+                netmsgguaranted.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void send_DeathCommand(com.maddox.il2.engine.Actor actor)
+    {
+        send_AnByteAndPoseCommand(true, actor, 68);
+    }
+
+    private void send_AbsoluteDeathCommand(com.maddox.il2.engine.Actor actor)
+    {
+        send_AnByteAndPoseCommand(true, actor, 65);
+    }
+
+    private void send_CollisionDeathCommand()
+    {
+        send_AnByteAndPoseCommand(false, null, 67);
+    }
+
+    private void send_MoveCommand(com.maddox.il2.ai.ground.Moving moving, float f)
+    {
+        if(!isNetMaster() || !net.isMirrored())
+            return;
+        if(moving.moveCurTime < 0L && moving.rotatCurTime < 0L)
+            return;
+        try
+        {
+            outCommand.unLockAndClear();
+            if(moving.dstPos == null || moving.moveTotTime <= 0L || moving.normal == null)
+            {
+                outCommand.writeByte(83);
+                outCommand.setIncludeTime(false);
+                net.post(com.maddox.rts.Time.current(), outCommand);
+            } else
+            {
+                if(f > 0.0F)
+                    outCommand.writeByte(77);
+                else
+                    outCommand.writeByte(109);
+                outCommand.write(com.maddox.il2.objects.vehicles.cars.CarGeneric.packPos(moving.dstPos));
+                outCommand.writeByte(com.maddox.il2.objects.vehicles.cars.CarGeneric.packNormal(moving.normal.z));
+                if(moving.normal.z >= 0.0F)
+                {
+                    outCommand.writeByte(com.maddox.il2.objects.vehicles.cars.CarGeneric.packNormal(moving.normal.x));
+                    outCommand.writeByte(com.maddox.il2.objects.vehicles.cars.CarGeneric.packNormal(moving.normal.y));
+                }
+                int i = (int)((long)com.maddox.rts.Time.tickLen() * moving.moveTotTime);
+                if(i >= 0x10000)
+                    i = 65535;
+                outCommand.writeShort(i);
+                outCommand.setIncludeTime(true);
+                net.post(com.maddox.rts.Time.current(), outCommand);
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    static int packNormal(float f)
+    {
+        f++;
+        f *= 0.5F;
+        f *= 254F;
+        int i = (int)(f + 0.5F);
+        if(i < 0)
+            i = 0;
+        if(i > 254)
+            i = 254;
+        return i - 127;
+    }
+
+    static byte[] packPos(com.maddox.JGP.Point3d point3d)
+    {
+        byte abyte0[] = new byte[8];
+        int i = (int)(point3d.x * 20D + 0.5D);
+        int j = (int)(point3d.y * 20D + 0.5D);
+        int k = (int)(point3d.z * 10D + 0.5D);
+        abyte0[0] = (byte)(i >> 0 & 0xff);
+        abyte0[1] = (byte)(i >> 8 & 0xff);
+        abyte0[2] = (byte)(i >> 16 & 0xff);
+        abyte0[3] = (byte)(j >> 0 & 0xff);
+        abyte0[4] = (byte)(j >> 8 & 0xff);
+        abyte0[5] = (byte)(j >> 16 & 0xff);
+        abyte0[6] = (byte)(k >> 0 & 0xff);
+        abyte0[7] = (byte)(k >> 8 & 0xff);
+        return abyte0;
+    }
+
+    static byte[] packOri(com.maddox.il2.engine.Orient orient)
+    {
+        byte abyte0[] = new byte[3];
+        int i = (int)((orient.getYaw() * 256F) / 360F);
+        int j = (int)((orient.getPitch() * 256F) / 360F);
+        int k = (int)((orient.getRoll() * 256F) / 360F);
+        abyte0[0] = (byte)(i & 0xff);
+        abyte0[1] = (byte)(j & 0xff);
+        abyte0[2] = (byte)(k & 0xff);
+        return abyte0;
+    }
+
+    static float unpackNormal(int i)
+    {
+        return (float)i / 127F;
+    }
+
+    static com.maddox.JGP.Point3d unpackPos(byte abyte0[])
+    {
+        int i = ((abyte0[2] & 0xff) << 16) + ((abyte0[1] & 0xff) << 8) + ((abyte0[0] & 0xff) << 0);
+        int j = ((abyte0[5] & 0xff) << 16) + ((abyte0[4] & 0xff) << 8) + ((abyte0[3] & 0xff) << 0);
+        int k = ((abyte0[7] & 0xff) << 8) + ((abyte0[6] & 0xff) << 0);
+        return new Point3d((double)i * 0.050000000000000003D, (double)j * 0.050000000000000003D, (double)k * 0.10000000000000001D);
+    }
+
+    static com.maddox.il2.engine.Orient unpackOri(byte abyte0[])
+    {
+        int i = abyte0[0] & 0xff;
+        int j = abyte0[1] & 0xff;
+        int k = abyte0[2] & 0xff;
+        com.maddox.il2.engine.Orient orient = new Orient();
+        orient.setYPR(((float)i * 360F) / 256F, ((float)j * 360F) / 256F, ((float)k * 360F) / 256F);
+        return orient;
+    }
+
+    static com.maddox.JGP.Point3d simplifyPos(com.maddox.JGP.Point3d point3d)
+    {
+        return com.maddox.il2.objects.vehicles.cars.CarGeneric.unpackPos(com.maddox.il2.objects.vehicles.cars.CarGeneric.packPos(point3d));
+    }
+
+    static com.maddox.il2.engine.Orient simplifyOri(com.maddox.il2.engine.Orient orient)
+    {
+        return com.maddox.il2.objects.vehicles.cars.CarGeneric.unpackOri(com.maddox.il2.objects.vehicles.cars.CarGeneric.packOri(orient));
+    }
+
+    static float readPackedNormal(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        return com.maddox.il2.objects.vehicles.cars.CarGeneric.unpackNormal(netmsginput.readByte());
+    }
+
+    static com.maddox.JGP.Point3d readPackedPos(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        byte abyte0[] = new byte[8];
+        netmsginput.read(abyte0);
+        return com.maddox.il2.objects.vehicles.cars.CarGeneric.unpackPos(abyte0);
+    }
+
+    static com.maddox.il2.engine.Orient readPackedOri(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+        byte abyte0[] = new byte[3];
+        netmsginput.read(abyte0);
+        return com.maddox.il2.objects.vehicles.cars.CarGeneric.unpackOri(abyte0);
+    }
+
+    private void sendPose(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+        netmsgguaranted.write(com.maddox.il2.objects.vehicles.cars.CarGeneric.packPos(pos.getAbsPoint()));
+        netmsgguaranted.write(com.maddox.il2.objects.vehicles.cars.CarGeneric.packOri(pos.getAbsOrient()));
+    }
+
+    public void netFirstUpdate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
+    {
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        byte byte0 = ((byte)(dying != 0 ? 105 : 73));
+        netmsgguaranted.writeByte(byte0);
+        sendPose(netmsgguaranted);
+        net.postTo(netchannel, netmsgguaranted);
+    }
+
+    public void startMove()
+    {
+        if(!interpEnd("move"))
+        {
+            mov = new Moving();
+            collisionStage = 0;
+            interpPut(new Move(), "move", com.maddox.rts.Time.current(), null);
+            engineSFX = newSound(prop.soundMove, true);
+            engineSTimer = (int)com.maddox.il2.objects.vehicles.cars.CarGeneric.SecsToTicks(com.maddox.il2.objects.vehicles.cars.CarGeneric.Rnd(5F, 7F));
+        }
+    }
+
+    public void forceReaskMove()
+    {
+        if(isNetMirror())
+            return;
+        if(collisionStage != 0)
+            return;
+        if(dying != 0)
+            return;
+        if(mov == null || mov.normal == null)
+        {
+            return;
+        } else
+        {
+            mov.switchToAsk();
+            return;
+        }
+    }
+
+    public com.maddox.il2.ai.ground.UnitData GetUnitData()
+    {
+        return udata;
+    }
+
+    public float HeightAboveLandSurface()
+    {
+        return heightAboveLandSurface;
+    }
+
+    public float SpeedAverage()
+    {
+        return prop.SPEED_AVERAGE;
+    }
+
+    public float BestSpace()
+    {
+        return prop.BEST_SPACE;
+    }
+
+    public float CommandInterval()
+    {
+        return prop.COMMAND_INTERVAL;
+    }
+
+    public float StayInterval()
+    {
+        return prop.STAY_INTERVAL;
+    }
+
+    public com.maddox.il2.ai.ground.UnitInPackedForm Pack()
+    {
+        int i = com.maddox.rts.Finger.Int(getClass().getName());
         int j = 0;
-        if ((i == 68) || (i == 65)) {
-          j = 1;
-        }
-        localObject2 = new NetMsgGuaranted(paramNetMsgInput, j);
-        post((NetMsgGuaranted)localObject2);
-      }
-
-      Object localObject1 = CarGeneric.readPackedPos(paramNetMsgInput);
-      Object localObject2 = CarGeneric.readPackedOri(paramNetMsgInput);
-
-      CarGeneric.this.setPosition((Point3d)localObject1, (Orient)localObject2);
-      CarGeneric.this.mov.switchToStay(20.0F);
-
-      switch (i)
-      {
-      case 73:
-      case 105:
-        if (CarGeneric.this.dying != 0) {
-          System.out.println("Car is dead at init stage");
-        }
-        if (i != 105) break;
-        CarGeneric.this.DieMirror(null, false); break;
-      case 67:
-        CarGeneric.this.doCollisionDeath();
-        break;
-      case 65:
-        localObject1 = paramNetMsgInput.readNetObj();
-        localObject2 = localObject1 == null ? null : ((ActorNet)localObject1).actor();
-        CarGeneric.this.doAbsoluteDeath((Actor)localObject2);
-
-        break;
-      case 68:
-        if (CarGeneric.this.dying != 0) break;
-        localObject1 = paramNetMsgInput.readNetObj();
-        localObject2 = localObject1 == null ? null : ((ActorNet)localObject1).actor();
-        CarGeneric.this.DieMirror((Actor)localObject2, true);
-        break;
-      default:
-        System.out.println("CarGeneric: Unknown G message (" + i + ")");
-        return false;
-      }
-
-      return true;
+        return new UnitInPackedForm(codeName, i, j, SpeedAverage(), BestSpace(), 0, HitbyMask());
     }
 
-    private boolean handleNonguaranted(NetMsgInput paramNetMsgInput) throws IOException
+    public int HitbyMask()
     {
-      int i = paramNetMsgInput.readByte();
-      switch (i)
-      {
-      case 68:
-        this.out.unLockAndSet(paramNetMsgInput, 1);
-        this.out.setIncludeTime(false);
-        postRealTo(Message.currentRealTime(), masterChannel(), this.out);
-        break;
-      case 83:
-        if (isMirrored()) {
-          this.out.unLockAndSet(paramNetMsgInput, 0);
-          this.out.setIncludeTime(false);
-          postReal(Message.currentRealTime(), this.out);
-        }
-
-        CarGeneric.this.mov.switchToStay(10.0F);
-        break;
-      case 77:
-      case 109:
-        int j = i == 77 ? 1 : 0;
-
-        if (isMirrored()) {
-          this.out.unLockAndSet(paramNetMsgInput, 0);
-          this.out.setIncludeTime(true);
-          postReal(Message.currentRealTime(), this.out);
-        }
-
-        Point3d localPoint3d = CarGeneric.readPackedPos(paramNetMsgInput);
-        Vector3f localVector3f = new Vector3f(0.0F, 0.0F, 0.0F);
-        localVector3f.z = CarGeneric.readPackedNormal(paramNetMsgInput);
-        if (localVector3f.z >= 0.0F) {
-          localVector3f.x = CarGeneric.readPackedNormal(paramNetMsgInput);
-          localVector3f.y = CarGeneric.readPackedNormal(paramNetMsgInput);
-          float f1 = localVector3f.length();
-          if (f1 > 0.001F)
-            localVector3f.scale(1.0F / f1);
-          else {
-            localVector3f.set(0.0F, 0.0F, 1.0F);
-          }
-        }
-        int k = paramNetMsgInput.readUnsignedShort();
-        float f2 = 0.001F * (float)(Message.currentGameTime() - Time.current() + k);
-
-        if (f2 <= 0.0F) {
-          f2 = 0.1F;
-        }
-
-        UnitMove localUnitMove = new UnitMove(0.0F, localPoint3d, f2, localVector3f, -1.0F);
-
-        if (CarGeneric.this.dying != 0) break;
-        CarGeneric.this.mov.set(localUnitMove, actor(), 2.0F * CarGeneric.this.prop.SPEED_MAX, j != 0 ? 2.0F * CarGeneric.this.prop.SPEED_BACK : -1.0F, 1.3F * CarGeneric.this.prop.ROT_SPEED_MAX, 1.1F * CarGeneric.this.prop.ROT_INVIS_ANG); break;
-      default:
-        System.out.println("CarGeneric: Unknown NG message");
-        return false;
-      }
-
-      return true;
+        return prop.HITBY_MASK;
     }
 
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException
+    public int chooseBulletType(com.maddox.il2.engine.BulletProperties abulletproperties[])
     {
-      if (paramNetMsgInput.isGuaranted()) {
-        return handleGuaranted(paramNetMsgInput);
-      }
-      return handleNonguaranted(paramNetMsgInput);
+        if(dying != 0)
+            return -1;
+        if(abulletproperties.length == 1)
+            return 0;
+        if(abulletproperties.length <= 0)
+            return -1;
+        if(abulletproperties[0].power <= 0.0F)
+            return 0;
+        if(abulletproperties[1].power <= 0.0F)
+            return 1;
+        if(abulletproperties[0].cumulativePower > 0.0F)
+            return 0;
+        if(abulletproperties[1].cumulativePower > 0.0F)
+            return 1;
+        if(abulletproperties[0].powerType == 1)
+            return 0;
+        if(abulletproperties[1].powerType == 1)
+            return 1;
+        return abulletproperties[0].powerType != 2 ? 0 : 1;
     }
 
-    public Mirror(Actor paramNetChannel, NetChannel paramInt, int arg4)
+    public int chooseShotpoint(com.maddox.il2.engine.BulletProperties bulletproperties)
     {
-      super(paramInt, i);
-    }
-  }
-
-  class Master extends ActorNet
-  {
-    public Master(Actor arg2)
-    {
-      super();
+        return dying == 0 ? 0 : -1;
     }
 
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException
+    public boolean getShotpointOffset(int i, com.maddox.JGP.Point3d point3d)
     {
-      if (paramNetMsgInput.isGuaranted()) {
-        return false;
-      }
+        if(dying != 0)
+            return false;
+        if(i != 0)
+            return false;
+        if(point3d != null)
+            point3d.set(0.0D, 0.0D, 0.0D);
+        return true;
+    }
 
-      int i = paramNetMsgInput.readByte();
-      switch (i) {
-      case 68:
-        if (CarGeneric.this.dying != 0) {
-          break;
+    public void absoluteDeath(com.maddox.il2.engine.Actor actor)
+    {
+        if(isNetMirror())
+            return;
+        if(isNetMaster())
+            send_AbsoluteDeathCommand(actor);
+        doAbsoluteDeath(actor);
+    }
+
+    private void doAbsoluteDeath(com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.il2.ai.ground.ChiefGround chiefground = (com.maddox.il2.ai.ground.ChiefGround)getOwner();
+        if(chiefground != null)
+            chiefground.Detach(this, actor);
+        if(!getDiedFlag())
+            com.maddox.il2.ai.World.onActorDied(this, actor);
+        com.maddox.il2.objects.effects.Explosions.Car_ExplodeCollapse(pos.getAbsPoint());
+        destroy();
+    }
+
+    public boolean unmovableInFuture()
+    {
+        return dying != 0;
+    }
+
+    public void collisionDeath()
+    {
+        if(isNetMirror())
+        {
+            send_CollisionDeathRequest();
+            return;
         }
-        NetObj localNetObj = paramNetMsgInput.readNetObj();
-        Actor localActor = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-        CarGeneric.this.Die(localActor);
-        break;
-      case 67:
-        CarGeneric.this.collisionDeath();
-        break;
-      default:
-        System.out.println("CarGeneric: Unknown M message (" + i + ")");
-        return false;
-      }
-
-      return true;
+        if(isNetMaster())
+            send_CollisionDeathCommand();
+        doCollisionDeath();
     }
-  }
 
-  protected static class CarProperties
-    implements Cloneable
-  {
-    public int codeName = 0;
-
-    public String MESH0_NAME = "3do/cars/None.him";
-    public String MESH1_NAME = null;
-
-    public String meshSummer = null;
-    public String meshDesert = null;
-    public String meshWinter = null;
-
-    public String meshSummer1 = null;
-    public String meshDesert1 = null;
-    public String meshWinter1 = null;
-
-    public String soundMove = "models.Car";
-
-    public TableFunction2 fnShotPanzer = null;
-    public TableFunction2 fnExplodePanzer = null;
-
-    public float PANZER_BODY_FRONT = 0.001F;
-    public float PANZER_BODY_BACK = 0.001F;
-    public float PANZER_BODY_SIDE = 0.001F;
-    public float PANZER_BODY_TOP = 0.001F;
-
-    public float PANZER_TNT_TYPE = 1.0F;
-
-    public String explodeName = null;
-
-    public int HITBY_MASK = -1;
-
-    public float SPEED_AVERAGE = CarGeneric.KmHourToMSec(1.0F);
-    public float SPEED_MAX = CarGeneric.KmHourToMSec(2.0F);
-    public float SPEED_BACK = CarGeneric.KmHourToMSec(1.0F);
-    public float ROT_SPEED_MAX = 3.6F;
-    public float ROT_INVIS_ANG = 360.0F;
-
-    public float BEST_SPACE = 2.0F;
-
-    public float AFTER_COLLISION_DIST = 0.1F;
-
-    public float COMMAND_INTERVAL = 20.0F;
-
-    public float STAY_INTERVAL = 30.0F;
-
-    public int NUM_HUMANS = 0;
-
-    public Object clone() {
-      try {
-        return super.clone(); } catch (Exception localException) {
-      }
-      return null;
+    private void doCollisionDeath()
+    {
+        com.maddox.il2.ai.ground.ChiefGround chiefground = (com.maddox.il2.ai.ground.ChiefGround)getOwner();
+        boolean flag = chiefground == null && codeOfUnderlyingBridgeSegment >= 0 || chiefground != null && chiefground.getCodeOfBridgeSegment(this) >= 0;
+        if(chiefground != null)
+            chiefground.Detach(this, null);
+        if(flag)
+            com.maddox.il2.objects.effects.Explosions.Car_ExplodeCollapse(pos.getAbsPoint());
+        else
+            com.maddox.il2.objects.effects.Explosions.Car_ExplodeCollapse(pos.getAbsPoint());
+        destroy();
     }
-  }
+
+    public float futurePosition(float f, com.maddox.JGP.Point3d point3d)
+    {
+        pos.getAbs(point3d);
+        if(f <= 0.0F)
+            return 0.0F;
+        if(mov.moveCurTime < 0L && mov.rotatCurTime < 0L)
+            return 0.0F;
+        float f1 = com.maddox.il2.objects.vehicles.cars.CarGeneric.TicksToSecs(mov.moveCurTime);
+        if(mov.dstPos == null)
+            if(f1 >= f)
+                return f;
+            else
+                return f1;
+        float f2 = 0.0F;
+        if(mov.rotatingInPlace)
+        {
+            f2 = com.maddox.il2.objects.vehicles.cars.CarGeneric.TicksToSecs(mov.rotatCurTime);
+            if(f2 >= f)
+                return f;
+        }
+        if(f1 <= 0.0F)
+            return f2;
+        if(f2 + f1 <= f)
+        {
+            point3d.set(mov.dstPos);
+            return f2 + f1;
+        }
+        com.maddox.JGP.Point3d point3d1 = new Point3d();
+        point3d1.set(mov.dstPos);
+        double d = (f - f2) / f1;
+        p.x = point3d.x * (1.0D - d) + point3d1.x * d;
+        p.y = point3d.y * (1.0D - d) + point3d1.y * d;
+        if(mov.normal.z < 0.0F)
+            p.z = com.maddox.il2.engine.Engine.land().HQ(p.x, p.y) + (double)HeightAboveLandSurface();
+        else
+            p.z = point3d.z * (1.0D - d) + point3d1.z * d;
+        point3d.set(p);
+        return f;
+    }
+
+    private com.maddox.il2.objects.vehicles.cars.CarProperties prop;
+    private int codeName;
+    private float heightAboveLandSurface;
+    public com.maddox.il2.ai.ground.UnitData udata;
+    private com.maddox.il2.ai.ground.Moving mov;
+    protected com.maddox.sound.SoundFX engineSFX;
+    protected int engineSTimer;
+    protected int ticksIn8secs;
+    private int collisionStage;
+    static final int COLLIS_NO_COLLISION = 0;
+    static final int COLLIS_JUST_COLLIDED = 1;
+    static final int COLLIS_MOVING_FROM_COLLISION = 2;
+    private com.maddox.JGP.Vector2d collisVector;
+    private com.maddox.il2.engine.Actor collidee;
+    private com.maddox.il2.ai.ground.StaticObstacle obs;
+    private long timeHumanLaunch;
+    private int dying;
+    static final int DYING_NONE = 0;
+    static final int DYING_DEAD = 1;
+    private int codeOfUnderlyingBridgeSegment;
+    private static com.maddox.il2.objects.vehicles.cars.CarProperties constr_arg1 = null;
+    private static com.maddox.il2.engine.Actor constr_arg2 = null;
+    private static com.maddox.JGP.Point3d p = new Point3d();
+    private static com.maddox.il2.engine.Orient o = new Orient();
+    private static com.maddox.JGP.Vector3f n = new Vector3f();
+    private com.maddox.rts.NetMsgFiltered outCommand;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

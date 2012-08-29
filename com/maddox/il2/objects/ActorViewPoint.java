@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ActorViewPoint.java
+
 package com.maddox.il2.objects;
 
 import com.maddox.il2.engine.Actor;
@@ -10,56 +15,70 @@ import com.maddox.il2.engine.Loc;
 import com.maddox.rts.Message;
 import com.maddox.rts.NetChannel;
 
-public class ActorViewPoint extends Actor
+public class ActorViewPoint extends com.maddox.il2.engine.Actor
 {
-  private HookUpdate hook;
-
-  public void setViewActor(Actor paramActor)
-  {
-    if (!Actor.isValid(paramActor)) return;
-    this.pos.setBase(paramActor, this.hook, true);
-  }
-
-  public void createNetObject(NetChannel paramNetChannel, int paramInt)
-  {
-    if (paramNetChannel == null)
+    class Mirror extends com.maddox.il2.engine.ActorNet
     {
-      this.net = new Master(this);
+
+        public Mirror(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(actor, netchannel, i);
+        }
     }
-    else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
-  }
 
-  public Object getSwitchListener(Message paramMessage)
-  {
-    return this;
-  }
-  public ActorViewPoint() {
-    this.pos = new ActorPosMove(this, new Loc());
-    this.hook = new HookUpdate();
-    this.acoustics = Engine.worldAcoustics();
-  }
-
-  class Mirror extends ActorNet
-  {
-    public Mirror(Actor paramNetChannel, NetChannel paramInt, int arg4)
+    class Master extends com.maddox.il2.engine.ActorNet
     {
-      super(paramInt, i);
-    }
-  }
 
-  class Master extends ActorNet
-  {
-    public Master(Actor arg2)
-    {
-      super();
+        public Master(com.maddox.il2.engine.Actor actor)
+        {
+            super(actor);
+        }
     }
-  }
 
-  static class HookUpdate extends Hook
-  {
-    public void computePos(Actor paramActor, Loc paramLoc1, Loc paramLoc2)
+    static class HookUpdate extends com.maddox.il2.engine.Hook
     {
+
+        public void computePos(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1)
+        {
+        }
+
+        HookUpdate()
+        {
+        }
     }
-  }
+
+
+    public void setViewActor(com.maddox.il2.engine.Actor actor)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor))
+        {
+            return;
+        } else
+        {
+            pos.setBase(actor, hook, true);
+            return;
+        }
+    }
+
+    public void createNetObject(com.maddox.rts.NetChannel netchannel, int i)
+    {
+        if(netchannel == null)
+            net = new Master(this);
+        else
+            net = new Mirror(this, netchannel, i);
+    }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    public ActorViewPoint()
+    {
+        pos = new ActorPosMove(this, new Loc());
+        hook = new HookUpdate();
+        acoustics = com.maddox.il2.engine.Engine.worldAcoustics();
+    }
+
+    private com.maddox.il2.objects.HookUpdate hook;
 }

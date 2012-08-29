@@ -1,35 +1,59 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   KI_27_OTSU.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
-public class KI_27_OTSU extends KI_27
+// Referenced classes of package com.maddox.il2.objects.air:
+//            KI_27, PaintSchemeFMPar01, PaintSchemeBCSPar01, NetAircraft
+
+public class KI_27_OTSU extends com.maddox.il2.objects.air.KI_27
 {
-  static
-  {
-    Class localClass = CLASS.THIS();
-    new NetAircraft.SPAWN(localClass);
 
-    Property.set(localClass, "iconFar_shortClassName", "Ki-27");
-    Property.set(localClass, "meshName", "3DO/Plane/Ki-27(Otsu)(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar01());
-    Property.set(localClass, "meshName_ja", "3DO/Plane/Ki-27(Otsu)(ja)/hier.him");
-    Property.set(localClass, "PaintScheme_ja", new PaintSchemeBCSPar01());
+    public KI_27_OTSU()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1938.0F);
-    Property.set(localClass, "yearExpired", 1946.0F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/Ki-27.fmd");
-    Property.set(localClass, "cockpitClass", CockpitKI_27OTSU.class);
-    Property.set(localClass, "LOSElevation", 0.74185F);
-
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303s 500", "MGunBrowning303s 500", null, null, null, null });
-
-    weaponsRegister(localClass, "4x25", new String[] { "MGunBrowning303s 500", "MGunBrowning303s 500", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun30kgJ 1" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.rts.CLASS.THIS();
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "Ki-27");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/Ki-27(Otsu)(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
+        com.maddox.rts.Property.set(class1, "meshName_ja", "3DO/Plane/Ki-27(Otsu)(ja)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_ja", new PaintSchemeBCSPar01());
+        com.maddox.rts.Property.set(class1, "yearService", 1938F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1946F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/Ki-27.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitKI_27OTSU.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.74185F);
+        com.maddox.il2.objects.air.KI_27_OTSU.weaponTriggersRegister(class1, new int[] {
+            0, 0, 3, 3, 3, 3
+        });
+        com.maddox.il2.objects.air.KI_27_OTSU.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04"
+        });
+        com.maddox.il2.objects.air.KI_27_OTSU.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning303s 500", "MGunBrowning303s 500", null, null, null, null
+        });
+        com.maddox.il2.objects.air.KI_27_OTSU.weaponsRegister(class1, "4x25", new java.lang.String[] {
+            "MGunBrowning303s 500", "MGunBrowning303s 500", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun30kgJ 1"
+        });
+        com.maddox.il2.objects.air.KI_27_OTSU.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null
+        });
+    }
 }

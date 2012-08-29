@@ -1,69 +1,90 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   DreamEnv.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
 
+// Referenced classes of package com.maddox.il2.engine:
+//            Actor
+
 public abstract class DreamEnv
 {
-  public static final double SQUARE_SIZE = 200.0D;
-  public static final double FIRE_SIZE = 7600.0D;
-  public static final double UPDATE_TIME = 1.0D;
 
-  public boolean isSleep(double paramDouble1, double paramDouble2)
-  {
-    return true; } 
-  public boolean isSleep(Point3d paramPoint3d) { return true; } 
-  public boolean isSleep(int paramInt1, int paramInt2) { return true;
-  }
+    public boolean isSleep(double d, double d1)
+    {
+        return true;
+    }
 
-  protected void doChanges()
-  {
-  }
+    public boolean isSleep(com.maddox.JGP.Point3d point3d)
+    {
+        return true;
+    }
 
-  protected void changedListenerPos(Actor paramActor, Point3d paramPoint3d1, Point3d paramPoint3d2)
-  {
-  }
+    public boolean isSleep(int i, int j)
+    {
+        return true;
+    }
 
-  protected void addListener(Actor paramActor)
-  {
-  }
+    protected void doChanges()
+    {
+    }
 
-  protected void removeListener(Actor paramActor)
-  {
-  }
+    protected void changedListenerPos(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+    }
 
-  protected void addGlobalListener(Actor paramActor)
-  {
-  }
+    protected void addListener(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  protected void removeGlobalListener(Actor paramActor)
-  {
-  }
+    protected void removeListener(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  public void resetGlobalListener(Actor paramActor)
-  {
-  }
+    protected void addGlobalListener(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  protected void changedFirePos(Actor paramActor, Point3d paramPoint3d1, Point3d paramPoint3d2)
-  {
-  }
+    protected void removeGlobalListener(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  protected void addFire(Actor paramActor)
-  {
-  }
+    public void resetGlobalListener(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  protected void removeFire(Actor paramActor)
-  {
-  }
+    protected void changedFirePos(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+    }
 
-  public void resetGameClear()
-  {
-  }
+    protected void addFire(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  public void resetGameCreate()
-  {
-  }
+    protected void removeFire(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  protected void clearFire()
-  {
-  }
+    public void resetGameClear()
+    {
+    }
+
+    public void resetGameCreate()
+    {
+    }
+
+    protected void clearFire()
+    {
+    }
+
+    protected DreamEnv()
+    {
+    }
+
+    public static final double SQUARE_SIZE = 200D;
+    public static final double FIRE_SIZE = 7600D;
+    public static final double UPDATE_TIME = 1D;
 }

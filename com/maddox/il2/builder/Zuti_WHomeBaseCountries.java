@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Zuti_WHomeBaseCountries.java
+
 package com.maddox.il2.builder;
 
 import com.maddox.gwindow.GFont;
@@ -8,7 +13,9 @@ import com.maddox.gwindow.GWindowButton;
 import com.maddox.gwindow.GWindowDialogClient;
 import com.maddox.gwindow.GWindowFramed;
 import com.maddox.gwindow.GWindowLookAndFeel;
+import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
+import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.ai.Regiment;
 import com.maddox.rts.LDRres;
 import com.maddox.rts.RTSConf;
@@ -16,332 +23,345 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class Zuti_WHomeBaseCountries extends GWindowFramed
+// Referenced classes of package com.maddox.il2.builder:
+//            Plugin, Builder, ActorBorn, PlMission
+
+public class Zuti_WHomeBaseCountries extends com.maddox.gwindow.GWindowFramed
 {
-  private Table lstSelected;
-  private Table lstAvailable;
-  private GWindowButton bAdd;
-  private GWindowButton bAddAll;
-  private GWindowButton bRemove;
-  private GWindowButton bRemoveAll;
-  private ArrayList fullCountriesList = new ArrayList();
-  private ActorBorn selectedActorBorn;
-  private int mode = 0;
-
-  public Zuti_WHomeBaseCountries()
-  {
-    doNew(Plugin.builder.clientWindow, 2.0F, 2.0F, 45.0F, 30.0F, true);
-    this.bSizable = true;
-  }
-
-  public void afterCreated()
-  {
-    super.afterCreated();
-
-    close(false);
-  }
-
-  public void windowShown()
-  {
-    super.windowShown();
-
-    if (this.lstSelected != null)
-      this.lstSelected.resolutionChanged();
-    if (this.lstAvailable != null)
-      this.lstAvailable.resolutionChanged();
-  }
-
-  public void windowHidden()
-  {
-    super.windowHidden();
-  }
-
-  public void created()
-  {
-    this.bAlwaysOnTop = true;
-    super.created();
-    this.title = Plugin.i18n("mds.zCountries.title");
-    this.clientWindow = create(new GWindowDialogClient()
+    class Table extends com.maddox.gwindow.GWindowTable
     {
-      public void resized()
-      {
-        super.resized();
-        Zuti_WHomeBaseCountries.this.setSizes(this);
-      }
-    });
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.clientWindow;
 
-    this.lstSelected = new Table(localGWindowDialogClient, Plugin.i18n("mds.zCountries.selected"), 1.0F, 3.0F, 15.0F, 20.0F);
-    this.lstAvailable = new Table(localGWindowDialogClient, Plugin.i18n("mds.zCountries.available"), 23.0F, 3.0F, 15.0F, 20.0F);
-
-    localGWindowDialogClient.addControl(this.bAddAll = new GWindowButton(localGWindowDialogClient, 17.0F, 3.0F, 5.0F, 2.0F, Plugin.i18n("bplace_addall"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) {
-          return false;
-        }
-
-        Zuti_WHomeBaseCountries.this.addAllCountries();
-
-        PlMission.setChanged();
-        return true;
-      }
-    });
-    localGWindowDialogClient.addControl(this.bAdd = new GWindowButton(localGWindowDialogClient, 17.0F, 5.0F, 5.0F, 2.0F, Plugin.i18n("bplace_add"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) {
-          return false;
-        }
-        int i = Zuti_WHomeBaseCountries.this.lstAvailable.selectRow;
-        if ((i < 0) || (i >= Zuti_WHomeBaseCountries.this.lstAvailable.lst.size())) {
-          return true;
-        }
-        if (!Zuti_WHomeBaseCountries.this.lstSelected.lst.contains(Zuti_WHomeBaseCountries.this.lstAvailable.lst.get(i)))
+        public int countRows()
         {
-          Zuti_WHomeBaseCountries.this.lstSelected.lst.add(Zuti_WHomeBaseCountries.this.lstAvailable.lst.get(i));
-          Zuti_WHomeBaseCountries.this.lstAvailable.lst.remove(i);
+            return lst == null ? 0 : lst.size();
         }
-        Zuti_WHomeBaseCountries.this.lstSelected.resized();
-        Zuti_WHomeBaseCountries.this.lstAvailable.resized();
-        PlMission.setChanged();
-        return true;
-      }
-    });
-    localGWindowDialogClient.addControl(this.bRemoveAll = new GWindowButton(localGWindowDialogClient, 17.0F, 8.0F, 5.0F, 2.0F, Plugin.i18n("bplace_delall"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) {
-          return false;
-        }
-        Zuti_WHomeBaseCountries.this.lstSelected.lst.clear();
-        Zuti_WHomeBaseCountries.this.fillAvailableCountries();
 
-        PlMission.setChanged();
-        return true;
-      }
-    });
-    localGWindowDialogClient.addControl(this.bRemove = new GWindowButton(localGWindowDialogClient, 17.0F, 10.0F, 5.0F, 2.0F, Plugin.i18n("bplace_del"), null)
-    {
-      public boolean notify(int paramInt1, int paramInt2)
-      {
-        if (paramInt1 != 2) {
-          return false;
-        }
-        int i = Zuti_WHomeBaseCountries.this.lstSelected.selectRow;
-        if ((i < 0) || (i >= Zuti_WHomeBaseCountries.this.lstSelected.lst.size())) {
-          return true;
-        }
-        if (!Zuti_WHomeBaseCountries.this.lstAvailable.lst.contains(Zuti_WHomeBaseCountries.this.lstSelected.lst.get(i)))
-          Zuti_WHomeBaseCountries.this.lstAvailable.lst.add(Zuti_WHomeBaseCountries.this.lstSelected.lst.get(i));
-        Zuti_WHomeBaseCountries.this.lstSelected.lst.remove(i);
-        Zuti_WHomeBaseCountries.this.lstSelected.resized();
-        Zuti_WHomeBaseCountries.this.lstAvailable.resized();
-        PlMission.setChanged();
-        return true;
-      }
-    });
-  }
-
-  private void setSizes(GWindow paramGWindow) {
-    float f1 = paramGWindow.win.dx;
-    float f2 = paramGWindow.win.dy;
-    GFont localGFont = paramGWindow.root.textFonts[0];
-    float f3 = paramGWindow.lAF().metric();
-    GSize localGSize = new GSize();
-    localGFont.size(Plugin.i18n("bplace_addall"), localGSize);
-    float f4 = localGSize.dx;
-    localGFont.size(Plugin.i18n("bplace_add"), localGSize);
-    float f5 = localGSize.dx;
-    localGFont.size(Plugin.i18n("bplace_delall"), localGSize);
-    float f6 = localGSize.dx;
-    localGFont.size(Plugin.i18n("bplace_del"), localGSize);
-    float f7 = localGSize.dx;
-    localGFont.size(Plugin.i18n("bplace_planes"), localGSize);
-    float f8 = localGSize.dx;
-    localGFont.size(Plugin.i18n("bplace_list"), localGSize);
-    float f9 = localGSize.dx;
-    float f10 = f4;
-    if (f10 < f5)
-      f10 = f5;
-    if (f10 < f6)
-      f10 = f6;
-    if (f10 < f7)
-      f10 = f7;
-    float f11 = f3 + f10;
-    f10 += f3 + 4.0F * f3 + f8 + 4.0F * f3 + f9 + 4.0F * f3;
-    if (f1 < f10)
-      f1 = f10;
-    float f12 = 10.0F * f3 + 10.0F * f3 + 2.0F * f3;
-    if (f2 < f12)
-      f2 = f12;
-    float f13 = (f1 - f11) / 2.0F;
-    this.bAddAll.setPosSize(f13, f3, f11, 2.0F * f3);
-    this.bAdd.setPosSize(f13, f3 + 2.0F * f3, f11, 2.0F * f3);
-    this.bRemoveAll.setPosSize(f13, 2.0F * f3 + 4.0F * f3, f11, 2.0F * f3);
-    this.bRemove.setPosSize(f13, 2.0F * f3 + 6.0F * f3, f11, 2.0F * f3);
-    float f14 = (f1 - f11 - 4.0F * f3) / 2.0F;
-    float f15 = f2 - f3 - 12.0F;
-    this.lstAvailable.setPosSize(f1 - f3 - f14, f3, f14, f15);
-    this.lstSelected.setPosSize(f3, f3, f14, f15);
-  }
-
-  public void setSelectedCountries(ActorBorn paramActorBorn)
-  {
-    this.lstSelected.lst.clear();
-    this.lstAvailable.lst.clear();
-
-    this.selectedActorBorn = paramActorBorn;
-
-    if ((this.fullCountriesList == null) || (this.fullCountriesList.size() < 1)) {
-      fillCountries();
-    }
-    fillAvailableCountries();
-
-    switch (this.mode)
-    {
-    case 0:
-      if ((this.selectedActorBorn.zutiHomeBaseCountries == null) || (this.selectedActorBorn.zutiHomeBaseCountries.size() <= 0)) {
-        break;
-      }
-      for (int i = 0; i < this.selectedActorBorn.zutiHomeBaseCountries.size(); i++)
-      {
-        try
+        public java.lang.Object getValueAt(int i, int j)
         {
-          String str = (String)this.selectedActorBorn.zutiHomeBaseCountries.get(i);
-          if (this.lstAvailable.lst.contains(str))
-            this.lstSelected.lst.add(str);
+            if(lst == null)
+                return null;
+            if(i < 0 || i >= lst.size())
+            {
+                return null;
+            } else
+            {
+                java.lang.String s = (java.lang.String)lst.get(i);
+                return s;
+            }
         }
-        catch (Exception localException)
+
+        public void resolutionChanged()
         {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
         }
-      }
-      break;
-    case 1:
-      break;
-    case 2:
-    }
 
-    syncLists();
-  }
+        public java.util.ArrayList lst;
 
-  private void fillCountries()
-  {
-    ResourceBundle localResourceBundle = ResourceBundle.getBundle("i18n/country", RTSConf.cur.locale, LDRres.loader());
-
-    List localList = Regiment.getAll();
-    int i = localList.size();
-    for (int j = 0; j < i; j++)
-    {
-      Regiment localRegiment = (Regiment)localList.get(j);
-      String str = localResourceBundle.getString(localRegiment.branch());
-      if (!this.fullCountriesList.contains(str))
-        this.fullCountriesList.add(str);
-    }
-  }
-
-  private void fillAvailableCountries()
-  {
-    this.lstAvailable.lst.clear();
-    for (int i = 0; i < this.fullCountriesList.size(); i++)
-      this.lstAvailable.lst.add(this.fullCountriesList.get(i));
-    this.lstSelected.resized();
-    this.lstAvailable.resized();
-  }
-
-  public void close(boolean paramBoolean)
-  {
-    super.close(paramBoolean);
-
-    if (this.selectedActorBorn != null)
-    {
-      switch (this.mode)
-      {
-      case 0:
-        if (this.selectedActorBorn.zutiHomeBaseCountries == null) {
-          this.selectedActorBorn.zutiHomeBaseCountries = new ArrayList();
+        public Table(com.maddox.gwindow.GWindow gwindow, java.lang.String s, float f, float f1, float f2, float f3)
+        {
+            super(gwindow, f, f1, f2, f3);
+            lst = new ArrayList();
+            bColumnsSizable = false;
+            addColumn(s, null);
+            vSB.scroll = rowHeight(0);
+            resized();
         }
-        this.selectedActorBorn.zutiHomeBaseCountries.clear();
-        for (int i = 0; i < this.lstSelected.lst.size(); i++) {
-          this.selectedActorBorn.zutiHomeBaseCountries.add(this.lstSelected.lst.get(i));
+    }
+
+
+    public Zuti_WHomeBaseCountries()
+    {
+        fullCountriesList = new ArrayList();
+        mode = 0;
+        doNew(com.maddox.il2.builder.Plugin.builder.clientWindow, 2.0F, 2.0F, 45F, 30F, true);
+        bSizable = true;
+    }
+
+    public void afterCreated()
+    {
+        super.afterCreated();
+        close(false);
+    }
+
+    public void windowShown()
+    {
+        super.windowShown();
+        if(lstSelected != null)
+            lstSelected.resolutionChanged();
+        if(lstAvailable != null)
+            lstAvailable.resolutionChanged();
+    }
+
+    public void windowHidden()
+    {
+        super.windowHidden();
+    }
+
+    public void created()
+    {
+        bAlwaysOnTop = true;
+        super.created();
+        title = com.maddox.il2.builder.Plugin.i18n("mds.zCountries.title");
+        clientWindow = create(new com.maddox.gwindow.GWindowDialogClient() {
+
+            public void resized()
+            {
+                super.resized();
+                setSizes(this);
+            }
+
         }
-        break;
-      case 1:
-        break;
-      case 2:
-      }
+);
+        com.maddox.gwindow.GWindowDialogClient gwindowdialogclient = (com.maddox.gwindow.GWindowDialogClient)clientWindow;
+        lstSelected = new Table(gwindowdialogclient, com.maddox.il2.builder.Plugin.i18n("mds.zCountries.selected"), 1.0F, 3F, 15F, 20F);
+        lstAvailable = new Table(gwindowdialogclient, com.maddox.il2.builder.Plugin.i18n("mds.zCountries.available"), 23F, 3F, 15F, 20F);
+        gwindowdialogclient.addControl(bAddAll = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 17F, 3F, 5F, 2.0F, com.maddox.il2.builder.Plugin.i18n("bplace_addall"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                {
+                    return false;
+                } else
+                {
+                    addAllCountries();
+                    com.maddox.il2.builder.PlMission.setChanged();
+                    return true;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bAdd = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 17F, 5F, 5F, 2.0F, com.maddox.il2.builder.Plugin.i18n("bplace_add"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                    return false;
+                int k = lstAvailable.selectRow;
+                if(k < 0 || k >= lstAvailable.lst.size())
+                    return true;
+                if(!lstSelected.lst.contains(lstAvailable.lst.get(k)))
+                {
+                    lstSelected.lst.add(lstAvailable.lst.get(k));
+                    lstAvailable.lst.remove(k);
+                }
+                lstSelected.resized();
+                lstAvailable.resized();
+                com.maddox.il2.builder.PlMission.setChanged();
+                return true;
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bRemoveAll = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 17F, 8F, 5F, 2.0F, com.maddox.il2.builder.Plugin.i18n("bplace_delall"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                {
+                    return false;
+                } else
+                {
+                    lstSelected.lst.clear();
+                    fillAvailableCountries();
+                    com.maddox.il2.builder.PlMission.setChanged();
+                    return true;
+                }
+            }
+
+        }
+);
+        gwindowdialogclient.addControl(bRemove = new com.maddox.gwindow.GWindowButton(gwindowdialogclient, 17F, 10F, 5F, 2.0F, com.maddox.il2.builder.Plugin.i18n("bplace_del"), null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i != 2)
+                    return false;
+                int k = lstSelected.selectRow;
+                if(k < 0 || k >= lstSelected.lst.size())
+                    return true;
+                if(!lstAvailable.lst.contains(lstSelected.lst.get(k)))
+                    lstAvailable.lst.add(lstSelected.lst.get(k));
+                lstSelected.lst.remove(k);
+                lstSelected.resized();
+                lstAvailable.resized();
+                com.maddox.il2.builder.PlMission.setChanged();
+                return true;
+            }
+
+        }
+);
     }
-  }
 
-  private void addAllCountries()
-  {
-    this.lstSelected.lst.clear();
-    for (int i = 0; i < this.fullCountriesList.size(); i++)
-      this.lstSelected.lst.add(this.fullCountriesList.get(i));
-    this.lstAvailable.lst.clear();
-    this.lstSelected.resized();
-    this.lstAvailable.resized();
-  }
-
-  private void syncLists()
-  {
-    for (int i = 0; i < this.lstSelected.lst.size(); i++)
-      this.lstAvailable.lst.remove(this.lstSelected.lst.get(i));
-  }
-
-  public void setTitle(String paramString)
-  {
-    this.title = paramString;
-  }
-
-  public void clearArrays()
-  {
-    if (this.lstAvailable.lst != null)
-      this.lstAvailable.lst.clear();
-    if (this.lstSelected.lst != null)
-      this.lstSelected.lst.clear();
-  }
-
-  public void setMode(int paramInt)
-  {
-    this.mode = paramInt;
-  }
-
-  class Table extends GWindowTable
-  {
-    public ArrayList lst = new ArrayList();
-
-    public int countRows()
+    private void setSizes(com.maddox.gwindow.GWindow gwindow)
     {
-      return this.lst != null ? this.lst.size() : 0;
+        float f = gwindow.win.dx;
+        float f1 = gwindow.win.dy;
+        com.maddox.gwindow.GFont gfont = gwindow.root.textFonts[0];
+        float f2 = gwindow.lAF().metric();
+        com.maddox.gwindow.GSize gsize = new GSize();
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_addall"), gsize);
+        float f3 = gsize.dx;
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_add"), gsize);
+        float f4 = gsize.dx;
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_delall"), gsize);
+        float f5 = gsize.dx;
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_del"), gsize);
+        float f6 = gsize.dx;
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_planes"), gsize);
+        float f7 = gsize.dx;
+        gfont.size(com.maddox.il2.builder.Plugin.i18n("bplace_list"), gsize);
+        float f8 = gsize.dx;
+        float f9 = f3;
+        if(f9 < f4)
+            f9 = f4;
+        if(f9 < f5)
+            f9 = f5;
+        if(f9 < f6)
+            f9 = f6;
+        float f10 = f2 + f9;
+        f9 += f2 + 4F * f2 + f7 + 4F * f2 + f8 + 4F * f2;
+        if(f < f9)
+            f = f9;
+        float f11 = 10F * f2 + 10F * f2 + 2.0F * f2;
+        if(f1 < f11)
+            f1 = f11;
+        float f12 = (f - f10) / 2.0F;
+        bAddAll.setPosSize(f12, f2, f10, 2.0F * f2);
+        bAdd.setPosSize(f12, f2 + 2.0F * f2, f10, 2.0F * f2);
+        bRemoveAll.setPosSize(f12, 2.0F * f2 + 4F * f2, f10, 2.0F * f2);
+        bRemove.setPosSize(f12, 2.0F * f2 + 6F * f2, f10, 2.0F * f2);
+        float f13 = (f - f10 - 4F * f2) / 2.0F;
+        float f14 = f1 - f2 - 12F;
+        lstAvailable.setPosSize(f - f2 - f13, f2, f13, f14);
+        lstSelected.setPosSize(f2, f2, f13, f14);
     }
 
-    public Object getValueAt(int paramInt1, int paramInt2)
+    public void setSelectedCountries(com.maddox.il2.builder.ActorBorn actorborn)
     {
-      if (this.lst == null)
-        return null;
-      if ((paramInt1 < 0) || (paramInt1 >= this.lst.size()))
-        return null;
-      String str = (String)this.lst.get(paramInt1);
-      return str;
+        lstSelected.lst.clear();
+        lstAvailable.lst.clear();
+        selectedActorBorn = actorborn;
+        if(fullCountriesList == null || fullCountriesList.size() < 1)
+            fillCountries();
+        fillAvailableCountries();
+        switch(mode)
+        {
+        case 1: // '\001'
+        case 2: // '\002'
+        default:
+            break;
+
+        case 0: // '\0'
+            if(selectedActorBorn.zutiHomeBaseCountries != null && selectedActorBorn.zutiHomeBaseCountries.size() > 0)
+            {
+                for(int i = 0; i < selectedActorBorn.zutiHomeBaseCountries.size(); i++)
+                    try
+                    {
+                        java.lang.String s = (java.lang.String)selectedActorBorn.zutiHomeBaseCountries.get(i);
+                        if(lstAvailable.lst.contains(s))
+                            lstSelected.lst.add(s);
+                    }
+                    catch(java.lang.Exception exception) { }
+
+            }
+            break;
+        }
+        syncLists();
     }
 
-    public void resolutionChanged()
+    private void fillCountries()
     {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
+        java.util.ResourceBundle resourcebundle = java.util.ResourceBundle.getBundle("i18n/country", com.maddox.rts.RTSConf.cur.locale, com.maddox.rts.LDRres.loader());
+        java.util.List list = com.maddox.il2.ai.Regiment.getAll();
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Regiment regiment = (com.maddox.il2.ai.Regiment)list.get(j);
+            java.lang.String s = resourcebundle.getString(regiment.branch());
+            if(!fullCountriesList.contains(s))
+                fullCountriesList.add(s);
+        }
+
     }
 
-    public Table(GWindow paramString, String paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float arg7)
+    private void fillAvailableCountries()
     {
-      super(paramFloat2, paramFloat3, paramFloat4, localObject);
-      this.bColumnsSizable = false;
-      addColumn(paramFloat1, null);
-      this.vSB.scroll = rowHeight(0);
-      resized();
+        lstAvailable.lst.clear();
+        for(int i = 0; i < fullCountriesList.size(); i++)
+            lstAvailable.lst.add(fullCountriesList.get(i));
+
+        lstSelected.resized();
+        lstAvailable.resized();
     }
-  }
+
+    public void close(boolean flag)
+    {
+        super.close(flag);
+        if(selectedActorBorn != null)
+            switch(mode)
+            {
+            case 0: // '\0'
+                if(selectedActorBorn.zutiHomeBaseCountries == null)
+                    selectedActorBorn.zutiHomeBaseCountries = new ArrayList();
+                selectedActorBorn.zutiHomeBaseCountries.clear();
+                for(int i = 0; i < lstSelected.lst.size(); i++)
+                    selectedActorBorn.zutiHomeBaseCountries.add(lstSelected.lst.get(i));
+
+                break;
+            }
+    }
+
+    private void addAllCountries()
+    {
+        lstSelected.lst.clear();
+        for(int i = 0; i < fullCountriesList.size(); i++)
+            lstSelected.lst.add(fullCountriesList.get(i));
+
+        lstAvailable.lst.clear();
+        lstSelected.resized();
+        lstAvailable.resized();
+    }
+
+    private void syncLists()
+    {
+        for(int i = 0; i < lstSelected.lst.size(); i++)
+            lstAvailable.lst.remove(lstSelected.lst.get(i));
+
+    }
+
+    public void setTitle(java.lang.String s)
+    {
+        title = s;
+    }
+
+    public void clearArrays()
+    {
+        if(lstAvailable.lst != null)
+            lstAvailable.lst.clear();
+        if(lstSelected.lst != null)
+            lstSelected.lst.clear();
+    }
+
+    public void setMode(int i)
+    {
+        mode = i;
+    }
+
+    private com.maddox.il2.builder.Table lstSelected;
+    private com.maddox.il2.builder.Table lstAvailable;
+    private com.maddox.gwindow.GWindowButton bAdd;
+    private com.maddox.gwindow.GWindowButton bAddAll;
+    private com.maddox.gwindow.GWindowButton bRemove;
+    private com.maddox.gwindow.GWindowButton bRemoveAll;
+    private java.util.ArrayList fullCountriesList;
+    private com.maddox.il2.builder.ActorBorn selectedActorBorn;
+    private int mode;
+
+
+
+
+
 }

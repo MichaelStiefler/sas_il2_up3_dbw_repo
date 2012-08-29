@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SConsole.java
+
 package com.maddox.il2.game;
 
 import com.maddox.rts.IniFile;
@@ -11,116 +16,147 @@ import java.net.Socket;
 
 public class SConsole
 {
-  static BufferedReader in = null;
-  static int prompt = -1;
-  static boolean bReady = true;
 
-  public static void main(String[] paramArrayOfString) {
-    int i = 0;
-    IniFile localIniFile = new IniFile("confc.ini", 0);
-    i = localIniFile.get("Console", "IP", 0, 0, 65000);
-    if (i == 0) {
-      return; } 
-Socket localSocket = null;
-    PrintWriter localPrintWriter = null;
-    BufferedReader localBufferedReader = null;
-    Object localObject;
-    try { InetAddress localInetAddress = InetAddress.getLocalHost();
-      if ((paramArrayOfString != null) && (paramArrayOfString.length > 0)) {
-        localInetAddress = InetAddress.getByName(paramArrayOfString[0]);
-      }
-      localObject = InetAddress.getLocalHost();
-      String str = localIniFile.get("NET", "localHost", (String)null);
-      if ((str != null) && (str.length() > 0))
-        localObject = InetAddress.getByName(str);
-      localSocket = new Socket(localInetAddress, i, (InetAddress)localObject, 0);
-      localPrintWriter = new PrintWriter(localSocket.getOutputStream(), true);
-      in = new BufferedReader(new InputStreamReader(localSocket.getInputStream()));
-
-      localBufferedReader = new BufferedReader(new InputStreamReader(System.in));
-    } catch (Exception localException1) {
-      System.err.println("Couldn't get I/O for the connection to IL2");
-      System.exit(1);
+    public SConsole()
+    {
     }
 
-    1 local1 = new Thread() {
-      public void run() { String str1 = "<consoleN><";
-        int i = str1.length();
-        try {
-          while (SConsole.bReady) {
-            String str2 = SConsole.in.readLine();
-            if (str2 == null) break;
-            str2 = UnicodeTo8bit.load(str2);
-            int j = str2.length();
-            int k = 0;
-            int m = 0;
-            while (k + i <= j) {
-              if (str2.regionMatches(k, str1, 0, i)) {
-                int n = k + i;
-                int i1 = str2.indexOf(">", n);
-                if (i1 > 0) {
-                  try {
-                    m = 1;
-                    SConsole.prompt = Integer.parseInt(str2.substring(n, i1)); } catch (Exception localException2) {
-                  }
-                  if (i1 + 1 < j) str2 = str2.substring(0, k) + str2.substring(i1 + 1, j); else
-                    str2 = str2.substring(0, k);
-                  j = str2.length();
-                  if ((j == 1) && (str2.charAt(0) == '\n')) {
-                    j = 0;
-                    str2 = null;
-                  }
-                } else {
-                  k++;
+    public static void main(java.lang.String args[])
+    {
+        int i = 0;
+        com.maddox.rts.IniFile inifile = new IniFile("confc.ini", 0);
+        i = inifile.get("Console", "IP", 0, 0, 65000);
+        if(i == 0)
+            return;
+        java.net.Socket socket = null;
+        java.io.PrintWriter printwriter = null;
+        java.io.BufferedReader bufferedreader = null;
+        try
+        {
+            java.net.InetAddress inetaddress = java.net.InetAddress.getLocalHost();
+            if(args != null && args.length > 0)
+                inetaddress = java.net.InetAddress.getByName(args[0]);
+            java.net.InetAddress inetaddress1 = java.net.InetAddress.getLocalHost();
+            java.lang.String s1 = inifile.get("NET", "localHost", (java.lang.String)null);
+            if(s1 != null && s1.length() > 0)
+                inetaddress1 = java.net.InetAddress.getByName(s1);
+            socket = new Socket(inetaddress, i, inetaddress1, 0);
+            printwriter = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            bufferedreader = new BufferedReader(new InputStreamReader(java.lang.System.in));
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.err.println("Couldn't get I/O for the connection to IL2");
+            java.lang.System.exit(1);
+        }
+        java.lang.Thread thread = new java.lang.Thread() {
+
+            public void run()
+            {
+                java.lang.String s2 = "<consoleN><";
+                int j = s2.length();
+                try
+                {
+                    do
+                    {
+                        if(!com.maddox.il2.game.SConsole.bReady)
+                            break;
+                        java.lang.String s3 = com.maddox.il2.game.SConsole.in.readLine();
+                        if(s3 == null)
+                            break;
+                        s3 = com.maddox.util.UnicodeTo8bit.load(s3);
+                        int k = s3.length();
+                        int l = 0;
+                        boolean flag = false;
+                        do
+                        {
+                            if(l + j > k)
+                                break;
+                            if(s3.regionMatches(l, s2, 0, j))
+                            {
+                                int i1 = l + j;
+                                int j1 = s3.indexOf(">", i1);
+                                if(j1 > 0)
+                                {
+                                    try
+                                    {
+                                        flag = true;
+                                        com.maddox.il2.game.SConsole.prompt = java.lang.Integer.parseInt(s3.substring(i1, j1));
+                                    }
+                                    catch(java.lang.Exception exception4) { }
+                                    if(j1 + 1 < k)
+                                        s3 = s3.substring(0, l) + s3.substring(j1 + 1, k);
+                                    else
+                                        s3 = s3.substring(0, l);
+                                    k = s3.length();
+                                    if(k == 1 && s3.charAt(0) == '\n')
+                                    {
+                                        k = 0;
+                                        s3 = null;
+                                    }
+                                } else
+                                {
+                                    l++;
+                                }
+                            } else
+                            {
+                                l++;
+                            }
+                        } while(true);
+                        if(s3 != null && s3.length() > 0)
+                            java.lang.System.out.print(s3);
+                        if(flag)
+                        {
+                            java.lang.System.out.print(com.maddox.il2.game.SConsole.prompt + ">");
+                            java.lang.System.out.flush();
+                        }
+                    } while(true);
                 }
-                continue;
-              }k++;
+                catch(java.lang.Exception exception3)
+                {
+                    com.maddox.il2.game.SConsole.bReady = false;
+                }
             }
 
-            if ((str2 != null) && (str2.length() > 0)) {
-              System.out.print(str2);
-            }
-            if (m != 0) {
-              System.out.print(SConsole.prompt + ">");
-              System.out.flush();
-            }
-          }
-        } catch (Exception localException1) {
-          SConsole.bReady = false;
         }
-      }
-    };
-    local1.start();
-    try
-    {
-      System.out.println("IL2 remote console");
-      System.out.println("For end console enter 'quit'");
-      localPrintWriter.println("server");
-      while ((bReady) && ((localObject = localBufferedReader.readLine()) != null)) {
-        if ("quit".equals(localObject)) {
-          localPrintWriter.println("<QUIT QUIT>");
-          localPrintWriter.flush();
+;
+        thread.start();
+        try
+        {
+            java.lang.System.out.println("IL2 remote console");
+            java.lang.System.out.println("For end console enter 'quit'");
+            printwriter.println("server");
+            java.lang.String s;
+            do
+            {
+                if(!bReady || (s = bufferedreader.readLine()) == null)
+                    break;
+                if("quit".equals(s))
+                {
+                    printwriter.println("<QUIT QUIT>");
+                    printwriter.flush();
+                    break;
+                }
+                printwriter.println(com.maddox.util.UnicodeTo8bit.save(s, false));
+                printwriter.flush();
+            } while(!"exit".equals(s));
         }
-        else {
-          localPrintWriter.println(UnicodeTo8bit.save((String)localObject, false));
-          localPrintWriter.flush();
-          if ("exit".equals(localObject))
-            break;
+        catch(java.lang.Exception exception1) { }
+        bReady = false;
+        try
+        {
+            printwriter.close();
+            in.close();
+            socket.close();
         }
-      }
+        catch(java.lang.Exception exception2) { }
+        thread.interrupt();
+        java.lang.System.exit(0);
     }
-    catch (Exception localException2)
-    {
-    }
-    bReady = false;
-    try
-    {
-      localPrintWriter.close();
-      in.close();
-      localSocket.close(); } catch (Exception localException3) {
-    }
-    local1.interrupt();
 
-    System.exit(0);
-  }
+    static java.io.BufferedReader in = null;
+    static int prompt = -1;
+    static boolean bReady = true;
+
 }

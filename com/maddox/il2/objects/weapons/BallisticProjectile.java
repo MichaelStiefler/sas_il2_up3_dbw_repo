@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BallisticProjectile.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Point3d;
@@ -10,49 +15,51 @@ import com.maddox.il2.fm.Atmosphere;
 import com.maddox.rts.Message;
 import com.maddox.rts.Time;
 
-public class BallisticProjectile extends Actor
+public class BallisticProjectile extends com.maddox.il2.engine.Actor
 {
-  private Vector3d v;
-  private long ttl;
-  private static Point3d tmpp = new Point3d();
-
-  public Object getSwitchListener(Message paramMessage)
-  {
-    return this;
-  }
-
-  public BallisticProjectile(Point3d paramPoint3d, Vector3d paramVector3d, float paramFloat)
-  {
-    this.pos = new ActorPosMove(this);
-    this.pos.setAbs(paramPoint3d);
-
-    this.pos.reset();
-    this.v = new Vector3d(paramVector3d);
-    this.v.scale(Time.tickConstLenFs());
-    this.ttl = (Time.current() + ()(paramFloat * 1000.0F));
-    interpPut(new Interpolater(), null, Time.current(), null);
-  }
-
-  public void interpolateStep()
-  {
-    this.pos.getAbs(tmpp);
-    tmpp.add(this.v);
-    this.pos.setAbs(tmpp);
-
-    this.v.z -= Atmosphere.g() * Time.tickLenFs() * Time.tickLenFs();
-    if (Time.current() > this.ttl) postDestroy();
-  }
-
-  class Interpolater extends Interpolate
-  {
-    Interpolater()
+    class Interpolater extends com.maddox.il2.engine.Interpolate
     {
+
+        public boolean tick()
+        {
+            interpolateStep();
+            return true;
+        }
+
+        Interpolater()
+        {
+        }
     }
 
-    public boolean tick()
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
     {
-      BallisticProjectile.this.interpolateStep();
-      return true;
+        return this;
     }
-  }
+
+    public BallisticProjectile(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Vector3d vector3d, float f)
+    {
+        pos = new ActorPosMove(this);
+        pos.setAbs(point3d);
+        pos.reset();
+        v = new Vector3d(vector3d);
+        v.scale(com.maddox.rts.Time.tickConstLenFs());
+        ttl = com.maddox.rts.Time.current() + (long)(f * 1000F);
+        interpPut(new Interpolater(), null, com.maddox.rts.Time.current(), null);
+    }
+
+    public void interpolateStep()
+    {
+        pos.getAbs(tmpp);
+        tmpp.add(v);
+        pos.setAbs(tmpp);
+        v.z -= com.maddox.il2.fm.Atmosphere.g() * com.maddox.rts.Time.tickLenFs() * com.maddox.rts.Time.tickLenFs();
+        if(com.maddox.rts.Time.current() > ttl)
+            postDestroy();
+    }
+
+    private com.maddox.JGP.Vector3d v;
+    private long ttl;
+    private static com.maddox.JGP.Point3d tmpp = new Point3d();
+
 }

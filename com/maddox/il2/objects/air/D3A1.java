@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   D3A1.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Actor;
@@ -10,132 +15,192 @@ import com.maddox.rts.NetMsgInput;
 import com.maddox.rts.Property;
 import java.io.IOException;
 
-public class D3A1 extends D3A
-  implements TypeDiveBomber
+// Referenced classes of package com.maddox.il2.objects.air:
+//            D3A, PaintSchemeFMPar01, PaintSchemeBCSPar01, TypeDiveBomber, 
+//            Cockpit, NetAircraft
+
+public class D3A1 extends com.maddox.il2.objects.air.D3A
+    implements com.maddox.il2.objects.air.TypeDiveBomber
 {
-  public static boolean bChangedPit = false;
 
-  protected void nextDMGLevel(String paramString, int paramInt, Actor paramActor)
-  {
-    super.nextDMGLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers()) bChangedPit = true; 
-  }
-
-  protected void nextCUTLevel(String paramString, int paramInt, Actor paramActor) {
-    super.nextCUTLevel(paramString, paramInt, paramActor);
-    if (this.FM.isPlayers()) bChangedPit = true; 
-  }
-
-  public void doWoundPilot(int paramInt, float paramFloat) {
-    super.doWoundPilot(paramInt, paramFloat);
-    if (this.FM.isPlayers()) bChangedPit = true; 
-  }
-
-  public void doMurderPilot(int paramInt) {
-    super.doMurderPilot(paramInt);
-    if (this.FM.isPlayers()) bChangedPit = true;
-  }
-
-  public void moveCockpitDoor(float paramFloat)
-  {
-    resetYPRmodifier();
-    xyz[1] = cvt(paramFloat, 0.01F, 0.99F, 0.0F, 0.44F);
-    hierMesh().chunkSetLocate("Blister1_D0", xyz, ypr);
-    if (Config.isUSE_RENDER()) {
-      if ((Main3D.cur3D().cockpits != null) && (Main3D.cur3D().cockpits[0] != null)) Main3D.cur3D().cockpits[0].onDoorMoved(paramFloat);
-      setDoorSnd(paramFloat);
-    }
-  }
-
-  public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
-  {
-    boolean bool = super.turretAngles(paramInt, paramArrayOfFloat);
-
-    float f1 = -paramArrayOfFloat[0]; float f2 = paramArrayOfFloat[1];
-    switch (paramInt) {
-    case 0:
-      if (f1 < -33.0F) { f1 = -33.0F; bool = false; }
-      if (f1 > 33.0F) { f1 = 33.0F; bool = false; }
-      if (f2 < -3.0F) { f2 = -3.0F; bool = false; }
-      if (f2 <= 62.0F) break; f2 = 62.0F; bool = false;
+    public D3A1()
+    {
     }
 
-    paramArrayOfFloat[0] = (-f1); paramArrayOfFloat[1] = f2;
-    return bool;
-  }
+    protected void nextDMGLevel(java.lang.String s, int i, com.maddox.il2.engine.Actor actor)
+    {
+        super.nextDMGLevel(s, i, actor);
+        if(FM.isPlayers())
+            bChangedPit = true;
+    }
 
-  public boolean typeDiveBomberToggleAutomation()
-  {
-    return false;
-  }
+    protected void nextCUTLevel(java.lang.String s, int i, com.maddox.il2.engine.Actor actor)
+    {
+        super.nextCUTLevel(s, i, actor);
+        if(FM.isPlayers())
+            bChangedPit = true;
+    }
 
-  public void typeDiveBomberAdjAltitudeReset()
-  {
-  }
+    public void doWoundPilot(int i, float f)
+    {
+        super.doWoundPilot(i, f);
+        if(FM.isPlayers())
+            bChangedPit = true;
+    }
 
-  public void typeDiveBomberAdjAltitudePlus()
-  {
-  }
+    public void doMurderPilot(int i)
+    {
+        super.doMurderPilot(i);
+        if(FM.isPlayers())
+            bChangedPit = true;
+    }
 
-  public void typeDiveBomberAdjAltitudeMinus()
-  {
-  }
+    public void moveCockpitDoor(float f)
+    {
+        resetYPRmodifier();
+        xyz[1] = com.maddox.il2.objects.air.D3A1.cvt(f, 0.01F, 0.99F, 0.0F, 0.44F);
+        hierMesh().chunkSetLocate("Blister1_D0", xyz, ypr);
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            if(com.maddox.il2.game.Main3D.cur3D().cockpits != null && com.maddox.il2.game.Main3D.cur3D().cockpits[0] != null)
+                com.maddox.il2.game.Main3D.cur3D().cockpits[0].onDoorMoved(f);
+            setDoorSnd(f);
+        }
+    }
 
-  public void typeDiveBomberAdjVelocityReset()
-  {
-  }
+    public boolean turretAngles(int i, float af[])
+    {
+        boolean flag = super.turretAngles(i, af);
+        float f = -af[0];
+        float f1 = af[1];
+        switch(i)
+        {
+        case 0: // '\0'
+            if(f < -33F)
+            {
+                f = -33F;
+                flag = false;
+            }
+            if(f > 33F)
+            {
+                f = 33F;
+                flag = false;
+            }
+            if(f1 < -3F)
+            {
+                f1 = -3F;
+                flag = false;
+            }
+            if(f1 > 62F)
+            {
+                f1 = 62F;
+                flag = false;
+            }
+            break;
+        }
+        af[0] = -f;
+        af[1] = f1;
+        return flag;
+    }
 
-  public void typeDiveBomberAdjVelocityPlus() {
-  }
+    public boolean typeDiveBomberToggleAutomation()
+    {
+        return false;
+    }
 
-  public void typeDiveBomberAdjVelocityMinus() {
-  }
+    public void typeDiveBomberAdjAltitudeReset()
+    {
+    }
 
-  public void typeDiveBomberAdjDiveAngleReset() {
-  }
+    public void typeDiveBomberAdjAltitudePlus()
+    {
+    }
 
-  public void typeDiveBomberAdjDiveAnglePlus() {
-  }
+    public void typeDiveBomberAdjAltitudeMinus()
+    {
+    }
 
-  public void typeDiveBomberAdjDiveAngleMinus() {
-  }
+    public void typeDiveBomberAdjVelocityReset()
+    {
+    }
 
-  public void typeDiveBomberReplicateToNet(NetMsgGuaranted paramNetMsgGuaranted) throws IOException {
-  }
+    public void typeDiveBomberAdjVelocityPlus()
+    {
+    }
 
-  public void typeDiveBomberReplicateFromNet(NetMsgInput paramNetMsgInput) throws IOException {
-  }
+    public void typeDiveBomberAdjVelocityMinus()
+    {
+    }
 
-  static {
-    Class localClass = D3A1.class;
-    new NetAircraft.SPAWN(localClass);
+    public void typeDiveBomberAdjDiveAngleReset()
+    {
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "D3A");
-    Property.set(localClass, "meshName", "3DO/Plane/D3A1(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar01());
-    Property.set(localClass, "meshName_ja", "3DO/Plane/D3A1(ja)/hier.him");
-    Property.set(localClass, "PaintScheme_ja", new PaintSchemeBCSPar01());
+    public void typeDiveBomberAdjDiveAnglePlus()
+    {
+    }
 
-    Property.set(localClass, "yearService", 1940.0F);
-    Property.set(localClass, "yearExpired", 1946.5F);
+    public void typeDiveBomberAdjDiveAngleMinus()
+    {
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/D3A1.fmd");
-    Property.set(localClass, "cockpitClass", CockpitD3A1.class);
-    Property.set(localClass, "cockpitClass", new Class[] { CockpitD3A1.class, CockpitD3A1_TGunner.class });
+    public void typeDiveBomberReplicateToNet(com.maddox.rts.NetMsgGuaranted netmsgguaranted)
+        throws java.io.IOException
+    {
+    }
 
-    Property.set(localClass, "LOSElevation", 0.87195F);
+    public void typeDiveBomberReplicateFromNet(com.maddox.rts.NetMsgInput netmsginput)
+        throws java.io.IOException
+    {
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 10, 3, 3, 3 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb01" });
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", null, null, null });
+    public static boolean bChangedPit = false;
 
-    weaponsRegister(localClass, "1x250", new String[] { "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", null, null, "BombGun250kgJ 1" });
-
-    weaponsRegister(localClass, "1x2502x30", new String[] { "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun250kgJ 1" });
-
-    weaponsRegister(localClass, "1x2502x60", new String[] { "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", "BombGun60kgJ 1", "BombGun60kgJ 1", "BombGun250kgJ 1" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.D3A1.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "D3A");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/D3A1(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
+        com.maddox.rts.Property.set(class1, "meshName_ja", "3DO/Plane/D3A1(ja)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_ja", new PaintSchemeBCSPar01());
+        com.maddox.rts.Property.set(class1, "yearService", 1940F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1946.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/D3A1.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitD3A1.class);
+        com.maddox.rts.Property.set(class1, "cockpitClass", new java.lang.Class[] {
+            com.maddox.il2.objects.air.CockpitD3A1.class, com.maddox.il2.objects.air.CockpitD3A1_TGunner.class
+        });
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.87195F);
+        com.maddox.il2.objects.air.D3A1.weaponTriggersRegister(class1, new int[] {
+            0, 0, 10, 3, 3, 3
+        });
+        com.maddox.il2.objects.air.D3A1.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb01"
+        });
+        com.maddox.il2.objects.air.D3A1.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", null, null, null
+        });
+        com.maddox.il2.objects.air.D3A1.weaponsRegister(class1, "1x250", new java.lang.String[] {
+            "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", null, null, "BombGun250kgJ 1"
+        });
+        com.maddox.il2.objects.air.D3A1.weaponsRegister(class1, "1x2502x30", new java.lang.String[] {
+            "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", "BombGun30kgJ 1", "BombGun30kgJ 1", "BombGun250kgJ 1"
+        });
+        com.maddox.il2.objects.air.D3A1.weaponsRegister(class1, "1x2502x60", new java.lang.String[] {
+            "MGunVikkersKsi 600", "MGunVikkersKsi 600", "MGunVikkersKt 600", "BombGun60kgJ 1", "BombGun60kgJ 1", "BombGun250kgJ 1"
+        });
+        com.maddox.il2.objects.air.D3A1.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null
+        });
+    }
 }

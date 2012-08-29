@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdChannel.java
+
 package com.maddox.rts.cmd;
 
 import com.maddox.rts.Cmd;
@@ -14,173 +19,209 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdChannel extends Cmd
+public class CmdChannel extends com.maddox.rts.Cmd
 {
-  public static final String DESTROY = "DESTROY";
-  public static final String MAXSPEED = "SPEED";
-  public static final String TIMEOUT = "TIMEOUT";
-  public static final String STAT = "STAT";
-  public static final String SOCKET = "SOCKET";
-  private HashMap stat = new HashMap();
-
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    boolean bool = exist(paramMap, "SOCKET");
-
-    int i = -1;
-    Object localObject;
-    int j;
-    if (nargs(paramMap, "_$$") == 1) {
-      i = arg(paramMap, "_$$", 0, -1);
-      if (i == -1) {
-        ERR_HARD("Unknown number of channel");
-        return null;
-      }
-      localObject = NetEnv.getChannel(i);
-      if (localObject == null) {
-        ERR_HARD("Channel: " + i + " not found");
-        return null;
-      }
-      if (exist(paramMap, "DESTROY")) {
-        ((NetChannel)localObject).destroy("Connection lost.");
-        return localObject;
-      }if ((exist(paramMap, "SPEED")) || (exist(paramMap, "TIMEOUT")) || (exist(paramMap, "STAT"))) {
-        if (nargs(paramMap, "SPEED") == 1) {
-          double d = arg(paramMap, "SPEED", 0, 1000) / 1000.0D;
-          ((NetChannel)localObject).setMaxSpeed(d);
-        }
-        if (nargs(paramMap, "TIMEOUT") == 1) {
-          j = arg(paramMap, "TIMEOUT", 0, 131);
-          ((NetChannel)localObject).setMaxTimeout(j * 1000);
-        }
-        if (nargs(paramMap, "STAT") == 1) {
-          j = arg(paramMap, "STAT", 0, -1) * 1000;
-          Stat localStat;
-          if (j <= 0) {
-            localStat = (Stat)this.stat.get(localObject);
-            if (localStat != null) localStat.destroy(); 
-          }
-          else {
-            localStat = (Stat)this.stat.get(localObject);
-            if (localStat == null) new Stat((NetChannel)localObject, j); else
-              localStat.timeStep(j);
-          }
-        }
-        return localObject;
-      }
-    }
-    if (i != -1) {
-      localObject = NetEnv.getChannel(i);
-      if (localObject == null) {
-        ERR_HARD("Channel: " + i + " not found");
-        return null;
-      }
-      info((NetChannel)localObject, bool);
-    } else {
-      localObject = NetEnv.channels();
-      j = ((List)localObject).size();
-      for (int k = 0; k < j; k++) {
-        NetChannel localNetChannel = (NetChannel)((List)localObject).get(k);
-        info(localNetChannel, bool);
-      }
-    }
-    return CmdEnv.RETURN_OK;
-  }
-
-  private void info(NetChannel paramNetChannel, boolean paramBoolean) {
-    String str1 = "READY";
-    if (paramNetChannel.isDestroyed()) str1 = "DESTROYED";
-    else if (paramNetChannel.isDestroying()) str1 = "DESTROYING";
-    else if (paramNetChannel.isIniting()) str1 = "INITING";
-    String str2 = (paramNetChannel.isPublic() ? "P" : "p") + (paramNetChannel.isGlobal() ? "G" : "g") + (paramNetChannel.isRealTime() ? "T" : "t");
-    INFO_HARD(" " + paramNetChannel.id() + ": [" + str1 + "." + str2 + "] ping: " + paramNetChannel.ping() + "ms timeout: " + paramNetChannel.getCurTimeout() / 1000 + "/" + paramNetChannel.getMaxTimeout() / 1000 + "s speed: " + (int)(paramNetChannel.getMaxSpeed() * 1000.0D) + "b/s");
-    if (paramBoolean)
-      INFO_HARD("    " + paramNetChannel.socket().getLocalAddress() + ":" + paramNetChannel.socket().getLocalPort() + (paramNetChannel.isInitRemote() ? " <- " : " -> ") + paramNetChannel.remoteAddress() + ":" + paramNetChannel.remotePort());
-  }
-
-  public CmdChannel()
-  {
-    this.param.put("DESTROY", null);
-    this.param.put("SPEED", null);
-    this.param.put("TIMEOUT", null);
-    this.param.put("STAT", null);
-    this.param.put("SOCKET", null);
-    this._properties.put("NAME", "channel");
-    this._levelAccess = 1;
-  }
-
-  class Stat
-    implements MsgTimeOutListener
-  {
-    private int timeStep;
-    private NetChannel ch;
-    private long prevTime;
-    private int statNumSendGMsgs;
-    private int statSizeSendGMsgs;
-    private int statNumSendFMsgs;
-    private int statSizeSendFMsgs;
-    private int statHSizeSendFMsgs;
-    private int statNumFilteredMsgs;
-    private int statSizeFilteredMsgs;
-    private int statNumReseivedMsgs;
-    private int statSizeReseivedMsgs;
-    private int statHSizeReseivedMsgs;
-
-    private void step()
+    class Stat
+        implements com.maddox.rts.MsgTimeOutListener
     {
-      long l = Time.currentReal();
-      if (this.prevTime > 0L) {
-        double d1 = (l - this.prevTime) / 1000.0D;
-        if (d1 > 0.0D) {
-          double d2 = (this.ch.statNumSendGMsgs - this.statNumSendGMsgs) / d1;
-          double d3 = (this.ch.statSizeSendGMsgs - this.statSizeSendGMsgs) / d1;
-          double d4 = (this.ch.statNumSendFMsgs - this.statNumSendFMsgs) / d1;
-          double d5 = (this.ch.statSizeSendFMsgs - this.statSizeSendFMsgs) / d1;
-          double d6 = (this.ch.statNumSendGMsgs + this.ch.statNumSendGMsgs - this.statNumSendGMsgs - this.statNumSendFMsgs) / d1;
-          double d7 = (this.ch.statSizeSendGMsgs + 3 * this.ch.statNumSendGMsgs + this.ch.statSizeSendFMsgs + this.ch.statHSizeSendFMsgs - this.statSizeSendGMsgs - 3 * this.statNumSendGMsgs - this.statSizeSendFMsgs - this.statHSizeSendFMsgs) / d1;
 
-          double d8 = (this.ch.statNumReseivedMsgs - this.statNumReseivedMsgs) / d1;
-          double d9 = (this.ch.statSizeReseivedMsgs + this.ch.statHSizeReseivedMsgs - this.statSizeReseivedMsgs - this.statHSizeReseivedMsgs) / d1;
-
-          System.out.println("ch " + this.ch.id() + ": ping: " + this.ch.ping() + "ms  > " + (int)d7 + "b/s  < " + (int)d9 + "b/s " + this.ch.gSendQueueLenght() + "/" + this.ch.gSendQueueSize());
+        private void step()
+        {
+            long l = com.maddox.rts.Time.currentReal();
+            if(prevTime > 0L)
+            {
+                double d = (double)(l - prevTime) / 1000D;
+                if(d > 0.0D)
+                {
+                    double d1 = (double)(ch.statNumSendGMsgs - statNumSendGMsgs) / d;
+                    double d2 = (double)(ch.statSizeSendGMsgs - statSizeSendGMsgs) / d;
+                    double d3 = (double)(ch.statNumSendFMsgs - statNumSendFMsgs) / d;
+                    double d4 = (double)(ch.statSizeSendFMsgs - statSizeSendFMsgs) / d;
+                    double d5 = (double)((ch.statNumSendGMsgs + ch.statNumSendGMsgs) - statNumSendGMsgs - statNumSendFMsgs) / d;
+                    double d6 = (double)((ch.statSizeSendGMsgs + 3 * ch.statNumSendGMsgs + ch.statSizeSendFMsgs + ch.statHSizeSendFMsgs) - statSizeSendGMsgs - 3 * statNumSendGMsgs - statSizeSendFMsgs - statHSizeSendFMsgs) / d;
+                    double d7 = (double)(ch.statNumReseivedMsgs - statNumReseivedMsgs) / d;
+                    double d8 = (double)((ch.statSizeReseivedMsgs + ch.statHSizeReseivedMsgs) - statSizeReseivedMsgs - statHSizeReseivedMsgs) / d;
+                    java.lang.System.out.println("ch " + ch.id() + ": ping: " + ch.ping() + "ms  > " + (int)d6 + "b/s  < " + (int)d8 + "b/s " + ch.gSendQueueLenght() + "/" + ch.gSendQueueSize());
+                }
+            }
+            prevTime = l;
+            statNumSendGMsgs = ch.statNumSendGMsgs;
+            statSizeSendGMsgs = ch.statSizeSendGMsgs;
+            statNumSendFMsgs = ch.statNumSendFMsgs;
+            statSizeSendFMsgs = ch.statSizeSendFMsgs;
+            statHSizeSendFMsgs = ch.statHSizeSendFMsgs;
+            statNumFilteredMsgs = ch.statNumFilteredMsgs;
+            statSizeFilteredMsgs = ch.statSizeFilteredMsgs;
+            statNumReseivedMsgs = ch.statNumReseivedMsgs;
+            statSizeReseivedMsgs = ch.statSizeReseivedMsgs;
+            statHSizeReseivedMsgs = ch.statHSizeReseivedMsgs;
         }
-      }
-      this.prevTime = l;
-      this.statNumSendGMsgs = this.ch.statNumSendGMsgs;
-      this.statSizeSendGMsgs = this.ch.statSizeSendGMsgs;
-      this.statNumSendFMsgs = this.ch.statNumSendFMsgs;
-      this.statSizeSendFMsgs = this.ch.statSizeSendFMsgs;
-      this.statHSizeSendFMsgs = this.ch.statHSizeSendFMsgs;
-      this.statNumFilteredMsgs = this.ch.statNumFilteredMsgs;
-      this.statSizeFilteredMsgs = this.ch.statSizeFilteredMsgs;
-      this.statNumReseivedMsgs = this.ch.statNumReseivedMsgs;
-      this.statSizeReseivedMsgs = this.ch.statSizeReseivedMsgs;
-      this.statHSizeReseivedMsgs = this.ch.statHSizeReseivedMsgs;
+
+        public void msgTimeOut(java.lang.Object obj)
+        {
+            if(ch.isDestroying())
+            {
+                destroy();
+                return;
+            }
+            if(!stat.containsKey(ch))
+            {
+                return;
+            } else
+            {
+                step();
+                com.maddox.rts.MsgTimeOut.post(64, com.maddox.rts.Time.currentReal() + (long)timeStep, this, null);
+                return;
+            }
+        }
+
+        public void destroy()
+        {
+            stat.remove(ch);
+        }
+
+        public void timeStep(int i)
+        {
+            timeStep = i;
+        }
+
+        private int timeStep;
+        private com.maddox.rts.NetChannel ch;
+        private long prevTime;
+        private int statNumSendGMsgs;
+        private int statSizeSendGMsgs;
+        private int statNumSendFMsgs;
+        private int statSizeSendFMsgs;
+        private int statHSizeSendFMsgs;
+        private int statNumFilteredMsgs;
+        private int statSizeFilteredMsgs;
+        private int statNumReseivedMsgs;
+        private int statSizeReseivedMsgs;
+        private int statHSizeReseivedMsgs;
+
+        public Stat(com.maddox.rts.NetChannel netchannel, int i)
+        {
+            timeStep = i;
+            ch = netchannel;
+            stat.put(netchannel, this);
+            step();
+            com.maddox.rts.MsgTimeOut.post(64, com.maddox.rts.Time.currentReal() + (long)i, this, null);
+        }
     }
 
-    public void msgTimeOut(Object paramObject) {
-      if (this.ch.isDestroying()) {
-        destroy();
-        return;
-      }
-      if (!CmdChannel.this.stat.containsKey(this.ch)) return;
-      step();
-      MsgTimeOut.post(64, Time.currentReal() + this.timeStep, this, null);
-    }
-    public void destroy() {
-      CmdChannel.this.stat.remove(this.ch);
-    }
-    public void timeStep(int paramInt) { this.timeStep = paramInt;
-    }
 
-    public Stat(NetChannel paramInt, int arg3)
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
     {
-      int i;
-      this.timeStep = i;
-      this.ch = paramInt;
-      CmdChannel.this.stat.put(paramInt, this);
-      step();
-      MsgTimeOut.post(64, Time.currentReal() + i, this, null);
+        boolean flag = com.maddox.rts.cmd.CmdChannel.exist(map, "SOCKET");
+        int i = -1;
+        if(com.maddox.rts.cmd.CmdChannel.nargs(map, "_$$") == 1)
+        {
+            i = com.maddox.rts.cmd.CmdChannel.arg(map, "_$$", 0, -1);
+            if(i == -1)
+            {
+                ERR_HARD("Unknown number of channel");
+                return null;
+            }
+            com.maddox.rts.NetChannel netchannel = com.maddox.rts.NetEnv.getChannel(i);
+            if(netchannel == null)
+            {
+                ERR_HARD("Channel: " + i + " not found");
+                return null;
+            }
+            if(com.maddox.rts.cmd.CmdChannel.exist(map, "DESTROY"))
+            {
+                netchannel.destroy("Connection lost.");
+                return netchannel;
+            }
+            if(com.maddox.rts.cmd.CmdChannel.exist(map, "SPEED") || com.maddox.rts.cmd.CmdChannel.exist(map, "TIMEOUT") || com.maddox.rts.cmd.CmdChannel.exist(map, "STAT"))
+            {
+                if(com.maddox.rts.cmd.CmdChannel.nargs(map, "SPEED") == 1)
+                {
+                    double d = (double)com.maddox.rts.cmd.CmdChannel.arg(map, "SPEED", 0, 1000) / 1000D;
+                    netchannel.setMaxSpeed(d);
+                }
+                if(com.maddox.rts.cmd.CmdChannel.nargs(map, "TIMEOUT") == 1)
+                {
+                    int j = com.maddox.rts.cmd.CmdChannel.arg(map, "TIMEOUT", 0, 131);
+                    netchannel.setMaxTimeout(j * 1000);
+                }
+                if(com.maddox.rts.cmd.CmdChannel.nargs(map, "STAT") == 1)
+                {
+                    int k = com.maddox.rts.cmd.CmdChannel.arg(map, "STAT", 0, -1) * 1000;
+                    if(k <= 0)
+                    {
+                        com.maddox.rts.cmd.Stat stat1 = (com.maddox.rts.cmd.Stat)stat.get(netchannel);
+                        if(stat1 != null)
+                            stat1.destroy();
+                    } else
+                    {
+                        com.maddox.rts.cmd.Stat stat2 = (com.maddox.rts.cmd.Stat)stat.get(netchannel);
+                        if(stat2 == null)
+                            new Stat(netchannel, k);
+                        else
+                            stat2.timeStep(k);
+                    }
+                }
+                return netchannel;
+            }
+        }
+        if(i != -1)
+        {
+            com.maddox.rts.NetChannel netchannel1 = com.maddox.rts.NetEnv.getChannel(i);
+            if(netchannel1 == null)
+            {
+                ERR_HARD("Channel: " + i + " not found");
+                return null;
+            }
+            info(netchannel1, flag);
+        } else
+        {
+            java.util.List list = com.maddox.rts.NetEnv.channels();
+            int l = list.size();
+            for(int i1 = 0; i1 < l; i1++)
+            {
+                com.maddox.rts.NetChannel netchannel2 = (com.maddox.rts.NetChannel)list.get(i1);
+                info(netchannel2, flag);
+            }
+
+        }
+        return com.maddox.rts.CmdEnv.RETURN_OK;
     }
-  }
+
+    private void info(com.maddox.rts.NetChannel netchannel, boolean flag)
+    {
+        java.lang.String s = "READY";
+        if(netchannel.isDestroyed())
+            s = "DESTROYED";
+        else
+        if(netchannel.isDestroying())
+            s = "DESTROYING";
+        else
+        if(netchannel.isIniting())
+            s = "INITING";
+        java.lang.String s1 = (netchannel.isPublic() ? "P" : "p") + (netchannel.isGlobal() ? "G" : "g") + (netchannel.isRealTime() ? "T" : "t");
+        INFO_HARD(" " + netchannel.id() + ": [" + s + "." + s1 + "] ping: " + netchannel.ping() + "ms timeout: " + netchannel.getCurTimeout() / 1000 + "/" + netchannel.getMaxTimeout() / 1000 + "s speed: " + (int)(netchannel.getMaxSpeed() * 1000D) + "b/s");
+        if(flag)
+            INFO_HARD("    " + netchannel.socket().getLocalAddress() + ":" + netchannel.socket().getLocalPort() + (netchannel.isInitRemote() ? " <- " : " -> ") + netchannel.remoteAddress() + ":" + netchannel.remotePort());
+    }
+
+    public CmdChannel()
+    {
+        stat = new HashMap();
+        param.put("DESTROY", null);
+        param.put("SPEED", null);
+        param.put("TIMEOUT", null);
+        param.put("STAT", null);
+        param.put("SOCKET", null);
+        _properties.put("NAME", "channel");
+        _levelAccess = 1;
+    }
+
+    public static final java.lang.String DESTROY = "DESTROY";
+    public static final java.lang.String MAXSPEED = "SPEED";
+    public static final java.lang.String TIMEOUT = "TIMEOUT";
+    public static final java.lang.String STAT = "STAT";
+    public static final java.lang.String SOCKET = "SOCKET";
+    private java.util.HashMap stat;
+
 }

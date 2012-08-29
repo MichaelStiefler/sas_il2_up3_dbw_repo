@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RocketPhBall.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
@@ -15,74 +20,85 @@ import com.maddox.il2.engine.Loc;
 import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 
-public class RocketPhBall extends Rocket
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Rocket
+
+public class RocketPhBall extends com.maddox.il2.objects.weapons.Rocket
 {
-  private static Point3d p = new Point3d();
 
-  public void start(float paramFloat, int paramInt)
-  {
-    float f = 6.0F + World.Rnd().nextFloat(0.0F, 6.0F);
-    super.start(f, paramInt);
-    drawing(false);
-    if (World.Rnd().nextFloat() < 0.1F) {
-      Eff3DActor.New(this, null, new Loc(), 1.0F, "3DO/Effects/Fireworks/PhosfourousBall.eff", f);
+    public RocketPhBall()
+    {
     }
-    switch (World.Rnd().nextInt(0, 3)) {
-    case 0:
-      Eff3DActor.New(this, null, new Loc(), 1.0F, "Effects/Smokes/SmokeBlack_BuletteTrail.eff", f);
-      break;
-    case 1:
-    case 2:
-      Eff3DActor.New(this, null, new Loc(), 1.0F, "3DO/Effects/Tracers/TrailCurved.eff", f);
+
+    public void start(float f, int i)
+    {
+        float f1 = 6F + com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 6F);
+        super.start(f1, i);
+        drawing(false);
+        if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.1F)
+            com.maddox.il2.engine.Eff3DActor.New(this, null, new Loc(), 1.0F, "3DO/Effects/Fireworks/PhosfourousBall.eff", f1);
+        switch(com.maddox.il2.ai.World.Rnd().nextInt(0, 3))
+        {
+        case 0: // '\0'
+            com.maddox.il2.engine.Eff3DActor.New(this, null, new Loc(), 1.0F, "Effects/Smokes/SmokeBlack_BuletteTrail.eff", f1);
+            break;
+
+        case 1: // '\001'
+        case 2: // '\002'
+            com.maddox.il2.engine.Eff3DActor.New(this, null, new Loc(), 1.0F, "3DO/Effects/Tracers/TrailCurved.eff", f1);
+            break;
+        }
     }
-  }
 
-  protected void doExplosion(Actor paramActor, String paramString)
-  {
-    this.pos.getTime(Time.current(), p);
+    protected void doExplosion(com.maddox.il2.engine.Actor actor, java.lang.String s)
+    {
+        pos.getTime(com.maddox.rts.Time.current(), p);
+        java.lang.Class class1 = getClass();
+        float f = com.maddox.rts.Property.floatValue(class1, "power", 1000F);
+        int i = com.maddox.rts.Property.intValue(class1, "powerType", 0);
+        float f1 = com.maddox.rts.Property.floatValue(class1, "radius", 0.0F);
+        getSpeed(speed);
+        com.maddox.JGP.Vector3f vector3f = new Vector3f(speed);
+        vector3f.normalize();
+        vector3f.scale(850F);
+        com.maddox.il2.ai.MsgShot.send(actor, s, p, vector3f, M, getOwner(), (float)((double)(0.5F * M) * speed.lengthSquared()), 3, 0.0D);
+        com.maddox.il2.ai.MsgExplosion.send(actor, s, p, getOwner(), M, f, i, f1);
+        destroy();
+    }
 
-    Class localClass = getClass();
-    float f1 = Property.floatValue(localClass, "power", 1000.0F);
-    int i = Property.intValue(localClass, "powerType", 0);
-    float f2 = Property.floatValue(localClass, "radius", 0.0F);
-    getSpeed(this.speed);
-    Vector3f localVector3f = new Vector3f(this.speed);
-    localVector3f.normalize();
-    localVector3f.scale(850.0F);
+    protected void doExplosionAir()
+    {
+    }
 
-    MsgShot.send(paramActor, paramString, p, localVector3f, this.M, getOwner(), (float)(0.5F * this.M * this.speed.lengthSquared()), 3, 0.0D);
-    MsgExplosion.send(paramActor, paramString, p, getOwner(), this.M, f1, i, f2);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    destroy();
-  }
+    private static com.maddox.JGP.Point3d p = new Point3d();
 
-  protected void doExplosionAir()
-  {
-  }
-
-  static
-  {
-    Class localClass = RocketPhBall.class;
-    Property.set(localClass, "mesh", "3DO/Arms/Null/mono.sim");
-
-    Property.set(localClass, "sprite", (Object)null);
-    Property.set(localClass, "flame", (Object)null);
-    Property.set(localClass, "smoke", (Object)null);
-    Property.set(localClass, "emitColor", new Color3f(0.0F, 0.0F, 0.0F));
-    Property.set(localClass, "emitLen", 0.0F);
-    Property.set(localClass, "emitMax", 0.0F);
-
-    Property.set(localClass, "sound", (Object)null);
-
-    Property.set(localClass, "radius", 0.1F);
-    Property.set(localClass, "timeLife", 999.99902F);
-    Property.set(localClass, "timeFire", 0.0F);
-    Property.set(localClass, "force", 0.0F);
-
-    Property.set(localClass, "power", 0.01485F);
-    Property.set(localClass, "powerType", 0);
-    Property.set(localClass, "kalibr", 0.001F);
-    Property.set(localClass, "massa", 0.01485F);
-    Property.set(localClass, "massaEnd", 0.01485F);
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.RocketPhBall.class;
+        com.maddox.rts.Property.set(class1, "mesh", "3DO/Arms/Null/mono.sim");
+        com.maddox.rts.Property.set(class1, "sprite", (java.lang.Object)null);
+        com.maddox.rts.Property.set(class1, "flame", (java.lang.Object)null);
+        com.maddox.rts.Property.set(class1, "smoke", (java.lang.Object)null);
+        com.maddox.rts.Property.set(class1, "emitColor", new Color3f(0.0F, 0.0F, 0.0F));
+        com.maddox.rts.Property.set(class1, "emitLen", 0.0F);
+        com.maddox.rts.Property.set(class1, "emitMax", 0.0F);
+        com.maddox.rts.Property.set(class1, "sound", (java.lang.Object)null);
+        com.maddox.rts.Property.set(class1, "radius", 0.1F);
+        com.maddox.rts.Property.set(class1, "timeLife", 999.999F);
+        com.maddox.rts.Property.set(class1, "timeFire", 0.0F);
+        com.maddox.rts.Property.set(class1, "force", 0.0F);
+        com.maddox.rts.Property.set(class1, "power", 0.01485F);
+        com.maddox.rts.Property.set(class1, "powerType", 0);
+        com.maddox.rts.Property.set(class1, "kalibr", 0.001F);
+        com.maddox.rts.Property.set(class1, "massa", 0.01485F);
+        com.maddox.rts.Property.set(class1, "massaEnd", 0.01485F);
+    }
 }

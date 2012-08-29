@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CannonAntiAir76.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Vector3d;
@@ -6,47 +11,44 @@ import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.GunProperties;
 import com.maddox.il2.engine.Loc;
 
-public class CannonAntiAir76 extends CannonAntiAirGeneric
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            CannonAntiAirGeneric, BulletAntiAirBigUSSR, Bullet
+
+public class CannonAntiAir76 extends com.maddox.il2.objects.weapons.CannonAntiAirGeneric
 {
-  protected float Specify(GunProperties paramGunProperties)
-  {
-    paramGunProperties.aimMaxDist = 9000.0F;
 
-    BulletProperties localBulletProperties = paramGunProperties.bullet[0];
+    public CannonAntiAir76()
+    {
+    }
 
-    localBulletProperties.timeLife = 22.0F;
+    protected float Specify(com.maddox.il2.engine.GunProperties gunproperties)
+    {
+        gunproperties.aimMaxDist = 9000F;
+        com.maddox.il2.engine.BulletProperties bulletproperties = gunproperties.bullet[0];
+        bulletproperties.timeLife = 22F;
+        bulletproperties.power = 0.35F;
+        bulletproperties.powerType = 1;
+        bulletproperties.powerRadius = 120F;
+        bulletproperties.kalibr = 0.0762F;
+        bulletproperties.massa = 6.5F;
+        bulletproperties.speed = 816F;
+        bulletproperties.traceColor = 0;
+        bulletproperties = gunproperties.bullet[1];
+        bulletproperties.timeLife = 15F;
+        bulletproperties.power = 0.7F;
+        bulletproperties.powerType = 0;
+        bulletproperties.powerRadius = 25F;
+        bulletproperties.kalibr = 0.0762F;
+        bulletproperties.massa = 6.8F;
+        bulletproperties.speed = 816F;
+        bulletproperties.traceMesh = "3do/effects/tracers/20mmOrange/mono.sim";
+        bulletproperties.traceTrail = "effects/Smokes/SmokeBlack_BuletteTrail.eff";
+        bulletproperties.traceColor = 0xd2129cef;
+        return 55F;
+    }
 
-    localBulletProperties.power = 0.35F;
-    localBulletProperties.powerType = 1;
-    localBulletProperties.powerRadius = 120.0F;
-
-    localBulletProperties.kalibr = 0.0762F;
-    localBulletProperties.massa = 6.5F;
-    localBulletProperties.speed = 816.0F;
-
-    localBulletProperties.traceColor = 0;
-
-    localBulletProperties = paramGunProperties.bullet[1];
-
-    localBulletProperties.timeLife = 15.0F;
-
-    localBulletProperties.power = 0.7F;
-    localBulletProperties.powerType = 0;
-    localBulletProperties.powerRadius = 25.0F;
-
-    localBulletProperties.kalibr = 0.0762F;
-    localBulletProperties.massa = 6.8F;
-    localBulletProperties.speed = 816.0F;
-
-    localBulletProperties.traceMesh = "3do/effects/tracers/20mmOrange/mono.sim";
-    localBulletProperties.traceTrail = "effects/Smokes/SmokeBlack_BuletteTrail.eff";
-    localBulletProperties.traceColor = -770532113;
-
-    return 55.0F;
-  }
-
-  public Bullet createNextBullet(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong)
-  {
-    return new BulletAntiAirBigUSSR(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong, this.explodeAtHeight);
-  }
+    public com.maddox.il2.objects.weapons.Bullet createNextBullet(com.maddox.JGP.Vector3d vector3d, int i, com.maddox.il2.engine.GunGeneric gungeneric, com.maddox.il2.engine.Loc loc, com.maddox.JGP.Vector3d vector3d1, long l)
+    {
+        return new BulletAntiAirBigUSSR(vector3d, i, gungeneric, loc, vector3d1, l, explodeAtHeight);
+    }
 }

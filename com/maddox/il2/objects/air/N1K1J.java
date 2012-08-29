@@ -1,59 +1,90 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   N1K1J.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.EnginesInterface;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Motor;
 import com.maddox.rts.Property;
 
-public class N1K1J extends N1K
+// Referenced classes of package com.maddox.il2.objects.air:
+//            N1K, PaintSchemeFMPar01, PaintSchemeFMPar04, NetAircraft
+
+public class N1K1J extends com.maddox.il2.objects.air.N1K
 {
-  public void update(float paramFloat)
-  {
-    super.update(paramFloat);
 
-    float f = this.FM.EI.engines[0].getControlRadiator();
-    if (Math.abs(this.flapps - f) > 0.01F) {
-      this.flapps = f;
-      for (int i = 1; i < 11; i++)
-        hierMesh().chunkSetAngles("Cowflap" + i + "_D0", 0.0F, -20.0F * f, 0.0F);
+    public N1K1J()
+    {
     }
-  }
 
-  public void onAircraftLoaded()
-  {
-    super.onAircraftLoaded();
-    if (this.FM.CT.Weapons[3] != null) {
-      hierMesh().chunkVisible("RackL_D0", true);
-      hierMesh().chunkVisible("RackR_D0", true);
+    public void update(float f)
+    {
+        super.update(f);
+        float f1 = FM.EI.engines[0].getControlRadiator();
+        if(java.lang.Math.abs(flapps - f1) > 0.01F)
+        {
+            flapps = f1;
+            for(int i = 1; i < 11; i++)
+                hierMesh().chunkSetAngles("Cowflap" + i + "_D0", 0.0F, -20F * f1, 0.0F);
+
+        }
     }
-  }
 
-  static
-  {
-    Class localClass = N1K1J.class;
-    new NetAircraft.SPAWN(localClass);
+    public void onAircraftLoaded()
+    {
+        super.onAircraftLoaded();
+        if(FM.CT.Weapons[3] != null)
+        {
+            hierMesh().chunkVisible("RackL_D0", true);
+            hierMesh().chunkVisible("RackR_D0", true);
+        }
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "N1K");
-    Property.set(localClass, "meshName", "3DO/Plane/N1K1-J(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar01());
-    Property.set(localClass, "meshName_ja", "3DO/Plane/N1K1-J(ja)/hier.him");
-    Property.set(localClass, "PaintScheme_ja", new PaintSchemeFMPar04());
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "yearService", 1944.0F);
-    Property.set(localClass, "yearExpired", 1945.5F);
-
-    Property.set(localClass, "FlightModel", "FlightModels/N1K1-J.fmd");
-
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1, 1, 1, 3, 3, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunMG15s 525", "MGunMG15s 525", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", null, null, null, null });
-
-    weaponsRegister(localClass, "1x400dt", new String[] { "MGunMG15s 525", "MGunMG15s 525", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", null, null, "PylonN1K1PLN1", "FuelTankGun_TankN1K1" });
-
-    weaponsRegister(localClass, "2x30", new String[] { "MGunMG15s 525", "MGunMG15s 525", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", "BombGun30kgJ 1", "BombGun30kgJ 1", null, null });
-
-    weaponsRegister(localClass, "2x60", new String[] { "MGunMG15s 525", "MGunMG15s 525", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", "BombGun60kgJ 1", "BombGun60kgJ 1", null, null });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.N1K1J.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "N1K");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/N1K1-J(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
+        com.maddox.rts.Property.set(class1, "meshName_ja", "3DO/Plane/N1K1-J(ja)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_ja", new PaintSchemeFMPar04());
+        com.maddox.rts.Property.set(class1, "yearService", 1944F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/N1K1-J.fmd");
+        com.maddox.il2.objects.air.N1K1J.weaponTriggersRegister(class1, new int[] {
+            0, 0, 1, 1, 1, 1, 3, 3, 9, 9
+        });
+        com.maddox.il2.objects.air.N1K1J.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_CANNON01", "_CANNON02", "_CANNON03", "_CANNON04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02"
+        });
+        com.maddox.il2.objects.air.N1K1J.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunMG15s 525", "MGunMG15s 525", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", null, null, null, null
+        });
+        com.maddox.il2.objects.air.N1K1J.weaponsRegister(class1, "1x400dt", new java.lang.String[] {
+            "MGunMG15s 525", "MGunMG15s 525", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", null, null, "PylonN1K1PLN1", "FuelTankGun_TankN1K1"
+        });
+        com.maddox.il2.objects.air.N1K1J.weaponsRegister(class1, "2x30", new java.lang.String[] {
+            "MGunMG15s 525", "MGunMG15s 525", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", "BombGun30kgJ 1", "BombGun30kgJ 1", null, null
+        });
+        com.maddox.il2.objects.air.N1K1J.weaponsRegister(class1, "2x60", new java.lang.String[] {
+            "MGunMG15s 525", "MGunMG15s 525", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", "MGunHo5k 60", "BombGun60kgJ 1", "BombGun60kgJ 1", null, null
+        });
+        com.maddox.il2.objects.air.N1K1J.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null
+        });
+    }
 }

@@ -1,89 +1,106 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Line3f.java
+
 package com.maddox.JGP;
 
 import java.io.PrintStream;
 import java.io.Serializable;
 
+// Referenced classes of package com.maddox.JGP:
+//            Vector3f, Point3f
+
 public class Line3f
-  implements Serializable, Cloneable
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public Vector3f A = new Vector3f();
 
-  public Point3f P0 = new Point3f();
-
-  public Line3f()
-  {
-    this.A.x = (this.A.y = this.A.z = 0.5773503F);
-  }
-
-  public Line3f(Line3f paramLine3f)
-  {
-    this.A.set(paramLine3f.A); this.P0.set(paramLine3f.P0);
-  }
-
-  public Line3f(Point3f paramPoint3f1, Point3f paramPoint3f2)
-  {
-    set(paramPoint3f1, paramPoint3f2);
-  }
-
-  public final void set(Line3f paramLine3f)
-  {
-    this.A.set(paramLine3f.A); this.P0.set(paramLine3f.P0);
-  }
-
-  public final void set(Point3f paramPoint3f1, Point3f paramPoint3f2)
-  {
-    this.A.x = (paramPoint3f2.x - paramPoint3f1.x);
-    this.A.y = (paramPoint3f2.y - paramPoint3f1.y);
-    this.A.z = (paramPoint3f2.z - paramPoint3f1.z);
-    this.A.normalize();
-    this.P0 = paramPoint3f1;
-  }
-
-  public final float distance(Point3f paramPoint3f)
-  {
-    Vector3f localVector3f = new Vector3f(paramPoint3f.x - this.P0.x, paramPoint3f.y - this.P0.y, paramPoint3f.z - this.P0.z);
-
-    float f = this.A.dot(localVector3f);
-    return (float)Math.sqrt(localVector3f.lengthSquared() - f * f);
-  }
-
-  public final float distance(Line3f paramLine3f)
-  {
-    Vector3f localVector3f = new Vector3f();
-    localVector3f.cross(this.A, paramLine3f.A);
-    try { localVector3f.normalize();
-    } catch (RuntimeException localRuntimeException) {
-      return distance(paramLine3f.P0);
+    public Line3f()
+    {
+        A = new Vector3f();
+        P0 = new Point3f();
+        A.x = A.y = A.z = 0.5773503F;
     }
-    return Math.abs(localVector3f.dot(this.P0) - localVector3f.dot(paramLine3f.P0));
-  }
 
-  public final float cos(Line3f paramLine3f)
-  {
-    return this.A.dot(paramLine3f.A);
-  }
+    public Line3f(com.maddox.JGP.Line3f line3f)
+    {
+        A = new Vector3f();
+        P0 = new Point3f();
+        A.set(line3f.A);
+        P0.set(line3f.P0);
+    }
 
-  public String toString()
-  {
-    return "( " + this.A.x + "," + this.A.y + "," + this.A.z + "; " + this.P0.x + "," + this.P0.y + "," + this.P0.z + " )";
-  }
+    public Line3f(com.maddox.JGP.Point3f point3f, com.maddox.JGP.Point3f point3f1)
+    {
+        A = new Vector3f();
+        P0 = new Point3f();
+        set(point3f, point3f1);
+    }
 
-  public static void main(String[] paramArrayOfString)
-  {
-    Point3f localPoint3f1 = new Point3f(0.0F, 0.0F, 0.0F);
-    Point3f localPoint3f2 = new Point3f(1.0F, 0.0F, 0.0F);
-    Point3f localPoint3f3 = new Point3f(0.0F, 1.0F, 0.0F);
-    Point3f localPoint3f4 = new Point3f(0.0F, 0.0F, 1.0F);
-    Line3f localLine3f1 = new Line3f(localPoint3f1, localPoint3f3);
-    Line3f localLine3f2 = new Line3f(localPoint3f2, localPoint3f3);
-    System.out.println("Line: " + localLine3f2);
+    public final void set(com.maddox.JGP.Line3f line3f)
+    {
+        A.set(line3f.A);
+        P0.set(line3f.P0);
+    }
 
-    System.out.println("Point: " + localPoint3f1);
-    System.out.println("Distance: " + localLine3f2.distance(localPoint3f1) + "\n");
+    public final void set(com.maddox.JGP.Point3f point3f, com.maddox.JGP.Point3f point3f1)
+    {
+        A.x = point3f1.x - point3f.x;
+        A.y = point3f1.y - point3f.y;
+        A.z = point3f1.z - point3f.z;
+        A.normalize();
+        P0 = point3f;
+    }
 
-    System.out.println("Line1: " + localLine3f1);
-    System.out.println("Line2: " + localLine3f2);
-    System.out.println("Distance: " + localLine3f1.distance(localLine3f2));
-    System.out.println("Cos: " + localLine3f1.cos(localLine3f2));
-  }
+    public final float distance(com.maddox.JGP.Point3f point3f)
+    {
+        com.maddox.JGP.Vector3f vector3f = new Vector3f(point3f.x - P0.x, point3f.y - P0.y, point3f.z - P0.z);
+        float f = A.dot(vector3f);
+        return (float)java.lang.Math.sqrt(vector3f.lengthSquared() - f * f);
+    }
+
+    public final float distance(com.maddox.JGP.Line3f line3f)
+    {
+        com.maddox.JGP.Vector3f vector3f = new Vector3f();
+        vector3f.cross(A, line3f.A);
+        try
+        {
+            vector3f.normalize();
+        }
+        catch(java.lang.RuntimeException runtimeexception)
+        {
+            return distance(line3f.P0);
+        }
+        return java.lang.Math.abs(vector3f.dot(P0) - vector3f.dot(line3f.P0));
+    }
+
+    public final float cos(com.maddox.JGP.Line3f line3f)
+    {
+        return A.dot(line3f.A);
+    }
+
+    public java.lang.String toString()
+    {
+        return "( " + A.x + "," + A.y + "," + A.z + "; " + P0.x + "," + P0.y + "," + P0.z + " )";
+    }
+
+    public static void main(java.lang.String args[])
+    {
+        com.maddox.JGP.Point3f point3f = new Point3f(0.0F, 0.0F, 0.0F);
+        com.maddox.JGP.Point3f point3f1 = new Point3f(1.0F, 0.0F, 0.0F);
+        com.maddox.JGP.Point3f point3f2 = new Point3f(0.0F, 1.0F, 0.0F);
+        com.maddox.JGP.Point3f point3f3 = new Point3f(0.0F, 0.0F, 1.0F);
+        com.maddox.JGP.Line3f line3f = new Line3f(point3f, point3f2);
+        com.maddox.JGP.Line3f line3f1 = new Line3f(point3f1, point3f2);
+        java.lang.System.out.println("Line: " + line3f1);
+        java.lang.System.out.println("Point: " + point3f);
+        java.lang.System.out.println("Distance: " + line3f1.distance(point3f) + "\n");
+        java.lang.System.out.println("Line1: " + line3f);
+        java.lang.System.out.println("Line2: " + line3f1);
+        java.lang.System.out.println("Distance: " + line3f.distance(line3f1));
+        java.lang.System.out.println("Cos: " + line3f.cos(line3f1));
+    }
+
+    public com.maddox.JGP.Vector3f A;
+    public com.maddox.JGP.Point3f P0;
 }

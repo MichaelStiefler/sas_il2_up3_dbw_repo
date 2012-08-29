@@ -1,93 +1,121 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   TrackIR.java
+
 package com.maddox.rts;
 
+
+// Referenced classes of package com.maddox.rts:
+//            MsgTrackIR, Listeners, MessageCache, MsgAddListenerListener, 
+//            MsgRemoveListenerListener, RTSConf, Message, Time, 
+//            IniFile
+
 public class TrackIR
-  implements MsgAddListenerListener, MsgRemoveListenerListener
+    implements com.maddox.rts.MsgAddListenerListener, com.maddox.rts.MsgRemoveListenerListener
 {
-  public static final int ANGLES = 0;
-  public static final int UNKNOWN = -1;
-  private boolean bExist;
-  private Listeners listeners;
-  private Listeners realListeners;
-  private MessageCache cache;
-  private float yaw;
-  private float pitch;
-  private float roll;
 
-  public static TrackIR adapter()
-  {
-    return RTSConf.cur.trackIR;
-  }
-
-  public boolean isExist()
-  {
-    return this.bExist;
-  }
-  public void getAngles(float[] paramArrayOfFloat) {
-    paramArrayOfFloat[0] = this.yaw;
-    paramArrayOfFloat[1] = this.pitch;
-    paramArrayOfFloat[2] = this.roll;
-  }
-
-  public Object[] getListeners()
-  {
-    return this.listeners.get();
-  }
-
-  public Object[] getRealListeners()
-  {
-    return this.realListeners.get();
-  }
-  public void msgAddListener(Object paramObject1, Object paramObject2) {
-    if (Message.current().isRealTime()) this.realListeners.insListener(paramObject1); else
-      this.listeners.insListener(paramObject1);
-  }
-
-  public void msgRemoveListener(Object paramObject1, Object paramObject2) {
-    if (Message.current().isRealTime()) this.realListeners.removeListener(paramObject1); else
-      this.listeners.removeListener(paramObject1);
-  }
-
-  protected void setExist(boolean paramBoolean) {
-    this.bExist = paramBoolean;
-  }
-  protected void clear() { this.yaw = (this.pitch = this.roll = 0.0F); }
-
-  protected void setAngles(float paramFloat1, float paramFloat2, float paramFloat3) {
-    if ((this.yaw == paramFloat1) && (this.pitch == paramFloat2) && (this.roll == paramFloat3)) {
-      return;
+    public static com.maddox.rts.TrackIR adapter()
+    {
+        return com.maddox.rts.RTSConf.cur.trackIR;
     }
-    this.yaw = paramFloat1;
-    this.pitch = paramFloat2;
-    this.roll = paramFloat3;
 
-    Object[] arrayOfObject = this.realListeners.get();
-    MsgTrackIR localMsgTrackIR;
-    if (arrayOfObject != null) {
-      localMsgTrackIR = (MsgTrackIR)this.cache.get();
-      localMsgTrackIR.id = 0;
-      localMsgTrackIR.yaw = this.yaw;
-      localMsgTrackIR.pitch = this.pitch;
-      localMsgTrackIR.roll = this.roll;
-      localMsgTrackIR.post(64, arrayOfObject, Time.currentReal(), this);
+    public boolean isExist()
+    {
+        return bExist;
     }
-    if (!Time.isPaused()) {
-      arrayOfObject = this.listeners.get();
-      if (arrayOfObject != null) {
-        localMsgTrackIR = (MsgTrackIR)this.cache.get();
-        localMsgTrackIR.id = 0;
-        localMsgTrackIR.yaw = this.yaw;
-        localMsgTrackIR.pitch = this.pitch;
-        localMsgTrackIR.roll = this.roll;
-        localMsgTrackIR.post(0, arrayOfObject, Time.current(), this);
-      }
-    }
-  }
 
-  protected TrackIR(IniFile paramIniFile, String paramString) {
-    this.bExist = false;
-    this.listeners = new Listeners();
-    this.realListeners = new Listeners();
-    this.cache = new MessageCache(MsgTrackIR.class);
-    clear();
-  }
+    public void getAngles(float af[])
+    {
+        af[0] = yaw;
+        af[1] = pitch;
+        af[2] = roll;
+    }
+
+    public java.lang.Object[] getListeners()
+    {
+        return listeners.get();
+    }
+
+    public java.lang.Object[] getRealListeners()
+    {
+        return realListeners.get();
+    }
+
+    public void msgAddListener(java.lang.Object obj, java.lang.Object obj1)
+    {
+        if(com.maddox.rts.Message.current().isRealTime())
+            realListeners.insListener(obj);
+        else
+            listeners.insListener(obj);
+    }
+
+    public void msgRemoveListener(java.lang.Object obj, java.lang.Object obj1)
+    {
+        if(com.maddox.rts.Message.current().isRealTime())
+            realListeners.removeListener(obj);
+        else
+            listeners.removeListener(obj);
+    }
+
+    protected void setExist(boolean flag)
+    {
+        bExist = flag;
+    }
+
+    protected void clear()
+    {
+        yaw = pitch = roll = 0.0F;
+    }
+
+    protected void setAngles(float f, float f1, float f2)
+    {
+        if(yaw == f && pitch == f1 && roll == f2)
+            return;
+        yaw = f;
+        pitch = f1;
+        roll = f2;
+        java.lang.Object aobj[] = realListeners.get();
+        if(aobj != null)
+        {
+            com.maddox.rts.MsgTrackIR msgtrackir = (com.maddox.rts.MsgTrackIR)cache.get();
+            msgtrackir.id = 0;
+            msgtrackir.yaw = yaw;
+            msgtrackir.pitch = pitch;
+            msgtrackir.roll = roll;
+            msgtrackir.post(64, ((java.lang.Object) (aobj)), com.maddox.rts.Time.currentReal(), this);
+        }
+        if(!com.maddox.rts.Time.isPaused())
+        {
+            java.lang.Object aobj1[] = listeners.get();
+            if(aobj1 != null)
+            {
+                com.maddox.rts.MsgTrackIR msgtrackir1 = (com.maddox.rts.MsgTrackIR)cache.get();
+                msgtrackir1.id = 0;
+                msgtrackir1.yaw = yaw;
+                msgtrackir1.pitch = pitch;
+                msgtrackir1.roll = roll;
+                msgtrackir1.post(0, ((java.lang.Object) (aobj1)), com.maddox.rts.Time.current(), this);
+            }
+        }
+    }
+
+    protected TrackIR(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        bExist = false;
+        listeners = new Listeners();
+        realListeners = new Listeners();
+        cache = new MessageCache(com.maddox.rts.MsgTrackIR.class);
+        clear();
+    }
+
+    public static final int ANGLES = 0;
+    public static final int UNKNOWN = -1;
+    private boolean bExist;
+    private com.maddox.rts.Listeners listeners;
+    private com.maddox.rts.Listeners realListeners;
+    private com.maddox.rts.MessageCache cache;
+    private float yaw;
+    private float pitch;
+    private float roll;
 }

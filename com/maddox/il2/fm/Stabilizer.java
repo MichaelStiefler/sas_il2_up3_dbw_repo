@@ -1,44 +1,66 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Stabilizer.java
+
 package com.maddox.il2.fm;
+
 
 public class Stabilizer
 {
-  float Hset;
-  float Hcur;
-  float Hold;
-  float HDiff;
-  float MaxSpeed;
-  float Speed;
-  float OldSpeed;
-  float Accel;
-  float OldAccel;
-  float dAccel;
-  float NeedSpeed;
-  float NeedAccel;
-  float A;
 
-  public void set(float paramFloat1, float paramFloat2)
-  {
-    this.Hset = (this.Hcur = this.Hold = paramFloat1); this.A = paramFloat2;
-    this.HDiff = (this.Speed = this.OldSpeed = this.Accel = this.OldAccel = 0.0F);
-    this.MaxSpeed = Math.max(this.Hset * 1.0E-004F, 0.001F);
-  }
+    public Stabilizer()
+    {
+    }
 
-  public float getOutput(float paramFloat) {
-    this.Hold = this.Hcur;
-    this.Hcur = paramFloat;
-    this.OldAccel = this.Accel;
-    this.OldSpeed = this.Speed;
+    public void set(float f, float f1)
+    {
+        Hset = Hcur = Hold = f;
+        A = f1;
+        HDiff = Speed = OldSpeed = Accel = OldAccel = 0.0F;
+        MaxSpeed = java.lang.Math.max(Hset * 0.0001F, 0.001F);
+    }
 
-    this.HDiff = (this.Hcur - this.Hset);
-    this.Speed = (this.Hcur - this.Hold);
-    this.Accel = (this.Speed - this.OldSpeed);
-    this.NeedSpeed = (-this.HDiff * 0.01F);
-    if (this.NeedSpeed > this.MaxSpeed) this.NeedSpeed = this.MaxSpeed;
-    else if (this.NeedSpeed < -this.MaxSpeed) this.NeedSpeed = (-this.MaxSpeed);
-    this.NeedAccel = ((this.NeedSpeed - this.Speed) * 0.01F);
-    this.dAccel = (this.Accel - this.OldAccel);
-    if (this.NeedAccel - this.Accel > this.dAccel) this.A += 0.001F; else this.A -= 0.001F;
-    if (this.A < -1.0F) this.A = -1.0F; else if (this.A > 1.0F) this.A = 1.0F;
-    return this.A;
-  }
+    public float getOutput(float f)
+    {
+        Hold = Hcur;
+        Hcur = f;
+        OldAccel = Accel;
+        OldSpeed = Speed;
+        HDiff = Hcur - Hset;
+        Speed = Hcur - Hold;
+        Accel = Speed - OldSpeed;
+        NeedSpeed = -HDiff * 0.01F;
+        if(NeedSpeed > MaxSpeed)
+            NeedSpeed = MaxSpeed;
+        else
+        if(NeedSpeed < -MaxSpeed)
+            NeedSpeed = -MaxSpeed;
+        NeedAccel = (NeedSpeed - Speed) * 0.01F;
+        dAccel = Accel - OldAccel;
+        if(NeedAccel - Accel > dAccel)
+            A += 0.001F;
+        else
+            A -= 0.001F;
+        if(A < -1F)
+            A = -1F;
+        else
+        if(A > 1.0F)
+            A = 1.0F;
+        return A;
+    }
+
+    float Hset;
+    float Hcur;
+    float Hold;
+    float HDiff;
+    float MaxSpeed;
+    float Speed;
+    float OldSpeed;
+    float Accel;
+    float OldAccel;
+    float dAccel;
+    float NeedSpeed;
+    float NeedAccel;
+    float A;
 }

@@ -1,103 +1,126 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   JoyWin.java
+
 package com.maddox.rts;
 
+
+// Referenced classes of package com.maddox.rts:
+//            JoyWinException, MsgTimeOut, MsgTimeOutListener, RTSConf, 
+//            MainWindow, Time, Joy, MessageQueue, 
+//            RTS
+
 public final class JoyWin
-  implements MsgTimeOutListener
+    implements com.maddox.rts.MsgTimeOutListener
 {
-  private static final int BUTTON0 = 1;
-  private static final int BUTTON1 = 2;
-  private static final int BUTTON2 = 4;
-  private static final int BUTTON3 = 8;
-  private static final int MOVE_X = 16;
-  private static final int MOVE_Y = 32;
-  private static boolean[][] bButtons = new boolean[2][4];
-  private boolean bCreated;
-  private int amount;
-  private int[] param;
-  private MsgTimeOut ticker;
-  private long timePool = 100L;
 
-  public final boolean isCreated()
-  {
-    return this.bCreated;
-  }
-
-  public final void create()
-    throws JoyWinException
-  {
-    if (RTSConf.cur.mainWindow.hWnd() == 0)
-      throw new JoyWinException("Windows joystick driver: window not present");
-    this.amount = nCreate();
-    if (this.amount == 0)
-      throw new JoyWinException("Windows joystick not found");
-    this.ticker.setTime(Time.currentReal() + this.timePool);
-    this.ticker.post();
-    this.bCreated = true;
-    RTSConf.cur.joy.setAttached(true);
-    for (int i = 0; i < this.amount; i++)
-      RTSConf.cur.joy.setCaps(i, 4, 2, 0, 3);
-  }
-
-  public final void destroy()
-  {
-    if (this.bCreated) {
-      RTSConf.cur.queueRealTime.remove(this.ticker);
-      RTSConf.cur.queueRealTimeNextTick.remove(this.ticker);
-      this.bCreated = false;
-      this.amount = 0;
-      RTSConf.cur.joy.setAttached(false);
+    public final boolean isCreated()
+    {
+        return bCreated;
     }
-  }
 
-  private void checkButton(long paramLong, int paramInt1, int paramInt2, boolean paramBoolean)
-  {
-    if (bButtons[paramInt1][paramInt2] != paramBoolean) {
-      bButtons[paramInt1][paramInt2] = paramBoolean;
-      if (paramBoolean) RTSConf.cur.joy.setPress(paramLong, paramInt1, paramInt2); else
-        RTSConf.cur.joy.setRelease(paramLong, paramInt1, paramInt2); 
+    public final void create()
+        throws com.maddox.rts.JoyWinException
+    {
+        if(com.maddox.rts.RTSConf.cur.mainWindow.hWnd() == 0)
+            throw new JoyWinException("Windows joystick driver: window not present");
+        amount = com.maddox.rts.JoyWin.nCreate();
+        if(amount == 0)
+            throw new JoyWinException("Windows joystick not found");
+        ticker.setTime(com.maddox.rts.Time.currentReal() + timePool);
+        ticker.post();
+        bCreated = true;
+        com.maddox.rts.RTSConf.cur.joy.setAttached(true);
+        for(int i = 0; i < amount; i++)
+            com.maddox.rts.RTSConf.cur.joy.setCaps(i, 4, 2, 0, 3);
+
     }
-  }
 
-  public void msgTimeOut(Object paramObject) {
-    if (this.bCreated) {
-      long l = Time.currentReal();
-      for (int i = 0; i < this.amount; i++) {
-        if (nGetMsg(i, this.param)) {
-          checkButton(l, i, 0, (this.param[0] & 0x1) != 0);
-          checkButton(l, i, 1, (this.param[0] & 0x2) != 0);
-          checkButton(l, i, 2, (this.param[0] & 0x4) != 0);
-          checkButton(l, i, 3, (this.param[0] & 0x8) != 0);
-          if ((this.param[0] & 0x10) != 0)
-            RTSConf.cur.joy.setMove(l, i, 0, this.param[1]);
-          if ((this.param[0] & 0x20) != 0)
-            RTSConf.cur.joy.setMove(l, i, 1, this.param[2]);
+    public final void destroy()
+    {
+        if(bCreated)
+        {
+            com.maddox.rts.RTSConf.cur.queueRealTime.remove(ticker);
+            com.maddox.rts.RTSConf.cur.queueRealTimeNextTick.remove(ticker);
+            bCreated = false;
+            amount = 0;
+            com.maddox.rts.RTSConf.cur.joy.setAttached(false);
         }
-      }
-      RTSConf.cur.joy.poll(l);
-      this.ticker.setTime(Time.currentReal() + this.timePool);
-      this.ticker.post();
     }
-  }
 
-  protected JoyWin(long paramLong, boolean paramBoolean) {
-    this.param = new int[3];
-    this.bCreated = false;
-    this.amount = 0;
-    this.ticker = new MsgTimeOut(null);
-    this.timePool = paramLong;
-    this.ticker.setTime(Time.currentReal() + paramLong);
-    this.ticker.setNotCleanAfterSend();
-    this.ticker.setFlags(64);
-    this.ticker.setListener(this);
-    if (paramBoolean)
-      create();
-  }
+    private void checkButton(long l, int i, int j, boolean flag)
+    {
+        if(bButtons[i][j] != flag)
+        {
+            bButtons[i][j] = flag;
+            if(flag)
+                com.maddox.rts.RTSConf.cur.joy.setPress(l, i, j);
+            else
+                com.maddox.rts.RTSConf.cur.joy.setRelease(l, i, j);
+        }
+    }
 
-  private static final native int nCreate();
+    public void msgTimeOut(java.lang.Object obj)
+    {
+        if(bCreated)
+        {
+            long l = com.maddox.rts.Time.currentReal();
+            for(int i = 0; i < amount; i++)
+            {
+                if(!com.maddox.rts.JoyWin.nGetMsg(i, param))
+                    continue;
+                checkButton(l, i, 0, (param[0] & 1) != 0);
+                checkButton(l, i, 1, (param[0] & 2) != 0);
+                checkButton(l, i, 2, (param[0] & 4) != 0);
+                checkButton(l, i, 3, (param[0] & 8) != 0);
+                if((param[0] & 0x10) != 0)
+                    com.maddox.rts.RTSConf.cur.joy.setMove(l, i, 0, param[1]);
+                if((param[0] & 0x20) != 0)
+                    com.maddox.rts.RTSConf.cur.joy.setMove(l, i, 1, param[2]);
+            }
 
-  private static final native boolean nGetMsg(int paramInt, int[] paramArrayOfInt);
+            com.maddox.rts.RTSConf.cur.joy.poll(l);
+            ticker.setTime(com.maddox.rts.Time.currentReal() + timePool);
+            ticker.post();
+        }
+    }
 
-  static
-  {
-    RTS.loadNative();
-  }
+    protected JoyWin(long l, boolean flag)
+    {
+        timePool = 100L;
+        param = new int[3];
+        bCreated = false;
+        amount = 0;
+        ticker = new MsgTimeOut(null);
+        timePool = l;
+        ticker.setTime(com.maddox.rts.Time.currentReal() + l);
+        ticker.setNotCleanAfterSend();
+        ticker.setFlags(64);
+        ticker.setListener(this);
+        if(flag)
+            create();
+    }
+
+    private static final native int nCreate();
+
+    private static final native boolean nGetMsg(int i, int ai[]);
+
+    private static final int BUTTON0 = 1;
+    private static final int BUTTON1 = 2;
+    private static final int BUTTON2 = 4;
+    private static final int BUTTON3 = 8;
+    private static final int MOVE_X = 16;
+    private static final int MOVE_Y = 32;
+    private static boolean bButtons[][] = new boolean[2][4];
+    private boolean bCreated;
+    private int amount;
+    private int param[];
+    private com.maddox.rts.MsgTimeOut ticker;
+    private long timePool;
+
+    static 
+    {
+        com.maddox.rts.RTS.loadNative();
+    }
 }

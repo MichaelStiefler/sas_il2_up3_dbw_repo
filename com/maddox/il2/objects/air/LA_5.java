@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   LA_5.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.RangeRandom;
@@ -6,46 +11,68 @@ import com.maddox.il2.fm.AircraftState;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.rts.Property;
 
-public class LA_5 extends LA_X
+// Referenced classes of package com.maddox.il2.objects.air:
+//            LA_X, PaintSchemeFMPar02, NetAircraft
+
+public class LA_5 extends com.maddox.il2.objects.air.LA_X
 {
-  public void rareAction(float paramFloat, boolean paramBoolean)
-  {
-    super.rareAction(paramFloat, paramBoolean);
-    if (paramBoolean)
-      for (int i = 0; i < 4; i++) {
-        if ((this.FM.AS.astateTankStates[i] <= 0) || (this.FM.AS.astateTankStates[i] >= 5) || 
-          (World.Rnd().nextFloat() >= 0.1F)) continue;
-        this.FM.AS.repairTank(i);
-      }
-  }
 
-  static
-  {
-    Class localClass = LA_5.class;
-    new NetAircraft.SPAWN(localClass);
+    public LA_5()
+    {
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "La");
-    Property.set(localClass, "meshName", "3DO/Plane/La-5(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar02());
+    public void rareAction(float f, boolean flag)
+    {
+        super.rareAction(f, flag);
+        if(flag)
+        {
+            for(int i = 0; i < 4; i++)
+                if(FM.AS.astateTankStates[i] > 0 && FM.AS.astateTankStates[i] < 5 && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.1F)
+                    FM.AS.repairTank(i);
 
-    Property.set(localClass, "yearService", 1943.0F);
-    Property.set(localClass, "yearExpired", 1948.0F);
+        }
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/La-5.fmd");
-    Property.set(localClass, "cockpitClass", CockpitLA_5.class);
-    Property.set(localClass, "LOSElevation", 0.750618F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 1, 1, 3, 3, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", null, null, null, null });
-
-    weaponsRegister(localClass, "2xFAB50", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", "BombGunFAB50 1", "BombGunFAB50 1", null, null });
-
-    weaponsRegister(localClass, "2xFAB100", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", "BombGunFAB100 1", "BombGunFAB100 1", null, null });
-
-    weaponsRegister(localClass, "2xDROPTANK", new String[] { "MGunShVAKs 170", "MGunShVAKs 200", null, null, "FuelTankGun_Tank80", "FuelTankGun_Tank80" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.LA_5.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "La");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/La-5(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar02());
+        com.maddox.rts.Property.set(class1, "yearService", 1943F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1948F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/La-5.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitLA_5.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.750618F);
+        com.maddox.il2.objects.air.LA_5.weaponTriggersRegister(class1, new int[] {
+            1, 1, 3, 3, 9, 9
+        });
+        com.maddox.il2.objects.air.LA_5.weaponHooksRegister(class1, new java.lang.String[] {
+            "_CANNON01", "_CANNON02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb01", "_ExternalBomb02"
+        });
+        com.maddox.il2.objects.air.LA_5.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunShVAKs 170", "MGunShVAKs 200", null, null, null, null
+        });
+        com.maddox.il2.objects.air.LA_5.weaponsRegister(class1, "2xFAB50", new java.lang.String[] {
+            "MGunShVAKs 170", "MGunShVAKs 200", "BombGunFAB50 1", "BombGunFAB50 1", null, null
+        });
+        com.maddox.il2.objects.air.LA_5.weaponsRegister(class1, "2xFAB100", new java.lang.String[] {
+            "MGunShVAKs 170", "MGunShVAKs 200", "BombGunFAB100 1", "BombGunFAB100 1", null, null
+        });
+        com.maddox.il2.objects.air.LA_5.weaponsRegister(class1, "2xDROPTANK", new java.lang.String[] {
+            "MGunShVAKs 170", "MGunShVAKs 200", null, null, "FuelTankGun_Tank80", "FuelTankGun_Tank80"
+        });
+        com.maddox.il2.objects.air.LA_5.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null
+        });
+    }
 }

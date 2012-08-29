@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SfxExplosion.java
+
 package com.maddox.il2.objects.sounds;
 
 import com.maddox.JGP.Point3d;
@@ -6,86 +11,115 @@ import com.maddox.sound.SoundPreset;
 
 public class SfxExplosion
 {
-  private static SoundPreset crashTank;
-  private static SoundPreset crashAir;
-  private static SoundPreset explodeZenitka;
-  private static SoundPreset explodeBullet;
-  private static SoundPreset explodeShell;
-  private static SoundPreset explodeBig;
-  private static SoundPreset explodeMiddle;
 
-  private static boolean init()
-  {
-    if (crashTank != null)
-      return true;
-    try {
-      crashTank = new SoundPreset("crash.tank");
-      crashAir = new SoundPreset("crash.air");
-      explodeZenitka = new SoundPreset("explode.zenitka");
-      explodeBullet = new SoundPreset("explode.bullet");
-      explodeShell = new SoundPreset("explode.shell");
-      explodeBig = new SoundPreset("explode.big");
-      explodeMiddle = new SoundPreset("explode.middle");
-      return true; } catch (Exception localException) {
+    public SfxExplosion()
+    {
     }
-    return false;
-  }
 
-  public static void crashTank(Point3d paramPoint3d, int paramInt)
-  {
-    if (!init()) return;
-    SoundFX localSoundFX = new SoundFX(crashTank);
-    localSoundFX.setPosition(paramPoint3d);
-    localSoundFX.play();
-  }
+    private static boolean init()
+    {
+        if(crashTank != null)
+            return true;
+        crashTank = new SoundPreset("crash.tank");
+        crashAir = new SoundPreset("crash.air");
+        explodeZenitka = new SoundPreset("explode.zenitka");
+        explodeBullet = new SoundPreset("explode.bullet");
+        explodeShell = new SoundPreset("explode.shell");
+        explodeBig = new SoundPreset("explode.big");
+        explodeMiddle = new SoundPreset("explode.middle");
+        return true;
+        java.lang.Exception exception;
+        exception;
+        return false;
+    }
 
-  public static void crashAir(Point3d paramPoint3d, int paramInt)
-  {
-    if (!init()) return;
-    SoundFX localSoundFX = new SoundFX(crashAir);
-    localSoundFX.setPosition(paramPoint3d);
-    localSoundFX.setUsrFlag(paramInt);
-    localSoundFX.play();
-  }
+    public static void crashTank(com.maddox.JGP.Point3d point3d, int i)
+    {
+        if(!com.maddox.il2.objects.sounds.SfxExplosion.init())
+        {
+            return;
+        } else
+        {
+            com.maddox.sound.SoundFX soundfx = new SoundFX(crashTank);
+            soundfx.setPosition(point3d);
+            soundfx.play();
+            return;
+        }
+    }
 
-  public static void crashParts(Point3d paramPoint3d, int paramInt)
-  {
-  }
+    public static void crashAir(com.maddox.JGP.Point3d point3d, int i)
+    {
+        if(!com.maddox.il2.objects.sounds.SfxExplosion.init())
+        {
+            return;
+        } else
+        {
+            com.maddox.sound.SoundFX soundfx = new SoundFX(crashAir);
+            soundfx.setPosition(point3d);
+            soundfx.setUsrFlag(i);
+            soundfx.play();
+            return;
+        }
+    }
 
-  public static void zenitka(Point3d paramPoint3d, int paramInt)
-  {
-    if (!init()) return;
+    public static void crashParts(com.maddox.JGP.Point3d point3d, int i)
+    {
+    }
 
-    SoundFX localSoundFX = new SoundFX(explodeZenitka);
-    localSoundFX.setPosition(paramPoint3d);
-    localSoundFX.setUsrFlag(paramInt > 1 ? 1 : 0);
-    localSoundFX.play();
-  }
+    public static void zenitka(com.maddox.JGP.Point3d point3d, int i)
+    {
+        if(!com.maddox.il2.objects.sounds.SfxExplosion.init())
+        {
+            return;
+        } else
+        {
+            com.maddox.sound.SoundFX soundfx = new SoundFX(explodeZenitka);
+            soundfx.setPosition(point3d);
+            soundfx.setUsrFlag(i <= 1 ? 0 : 1);
+            soundfx.play();
+            return;
+        }
+    }
 
-  public static void shell(Point3d paramPoint3d, int paramInt1, float paramFloat1, int paramInt2, float paramFloat2)
-  {
-    if (!init()) return;
+    public static void shell(com.maddox.JGP.Point3d point3d, int i, float f, int j, float f1)
+    {
+        if(!com.maddox.il2.objects.sounds.SfxExplosion.init())
+            return;
+        if(f < 0.001F)
+            return;
+        com.maddox.sound.SoundFX soundfx;
+        if(f < 0.02F)
+            soundfx = new SoundFX(explodeBullet);
+        else
+        if(f < 0.5F)
+            soundfx = new SoundFX(explodeShell);
+        else
+        if(f < 50F)
+            soundfx = new SoundFX(explodeMiddle);
+        else
+            soundfx = new SoundFX(explodeBig);
+        soundfx.setPosition(point3d);
+        soundfx.setUsrFlag(i);
+        soundfx.play();
+    }
 
-    if (paramFloat1 < 0.001F) return;
-    SoundFX localSoundFX;
-    if (paramFloat1 < 0.02F) localSoundFX = new SoundFX(explodeBullet);
-    else if (paramFloat1 < 0.5F) localSoundFX = new SoundFX(explodeShell);
-    else if (paramFloat1 < 50.0F) localSoundFX = new SoundFX(explodeMiddle); else
-      localSoundFX = new SoundFX(explodeBig);
-    localSoundFX.setPosition(paramPoint3d);
-    localSoundFX.setUsrFlag(paramInt1);
-    localSoundFX.play();
-  }
+    public static void building(com.maddox.JGP.Point3d point3d, int i, float af[])
+    {
+    }
 
-  public static void building(Point3d paramPoint3d, int paramInt, float[] paramArrayOfFloat)
-  {
-  }
+    public static void bridge(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, float f)
+    {
+    }
 
-  public static void bridge(Point3d paramPoint3d1, Point3d paramPoint3d2, float paramFloat)
-  {
-  }
+    public static void wagon(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, float f, int i)
+    {
+    }
 
-  public static void wagon(Point3d paramPoint3d1, Point3d paramPoint3d2, float paramFloat, int paramInt)
-  {
-  }
+    private static com.maddox.sound.SoundPreset crashTank;
+    private static com.maddox.sound.SoundPreset crashAir;
+    private static com.maddox.sound.SoundPreset explodeZenitka;
+    private static com.maddox.sound.SoundPreset explodeBullet;
+    private static com.maddox.sound.SoundPreset explodeShell;
+    private static com.maddox.sound.SoundPreset explodeBig;
+    private static com.maddox.sound.SoundPreset explodeMiddle;
 }

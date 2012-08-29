@@ -1,108 +1,141 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetMsgFiltered.java
+
 package com.maddox.rts;
 
 import java.io.IOException;
 import java.util.List;
 
-public class NetMsgFiltered extends NetMsgOutput
+// Referenced classes of package com.maddox.rts:
+//            NetMsgOutput, NetChannel, NetEnv, NetMsgInput
+
+public class NetMsgFiltered extends com.maddox.rts.NetMsgOutput
 {
-  protected long _time;
-  protected long _timeStamp;
-  protected float _prior;
-  private boolean bIncludeTime = false;
 
-  protected float prior = 0.5F;
-  private Object filterArg;
-
-  public void setFilterArg(Object paramObject)
-    throws IOException
-  {
-    checkLock();
-    this.filterArg = paramObject;
-  }
-
-  public Object filterArg() {
-    return this.filterArg;
-  }
-
-  public void setIncludeTime(boolean paramBoolean)
-    throws IOException
-  {
-    checkLock();
-    this.bIncludeTime = paramBoolean;
-  }
-
-  public boolean isIncludeTime()
-  {
-    return this.bIncludeTime;
-  }
-
-  public void setPrior(float paramFloat) throws IOException
-  {
-    checkLock();
-    if (paramFloat < 0.0F) paramFloat = 0.0F;
-    if (paramFloat > 1.0F) paramFloat = 1.0F;
-    this.prior = paramFloat;
-  }
-
-  public float prior() {
-    return this.prior;
-  }
-  public float lastDinamicPrior() { return this._prior;
-  }
-
-  public void unLock()
-  {
-    if (!isLocked()) return;
-    NetEnv.cur(); List localList = NetEnv.channels();
-    int i = localList.size();
-    for (int j = 0; j < i; j++) {
-      NetChannel localNetChannel = (NetChannel)localList.get(j);
-      if (localNetChannel.unLockMessage(this))
-        return;
+    public void setFilterArg(java.lang.Object obj)
+        throws java.io.IOException
+    {
+        checkLock();
+        filterArg = obj;
     }
-  }
 
-  public void unLock(NetChannel paramNetChannel)
-  {
-    if (!isLocked()) return;
-    if ((paramNetChannel != null) && 
-      (paramNetChannel.unLockMessage(this))) {
-      return;
+    public java.lang.Object filterArg()
+    {
+        return filterArg;
     }
-    unLock();
-  }
 
-  public void unLockAndClear()
-    throws IOException
-  {
-    unLock();
-    clear();
-  }
+    public void setIncludeTime(boolean flag)
+        throws java.io.IOException
+    {
+        checkLock();
+        bIncludeTime = flag;
+    }
 
-  public void unLockAndSet(NetMsgInput paramNetMsgInput, int paramInt)
-    throws IOException
-  {
-    unLock();
-    clear();
-    writeMsg(paramNetMsgInput, paramInt);
-  }
+    public boolean isIncludeTime()
+    {
+        return bIncludeTime;
+    }
 
-  public NetMsgFiltered()
-  {
-  }
+    public void setPrior(float f)
+        throws java.io.IOException
+    {
+        checkLock();
+        if(f < 0.0F)
+            f = 0.0F;
+        if(f > 1.0F)
+            f = 1.0F;
+        prior = f;
+    }
 
-  public NetMsgFiltered(byte[] paramArrayOfByte)
-  {
-    super(paramArrayOfByte);
-  }
+    public float prior()
+    {
+        return prior;
+    }
 
-  public NetMsgFiltered(int paramInt)
-  {
-    super(paramInt);
-  }
+    public float lastDinamicPrior()
+    {
+        return _prior;
+    }
 
-  public NetMsgFiltered(NetMsgInput paramNetMsgInput, int paramInt) throws IOException
-  {
-    super(paramNetMsgInput, paramInt);
-  }
+    public void unLock()
+    {
+        if(!isLocked())
+            return;
+        com.maddox.rts.NetEnv.cur();
+        java.util.List list = com.maddox.rts.NetEnv.channels();
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.rts.NetChannel netchannel = (com.maddox.rts.NetChannel)list.get(j);
+            if(netchannel.unLockMessage(this))
+                return;
+        }
+
+    }
+
+    public void unLock(com.maddox.rts.NetChannel netchannel)
+    {
+        if(!isLocked())
+            return;
+        if(netchannel != null && netchannel.unLockMessage(this))
+        {
+            return;
+        } else
+        {
+            unLock();
+            return;
+        }
+    }
+
+    public void unLockAndClear()
+        throws java.io.IOException
+    {
+        unLock();
+        clear();
+    }
+
+    public void unLockAndSet(com.maddox.rts.NetMsgInput netmsginput, int i)
+        throws java.io.IOException
+    {
+        unLock();
+        clear();
+        writeMsg(netmsginput, i);
+    }
+
+    public NetMsgFiltered()
+    {
+        bIncludeTime = false;
+        prior = 0.5F;
+    }
+
+    public NetMsgFiltered(byte abyte0[])
+    {
+        super(abyte0);
+        bIncludeTime = false;
+        prior = 0.5F;
+    }
+
+    public NetMsgFiltered(int i)
+    {
+        super(i);
+        bIncludeTime = false;
+        prior = 0.5F;
+    }
+
+    public NetMsgFiltered(com.maddox.rts.NetMsgInput netmsginput, int i)
+        throws java.io.IOException
+    {
+        super(netmsginput, i);
+        bIncludeTime = false;
+        prior = 0.5F;
+    }
+
+    protected long _time;
+    protected long _timeStamp;
+    protected float _prior;
+    private boolean bIncludeTime;
+    protected float prior;
+    private java.lang.Object filterArg;
 }

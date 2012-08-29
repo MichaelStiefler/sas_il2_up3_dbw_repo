@@ -1,75 +1,68 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PaintSchemeFMPar00s.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.Regiment;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.engine.HierMesh;
 
-public class PaintSchemeFMPar00s extends PaintSchemeFMPar00
+// Referenced classes of package com.maddox.il2.objects.air:
+//            PaintSchemeFMPar00, PaintScheme
+
+public class PaintSchemeFMPar00s extends com.maddox.il2.objects.air.PaintSchemeFMPar00
 {
-  public void prepareNum(Class paramClass, HierMesh paramHierMesh, Regiment paramRegiment, int paramInt1, int paramInt2, int paramInt3)
-  {
-    super.prepareNum(paramClass, paramHierMesh, paramRegiment, paramInt1, paramInt2, paramInt3);
 
-    int i = paramRegiment.gruppeNumber() - 1;
-
-    if (paramRegiment.country() == PaintScheme.countrySlovakia)
+    public PaintSchemeFMPar00s()
     {
-      float f = 0.85F;
-      changeMat(paramHierMesh, "Overlay1", "psBM00SLVKLNUM" + i + paramInt1 + paramInt3, "Slovakian2/S.tga", "Slovakian2/-.tga", f, f, f, f, f, f);
-
-      if (paramInt3 > 9) {
-        changeMat(paramHierMesh, "Overlay2", "psBM00SLVKRNUM" + i + paramInt1 + paramInt3, "Slovakian2/" + paramInt3 / 10 + ".tga", "Slovakian2/" + paramInt3 % 10 + ".tga", f, f, f, f, f, f);
-      }
-      else
-      {
-        changeMat(paramHierMesh, "Overlay2", "psBM00SLVKRNUM" + i + paramInt1 + paramInt3, "Slovakian2/0.tga", "Slovakian2/" + paramInt3 % 10 + ".tga", f, f, f, f, f, f);
-      }
-
-      changeMat(paramClass, paramHierMesh, "Overlay7", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-
-      return;
     }
 
-    if (paramRegiment.country() == PaintScheme.countryBritain)
+    public void prepareNum(java.lang.Class class1, com.maddox.il2.engine.HierMesh hiermesh, com.maddox.il2.ai.Regiment regiment, int i, int j, int k)
     {
-      if ((!"ra".equals(paramRegiment.branch())) && (!"rz".equals(paramRegiment.branch())) && (!"rn".equals(paramRegiment.branch())))
-      {
-        changeMat(paramClass, paramHierMesh, "Overlay6", "britishroundel4c", "British/roundel4c.tga", 1.0F, 1.0F, 1.0F);
-
-        changeMat(paramClass, paramHierMesh, "Overlay7", "britishroundel3c", "British/roundel3c.tga", 1.0F, 1.0F, 1.0F);
-      }
-
-      changeMat(paramClass, paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay2", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+        super.prepareNum(class1, hiermesh, regiment, i, j, k);
+        int l = regiment.gruppeNumber() - 1;
+        if(regiment.country() == com.maddox.il2.objects.air.PaintScheme.countrySlovakia)
+        {
+            float f = 0.85F;
+            changeMat(hiermesh, "Overlay1", "psBM00SLVKLNUM" + l + i + k, "Slovakian2/S.tga", "Slovakian2/-.tga", f, f, f, f, f, f);
+            if(k > 9)
+                changeMat(hiermesh, "Overlay2", "psBM00SLVKRNUM" + l + i + k, "Slovakian2/" + k / 10 + ".tga", "Slovakian2/" + k % 10 + ".tga", f, f, f, f, f, f);
+            else
+                changeMat(hiermesh, "Overlay2", "psBM00SLVKRNUM" + l + i + k, "Slovakian2/0.tga", "Slovakian2/" + k % 10 + ".tga", f, f, f, f, f, f);
+            changeMat(class1, hiermesh, "Overlay7", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+            return;
+        }
+        if(regiment.country() == com.maddox.il2.objects.air.PaintScheme.countryBritain)
+        {
+            if(!"ra".equals(regiment.branch()) && !"rz".equals(regiment.branch()) && !"rn".equals(regiment.branch()))
+            {
+                changeMat(class1, hiermesh, "Overlay6", "britishroundel4c", "British/roundel4c.tga", 1.0F, 1.0F, 1.0F);
+                changeMat(class1, hiermesh, "Overlay7", "britishroundel3c", "British/roundel3c.tga", 1.0F, 1.0F, 1.0F);
+            }
+            changeMat(class1, hiermesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay2", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+        } else
+        if(regiment.country() == com.maddox.il2.objects.air.PaintScheme.countryNoName)
+        {
+            changeMat(class1, hiermesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+            changeMat(class1, hiermesh, "Overlay2", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+        } else
+        {
+            int i1 = i + 1;
+            if(i1 == 4)
+                i1 = 0;
+            changeMat(class1, hiermesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
+            if(k >= 20)
+                k %= 20;
+            if(k < 10)
+                changeMat(hiermesh, "Overlay2", "psFM00GERRNUM" + l + i + k, "null.tga", "German/0" + i1 + k % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
+            else
+                changeMat(hiermesh, "Overlay2", "psFM00GERRNUM" + l + i + k, "German/0" + i1 + k / 10 + ".tga", "German/0" + i1 + k % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
+            if(regiment.country() == com.maddox.il2.objects.air.PaintScheme.countryGermany)
+                changeMat(class1, hiermesh, "Overlay8", "haken1", "German/" + (com.maddox.il2.ai.World.cur().isHakenAllowed() ? "haken1.tga" : "hakenfake.tga"), 1.0F, 1.0F, 1.0F);
+            return;
+        }
     }
-    else if (paramRegiment.country() == PaintScheme.countryNoName)
-    {
-      changeMat(paramClass, paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-      changeMat(paramClass, paramHierMesh, "Overlay2", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-    }
-    else
-    {
-      int j = paramInt1 + 1;
-
-      if (j == 4) {
-        j = 0;
-      }
-      changeMat(paramClass, paramHierMesh, "Overlay1", "null", "null.tga", 1.0F, 1.0F, 1.0F);
-
-      if (paramInt3 >= 20) {
-        paramInt3 %= 20;
-      }
-      if (paramInt3 < 10) {
-        changeMat(paramHierMesh, "Overlay2", "psFM00GERRNUM" + i + paramInt1 + paramInt3, "null.tga", "German/0" + j + paramInt3 % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
-      }
-      else {
-        changeMat(paramHierMesh, "Overlay2", "psFM00GERRNUM" + i + paramInt1 + paramInt3, "German/0" + j + paramInt3 / 10 + ".tga", "German/0" + j + paramInt3 % 10 + ".tga", 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F);
-      }
-
-      if (paramRegiment.country() == PaintScheme.countryGermany) {
-        changeMat(paramClass, paramHierMesh, "Overlay8", "haken1", "German/" + (World.cur().isHakenAllowed() ? "haken1.tga" : "hakenfake.tga"), 1.0F, 1.0F, 1.0F);
-      }
-      return;
-    }
-  }
 }

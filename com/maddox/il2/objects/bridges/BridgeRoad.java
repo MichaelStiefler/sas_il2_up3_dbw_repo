@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BridgeRoad.java
+
 package com.maddox.il2.objects.bridges;
 
 import com.maddox.JGP.Point3d;
@@ -13,82 +18,92 @@ import com.maddox.il2.engine.Mat;
 import com.maddox.il2.engine.Render;
 import com.maddox.rts.Message;
 
-public class BridgeRoad extends Actor
-  implements LandPlate
+public class BridgeRoad extends com.maddox.il2.engine.Actor
+    implements com.maddox.il2.engine.LandPlate
 {
-  private Mat mat;
-  private int tp;
-  private int begX;
-  private int begY;
-  private int incX;
-  private int incY;
-  private float offsetKoef;
-  private float R;
-  private static Point3d p = new Point3d();
-
-  public boolean isStaticPos()
-  {
-    return true;
-  }
-
-  public Object getSwitchListener(Message paramMessage) {
-    return this;
-  }
-
-  public BridgeRoad(Point3d paramPoint3d, float paramFloat1, Mat paramMat, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, float paramFloat2)
-  {
-    this.pos = new ActorPosStatic(this);
-    this.pos.setAbs(paramPoint3d);
-    this.pos.reset();
-
-    this.draw = new BridgeRoadDraw(null);
-    drawing(true);
-
-    this.R = paramFloat1;
-
-    this.mat = paramMat;
-
-    switch (paramInt1) {
-    case 0:
-      this.tp = 128;
-      break;
-    case 1:
-      this.tp = 32;
-      break;
-    default:
-      this.tp = 64;
-    }
-
-    this.begX = paramInt2;
-    this.begY = paramInt3;
-    this.incX = paramInt4;
-    this.incY = paramInt5;
-
-    this.offsetKoef = paramFloat2;
-  }
-
-  private class BridgeRoadDraw extends ActorDraw
-  {
-    private final BridgeRoad this$0;
-
-    private BridgeRoadDraw()
+    private class BridgeRoadDraw extends com.maddox.il2.engine.ActorDraw
     {
-      this.this$0 = this$1;
-    }
-    public int preRender(Actor paramActor) { this.this$0.pos.getRender(BridgeRoad.p);
-      if (!Render.currentCamera().isSphereVisible(BridgeRoad.p, this.this$0.R)) {
-        return 0;
-      }
-      return this.this$0.mat.preRender(); }
 
-    public void render(Actor paramActor)
-    {
-      World.cur(); World.land().renderBridgeRoad(this.this$0.mat, this.this$0.tp, this.this$0.begX, this.this$0.begY, this.this$0.incX, this.this$0.incY, this.this$0.offsetKoef);
+        public int preRender(com.maddox.il2.engine.Actor actor)
+        {
+            pos.getRender(com.maddox.il2.objects.bridges.BridgeRoad.p);
+            if(!com.maddox.il2.engine.Render.currentCamera().isSphereVisible(com.maddox.il2.objects.bridges.BridgeRoad.p, R))
+                return 0;
+            else
+                return mat.preRender();
+        }
+
+        public void render(com.maddox.il2.engine.Actor actor)
+        {
+            com.maddox.il2.ai.World.cur();
+            com.maddox.il2.ai.World.land().renderBridgeRoad(mat, tp, begX, begY, incX, incY, offsetKoef);
+        }
+
+        private BridgeRoadDraw()
+        {
+        }
+
     }
 
-    BridgeRoadDraw(BridgeRoad.1 arg2)
+
+    public boolean isStaticPos()
     {
-      this();
+        return true;
     }
-  }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    public BridgeRoad(com.maddox.JGP.Point3d point3d, float f, com.maddox.il2.engine.Mat mat1, int i, int j, int k, int l, 
+            int i1, float f1)
+    {
+        pos = new ActorPosStatic(this);
+        pos.setAbs(point3d);
+        pos.reset();
+        draw = new BridgeRoadDraw();
+        drawing(true);
+        R = f;
+        mat = mat1;
+        switch(i)
+        {
+        case 0: // '\0'
+            tp = 128;
+            break;
+
+        case 1: // '\001'
+            tp = 32;
+            break;
+
+        default:
+            tp = 64;
+            break;
+        }
+        begX = j;
+        begY = k;
+        incX = l;
+        incY = i1;
+        offsetKoef = f1;
+    }
+
+    private com.maddox.il2.engine.Mat mat;
+    private int tp;
+    private int begX;
+    private int begY;
+    private int incX;
+    private int incY;
+    private float offsetKoef;
+    private float R;
+    private static com.maddox.JGP.Point3d p = new Point3d();
+
+
+
+
+
+
+
+
+
+
 }

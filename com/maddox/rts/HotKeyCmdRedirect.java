@@ -1,43 +1,73 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HotKeyCmdRedirect.java
+
 package com.maddox.rts;
 
-public abstract class HotKeyCmdRedirect extends HotKeyCmd
+
+// Referenced classes of package com.maddox.rts:
+//            HotKeyCmd, Time, HotKeyCmdEnv, RTSConf, 
+//            HotKeyCmdEnvs
+
+public abstract class HotKeyCmdRedirect extends com.maddox.rts.HotKeyCmd
 {
-  private int idRedirect;
-  protected int[] _r = new int[8];
 
-  public int idRedirect() { return this.idRedirect; } 
-  public void redirect(int[] paramArrayOfInt) {
-  }
+    public int idRedirect()
+    {
+        return idRedirect;
+    }
 
-  public final void setRedirect(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8) {
-    this._r[0] = paramInt1;
-    this._r[1] = paramInt2;
-    this._r[2] = paramInt3;
-    this._r[3] = paramInt4;
-    this._r[4] = paramInt5;
-    this._r[5] = paramInt6;
-    this._r[6] = paramInt7;
-    this._r[7] = paramInt8;
-  }
+    public void redirect(int ai[])
+    {
+    }
 
-  public final void doRedirect() {
-    this.bActive = true;
-    redirect(this._r);
-    this.bActive = false;
-  }
+    public final void setRedirect(int i, int j, int k, int l, int i1, int j1, int k1, 
+            int l1)
+    {
+        _r[0] = i;
+        _r[1] = j;
+        _r[2] = k;
+        _r[3] = l;
+        _r[4] = i1;
+        _r[5] = j1;
+        _r[6] = k1;
+        _r[7] = l1;
+    }
 
-  public HotKeyCmdRedirect(boolean paramBoolean, String paramString, int paramInt) {
-    super(paramBoolean, paramString);
-    this.idRedirect = paramInt;
-  }
+    public final void doRedirect()
+    {
+        bActive = true;
+        redirect(_r);
+        bActive = false;
+    }
 
-  protected void _exec(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8) {
-    boolean bool = Time.isPaused();
-    if ((Time.isPaused()) && (!isRealTime())) return;
-    if (!this.hotKeyCmdEnv.isEnabled()) return;
-    setRedirect(paramInt1, paramInt2, paramInt3, paramInt4, paramInt5, paramInt6, paramInt7, paramInt8);
-    RTSConf.cur.hotKeyCmdEnvs.post(this, true, true);
-    doRedirect();
-    RTSConf.cur.hotKeyCmdEnvs.post(this, true, false);
-  }
+    public HotKeyCmdRedirect(boolean flag, java.lang.String s, int i)
+    {
+        super(flag, s);
+        _r = new int[8];
+        idRedirect = i;
+    }
+
+    protected void _exec(int i, int j, int k, int l, int i1, int j1, int k1, 
+            int l1)
+    {
+        boolean flag = com.maddox.rts.Time.isPaused();
+        if(com.maddox.rts.Time.isPaused() && !isRealTime())
+            return;
+        if(!hotKeyCmdEnv.isEnabled())
+        {
+            return;
+        } else
+        {
+            setRedirect(i, j, k, l, i1, j1, k1, l1);
+            com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(this, true, true);
+            doRedirect();
+            com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(this, true, false);
+            return;
+        }
+    }
+
+    private int idRedirect;
+    protected int _r[];
 }

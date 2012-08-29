@@ -1,20 +1,41 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RocketGunHS_293.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class RocketGunHS_293 extends RocketBombGun
-{
-  public void setRocketTimeLife(float paramFloat)
-  {
-    this.timeLife = 30.0F;
-  }
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            RocketBombGun
 
-  static
-  {
-    Class localClass = RocketGunHS_293.class;
-    Property.set(localClass, "bulletClass", RocketHS_293.class);
-    Property.set(localClass, "bullets", 1);
-    Property.set(localClass, "shotFreq", 0.25F);
-    Property.set(localClass, "sound", "weapon.bombgun");
-  }
+public class RocketGunHS_293 extends com.maddox.il2.objects.weapons.RocketBombGun
+{
+
+    public RocketGunHS_293()
+    {
+    }
+
+    public void setRocketTimeLife(float f)
+    {
+        timeLife = 30F;
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.RocketGunHS_293.class;
+        com.maddox.rts.Property.set(class1, "bulletClass", com.maddox.il2.objects.weapons.RocketHS_293.class);
+        com.maddox.rts.Property.set(class1, "bullets", 1);
+        com.maddox.rts.Property.set(class1, "shotFreq", 0.25F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.bombgun");
+    }
 }

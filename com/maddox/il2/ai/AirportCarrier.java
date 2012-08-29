@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   AirportCarrier.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.JGP.Point2d;
@@ -30,7 +35,6 @@ import com.maddox.il2.net.BornPlace;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.air.NetAircraft;
-import com.maddox.il2.objects.air.NetAircraft.AircraftNet;
 import com.maddox.il2.objects.ships.BigshipGeneric;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
@@ -42,663 +46,714 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class AirportCarrier extends Airport
+// Referenced classes of package com.maddox.il2.ai:
+//            Airport, Way, WayPoint, World, 
+//            RangeRandom, War
+
+public class AirportCarrier extends com.maddox.il2.ai.Airport
 {
-  public static final double cellSize = 1.0D;
-  private BigshipGeneric ship;
-  private Loc[] runway;
-  public BornPlace bornPlace2Move;
-  public int bornPlaceArmyBk;
-  private List lastCarrierUsers = new ArrayList();
-
-  private GUINetClientDBrief ui = null;
-  private Loc clientLoc = null;
-
-  private static final Loc invalidLoc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-
-  private Aircraft lastAddedAC = null;
-  private CellAirPlane lastAddedCells = null;
-
-  private int rnd1 = World.Rnd().nextInt(0, 30);
-  private int rnd2 = World.Rnd().nextInt(40, 60);
-
-  private boolean skipCheck = false;
-
-  private static float[] x = { -100.0F, -20.0F, -10.0F, 1000.0F, 3000.0F, 4000.0F, 3000.0F, 0.0F, 0.0F };
-  private static float[] y = { 0.0F, 0.0F, 0.0F, 0.0F, -500.0F, -1500.0F, -3000.0F, -3000.0F, -3000.0F };
-  private static float[] z = { -4.0F, 5.0F, 5.0F, 150.0F, 450.0F, 500.0F, 500.0F, 500.0F, 500.0F };
-  private static float[] v = { 0.0F, 80.0F, 100.0F, 180.0F, 250.0F, 270.0F, 280.0F, 300.0F, 300.0F };
-
-  private Loc tmpLoc = new Loc();
-  private Point3d tmpP3d = new Point3d();
-  private Point3f tmpP3f = new Point3f();
-  private Orient tmpOr = new Orient();
-
-  public int curPlaneShift = 0;
-  private int oldTickCounter = 0;
-  private int oldIdleTickCounter = 0;
-  private Loc r = new Loc();
-  private static Vector3d startSpeed = new Vector3d();
-  private static Vector3d shipSpeed = new Vector3d();
-
-  private static Class _clsBigArrestorPlane = null;
-  private static CellAirPlane _cellBigArrestorPlane = null;
-  private static HashMap _clsMapArrestorPlane = new HashMap();
-
-  public BigshipGeneric ship()
-  {
-    return this.ship;
-  }
-
-  public AirportCarrier(BigshipGeneric paramBigshipGeneric, Loc[] paramArrayOfLoc) {
-    this.ship = paramBigshipGeneric;
-    this.pos = new ActorPosMove(this, new Loc());
-    this.pos.setBase(paramBigshipGeneric, null, false);
-    this.pos.reset();
-    this.runway = paramArrayOfLoc;
-    if (Mission.isDogfight()) {
-      Point_Stay[][] arrayOfPoint_Stay1 = getStayPlaces();
-      Point_Stay[][] arrayOfPoint_Stay2 = World.cur().airdrome.stay;
-      Point_Stay[][] arrayOfPoint_Stay; = new Point_Stay[arrayOfPoint_Stay2.length + arrayOfPoint_Stay1.length][];
-      int i = 0;
-      for (int j = 0; j < arrayOfPoint_Stay2.length; j++)
-        arrayOfPoint_Stay;[(i++)] = arrayOfPoint_Stay2[j];
-      for (j = 0; j < arrayOfPoint_Stay1.length; j++)
-        arrayOfPoint_Stay;[(i++)] = arrayOfPoint_Stay1[j];
-      World.cur().airdrome.stay = arrayOfPoint_Stay;;
-    }
-    startDeckOperations();
-  }
-
-  public void disableBornPlace()
-  {
-    if (this.bornPlace2Move != null)
-      this.bornPlace2Move.army = -2;
-  }
-
-  public void enableBornPlace() {
-    this.bornPlace2Move.army = this.bornPlaceArmyBk;
-  }
-
-  public boolean isAlive() {
-    return Actor.isAlive(this.ship);
-  }
-
-  public int getArmy() {
-    if (Actor.isAlive(this.ship)) {
-      return this.ship.getArmy();
-    }
-    return super.getArmy();
-  }
-
-  public boolean landWay(FlightModel paramFlightModel)
-  {
-    Way localWay = new Way();
-
-    this.tmpLoc.set(this.runway[1]);
-    this.tmpLoc.add(this.ship.initLoc);
-    float f = paramFlightModel.M.massEmpty * 0.0003333F;
-    if (f > 1.0F) f = 1.0F;
-    if (f < 0.4F) f = 0.4F;
-
-    for (int i = x.length - 1; i >= 0; i--) {
-      WayPoint localWayPoint = new WayPoint();
-      this.tmpP3d.set(x[i] * f, y[i] * f, z[i] * f);
-      localWayPoint.set(Math.min(v[i] * 0.278F, paramFlightModel.Vmax * 0.6F));
-      localWayPoint.Action = 2;
-      localWayPoint.sTarget = this.ship.name();
-      this.tmpLoc.transform(this.tmpP3d);
-      this.tmpP3f.set(this.tmpP3d);
-      localWayPoint.set(this.tmpP3f);
-      localWay.add(localWayPoint);
-    }
-    localWay.setLanding(true);
-    paramFlightModel.AP.way = localWay;
-    return true;
-  }
-
-  public void rebuildLandWay(FlightModel paramFlightModel)
-  {
-    if (!this.ship.isAlive()) {
-      paramFlightModel.AP.way.setLanding(false);
-      return;
-    }
-    this.tmpLoc.set(this.runway[1]);
-    this.tmpLoc.add(this.ship.initLoc);
-    float f = paramFlightModel.M.massEmpty * 0.0003333F;
-    if (f > 1.0F) f = 1.0F;
-    if (f < 0.4F) f = 0.4F;
-
-    for (int i = 0; i < x.length; i++) {
-      WayPoint localWayPoint = paramFlightModel.AP.way.get(i);
-      this.tmpP3d.set(x[(x.length - 1 - i)] * f, y[(x.length - 1 - i)] * f, z[(x.length - 1 - i)] * f);
-      this.tmpLoc.transform(this.tmpP3d);
-      this.tmpP3f.set(this.tmpP3d);
-      localWayPoint.set(this.tmpP3f);
-    }
-  }
-
-  public void rebuildLastPoint(FlightModel paramFlightModel) {
-    if (!Actor.isAlive(this.ship)) {
-      return;
-    }
-    int i = paramFlightModel.AP.way.Cur();
-    paramFlightModel.AP.way.last();
-    if (paramFlightModel.AP.way.curr().Action == 2) {
-      this.ship.pos.getAbs(this.tmpP3d);
-      paramFlightModel.AP.way.curr().set(this.tmpP3d);
-    }
-    paramFlightModel.AP.way.setCur(i);
-  }
-
-  public double ShiftFromLine(FlightModel paramFlightModel) {
-    this.tmpLoc.set(paramFlightModel.Loc);
-    this.r.set(this.runway[0]);
-    this.r.add(this.ship.pos.getAbs());
-    this.tmpLoc.sub(this.r);
-    return this.tmpLoc.getY();
-  }
-
-  public boolean nearestRunway(Point3d paramPoint3d, Loc paramLoc)
-  {
-    paramLoc.add(this.runway[1], this.pos.getAbs());
-    return true;
-  }
-
-  public int landingFeedback(Point3d paramPoint3d, Aircraft paramAircraft) {
-    this.tmpLoc.set(this.runway[1]);
-    this.tmpLoc.add(this.ship.initLoc);
-    Aircraft localAircraft = War.getNearestFriendAtPoint(this.tmpLoc.getPoint(), paramAircraft, 50.0F);
-    if ((localAircraft != null) && (localAircraft != paramAircraft)) return 1;
-    if (paramAircraft.FM.CT.GearControl > 0.0F) return 0;
-    if (this.landingRequest > 0) return 1;
-    this.landingRequest = 3000;
-    return 0;
-  }
-
-  public void setTakeoffOld(Point3d paramPoint3d, Aircraft paramAircraft) {
-    if (!Actor.isValid(paramAircraft)) return;
-    this.r.set(this.runway[0]);
-    this.r.add(this.ship.pos.getAbs());
-
-    if (!Mission.isDogfight())
+    class DeckUpdater extends com.maddox.il2.engine.Interpolate
     {
-      if (Time.tickCounter() != this.oldTickCounter) {
-        this.oldTickCounter = Time.tickCounter();
-        this.curPlaneShift = 0;
-      }
-    }
-    this.curPlaneShift += 1;
-    paramAircraft.FM.setStationedOnGround(false);
-    paramAircraft.FM.setWasAirborne(true);
 
-    this.tmpLoc.set(-(this.curPlaneShift * 200.0F), -(this.curPlaneShift * 100.0F), 300.0D, 0.0F, 0.0F, 0.0F);
-    this.tmpLoc.add(this.r);
-    paramAircraft.pos.setAbs(this.tmpLoc);
-    paramAircraft.pos.getAbs(this.tmpP3d, this.tmpOr);
-    startSpeed.set(100.0D, 0.0D, 0.0D);
-    this.tmpOr.transform(startSpeed);
-    paramAircraft.setSpeed(startSpeed);
-    paramAircraft.pos.reset();
-    if ((paramAircraft.FM instanceof Maneuver)) ((Maneuver)paramAircraft.FM).direction = paramAircraft.pos.getAbsOrient().getAzimut();
-
-    paramAircraft.FM.AP.way.takeoffAirport = this;
-
-    if (paramAircraft == World.getPlayerAircraft()) {
-      paramAircraft.FM.EI.setCurControlAll(true);
-      paramAircraft.FM.EI.setEngineRunning();
-      paramAircraft.FM.CT.setPowerControl(0.75F);
-    }
-  }
-
-  public double speedLen()
-  {
-    this.ship.getSpeed(shipSpeed);
-    return shipSpeed.length();
-  }
-
-  private void checkIsDeckClear()
-  {
-    if (this.skipCheck) {
-      return;
-    }
-    if (this.lastAddedAC != null)
-    {
-      if (this.lastAddedAC.isDestroyed())
-      {
-        CellAirField localCellAirField = this.ship.getCellTO();
-        boolean bool = localCellAirField.removeAirPlane(this.lastAddedCells);
-        if (bool)
+        public boolean tick()
         {
-          this.curPlaneShift -= 1;
-        }
-        this.lastAddedAC = null;
-        this.lastAddedCells = null;
-      }
-    }
-
-    int i = 1;
-
-    for (int j = this.lastCarrierUsers.size() - 1; j >= 0; j--)
-    {
-      Aircraft localAircraft = (Aircraft)this.lastCarrierUsers.get(j);
-      if ((localAircraft != null) && (!localAircraft.isDestroyed()) && (localAircraft.isAlive()) && ((localAircraft.FM.Gears.isUnderDeck()) || (NetAircraft.isOnCarrierDeck(this, localAircraft.pos.getAbs()))))
-      {
-        i = 0;
-      }
-      else
-      {
-        this.lastCarrierUsers.remove(localAircraft);
-      }
-    }
-
-    if (i != 0)
-    {
-      this.lastCarrierUsers.clear();
-      deckCleared();
-    }
-  }
-
-  private void checkPlaneIdle()
-  {
-    for (int i = this.lastCarrierUsers.size() - 1; i >= 0; i--)
-    {
-      Aircraft localAircraft1 = (Aircraft)this.lastCarrierUsers.get(i);
-
-      if ((localAircraft1 == null) || (localAircraft1.isDestroyed()) || ((!localAircraft1.FM.Gears.isUnderDeck()) && (!NetAircraft.isOnCarrierDeck(this, localAircraft1.pos.getAbs()))))
-        continue;
-      localAircraft1.idleTimeOnCarrier += 1;
-      if (localAircraft1.idleTimeOnCarrier < 6)
-        continue;
-      if ((localAircraft1.isNetPlayer()) && (!localAircraft1.isNetMaster()))
-      {
-        Aircraft localAircraft2 = localAircraft1;
-        NetUser localNetUser = ((NetAircraft.AircraftNet)localAircraft2.net).netUser;
-        localNetUser.kick(localNetUser);
-      }
-      else
-      {
-        if (localAircraft1.FM.AP.way.size() == 1)
-          continue;
-        localAircraft1.net.destroy();
-        localAircraft1.destroy();
-        this.lastCarrierUsers.remove(localAircraft1);
-      }
-    }
-  }
-
-  public Loc setClientTakeOff(Point3d paramPoint3d, Aircraft paramAircraft)
-  {
-    Loc localLoc = null;
-    if (this.clientLoc != null)
-      localLoc = new Loc(this.clientLoc);
-    this.clientLoc = null;
-
-    if ((localLoc == null) || (!isLocValid(localLoc)))
-    {
-      setTakeoffOld(paramPoint3d, paramAircraft);
-      localObject = paramAircraft.pos.getAbs();
-      double d1 = World.Rnd().nextDouble(400.0D, 800.0D);
-      double d2 = World.Rnd().nextDouble(400.0D, 800.0D);
-      if (World.Rnd().nextFloat() < 0.5F)
-        d1 *= -1.0D;
-      if (World.Rnd().nextFloat() < 0.5F)
-        d2 *= -1.0D;
-      Point3d localPoint3d = new Point3d(d1, d2, 0.0D);
-      ((Loc)localObject).add(localPoint3d);
-      paramAircraft.pos.setAbs((Loc)localObject);
-      return localObject;
-    }
-
-    localLoc.add(this.ship.pos.getAbs());
-    Object localObject = localLoc.getPoint();
-    Orient localOrient = localLoc.getOrient();
-    localOrient.increment(0.0F, paramAircraft.FM.Gears.Pitch, 0.0F);
-    this.ship.getSpeed(shipSpeed);
-    paramAircraft.setOnGround((Point3d)localObject, localOrient, shipSpeed);
-    if ((paramAircraft.FM instanceof Maneuver)) ((Maneuver)paramAircraft.FM).direction = paramAircraft.pos.getAbsOrient().getAzimut();
-    paramAircraft.FM.AP.way.takeoffAirport = this;
-
-    paramAircraft.FM.brakeShoe = true;
-    paramAircraft.FM.turnOffCollisions = true;
-    paramAircraft.FM.brakeShoeLoc.set(paramAircraft.pos.getAbs());
-    paramAircraft.FM.brakeShoeLoc.sub(this.ship.pos.getAbs());
-    paramAircraft.FM.brakeShoeLastCarrier = this.ship;
-    paramAircraft.FM.Gears.bFlatTopGearCheck = true;
-    paramAircraft.makeMirrorCarrierRelPos();
-
-    if (paramAircraft.FM.CT.bHasWingControl)
-    {
-      paramAircraft.FM.CT.wingControl = 1.0F;
-      paramAircraft.FM.CT.forceWing(1.0F);
-    }
-
-    return (Loc)localLoc;
-  }
-
-  private Point3d reservePlaceForPlane(CellAirPlane paramCellAirPlane, Aircraft paramAircraft)
-  {
-    CellAirField localCellAirField = this.ship.getCellTO();
-    if (localCellAirField.findPlaceForAirPlane(paramCellAirPlane)) {
-      localCellAirField.placeAirPlane(paramCellAirPlane, localCellAirField.resX(), localCellAirField.resY());
-      double d1 = -localCellAirField.leftUpperCorner().x - localCellAirField.resX() * localCellAirField.getCellSize() - paramCellAirPlane.ofsX;
-      double d2 = localCellAirField.leftUpperCorner().y - localCellAirField.resY() * localCellAirField.getCellSize() - paramCellAirPlane.ofsY;
-      double d3 = this.runway[0].getZ();
-      this.curPlaneShift += 1;
-      if ((Mission.isDogfight()) && (this.ship.net.isMaster()))
-      {
-        if (paramAircraft != null)
-        {
-          this.lastCarrierUsers.add(paramAircraft);
-          this.lastAddedAC = paramAircraft;
-        }
-        this.lastAddedCells = paramCellAirPlane;
-      }
-      return new Point3d(d2, d1, d3);
-    }
-    return null;
-  }
-
-  public void setTakeoff(Point3d paramPoint3d, Aircraft[] paramArrayOfAircraft) {
-    CellAirField localCellAirField = this.ship.getCellTO();
-    if (localCellAirField == null) {
-      for (i = 0; i < paramArrayOfAircraft.length; i++) setTakeoffOld(paramPoint3d, paramArrayOfAircraft[i]);
-      return;
-    }
-
-    if (!Mission.isDogfight())
-    {
-      if (Time.tickCounter() != this.oldTickCounter) {
-        this.oldTickCounter = Time.tickCounter();
-        this.curPlaneShift = 0;
-        localCellAirField.freeCells();
-      }
-    }
-    this.ship.getSpeed(shipSpeed);
-    for (int i = 0; i < paramArrayOfAircraft.length; i++) {
-      if (!Actor.isValid(paramArrayOfAircraft[i]))
-      {
-        continue;
-      }
-      CellAirPlane localCellAirPlane = paramArrayOfAircraft[i].getCellAirPlane();
-
-      Point3d localPoint3d1 = reservePlaceForPlane(localCellAirPlane, paramArrayOfAircraft[i]);
-
-      if (localPoint3d1 != null)
-      {
-        double d1 = localPoint3d1.x;
-        double d2 = localPoint3d1.y;
-        double d3 = localPoint3d1.z;
-
-        this.tmpLoc.set(d1, d2, d3 + paramArrayOfAircraft[i].FM.Gears.H, this.runway[0].getAzimut(), this.runway[0].getTangage(), this.runway[0].getKren());
-        this.tmpLoc.add(this.ship.pos.getAbs());
-        Point3d localPoint3d2 = this.tmpLoc.getPoint();
-        Orient localOrient = this.tmpLoc.getOrient();
-        localOrient.increment(0.0F, paramArrayOfAircraft[i].FM.Gears.Pitch, 0.0F);
-        paramArrayOfAircraft[i].setOnGround(localPoint3d2, localOrient, shipSpeed);
-        if ((paramArrayOfAircraft[i].FM instanceof Maneuver)) ((Maneuver)paramArrayOfAircraft[i].FM).direction = paramArrayOfAircraft[i].pos.getAbsOrient().getAzimut();
-
-        paramArrayOfAircraft[i].FM.AP.way.takeoffAirport = this;
-
-        paramArrayOfAircraft[i].FM.brakeShoe = true;
-        paramArrayOfAircraft[i].FM.turnOffCollisions = true;
-        paramArrayOfAircraft[i].FM.brakeShoeLoc.set(paramArrayOfAircraft[i].pos.getAbs());
-        paramArrayOfAircraft[i].FM.brakeShoeLoc.sub(this.ship.pos.getAbs());
-        paramArrayOfAircraft[i].FM.brakeShoeLastCarrier = this.ship;
-        paramArrayOfAircraft[i].FM.Gears.bFlatTopGearCheck = true;
-        paramArrayOfAircraft[i].makeMirrorCarrierRelPos();
-        if (this.curPlaneShift > 1)
-        {
-          if (paramArrayOfAircraft[i].FM.CT.bHasWingControl) {
-            paramArrayOfAircraft[i].FM.CT.wingControl = 1.0F;
-            paramArrayOfAircraft[i].FM.CT.forceWing(1.0F);
-          }
-        }
-      } else {
-        setTakeoffOld(paramPoint3d, paramArrayOfAircraft[i]);
-      }
-    }
-
-    if ((Actor.isValid(paramArrayOfAircraft[0])) && ((paramArrayOfAircraft[0].FM instanceof Maneuver))) {
-      Maneuver localManeuver = (Maneuver)paramArrayOfAircraft[0].FM;
-      if ((localManeuver.Group != null) && (localManeuver.Group.w != null)) localManeuver.Group.w.takeoffAirport = this; 
-    }
-  }
-
-  public void getTakeoff(Aircraft paramAircraft, Loc paramLoc)
-  {
-    this.tmpLoc.sub(paramLoc, this.ship.initLoc);
-    this.tmpLoc.set(this.tmpLoc.getPoint().x, this.tmpLoc.getPoint().y, this.runway[0].getZ() + paramAircraft.FM.Gears.H, this.runway[0].getAzimut(), this.runway[0].getTangage(), this.runway[0].getKren());
-    this.tmpLoc.add(this.ship.pos.getAbs());
-    paramLoc.set(this.tmpLoc);
-    Point3d localPoint3d = paramLoc.getPoint();
-    Orient localOrient = paramLoc.getOrient();
-    localOrient.increment(0.0F, paramAircraft.FM.Gears.Pitch, 0.0F);
-    if ((paramAircraft.FM instanceof Maneuver)) ((Maneuver)paramAircraft.FM).direction = paramLoc.getAzimut();
-
-    paramAircraft.FM.AP.way.takeoffAirport = this;
-    paramAircraft.FM.brakeShoe = true;
-    paramAircraft.FM.turnOffCollisions = true;
-    paramAircraft.FM.brakeShoeLoc.set(paramLoc);
-    paramAircraft.FM.brakeShoeLoc.sub(this.ship.pos.getAbs());
-    paramAircraft.FM.brakeShoeLastCarrier = this.ship;
-  }
-
-  public float height() {
-    return (float)(this.ship.pos.getAbs().getZ() + this.runway[0].getZ());
-  }
-
-  public static boolean isPlaneContainsArrestor(Class paramClass)
-  {
-    clsBigArrestorPlane();
-    return _clsMapArrestorPlane.containsKey(paramClass);
-  }
-
-  private static Class clsBigArrestorPlane() {
-    if (_clsBigArrestorPlane != null) {
-      return _clsBigArrestorPlane;
-    }
-    double d1 = 0.0D;
-    SectFile localSectFile1 = new SectFile("com/maddox/il2/objects/air.ini", 0);
-    int i = localSectFile1.sections();
-    for (int j = 0; j < i; j++) {
-      int k = localSectFile1.vars(j);
-      for (int m = 0; m < k; m++) {
-        String str1 = localSectFile1.value(j, m);
-        StringTokenizer localStringTokenizer = new StringTokenizer(localSectFile1.value(j, m));
-        if (localStringTokenizer.hasMoreTokens()) {
-          String str2 = "com.maddox.il2.objects." + localStringTokenizer.nextToken();
-          Class localClass = null;
-          String str3 = null;
-          try {
-            localClass = Class.forName(str2);
-            str3 = Property.stringValue(localClass, "FlightModel", null);
-          } catch (Exception localException1) {
-            System.out.println(localException1.getMessage());
-            localException1.printStackTrace();
-          }
-          try {
-            if (str3 != null) {
-              SectFile localSectFile2 = FlightModelMain.sectFile(str3);
-              if (localSectFile2.get("Controls", "CArrestorHook", 0) == 1) {
-                _clsMapArrestorPlane.put(localClass, null);
-                String str4 = Aircraft.getPropertyMesh(localClass, null);
-                SectFile localSectFile3 = new SectFile(str4, 0);
-                String str5 = localSectFile3.get("_ROOT_", "CollisionObject", (String)null);
-                if (str5 != null) {
-                  NumberTokenizer localNumberTokenizer = new NumberTokenizer(str5);
-                  if (localNumberTokenizer.hasMoreTokens()) {
-                    localNumberTokenizer.next();
-                    if (localNumberTokenizer.hasMoreTokens()) {
-                      double d2 = localNumberTokenizer.next(-1.0D);
-                      if ((d2 > 0.0D) && 
-                        (d1 < d2)) {
-                        d1 = d2;
-                        _clsBigArrestorPlane = localClass;
-                      }
-                    }
-                  }
+            if(ship().isAlive())
+            {
+                if(com.maddox.rts.Time.tickCounter() > oldTickCounter + 150 + rnd1)
+                {
+                    oldTickCounter = com.maddox.rts.Time.tickCounter();
+                    checkIsDeckClear();
                 }
-              }
+                if(com.maddox.rts.Time.tickCounter() > oldIdleTickCounter + 2000 + rnd2)
+                {
+                    oldIdleTickCounter = com.maddox.rts.Time.tickCounter();
+                    checkPlaneIdle();
+                    skipCheck = false;
+                }
             }
-          }
-          catch (Exception localException2)
-          {
-            System.out.println(localException2.getMessage());
-            localException2.printStackTrace();
-          }
+            return true;
         }
-      }
-    }
-    return _clsBigArrestorPlane;
-  }
-  private static CellAirPlane cellBigArrestorPlane() {
-    if (_cellBigArrestorPlane != null)
-      return _cellBigArrestorPlane;
-    _cellBigArrestorPlane = Aircraft.getCellAirPlane(clsBigArrestorPlane());
-    return _cellBigArrestorPlane;
-  }
-  private Point_Stay[][] getStayPlaces() {
-    Point_Stay[][] arrayOfPoint_Stay = (Point_Stay[][])null;
-    Class localClass = this.ship.getClass();
-    arrayOfPoint_Stay = (Point_Stay[][])(Point_Stay[][])Property.value(localClass, "StayPlaces", null);
-    Object localObject2;
-    if (arrayOfPoint_Stay == null) {
-      localObject1 = cellBigArrestorPlane();
-      CellAirField localCellAirField = this.ship.getCellTO();
-      localCellAirField = (CellAirField)localCellAirField.getClone();
-      localObject2 = new ArrayList();
-      while (true) {
-        localObject1 = (CellAirPlane)((CellAirPlane)localObject1).getClone();
-        if (!localCellAirField.findPlaceForAirPlane((CellAirPlane)localObject1)) break;
-        localCellAirField.placeAirPlane((CellAirPlane)localObject1, localCellAirField.resX(), localCellAirField.resY());
 
-        double d1 = -localCellAirField.leftUpperCorner().x - localCellAirField.resX() * localCellAirField.getCellSize() - ((CellAirPlane)localObject1).ofsX;
-
-        double d3 = localCellAirField.leftUpperCorner().y - localCellAirField.resY() * localCellAirField.getCellSize() - ((CellAirPlane)localObject1).ofsY;
-
-        ((ArrayList)localObject2).add(new Point2d(d3, d1));
-      }
-
-      int j = ((ArrayList)localObject2).size();
-      if (j > 0) {
-        arrayOfPoint_Stay = new Point_Stay[j][1];
-        for (int k = 0; k < j; k++) {
-          Point2d localPoint2d = (Point2d)((ArrayList)localObject2).get(k);
-          arrayOfPoint_Stay[k][0] = new Point_Stay((float)localPoint2d.x, (float)localPoint2d.y);
-        }
-        Property.set(localClass, "StayPlaces", arrayOfPoint_Stay);
-      }
-    }
-    if (arrayOfPoint_Stay == null) {
-      return (Point_Stay[][])null;
-    }
-    Object localObject1 = new Point_Stay[arrayOfPoint_Stay.length][1];
-    for (int i = 0; i < arrayOfPoint_Stay.length; i++) {
-      localObject2 = arrayOfPoint_Stay[i][0];
-      double d2 = ((Point_Stay)localObject2).x;
-      double d4 = ((Point_Stay)localObject2).y;
-      double d5 = this.runway[0].getZ();
-      this.tmpLoc.set(d2, d4, d5, this.runway[0].getAzimut(), this.runway[0].getTangage(), this.runway[0].getKren());
-      this.tmpLoc.add(this.ship.pos.getAbs());
-      Point3d localPoint3d = this.tmpLoc.getPoint();
-      localObject1[i][0] = new Point_Stay((float)localPoint3d.x, (float)localPoint3d.y);
-    }
-    return (Point_Stay)(Point_Stay)localObject1;
-  }
-
-  public void setCellUsed(Aircraft paramAircraft)
-  {
-    this.skipCheck = false;
-    if (this.ship.net.isMaster())
-    {
-      this.lastCarrierUsers.add(paramAircraft);
-      this.lastAddedAC = paramAircraft;
-    }
-    if ((paramAircraft.FM.CT.bHasWingControl) && (!paramAircraft.isNetPlayer()))
-    {
-      paramAircraft.FM.CT.wingControl = 0.0F;
-    }
-  }
-
-  public Loc requestCell(Aircraft paramAircraft)
-  {
-    if (!ship().isAlive()) {
-      return invalidLoc;
-    }
-    CellAirPlane localCellAirPlane = paramAircraft.getCellAirPlane();
-    Point3d localPoint3d = reservePlaceForPlane(localCellAirPlane, null);
-    if (localPoint3d != null)
-    {
-      this.skipCheck = true;
-      double d1 = localPoint3d.x;
-      double d2 = localPoint3d.y;
-      double d3 = localPoint3d.z;
-      Loc localLoc = new Loc();
-      localLoc.set(d1, d2, d3 + paramAircraft.FM.Gears.H, this.runway[0].getAzimut(), this.runway[0].getTangage(), this.runway[0].getKren());
-      return localLoc;
-    }
-
-    return invalidLoc;
-  }
-
-  private void deckCleared()
-  {
-    this.curPlaneShift = 0;
-    CellAirField localCellAirField = this.ship.getCellTO();
-    localCellAirField.freeCells();
-  }
-
-  public void setGuiCallback(GUINetClientDBrief paramGUINetClientDBrief)
-  {
-    this.ui = paramGUINetClientDBrief;
-  }
-
-  public void setClientLoc(Loc paramLoc)
-  {
-    this.clientLoc = paramLoc;
-    boolean bool = isLocValid(paramLoc);
-    if (this.ui != null)
-    {
-      this.ui.flyFromCarrier(bool);
-    }
-  }
-
-  private boolean isLocValid(Loc paramLoc)
-  {
-    if (paramLoc == null) {
-      return false;
-    }
-
-    return ((int)paramLoc.getX() != 0) || ((int)paramLoc.getY() != 0) || ((int)paramLoc.getZ() != 0) || ((int)paramLoc.getTangage() != 0) || ((int)paramLoc.getKren() != 0);
-  }
-
-  public void startDeckOperations()
-  {
-    if ((Mission.isDogfight()) && (this.ship.net.isMaster()))
-      interpPut(new DeckUpdater(), "deck_operations", Time.current(), null);
-  }
-
-  class DeckUpdater extends Interpolate {
-    DeckUpdater() {
-    }
-
-    public boolean tick() {
-      if (AirportCarrier.this.ship().isAlive())
-      {
-        if (Time.tickCounter() > AirportCarrier.this.oldTickCounter + 150 + AirportCarrier.this.rnd1)
+        DeckUpdater()
         {
-          AirportCarrier.access$002(AirportCarrier.this, Time.tickCounter());
-          AirportCarrier.this.checkIsDeckClear();
         }
-        if (Time.tickCounter() > AirportCarrier.this.oldIdleTickCounter + 2000 + AirportCarrier.this.rnd2)
-        {
-          AirportCarrier.access$302(AirportCarrier.this, Time.tickCounter());
-          AirportCarrier.this.checkPlaneIdle();
-          AirportCarrier.access$602(AirportCarrier.this, false);
-        }
-      }
-      return true;
     }
-  }
+
+
+    public com.maddox.il2.objects.ships.BigshipGeneric ship()
+    {
+        return ship;
+    }
+
+    public AirportCarrier(com.maddox.il2.objects.ships.BigshipGeneric bigshipgeneric, com.maddox.il2.engine.Loc aloc[])
+    {
+        lastCarrierUsers = new ArrayList();
+        ui = null;
+        clientLoc = null;
+        lastAddedAC = null;
+        lastAddedCells = null;
+        rnd1 = com.maddox.il2.ai.World.Rnd().nextInt(0, 30);
+        rnd2 = com.maddox.il2.ai.World.Rnd().nextInt(40, 60);
+        skipCheck = false;
+        tmpLoc = new Loc();
+        tmpP3d = new Point3d();
+        tmpP3f = new Point3f();
+        tmpOr = new Orient();
+        curPlaneShift = 0;
+        oldTickCounter = 0;
+        oldIdleTickCounter = 0;
+        r = new Loc();
+        ship = bigshipgeneric;
+        pos = new ActorPosMove(this, new Loc());
+        pos.setBase(bigshipgeneric, null, false);
+        pos.reset();
+        runway = aloc;
+        if(com.maddox.il2.game.Mission.isDogfight())
+        {
+            com.maddox.il2.ai.air.Point_Stay apoint_stay[][] = getStayPlaces();
+            com.maddox.il2.ai.air.Point_Stay apoint_stay1[][] = com.maddox.il2.ai.World.cur().airdrome.stay;
+            com.maddox.il2.ai.air.Point_Stay apoint_stay2[][] = new com.maddox.il2.ai.air.Point_Stay[apoint_stay1.length + apoint_stay.length][];
+            int i = 0;
+            for(int j = 0; j < apoint_stay1.length; j++)
+                apoint_stay2[i++] = apoint_stay1[j];
+
+            for(int k = 0; k < apoint_stay.length; k++)
+                apoint_stay2[i++] = apoint_stay[k];
+
+            com.maddox.il2.ai.World.cur().airdrome.stay = apoint_stay2;
+        }
+        startDeckOperations();
+    }
+
+    public void disableBornPlace()
+    {
+        if(bornPlace2Move != null)
+            bornPlace2Move.army = -2;
+    }
+
+    public void enableBornPlace()
+    {
+        bornPlace2Move.army = bornPlaceArmyBk;
+    }
+
+    public boolean isAlive()
+    {
+        return com.maddox.il2.engine.Actor.isAlive(ship);
+    }
+
+    public int getArmy()
+    {
+        if(com.maddox.il2.engine.Actor.isAlive(ship))
+            return ship.getArmy();
+        else
+            return super.getArmy();
+    }
+
+    public boolean landWay(com.maddox.il2.fm.FlightModel flightmodel)
+    {
+        com.maddox.il2.ai.Way way = new Way();
+        tmpLoc.set(runway[1]);
+        tmpLoc.add(ship.initLoc);
+        float f = flightmodel.M.massEmpty * 0.0003333F;
+        if(f > 1.0F)
+            f = 1.0F;
+        if(f < 0.4F)
+            f = 0.4F;
+        for(int i = x.length - 1; i >= 0; i--)
+        {
+            com.maddox.il2.ai.WayPoint waypoint = new WayPoint();
+            tmpP3d.set(x[i] * f, y[i] * f, z[i] * f);
+            waypoint.set(java.lang.Math.min(v[i] * 0.278F, flightmodel.Vmax * 0.6F));
+            waypoint.Action = 2;
+            waypoint.sTarget = ship.name();
+            tmpLoc.transform(tmpP3d);
+            tmpP3f.set(tmpP3d);
+            waypoint.set(tmpP3f);
+            way.add(waypoint);
+        }
+
+        way.setLanding(true);
+        flightmodel.AP.way = way;
+        return true;
+    }
+
+    public void rebuildLandWay(com.maddox.il2.fm.FlightModel flightmodel)
+    {
+        if(!ship.isAlive())
+        {
+            flightmodel.AP.way.setLanding(false);
+            return;
+        }
+        tmpLoc.set(runway[1]);
+        tmpLoc.add(ship.initLoc);
+        float f = flightmodel.M.massEmpty * 0.0003333F;
+        if(f > 1.0F)
+            f = 1.0F;
+        if(f < 0.4F)
+            f = 0.4F;
+        for(int i = 0; i < x.length; i++)
+        {
+            com.maddox.il2.ai.WayPoint waypoint = flightmodel.AP.way.get(i);
+            tmpP3d.set(x[x.length - 1 - i] * f, y[x.length - 1 - i] * f, z[x.length - 1 - i] * f);
+            tmpLoc.transform(tmpP3d);
+            tmpP3f.set(tmpP3d);
+            waypoint.set(tmpP3f);
+        }
+
+    }
+
+    public void rebuildLastPoint(com.maddox.il2.fm.FlightModel flightmodel)
+    {
+        if(!com.maddox.il2.engine.Actor.isAlive(ship))
+            return;
+        int i = flightmodel.AP.way.Cur();
+        flightmodel.AP.way.last();
+        if(flightmodel.AP.way.curr().Action == 2)
+        {
+            ship.pos.getAbs(tmpP3d);
+            flightmodel.AP.way.curr().set(tmpP3d);
+        }
+        flightmodel.AP.way.setCur(i);
+    }
+
+    public double ShiftFromLine(com.maddox.il2.fm.FlightModel flightmodel)
+    {
+        tmpLoc.set(flightmodel.Loc);
+        r.set(runway[0]);
+        r.add(ship.pos.getAbs());
+        tmpLoc.sub(r);
+        return tmpLoc.getY();
+    }
+
+    public boolean nearestRunway(com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Loc loc)
+    {
+        loc.add(runway[1], pos.getAbs());
+        return true;
+    }
+
+    public int landingFeedback(com.maddox.JGP.Point3d point3d, com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        tmpLoc.set(runway[1]);
+        tmpLoc.add(ship.initLoc);
+        com.maddox.il2.objects.air.Aircraft aircraft1 = com.maddox.il2.ai.War.getNearestFriendAtPoint(tmpLoc.getPoint(), aircraft, 50F);
+        if(aircraft1 != null && aircraft1 != aircraft)
+            return 1;
+        if(aircraft.FM.CT.GearControl > 0.0F)
+            return 0;
+        if(landingRequest > 0)
+        {
+            return 1;
+        } else
+        {
+            landingRequest = 3000;
+            return 0;
+        }
+    }
+
+    public void setTakeoffOld(com.maddox.JGP.Point3d point3d, com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(aircraft))
+            return;
+        r.set(runway[0]);
+        r.add(ship.pos.getAbs());
+        if(!com.maddox.il2.game.Mission.isDogfight() && com.maddox.rts.Time.tickCounter() != oldTickCounter)
+        {
+            oldTickCounter = com.maddox.rts.Time.tickCounter();
+            curPlaneShift = 0;
+        }
+        curPlaneShift++;
+        aircraft.FM.setStationedOnGround(false);
+        aircraft.FM.setWasAirborne(true);
+        tmpLoc.set(-((float)curPlaneShift * 200F), -((float)curPlaneShift * 100F), 300D, 0.0F, 0.0F, 0.0F);
+        tmpLoc.add(r);
+        aircraft.pos.setAbs(tmpLoc);
+        aircraft.pos.getAbs(tmpP3d, tmpOr);
+        startSpeed.set(100D, 0.0D, 0.0D);
+        tmpOr.transform(startSpeed);
+        aircraft.setSpeed(startSpeed);
+        aircraft.pos.reset();
+        if(aircraft.FM instanceof com.maddox.il2.ai.air.Maneuver)
+            ((com.maddox.il2.ai.air.Maneuver)aircraft.FM).direction = aircraft.pos.getAbsOrient().getAzimut();
+        aircraft.FM.AP.way.takeoffAirport = this;
+        if(aircraft == com.maddox.il2.ai.World.getPlayerAircraft())
+        {
+            aircraft.FM.EI.setCurControlAll(true);
+            aircraft.FM.EI.setEngineRunning();
+            aircraft.FM.CT.setPowerControl(0.75F);
+        }
+    }
+
+    public double speedLen()
+    {
+        ship.getSpeed(shipSpeed);
+        return shipSpeed.length();
+    }
+
+    private void checkIsDeckClear()
+    {
+        if(skipCheck)
+            return;
+        if(lastAddedAC != null && lastAddedAC.isDestroyed())
+        {
+            com.maddox.il2.ai.air.CellAirField cellairfield = ship.getCellTO();
+            boolean flag1 = cellairfield.removeAirPlane(lastAddedCells);
+            if(flag1)
+                curPlaneShift--;
+            lastAddedAC = null;
+            lastAddedCells = null;
+        }
+        boolean flag = true;
+        for(int i = lastCarrierUsers.size() - 1; i >= 0; i--)
+        {
+            com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft)lastCarrierUsers.get(i);
+            if(aircraft != null && !aircraft.isDestroyed() && aircraft.isAlive() && (aircraft.FM.Gears.isUnderDeck() || com.maddox.il2.objects.air.NetAircraft.isOnCarrierDeck(this, aircraft.pos.getAbs())))
+                flag = false;
+            else
+                lastCarrierUsers.remove(aircraft);
+        }
+
+        if(flag)
+        {
+            lastCarrierUsers.clear();
+            deckCleared();
+        }
+    }
+
+    private void checkPlaneIdle()
+    {
+        for(int i = lastCarrierUsers.size() - 1; i >= 0; i--)
+        {
+            com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft)lastCarrierUsers.get(i);
+            if(aircraft == null || aircraft.isDestroyed() || !aircraft.FM.Gears.isUnderDeck() && !com.maddox.il2.objects.air.NetAircraft.isOnCarrierDeck(this, aircraft.pos.getAbs()))
+                continue;
+            aircraft.idleTimeOnCarrier++;
+            if(aircraft.idleTimeOnCarrier < 6)
+                continue;
+            if(aircraft.isNetPlayer() && !aircraft.isNetMaster())
+            {
+                com.maddox.il2.objects.air.Aircraft aircraft1 = aircraft;
+                com.maddox.il2.net.NetUser netuser = ((com.maddox.il2.objects.air.NetAircraft.AircraftNet)((com.maddox.il2.objects.air.NetAircraft) (aircraft1)).net).netUser;
+                netuser.kick(netuser);
+            } else
+            {
+                ((com.maddox.il2.objects.air.NetAircraft) (aircraft)).net.destroy();
+                aircraft.destroy();
+                lastCarrierUsers.remove(aircraft);
+            }
+        }
+
+    }
+
+    public com.maddox.il2.engine.Loc setClientTakeOff(com.maddox.JGP.Point3d point3d, com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        com.maddox.il2.engine.Loc loc = null;
+        if(clientLoc != null)
+            loc = new Loc(clientLoc);
+        clientLoc = null;
+        if(loc == null || !isLocValid(loc))
+        {
+            setTakeoffOld(point3d, aircraft);
+            com.maddox.il2.engine.Loc loc1 = aircraft.pos.getAbs();
+            double d = com.maddox.il2.ai.World.Rnd().nextDouble(400D, 800D);
+            double d1 = com.maddox.il2.ai.World.Rnd().nextDouble(400D, 800D);
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.5F)
+                d *= -1D;
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.5F)
+                d1 *= -1D;
+            com.maddox.JGP.Point3d point3d2 = new Point3d(d, d1, 0.0D);
+            loc1.add(point3d2);
+            aircraft.pos.setAbs(loc1);
+            return loc1;
+        }
+        loc.add(ship.pos.getAbs());
+        com.maddox.JGP.Point3d point3d1 = loc.getPoint();
+        com.maddox.il2.engine.Orient orient = loc.getOrient();
+        orient.increment(0.0F, aircraft.FM.Gears.Pitch, 0.0F);
+        ship.getSpeed(shipSpeed);
+        aircraft.setOnGround(point3d1, orient, shipSpeed);
+        if(aircraft.FM instanceof com.maddox.il2.ai.air.Maneuver)
+            ((com.maddox.il2.ai.air.Maneuver)aircraft.FM).direction = aircraft.pos.getAbsOrient().getAzimut();
+        aircraft.FM.AP.way.takeoffAirport = this;
+        aircraft.FM.brakeShoe = true;
+        aircraft.FM.turnOffCollisions = true;
+        aircraft.FM.brakeShoeLoc.set(aircraft.pos.getAbs());
+        aircraft.FM.brakeShoeLoc.sub(ship.pos.getAbs());
+        aircraft.FM.brakeShoeLastCarrier = ship;
+        aircraft.FM.Gears.bFlatTopGearCheck = true;
+        aircraft.makeMirrorCarrierRelPos();
+        if(aircraft.FM.CT.bHasWingControl)
+        {
+            aircraft.FM.CT.wingControl = 1.0F;
+            aircraft.FM.CT.forceWing(1.0F);
+        }
+        return loc;
+    }
+
+    private com.maddox.JGP.Point3d reservePlaceForPlane(com.maddox.il2.ai.air.CellAirPlane cellairplane, com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        com.maddox.il2.ai.air.CellAirField cellairfield = ship.getCellTO();
+        if(cellairfield.findPlaceForAirPlane(cellairplane))
+        {
+            cellairfield.placeAirPlane(cellairplane, cellairfield.resX(), cellairfield.resY());
+            double d = -cellairfield.leftUpperCorner().x - (double)cellairfield.resX() * cellairfield.getCellSize() - cellairplane.ofsX;
+            double d1 = cellairfield.leftUpperCorner().y - (double)cellairfield.resY() * cellairfield.getCellSize() - cellairplane.ofsY;
+            double d2 = runway[0].getZ();
+            curPlaneShift++;
+            if(com.maddox.il2.game.Mission.isDogfight() && ship.net.isMaster())
+            {
+                if(aircraft != null)
+                {
+                    lastCarrierUsers.add(aircraft);
+                    lastAddedAC = aircraft;
+                }
+                lastAddedCells = cellairplane;
+            }
+            return new Point3d(d1, d, d2);
+        } else
+        {
+            return null;
+        }
+    }
+
+    public void setTakeoff(com.maddox.JGP.Point3d point3d, com.maddox.il2.objects.air.Aircraft aaircraft[])
+    {
+        com.maddox.il2.ai.air.CellAirField cellairfield = ship.getCellTO();
+        if(cellairfield == null)
+        {
+            for(int i = 0; i < aaircraft.length; i++)
+                setTakeoffOld(point3d, aaircraft[i]);
+
+            return;
+        }
+        if(!com.maddox.il2.game.Mission.isDogfight() && com.maddox.rts.Time.tickCounter() != oldTickCounter)
+        {
+            oldTickCounter = com.maddox.rts.Time.tickCounter();
+            curPlaneShift = 0;
+            cellairfield.freeCells();
+        }
+        ship.getSpeed(shipSpeed);
+        for(int j = 0; j < aaircraft.length; j++)
+        {
+            if(!com.maddox.il2.engine.Actor.isValid(aaircraft[j]))
+                continue;
+            com.maddox.il2.ai.air.CellAirPlane cellairplane = aaircraft[j].getCellAirPlane();
+            com.maddox.JGP.Point3d point3d1 = reservePlaceForPlane(cellairplane, aaircraft[j]);
+            if(point3d1 != null)
+            {
+                double d = point3d1.x;
+                double d1 = point3d1.y;
+                double d2 = point3d1.z;
+                tmpLoc.set(d, d1, d2 + (double)aaircraft[j].FM.Gears.H, runway[0].getAzimut(), runway[0].getTangage(), runway[0].getKren());
+                tmpLoc.add(ship.pos.getAbs());
+                com.maddox.JGP.Point3d point3d2 = tmpLoc.getPoint();
+                com.maddox.il2.engine.Orient orient = tmpLoc.getOrient();
+                orient.increment(0.0F, aaircraft[j].FM.Gears.Pitch, 0.0F);
+                aaircraft[j].setOnGround(point3d2, orient, shipSpeed);
+                if(aaircraft[j].FM instanceof com.maddox.il2.ai.air.Maneuver)
+                    ((com.maddox.il2.ai.air.Maneuver)aaircraft[j].FM).direction = aaircraft[j].pos.getAbsOrient().getAzimut();
+                aaircraft[j].FM.AP.way.takeoffAirport = this;
+                aaircraft[j].FM.brakeShoe = true;
+                aaircraft[j].FM.turnOffCollisions = true;
+                aaircraft[j].FM.brakeShoeLoc.set(aaircraft[j].pos.getAbs());
+                aaircraft[j].FM.brakeShoeLoc.sub(ship.pos.getAbs());
+                aaircraft[j].FM.brakeShoeLastCarrier = ship;
+                aaircraft[j].FM.Gears.bFlatTopGearCheck = true;
+                aaircraft[j].makeMirrorCarrierRelPos();
+                if(curPlaneShift > 1 && aaircraft[j].FM.CT.bHasWingControl)
+                {
+                    aaircraft[j].FM.CT.wingControl = 1.0F;
+                    aaircraft[j].FM.CT.forceWing(1.0F);
+                }
+            } else
+            {
+                setTakeoffOld(point3d, aaircraft[j]);
+            }
+        }
+
+        if(com.maddox.il2.engine.Actor.isValid(aaircraft[0]) && (aaircraft[0].FM instanceof com.maddox.il2.ai.air.Maneuver))
+        {
+            com.maddox.il2.ai.air.Maneuver maneuver = (com.maddox.il2.ai.air.Maneuver)aaircraft[0].FM;
+            if(maneuver.Group != null && maneuver.Group.w != null)
+                maneuver.Group.w.takeoffAirport = this;
+        }
+    }
+
+    public void getTakeoff(com.maddox.il2.objects.air.Aircraft aircraft, com.maddox.il2.engine.Loc loc)
+    {
+        tmpLoc.sub(loc, ship.initLoc);
+        tmpLoc.set(tmpLoc.getPoint().x, tmpLoc.getPoint().y, runway[0].getZ() + (double)aircraft.FM.Gears.H, runway[0].getAzimut(), runway[0].getTangage(), runway[0].getKren());
+        tmpLoc.add(ship.pos.getAbs());
+        loc.set(tmpLoc);
+        com.maddox.JGP.Point3d point3d = loc.getPoint();
+        com.maddox.il2.engine.Orient orient = loc.getOrient();
+        orient.increment(0.0F, aircraft.FM.Gears.Pitch, 0.0F);
+        if(aircraft.FM instanceof com.maddox.il2.ai.air.Maneuver)
+            ((com.maddox.il2.ai.air.Maneuver)aircraft.FM).direction = loc.getAzimut();
+        aircraft.FM.AP.way.takeoffAirport = this;
+        aircraft.FM.brakeShoe = true;
+        aircraft.FM.turnOffCollisions = true;
+        aircraft.FM.brakeShoeLoc.set(loc);
+        aircraft.FM.brakeShoeLoc.sub(ship.pos.getAbs());
+        aircraft.FM.brakeShoeLastCarrier = ship;
+    }
+
+    public float height()
+    {
+        return (float)(ship.pos.getAbs().getZ() + runway[0].getZ());
+    }
+
+    public static boolean isPlaneContainsArrestor(java.lang.Class class1)
+    {
+        com.maddox.il2.ai.AirportCarrier.clsBigArrestorPlane();
+        return _clsMapArrestorPlane.containsKey(class1);
+    }
+
+    private static java.lang.Class clsBigArrestorPlane()
+    {
+        if(_clsBigArrestorPlane != null)
+            return _clsBigArrestorPlane;
+        double d = 0.0D;
+        com.maddox.rts.SectFile sectfile = new SectFile("com/maddox/il2/objects/air.ini", 0);
+        int i = sectfile.sections();
+        for(int j = 0; j < i; j++)
+        {
+            int k = sectfile.vars(j);
+            for(int l = 0; l < k;)
+            {
+                java.lang.String s = sectfile.value(j, l);
+                java.util.StringTokenizer stringtokenizer = new StringTokenizer(sectfile.value(j, l));
+                if(!stringtokenizer.hasMoreTokens())
+                    continue;
+                java.lang.String s1 = "com.maddox.il2.objects." + stringtokenizer.nextToken();
+                java.lang.Class class1 = null;
+                java.lang.String s2 = null;
+                try
+                {
+                    class1 = java.lang.Class.forName(s1);
+                    s2 = com.maddox.rts.Property.stringValue(class1, "FlightModel", null);
+                }
+                catch(java.lang.Exception exception)
+                {
+                    java.lang.System.out.println(exception.getMessage());
+                    exception.printStackTrace();
+                }
+                try
+                {
+                    if(s2 == null)
+                        continue;
+                    com.maddox.rts.SectFile sectfile1 = com.maddox.il2.fm.FlightModelMain.sectFile(s2);
+                    if(sectfile1.get("Controls", "CArrestorHook", 0) != 1)
+                        continue;
+                    _clsMapArrestorPlane.put(class1, null);
+                    java.lang.String s3 = com.maddox.il2.objects.air.Aircraft.getPropertyMesh(class1, null);
+                    com.maddox.rts.SectFile sectfile2 = new SectFile(s3, 0);
+                    java.lang.String s4 = sectfile2.get("_ROOT_", "CollisionObject", (java.lang.String)null);
+                    if(s4 == null)
+                        continue;
+                    com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(s4);
+                    if(!numbertokenizer.hasMoreTokens())
+                        continue;
+                    numbertokenizer.next();
+                    if(!numbertokenizer.hasMoreTokens())
+                        continue;
+                    double d1 = numbertokenizer.next(-1D);
+                    if(d1 > 0.0D && d < d1)
+                    {
+                        d = d1;
+                        _clsBigArrestorPlane = class1;
+                    }
+                    continue;
+                }
+                catch(java.lang.Exception exception1)
+                {
+                    java.lang.System.out.println(exception1.getMessage());
+                    exception1.printStackTrace();
+                    l++;
+                }
+            }
+
+        }
+
+        return _clsBigArrestorPlane;
+    }
+
+    private static com.maddox.il2.ai.air.CellAirPlane cellBigArrestorPlane()
+    {
+        if(_cellBigArrestorPlane != null)
+        {
+            return _cellBigArrestorPlane;
+        } else
+        {
+            _cellBigArrestorPlane = com.maddox.il2.objects.air.Aircraft.getCellAirPlane(com.maddox.il2.ai.AirportCarrier.clsBigArrestorPlane());
+            return _cellBigArrestorPlane;
+        }
+    }
+
+    private com.maddox.il2.ai.air.Point_Stay[][] getStayPlaces()
+    {
+        com.maddox.il2.ai.air.Point_Stay apoint_stay[][] = (com.maddox.il2.ai.air.Point_Stay[][])null;
+        java.lang.Class class1 = ship.getClass();
+        apoint_stay = (com.maddox.il2.ai.air.Point_Stay[][])(com.maddox.il2.ai.air.Point_Stay[][])com.maddox.rts.Property.value(class1, "StayPlaces", null);
+        if(apoint_stay == null)
+        {
+            com.maddox.il2.ai.air.CellAirPlane cellairplane = com.maddox.il2.ai.AirportCarrier.cellBigArrestorPlane();
+            com.maddox.il2.ai.air.CellAirField cellairfield = ship.getCellTO();
+            cellairfield = (com.maddox.il2.ai.air.CellAirField)cellairfield.getClone();
+            java.util.ArrayList arraylist = new ArrayList();
+            do
+            {
+                cellairplane = (com.maddox.il2.ai.air.CellAirPlane)cellairplane.getClone();
+                if(!cellairfield.findPlaceForAirPlane(cellairplane))
+                    break;
+                cellairfield.placeAirPlane(cellairplane, cellairfield.resX(), cellairfield.resY());
+                double d = -cellairfield.leftUpperCorner().x - (double)cellairfield.resX() * cellairfield.getCellSize() - cellairplane.ofsX;
+                double d2 = cellairfield.leftUpperCorner().y - (double)cellairfield.resY() * cellairfield.getCellSize() - cellairplane.ofsY;
+                arraylist.add(new Point2d(d2, d));
+            } while(true);
+            int j = arraylist.size();
+            if(j > 0)
+            {
+                apoint_stay = new com.maddox.il2.ai.air.Point_Stay[j][1];
+                for(int k = 0; k < j; k++)
+                {
+                    com.maddox.JGP.Point2d point2d = (com.maddox.JGP.Point2d)arraylist.get(k);
+                    apoint_stay[k][0] = new Point_Stay((float)point2d.x, (float)point2d.y);
+                }
+
+                com.maddox.rts.Property.set(class1, "StayPlaces", apoint_stay);
+            }
+        }
+        if(apoint_stay == null)
+            return (com.maddox.il2.ai.air.Point_Stay[][])null;
+        com.maddox.il2.ai.air.Point_Stay apoint_stay1[][] = new com.maddox.il2.ai.air.Point_Stay[apoint_stay.length][1];
+        for(int i = 0; i < apoint_stay.length; i++)
+        {
+            com.maddox.il2.ai.air.Point_Stay point_stay = apoint_stay[i][0];
+            double d1 = point_stay.x;
+            double d3 = point_stay.y;
+            double d4 = runway[0].getZ();
+            tmpLoc.set(d1, d3, d4, runway[0].getAzimut(), runway[0].getTangage(), runway[0].getKren());
+            tmpLoc.add(ship.pos.getAbs());
+            com.maddox.JGP.Point3d point3d = tmpLoc.getPoint();
+            apoint_stay1[i][0] = new Point_Stay((float)point3d.x, (float)point3d.y);
+        }
+
+        return apoint_stay1;
+    }
+
+    public void setCellUsed(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        skipCheck = false;
+        if(ship.net.isMaster())
+        {
+            lastCarrierUsers.add(aircraft);
+            lastAddedAC = aircraft;
+        }
+        if(aircraft.FM.CT.bHasWingControl && !aircraft.isNetPlayer())
+            aircraft.FM.CT.wingControl = 0.0F;
+    }
+
+    public com.maddox.il2.engine.Loc requestCell(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        if(!ship().isAlive())
+            return invalidLoc;
+        com.maddox.il2.ai.air.CellAirPlane cellairplane = aircraft.getCellAirPlane();
+        com.maddox.JGP.Point3d point3d = reservePlaceForPlane(cellairplane, null);
+        if(point3d != null)
+        {
+            skipCheck = true;
+            double d = point3d.x;
+            double d1 = point3d.y;
+            double d2 = point3d.z;
+            com.maddox.il2.engine.Loc loc = new Loc();
+            loc.set(d, d1, d2 + (double)aircraft.FM.Gears.H, runway[0].getAzimut(), runway[0].getTangage(), runway[0].getKren());
+            return loc;
+        } else
+        {
+            return invalidLoc;
+        }
+    }
+
+    private void deckCleared()
+    {
+        curPlaneShift = 0;
+        com.maddox.il2.ai.air.CellAirField cellairfield = ship.getCellTO();
+        cellairfield.freeCells();
+    }
+
+    public void setGuiCallback(com.maddox.il2.gui.GUINetClientDBrief guinetclientdbrief)
+    {
+        ui = guinetclientdbrief;
+    }
+
+    public void setClientLoc(com.maddox.il2.engine.Loc loc)
+    {
+        clientLoc = loc;
+        boolean flag = isLocValid(loc);
+        if(ui != null)
+            ui.flyFromCarrier(flag);
+    }
+
+    private boolean isLocValid(com.maddox.il2.engine.Loc loc)
+    {
+        if(loc == null)
+            return false;
+        return (int)loc.getX() != 0 || (int)loc.getY() != 0 || (int)loc.getZ() != 0 || (int)loc.getTangage() != 0 || (int)loc.getKren() != 0;
+    }
+
+    public void startDeckOperations()
+    {
+        if(com.maddox.il2.game.Mission.isDogfight() && ship.net.isMaster())
+            interpPut(new DeckUpdater(), "deck_operations", com.maddox.rts.Time.current(), null);
+    }
+
+    public static final double cellSize = 1D;
+    private com.maddox.il2.objects.ships.BigshipGeneric ship;
+    private com.maddox.il2.engine.Loc runway[];
+    public com.maddox.il2.net.BornPlace bornPlace2Move;
+    public int bornPlaceArmyBk;
+    private java.util.List lastCarrierUsers;
+    private com.maddox.il2.gui.GUINetClientDBrief ui;
+    private com.maddox.il2.engine.Loc clientLoc;
+    private static final com.maddox.il2.engine.Loc invalidLoc = new Loc(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+    private com.maddox.il2.objects.air.Aircraft lastAddedAC;
+    private com.maddox.il2.ai.air.CellAirPlane lastAddedCells;
+    private int rnd1;
+    private int rnd2;
+    private boolean skipCheck;
+    private static float x[] = {
+        -100F, -20F, -10F, 1000F, 3000F, 4000F, 3000F, 0.0F, 0.0F
+    };
+    private static float y[] = {
+        0.0F, 0.0F, 0.0F, 0.0F, -500F, -1500F, -3000F, -3000F, -3000F
+    };
+    private static float z[] = {
+        -4F, 5F, 5F, 150F, 450F, 500F, 500F, 500F, 500F
+    };
+    private static float v[] = {
+        0.0F, 80F, 100F, 180F, 250F, 270F, 280F, 300F, 300F
+    };
+    private com.maddox.il2.engine.Loc tmpLoc;
+    private com.maddox.JGP.Point3d tmpP3d;
+    private com.maddox.JGP.Point3f tmpP3f;
+    private com.maddox.il2.engine.Orient tmpOr;
+    public int curPlaneShift;
+    private int oldTickCounter;
+    private int oldIdleTickCounter;
+    private com.maddox.il2.engine.Loc r;
+    private static com.maddox.JGP.Vector3d startSpeed = new Vector3d();
+    private static com.maddox.JGP.Vector3d shipSpeed = new Vector3d();
+    private static java.lang.Class _clsBigArrestorPlane = null;
+    private static com.maddox.il2.ai.air.CellAirPlane _cellBigArrestorPlane = null;
+    private static java.util.HashMap _clsMapArrestorPlane = new HashMap();
+
+
+
+
+
+
+
+
+
+
 }

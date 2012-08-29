@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HashMapInt.java
+
 package com.maddox.util;
 
 import java.io.IOException;
@@ -12,597 +17,647 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+// Referenced classes of package com.maddox.util:
+//            HashMapIntEntry
+
 public class HashMapInt
-  implements Cloneable, Serializable
+    implements java.lang.Cloneable, java.io.Serializable
 {
-  private transient Entry[] table;
-  private transient int count;
-  private int threshold;
-  private float loadFactor;
-  private transient int modCount = 0;
-  private transient int nextEntryLock;
-  private transient Set entrySet = null;
-  private transient Collection values = null;
-
-  private Entry freeEntryList = null;
-  private static final int VALUES = 1;
-  private static final int ENTRIES = 2;
-
-  public HashMapInt(int paramInt, float paramFloat)
-  {
-    if (paramInt < 0) {
-      throw new IllegalArgumentException("Illegal Initial Capacity: " + paramInt);
-    }
-    if (paramFloat <= 0.0F) {
-      throw new IllegalArgumentException("Illegal Load factor: " + paramFloat);
-    }
-    if (paramInt == 0)
-      paramInt = 1;
-    this.loadFactor = paramFloat;
-    this.table = new Entry[paramInt];
-    this.threshold = (int)(paramInt * paramFloat);
-  }
-
-  public HashMapInt(int paramInt)
-  {
-    this(paramInt, 0.75F);
-  }
-
-  public HashMapInt()
-  {
-    this(101, 0.75F);
-  }
-
-  public HashMapInt(HashMapInt paramHashMapInt)
-  {
-    this(Math.max(2 * paramHashMapInt.size(), 11), 0.75F);
-    putAll(paramHashMapInt);
-  }
-
-  public int size()
-  {
-    return this.count;
-  }
-
-  public boolean isEmpty()
-  {
-    return this.count == 0;
-  }
-
-  public boolean equals(Object paramObject)
-  {
-    return this == paramObject;
-  }
-
-  public HashMapIntEntry nextEntry(HashMapIntEntry paramHashMapIntEntry)
-  {
-    if (paramHashMapIntEntry == null) {
-      this.nextEntryLock = this.modCount;
-    }
-    else if (this.modCount != this.nextEntryLock) {
-      throw new ConcurrentModificationException();
-    }
-    Entry localEntry = (Entry)paramHashMapIntEntry;
-    int i = 0;
-    if (localEntry != null) {
-      if (localEntry.next != null)
-        return localEntry.next;
-      i = (localEntry.getKey() & 0x7FFFFFFF) % this.table.length - 1;
-    } else {
-      i = this.table.length - 1;
-    }
-
-    while (i >= 0) {
-      if (this.table[i] != null)
-        return this.table[i];
-      i--;
-    }
-    return null;
-  }
-
-  public HashMapIntEntry getEntry(int paramInt)
-  {
-    Entry[] arrayOfEntry = this.table;
-
-    int i = paramInt;
-    int j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
-    for (Entry localEntry = arrayOfEntry[j]; localEntry != null; localEntry = localEntry.next) {
-      if (localEntry.key == paramInt)
-        return localEntry;
-    }
-    return null;
-  }
-
-  public boolean containsValue(Object paramObject)
-  {
-    Entry[] arrayOfEntry = this.table;
-    int i;
-    Entry localEntry;
-    if (paramObject == null)
-      for (i = arrayOfEntry.length; i-- > 0; )
-        for (localEntry = arrayOfEntry[i]; localEntry != null; localEntry = localEntry.next)
-          if (localEntry.value == null)
-            return true;
-    else {
-      for (i = arrayOfEntry.length; i-- > 0; ) {
-        for (localEntry = arrayOfEntry[i]; localEntry != null; localEntry = localEntry.next)
-          if (paramObject.equals(localEntry.value))
-            return true;
-      }
-    }
-    return false;
-  }
-
-  public boolean containsKey(int paramInt)
-  {
-    Entry[] arrayOfEntry = this.table;
-    int i = paramInt;
-    int j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
-    for (Entry localEntry = arrayOfEntry[j]; localEntry != null; localEntry = localEntry.next)
-      if (localEntry.key == paramInt)
-        return true;
-    return false;
-  }
-
-  public int findNotUsedKey(int paramInt1, int paramInt2, int paramInt3)
-  {
-    Entry[] arrayOfEntry = this.table;
-    int i;
-    Entry localEntry;
-    if (paramInt1 < paramInt3) {
-      if ((paramInt2 < paramInt1) || (paramInt2 >= paramInt3))
-        return paramInt3;
-      for (i = paramInt2; i < paramInt3; i++) {
-        localEntry = arrayOfEntry[((i & 0x7FFFFFFF) % arrayOfEntry.length)];
-        while ((localEntry != null) && 
-          (localEntry.key != i)) {
-          localEntry = localEntry.next;
-        }
-
-        if (localEntry == null)
-          return i;
-      }
-      for (i = paramInt1; i < paramInt2; i++) {
-        localEntry = arrayOfEntry[((i & 0x7FFFFFFF) % arrayOfEntry.length)];
-        while ((localEntry != null) && 
-          (localEntry.key != i)) {
-          localEntry = localEntry.next;
-        }
-
-        if (localEntry == null)
-          return i;
-      }
-    } else if (paramInt1 > paramInt3) {
-      if ((paramInt2 > paramInt1) || (paramInt2 <= paramInt3))
-        return paramInt3;
-      for (i = paramInt2; i > paramInt3; i--) {
-        localEntry = arrayOfEntry[((i & 0x7FFFFFFF) % arrayOfEntry.length)];
-        while ((localEntry != null) && 
-          (localEntry.key != i)) {
-          localEntry = localEntry.next;
-        }
-
-        if (localEntry == null)
-          return i;
-      }
-      for (i = paramInt1; i > paramInt2; i--) {
-        localEntry = arrayOfEntry[((i & 0x7FFFFFFF) % arrayOfEntry.length)];
-        while ((localEntry != null) && 
-          (localEntry.key != i)) {
-          localEntry = localEntry.next;
-        }
-
-        if (localEntry == null)
-          return i;
-      }
-    }
-    return paramInt3;
-  }
-
-  public Object get(int paramInt)
-  {
-    Entry[] arrayOfEntry = this.table;
-
-    int i = paramInt;
-    int j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
-    for (Entry localEntry = arrayOfEntry[j]; localEntry != null; localEntry = localEntry.next)
-      if (localEntry.key == paramInt)
-        return localEntry.value;
-    return null;
-  }
-
-  private void rehash()
-  {
-    int i = this.table.length;
-    Entry[] arrayOfEntry1 = this.table;
-
-    int j = i * 2 + 1;
-    Entry[] arrayOfEntry2 = new Entry[j];
-
-    this.modCount += 1;
-    this.threshold = (int)(j * this.loadFactor);
-    this.table = arrayOfEntry2;
-
-    for (int k = i; k-- > 0; )
-      for (localEntry1 = arrayOfEntry1[k]; localEntry1 != null; ) {
-        Entry localEntry2 = localEntry1;
-        localEntry1 = localEntry1.next;
-
-        int m = (localEntry2.key & 0x7FFFFFFF) % j;
-        localEntry2.next = arrayOfEntry2[m];
-        arrayOfEntry2[m] = localEntry2;
-      }
-    Entry localEntry1;
-  }
-
-  public Object put(int paramInt, Object paramObject)
-  {
-    Entry[] arrayOfEntry = this.table;
-    int i = paramInt;
-    int j = 0;
-
-    j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
-    for (Entry localEntry = arrayOfEntry[j]; localEntry != null; localEntry = localEntry.next) {
-      if (localEntry.key == paramInt) {
-        Object localObject = localEntry.value;
-        localEntry.value = paramObject;
-        return localObject;
-      }
-    }
-
-    this.modCount += 1;
-    if (this.count >= this.threshold)
+    private class HashIterator
+        implements java.util.Iterator
     {
-      rehash();
 
-      arrayOfEntry = this.table;
-      j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
-    }
-
-    localEntry = allocEntry(paramInt, paramObject, arrayOfEntry[j]);
-    arrayOfEntry[j] = localEntry;
-    this.count += 1;
-    return null;
-  }
-
-  public Object remove(int paramInt)
-  {
-    Entry[] arrayOfEntry = this.table;
-
-    int i = paramInt;
-    int j = (i & 0x7FFFFFFF) % arrayOfEntry.length;
-
-    Entry localEntry1 = arrayOfEntry[j]; for (Entry localEntry2 = null; localEntry1 != null; )
-    {
-      if (localEntry1.key == paramInt) {
-        this.modCount += 1;
-        if (localEntry2 != null)
-          localEntry2.next = localEntry1.next;
-        else {
-          arrayOfEntry[j] = localEntry1.next;
-        }
-        this.count -= 1;
-        Object localObject = localEntry1.value;
-        freeEntry(localEntry1);
-        return localObject;
-      }
-      localEntry2 = localEntry1; localEntry1 = localEntry1.next;
-    }
-
-    return null;
-  }
-
-  public void putAll(HashMapInt paramHashMapInt)
-  {
-    HashMapIntEntry localHashMapIntEntry = paramHashMapInt.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      put(localHashMapIntEntry.getKey(), localHashMapIntEntry.getValue());
-      localHashMapIntEntry = paramHashMapInt.nextEntry(localHashMapIntEntry);
-    }
-  }
-
-  public void clear()
-  {
-    Entry[] arrayOfEntry = this.table;
-    this.modCount += 1;
-    int i = arrayOfEntry.length;
-    while (true) { i--; if (i < 0) break;
-      Object localObject = arrayOfEntry[i];
-      while (localObject != null) {
-        Entry localEntry = ((Entry)localObject).next;
-        freeEntry((Entry)localObject);
-        localObject = localEntry;
-      }
-      arrayOfEntry[i] = null;
-    }
-    this.count = 0;
-  }
-
-  public Object clone()
-  {
-    try
-    {
-      HashMapInt localHashMapInt = (HashMapInt)super.clone();
-      localHashMapInt.table = new Entry[this.table.length];
-      for (int i = this.table.length; i-- > 0; ) {
-        localHashMapInt.table[i] = (this.table[i] != null ? (Entry)this.table[i].clone() : null);
-      }
-
-      localHashMapInt.entrySet = null;
-      localHashMapInt.values = null;
-      localHashMapInt.modCount = 0;
-      return localHashMapInt;
-    } catch (CloneNotSupportedException localCloneNotSupportedException) {
-    }
-    throw new InternalError();
-  }
-
-  public Collection values()
-  {
-    if (this.values == null)
-      this.values = new AbstractCollection() {
-        public Iterator iterator() {
-          return new HashMapInt.HashIterator(HashMapInt.this, 1);
-        }
-        public int size() {
-          return HashMapInt.this.count;
-        }
-        public boolean contains(Object paramObject) {
-          return HashMapInt.this.containsValue(paramObject);
-        }
-        public void clear() {
-          HashMapInt.this.clear();
-        }
-      };
-    return this.values;
-  }
-
-  public Set entrySet()
-  {
-    if (this.entrySet == null) {
-      this.entrySet = new AbstractSet() {
-        public Iterator iterator() {
-          return new HashMapInt.HashIterator(HashMapInt.this, 2);
+        public boolean hasNext()
+        {
+            for(; entry == null && index > 0; entry = table[--index]);
+            return entry != null;
         }
 
-        public boolean contains(Object paramObject) {
-          if (!(paramObject instanceof HashMapIntEntry))
-            return false;
-          HashMapIntEntry localHashMapIntEntry = (HashMapIntEntry)paramObject;
-          int i = localHashMapIntEntry.getKey();
-          HashMapInt.Entry[] arrayOfEntry = HashMapInt.this.table;
-          int j = i;
-          int k = (j & 0x7FFFFFFF) % arrayOfEntry.length;
-
-          for (HashMapInt.Entry localEntry = arrayOfEntry[k]; localEntry != null; localEntry = localEntry.next)
-            if ((localEntry.key == i) && (localEntry.equals(localHashMapIntEntry)))
-              return true;
-          return false;
-        }
-
-        public boolean remove(Object paramObject) {
-          if (!(paramObject instanceof HashMapIntEntry))
-            return false;
-          HashMapIntEntry localHashMapIntEntry = (HashMapIntEntry)paramObject;
-          int i = localHashMapIntEntry.getKey();
-          HashMapInt.Entry[] arrayOfEntry = HashMapInt.this.table;
-          int j = i;
-          int k = (j & 0x7FFFFFFF) % arrayOfEntry.length;
-
-          HashMapInt.Entry localEntry1 = arrayOfEntry[k]; for (HashMapInt.Entry localEntry2 = null; localEntry1 != null; )
-          {
-            if ((localEntry1.key == i) && (localEntry1.equals(localHashMapIntEntry))) {
-              HashMapInt.access$208(HashMapInt.this);
-              if (localEntry2 != null)
-                localEntry2.next = localEntry1.next;
-              else {
-                arrayOfEntry[k] = localEntry1.next;
-              }
-              HashMapInt.access$010(HashMapInt.this);
-              HashMapInt.this.freeEntry(localEntry1);
-              return true;
+        public java.lang.Object next()
+        {
+            if(modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+            for(; entry == null && index > 0; entry = table[--index]);
+            if(entry != null)
+            {
+                com.maddox.util.HashMapInt.Entry entry1 = lastReturned = entry;
+                entry = entry1.next;
+                return type != 1 ? entry1 : entry1.value;
+            } else
+            {
+                throw new NoSuchElementException();
             }
-            localEntry2 = localEntry1; localEntry1 = localEntry1.next;
-          }
-
-          return false;
         }
 
-        public int size() {
-          return HashMapInt.this.count;
+        public void remove()
+        {
+            if(lastReturned == null)
+                throw new IllegalStateException();
+            if(modCount != expectedModCount)
+                throw new ConcurrentModificationException();
+            com.maddox.util.HashMapInt.Entry aentry[] = _fld0.table;
+            int i = (lastReturned.key & 0x7fffffff) % aentry.length;
+            com.maddox.util.HashMapInt.Entry entry1 = aentry[i];
+            com.maddox.util.HashMapInt.Entry entry2 = null;
+            for(; entry1 != null; entry1 = entry1.next)
+            {
+                if(entry1 == lastReturned)
+                {
+                    modCount++;
+                    expectedModCount++;
+                    if(entry2 == null)
+                        aentry[i] = entry1.next;
+                    else
+                        entry2.next = entry1.next;
+                    count--;
+                    lastReturned = null;
+                    freeEntry(entry1);
+                    return;
+                }
+                entry2 = entry1;
+            }
+
+            throw new ConcurrentModificationException();
         }
 
-        public void clear() {
-          HashMapInt.this.clear();
+        com.maddox.util.HashMapInt.Entry table[];
+        int index;
+        com.maddox.util.HashMapInt.Entry entry;
+        com.maddox.util.HashMapInt.Entry lastReturned;
+        int type;
+        private int expectedModCount;
+
+        HashIterator(int i)
+        {
+            table = _fld0.table;
+            index = table.length;
+            entry = null;
+            lastReturned = null;
+            expectedModCount = modCount;
+            type = i;
         }
-      };
     }
-    return this.entrySet;
-  }
 
-  private Entry allocEntry(int paramInt, Object paramObject, Entry paramEntry)
-  {
-    if (this.freeEntryList == null)
-      return new Entry(paramInt, paramObject, paramEntry);
-    Entry localEntry = this.freeEntryList;
-    this.freeEntryList = this.freeEntryList.next;
-    localEntry.key = paramInt;
-    localEntry.value = paramObject;
-    localEntry.next = paramEntry;
-    return localEntry;
-  }
-
-  private void freeEntry(Entry paramEntry) {
-    paramEntry.value = null;
-    paramEntry.next = this.freeEntryList;
-    this.freeEntryList = paramEntry;
-  }
-
-  public void freeCachedMem() {
-    this.freeEntryList = null;
-  }
-
-  private void writeObject(ObjectOutputStream paramObjectOutputStream)
-    throws IOException
-  {
-    paramObjectOutputStream.defaultWriteObject();
-
-    paramObjectOutputStream.writeInt(this.table.length);
-
-    paramObjectOutputStream.writeInt(this.count);
-
-    for (int i = this.table.length - 1; i >= 0; i--) {
-      Entry localEntry = this.table[i];
-
-      while (localEntry != null) {
-        paramObjectOutputStream.writeInt(localEntry.key);
-        paramObjectOutputStream.writeObject(localEntry.value);
-        localEntry = localEntry.next;
-      }
-    }
-  }
-
-  private void readObject(ObjectInputStream paramObjectInputStream)
-    throws IOException, ClassNotFoundException
-  {
-    paramObjectInputStream.defaultReadObject();
-
-    int i = paramObjectInputStream.readInt();
-    this.table = new Entry[i];
-
-    int j = paramObjectInputStream.readInt();
-
-    for (int k = 0; k < j; k++) {
-      int m = paramObjectInputStream.readInt();
-      Object localObject = paramObjectInputStream.readObject();
-      put(m, localObject);
-    }
-  }
-
-  int capacity() {
-    return this.table.length;
-  }
-
-  float loadFactor() {
-    return this.loadFactor;
-  }
-
-  private class HashIterator
-    implements Iterator
-  {
-    HashMapInt.Entry[] table = HashMapInt.this.table;
-    int index = this.table.length;
-    HashMapInt.Entry entry = null;
-    HashMapInt.Entry lastReturned = null;
-    int type;
-    private int expectedModCount = HashMapInt.this.modCount;
-
-    HashIterator(int arg2)
+    private static class Entry
+        implements com.maddox.util.HashMapIntEntry
     {
-      int i;
-      this.type = i;
-    }
 
-    public boolean hasNext() {
-      while ((this.entry == null) && (this.index > 0)) {
-        this.entry = this.table[(--this.index)];
-      }
-      return this.entry != null;
-    }
-
-    public Object next() {
-      if (HashMapInt.this.modCount != this.expectedModCount) {
-        throw new ConcurrentModificationException();
-      }
-      while ((this.entry == null) && (this.index > 0)) {
-        this.entry = this.table[(--this.index)];
-      }
-      if (this.entry != null) {
-        HashMapInt.Entry localEntry = this.lastReturned = this.entry;
-        this.entry = localEntry.next;
-        return this.type == 1 ? localEntry.value : localEntry;
-      }
-      throw new NoSuchElementException();
-    }
-
-    public void remove() {
-      if (this.lastReturned == null)
-        throw new IllegalStateException();
-      if (HashMapInt.this.modCount != this.expectedModCount) {
-        throw new ConcurrentModificationException();
-      }
-      HashMapInt.Entry[] arrayOfEntry = HashMapInt.this.table;
-      int i = (this.lastReturned.key & 0x7FFFFFFF) % arrayOfEntry.length;
-
-      HashMapInt.Entry localEntry1 = arrayOfEntry[i]; for (HashMapInt.Entry localEntry2 = null; localEntry1 != null; )
-      {
-        if (localEntry1 == this.lastReturned) {
-          HashMapInt.access$208(HashMapInt.this);
-          this.expectedModCount += 1;
-          if (localEntry2 == null)
-            arrayOfEntry[i] = localEntry1.next;
-          else
-            localEntry2.next = localEntry1.next;
-          HashMapInt.access$010(HashMapInt.this);
-          this.lastReturned = null;
-          HashMapInt.this.freeEntry(localEntry1);
-          return;
+        protected java.lang.Object clone()
+        {
+            return new Entry(key, value, next != null ? (com.maddox.util.Entry)next.clone() : null);
         }
-        localEntry2 = localEntry1; localEntry1 = localEntry1.next;
-      }
 
-      throw new ConcurrentModificationException();
+        public int getKey()
+        {
+            return key;
+        }
+
+        public java.lang.Object getValue()
+        {
+            return value;
+        }
+
+        public java.lang.Object setValue(java.lang.Object obj)
+        {
+            java.lang.Object obj1 = value;
+            value = obj;
+            return obj1;
+        }
+
+        public boolean equals(java.lang.Object obj)
+        {
+            if(!(obj instanceof com.maddox.util.HashMapIntEntry))
+            {
+                return false;
+            } else
+            {
+                com.maddox.util.HashMapIntEntry hashmapintentry = (com.maddox.util.HashMapIntEntry)obj;
+                return key == hashmapintentry.getKey() && (value != null ? value.equals(hashmapintentry.getValue()) : hashmapintentry.getValue() == null);
+            }
+        }
+
+        public int hashCode()
+        {
+            return key ^ (value != null ? value.hashCode() : 0);
+        }
+
+        public java.lang.String toString()
+        {
+            return key + "=" + value.toString();
+        }
+
+        int key;
+        java.lang.Object value;
+        com.maddox.util.Entry next;
+
+        Entry(int i, java.lang.Object obj, com.maddox.util.Entry entry)
+        {
+            key = i;
+            value = obj;
+            next = entry;
+        }
     }
-  }
 
-  private static class Entry
-    implements HashMapIntEntry
-  {
-    int key;
-    Object value;
-    Entry next;
 
-    Entry(int paramInt, Object paramObject, Entry paramEntry)
+    public HashMapInt(int i, float f)
     {
-      this.key = paramInt;
-      this.value = paramObject;
-      this.next = paramEntry;
+        modCount = 0;
+        entrySet = null;
+        values = null;
+        freeEntryList = null;
+        if(i < 0)
+            throw new IllegalArgumentException("Illegal Initial Capacity: " + i);
+        if(f <= 0.0F)
+            throw new IllegalArgumentException("Illegal Load factor: " + f);
+        if(i == 0)
+            i = 1;
+        loadFactor = f;
+        table = new com.maddox.util.Entry[i];
+        threshold = (int)((float)i * f);
     }
 
-    protected Object clone() {
-      return new Entry(this.key, this.value, this.next == null ? null : (Entry)this.next.clone());
-    }
-
-    public int getKey()
+    public HashMapInt(int i)
     {
-      return this.key;
+        this(i, 0.75F);
     }
 
-    public Object getValue() {
-      return this.value;
+    public HashMapInt()
+    {
+        this(101, 0.75F);
     }
 
-    public Object setValue(Object paramObject) {
-      Object localObject = this.value;
-      this.value = paramObject;
-      return localObject;
+    public HashMapInt(com.maddox.util.HashMapInt hashmapint)
+    {
+        this(java.lang.Math.max(2 * hashmapint.size(), 11), 0.75F);
+        putAll(hashmapint);
     }
 
-    public boolean equals(Object paramObject) {
-      if (!(paramObject instanceof HashMapIntEntry))
+    public int size()
+    {
+        return count;
+    }
+
+    public boolean isEmpty()
+    {
+        return count == 0;
+    }
+
+    public boolean equals(java.lang.Object obj)
+    {
+        return this == obj;
+    }
+
+    public com.maddox.util.HashMapIntEntry nextEntry(com.maddox.util.HashMapIntEntry hashmapintentry)
+    {
+        if(hashmapintentry == null)
+            nextEntryLock = modCount;
+        else
+        if(modCount != nextEntryLock)
+            throw new ConcurrentModificationException();
+        com.maddox.util.Entry entry = (com.maddox.util.Entry)hashmapintentry;
+        int i = 0;
+        if(entry != null)
+        {
+            if(entry.next != null)
+                return entry.next;
+            i = (entry.getKey() & 0x7fffffff) % table.length - 1;
+        } else
+        {
+            i = table.length - 1;
+        }
+        for(; i >= 0; i--)
+            if(table[i] != null)
+                return table[i];
+
+        return null;
+    }
+
+    public com.maddox.util.HashMapIntEntry getEntry(int i)
+    {
+        com.maddox.util.Entry aentry[] = table;
+        int j = i;
+        int k = (j & 0x7fffffff) % aentry.length;
+        for(com.maddox.util.Entry entry = aentry[k]; entry != null; entry = entry.next)
+            if(entry.key == i)
+                return entry;
+
+        return null;
+    }
+
+    public boolean containsValue(java.lang.Object obj)
+    {
+        com.maddox.util.Entry aentry[] = table;
+        if(obj == null)
+        {
+            for(int i = aentry.length; i-- > 0;)
+            {
+                com.maddox.util.Entry entry = aentry[i];
+                while(entry != null) 
+                {
+                    if(entry.value == null)
+                        return true;
+                    entry = entry.next;
+                }
+            }
+
+        } else
+        {
+            for(int j = aentry.length; j-- > 0;)
+            {
+                com.maddox.util.Entry entry1 = aentry[j];
+                while(entry1 != null) 
+                {
+                    if(obj.equals(entry1.value))
+                        return true;
+                    entry1 = entry1.next;
+                }
+            }
+
+        }
         return false;
-      HashMapIntEntry localHashMapIntEntry = (HashMapIntEntry)paramObject;
-
-      return (this.key == localHashMapIntEntry.getKey()) && (this.value == null ? localHashMapIntEntry.getValue() == null : this.value.equals(localHashMapIntEntry.getValue()));
     }
 
-    public int hashCode()
+    public boolean containsKey(int i)
     {
-      return this.key ^ (this.value == null ? 0 : this.value.hashCode());
+        com.maddox.util.Entry aentry[] = table;
+        int j = i;
+        int k = (j & 0x7fffffff) % aentry.length;
+        for(com.maddox.util.Entry entry = aentry[k]; entry != null; entry = entry.next)
+            if(entry.key == i)
+                return true;
+
+        return false;
     }
 
-    public String toString() {
-      return this.key + "=" + this.value.toString();
+    public int findNotUsedKey(int i, int j, int k)
+    {
+        com.maddox.util.Entry aentry[] = table;
+        if(i < k)
+        {
+            if(j < i || j >= k)
+                return k;
+            for(int l = j; l < k; l++)
+            {
+                com.maddox.util.Entry entry;
+                for(entry = aentry[(l & 0x7fffffff) % aentry.length]; entry != null && entry.key != l; entry = entry.next);
+                if(entry == null)
+                    return l;
+            }
+
+            for(int i1 = i; i1 < j; i1++)
+            {
+                com.maddox.util.Entry entry1;
+                for(entry1 = aentry[(i1 & 0x7fffffff) % aentry.length]; entry1 != null && entry1.key != i1; entry1 = entry1.next);
+                if(entry1 == null)
+                    return i1;
+            }
+
+        } else
+        if(i > k)
+        {
+            if(j > i || j <= k)
+                return k;
+            for(int j1 = j; j1 > k; j1--)
+            {
+                com.maddox.util.Entry entry2;
+                for(entry2 = aentry[(j1 & 0x7fffffff) % aentry.length]; entry2 != null && entry2.key != j1; entry2 = entry2.next);
+                if(entry2 == null)
+                    return j1;
+            }
+
+            for(int k1 = i; k1 > j; k1--)
+            {
+                com.maddox.util.Entry entry3;
+                for(entry3 = aentry[(k1 & 0x7fffffff) % aentry.length]; entry3 != null && entry3.key != k1; entry3 = entry3.next);
+                if(entry3 == null)
+                    return k1;
+            }
+
+        }
+        return k;
     }
-  }
+
+    public java.lang.Object get(int i)
+    {
+        com.maddox.util.Entry aentry[] = table;
+        int j = i;
+        int k = (j & 0x7fffffff) % aentry.length;
+        for(com.maddox.util.Entry entry = aentry[k]; entry != null; entry = entry.next)
+            if(entry.key == i)
+                return entry.value;
+
+        return null;
+    }
+
+    private void rehash()
+    {
+        int i = table.length;
+        com.maddox.util.Entry aentry[] = table;
+        int j = i * 2 + 1;
+        com.maddox.util.Entry aentry1[] = new com.maddox.util.Entry[j];
+        modCount++;
+        threshold = (int)((float)j * loadFactor);
+        table = aentry1;
+        for(int k = i; k-- > 0;)
+        {
+            com.maddox.util.Entry entry = aentry[k];
+            while(entry != null) 
+            {
+                com.maddox.util.Entry entry1 = entry;
+                entry = entry.next;
+                int l = (entry1.key & 0x7fffffff) % j;
+                entry1.next = aentry1[l];
+                aentry1[l] = entry1;
+            }
+        }
+
+    }
+
+    public java.lang.Object put(int i, java.lang.Object obj)
+    {
+        com.maddox.util.Entry aentry[] = table;
+        int j = i;
+        int k = 0;
+        k = (j & 0x7fffffff) % aentry.length;
+        for(com.maddox.util.Entry entry = aentry[k]; entry != null; entry = entry.next)
+            if(entry.key == i)
+            {
+                java.lang.Object obj1 = entry.value;
+                entry.value = obj;
+                return obj1;
+            }
+
+        modCount++;
+        if(count >= threshold)
+        {
+            rehash();
+            aentry = table;
+            k = (j & 0x7fffffff) % aentry.length;
+        }
+        com.maddox.util.Entry entry1 = allocEntry(i, obj, aentry[k]);
+        aentry[k] = entry1;
+        count++;
+        return null;
+    }
+
+    public java.lang.Object remove(int i)
+    {
+        com.maddox.util.Entry aentry[] = table;
+        int j = i;
+        int k = (j & 0x7fffffff) % aentry.length;
+        com.maddox.util.Entry entry = aentry[k];
+        com.maddox.util.Entry entry1 = null;
+        for(; entry != null; entry = entry.next)
+        {
+            if(entry.key == i)
+            {
+                modCount++;
+                if(entry1 != null)
+                    entry1.next = entry.next;
+                else
+                    aentry[k] = entry.next;
+                count--;
+                java.lang.Object obj = entry.value;
+                freeEntry(entry);
+                return obj;
+            }
+            entry1 = entry;
+        }
+
+        return null;
+    }
+
+    public void putAll(com.maddox.util.HashMapInt hashmapint)
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = hashmapint.nextEntry(null); hashmapintentry != null; hashmapintentry = hashmapint.nextEntry(hashmapintentry))
+            put(hashmapintentry.getKey(), hashmapintentry.getValue());
+
+    }
+
+    public void clear()
+    {
+        com.maddox.util.Entry aentry[] = table;
+        modCount++;
+        for(int i = aentry.length; --i >= 0;)
+        {
+            com.maddox.util.Entry entry1;
+            for(com.maddox.util.Entry entry = aentry[i]; entry != null; entry = entry1)
+            {
+                entry1 = entry.next;
+                freeEntry(entry);
+            }
+
+            aentry[i] = null;
+        }
+
+        count = 0;
+    }
+
+    public java.lang.Object clone()
+    {
+        com.maddox.util.HashMapInt hashmapint;
+        hashmapint = (com.maddox.util.HashMapInt)super.clone();
+        hashmapint.table = new com.maddox.util.Entry[table.length];
+        for(int i = table.length; i-- > 0;)
+            hashmapint.table[i] = table[i] == null ? null : (com.maddox.util.Entry)table[i].clone();
+
+        hashmapint.entrySet = null;
+        hashmapint.values = null;
+        hashmapint.modCount = 0;
+        return hashmapint;
+        java.lang.CloneNotSupportedException clonenotsupportedexception;
+        clonenotsupportedexception;
+        throw new InternalError();
+    }
+
+    public java.util.Collection values()
+    {
+        if(values == null)
+            values = new java.util.AbstractCollection() {
+
+                public java.util.Iterator iterator()
+                {
+                    return new HashIterator(1);
+                }
+
+                public int size()
+                {
+                    return count;
+                }
+
+                public boolean contains(java.lang.Object obj)
+                {
+                    return containsValue(obj);
+                }
+
+                public void clear()
+                {
+                    com.maddox.util.HashMapInt.this.clear();
+                }
+
+            }
+;
+        return values;
+    }
+
+    public java.util.Set entrySet()
+    {
+        if(entrySet == null)
+            entrySet = new java.util.AbstractSet() {
+
+                public java.util.Iterator iterator()
+                {
+                    return new HashIterator(2);
+                }
+
+                public boolean contains(java.lang.Object obj)
+                {
+                    if(!(obj instanceof com.maddox.util.HashMapIntEntry))
+                        return false;
+                    com.maddox.util.HashMapIntEntry hashmapintentry = (com.maddox.util.HashMapIntEntry)obj;
+                    int i = hashmapintentry.getKey();
+                    com.maddox.util.HashMapInt.Entry aentry[] = table;
+                    int j = i;
+                    int k = (j & 0x7fffffff) % aentry.length;
+                    for(com.maddox.util.HashMapInt.Entry entry = aentry[k]; entry != null; entry = entry.next)
+                        if(entry.key == i && entry.equals(hashmapintentry))
+                            return true;
+
+                    return false;
+                }
+
+                public boolean remove(java.lang.Object obj)
+                {
+                    if(!(obj instanceof com.maddox.util.HashMapIntEntry))
+                        return false;
+                    com.maddox.util.HashMapIntEntry hashmapintentry = (com.maddox.util.HashMapIntEntry)obj;
+                    int i = hashmapintentry.getKey();
+                    com.maddox.util.HashMapInt.Entry aentry[] = table;
+                    int j = i;
+                    int k = (j & 0x7fffffff) % aentry.length;
+                    com.maddox.util.HashMapInt.Entry entry = aentry[k];
+                    com.maddox.util.HashMapInt.Entry entry1 = null;
+                    for(; entry != null; entry = entry.next)
+                    {
+                        if(entry.key == i && entry.equals(hashmapintentry))
+                        {
+                            modCount++;
+                            if(entry1 != null)
+                                entry1.next = entry.next;
+                            else
+                                aentry[k] = entry.next;
+                            count--;
+                            freeEntry(entry);
+                            return true;
+                        }
+                        entry1 = entry;
+                    }
+
+                    return false;
+                }
+
+                public int size()
+                {
+                    return count;
+                }
+
+                public void clear()
+                {
+                    com.maddox.util.HashMapInt.this.clear();
+                }
+
+            }
+;
+        return entrySet;
+    }
+
+    private com.maddox.util.Entry allocEntry(int i, java.lang.Object obj, com.maddox.util.Entry entry)
+    {
+        if(freeEntryList == null)
+        {
+            return new Entry(i, obj, entry);
+        } else
+        {
+            com.maddox.util.Entry entry1 = freeEntryList;
+            freeEntryList = freeEntryList.next;
+            entry1.key = i;
+            entry1.value = obj;
+            entry1.next = entry;
+            return entry1;
+        }
+    }
+
+    private void freeEntry(com.maddox.util.Entry entry)
+    {
+        entry.value = null;
+        entry.next = freeEntryList;
+        freeEntryList = entry;
+    }
+
+    public void freeCachedMem()
+    {
+        freeEntryList = null;
+    }
+
+    private void writeObject(java.io.ObjectOutputStream objectoutputstream)
+        throws java.io.IOException
+    {
+        objectoutputstream.defaultWriteObject();
+        objectoutputstream.writeInt(table.length);
+        objectoutputstream.writeInt(count);
+        for(int i = table.length - 1; i >= 0; i--)
+        {
+            for(com.maddox.util.Entry entry = table[i]; entry != null; entry = entry.next)
+            {
+                objectoutputstream.writeInt(entry.key);
+                objectoutputstream.writeObject(entry.value);
+            }
+
+        }
+
+    }
+
+    private void readObject(java.io.ObjectInputStream objectinputstream)
+        throws java.io.IOException, java.lang.ClassNotFoundException
+    {
+        objectinputstream.defaultReadObject();
+        int i = objectinputstream.readInt();
+        table = new com.maddox.util.Entry[i];
+        int j = objectinputstream.readInt();
+        for(int k = 0; k < j; k++)
+        {
+            int l = objectinputstream.readInt();
+            java.lang.Object obj = objectinputstream.readObject();
+            put(l, obj);
+        }
+
+    }
+
+    int capacity()
+    {
+        return table.length;
+    }
+
+    float loadFactor()
+    {
+        return loadFactor;
+    }
+
+    private transient com.maddox.util.Entry table[];
+    private transient int count;
+    private int threshold;
+    private float loadFactor;
+    private transient int modCount;
+    private transient int nextEntryLock;
+    private transient java.util.Set entrySet;
+    private transient java.util.Collection values;
+    private com.maddox.util.Entry freeEntryList;
+    private static final int VALUES = 1;
+    private static final int ENTRIES = 2;
+
+
+
+
+
+
 }

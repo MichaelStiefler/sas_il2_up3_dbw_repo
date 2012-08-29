@@ -1,14 +1,35 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   FuelTank_Tank154gal.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class FuelTank_Tank154gal extends FuelTank
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            FuelTank
+
+public class FuelTank_Tank154gal extends com.maddox.il2.objects.weapons.FuelTank
 {
-  static
-  {
-    Class localClass = FuelTank_Tank154gal.class;
-    Property.set(localClass, "mesh", "3DO/Arms/Tank154gal/mono.sim");
-    Property.set(localClass, "kalibr", 0.6F);
-    Property.set(localClass, "massa", 445.0F);
-  }
+
+    public FuelTank_Tank154gal()
+    {
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.FuelTank_Tank154gal.class;
+        com.maddox.rts.Property.set(class1, "mesh", "3DO/Arms/Tank154gal/mono.sim");
+        com.maddox.rts.Property.set(class1, "kalibr", 0.6F);
+        com.maddox.rts.Property.set(class1, "massa", 445F);
+    }
 }

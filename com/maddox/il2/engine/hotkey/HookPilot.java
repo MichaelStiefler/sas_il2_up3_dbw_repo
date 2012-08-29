@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HookPilot.java
+
 package com.maddox.il2.engine.hotkey;
 
 import com.maddox.JGP.Point3d;
@@ -26,697 +31,923 @@ import com.maddox.rts.Time;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 
-public class HookPilot extends HookRender
+// Referenced classes of package com.maddox.il2.engine.hotkey:
+//            HookView
+
+public class HookPilot extends com.maddox.il2.engine.HookRender
 {
-  private float stepAzimut = 45.0F;
-  private float stepTangage = 30.0F;
-  private float maxAzimut = 155.0F;
-  private float maxTangage = 89.0F;
-  private float minTangage = -60.0F;
-  private float Azimut = 0.0F;
-  private float Tangage = 0.0F;
-  private float _Azimut = 0.0F;
-  private float _Tangage = 0.0F;
-  private long rprevTime = 0L;
-  private float Px;
-  private float Py;
-  private float Pz;
-  private float azimPadlock;
-  private float tangPadlock;
-  private float timeKoof = 1.0F;
-  private Orient o = new Orient();
-  private Orient op = new Orient();
-  private Loc le = new Loc();
-  private Point3d pe = new Point3d();
-  private Point3d pEnemyAbs = new Point3d();
-  private Vector3d Ve = new Vector3d();
-  private Point3d pAbs = new Point3d();
-  private Orient oAbs = new Orient();
-  private Actor target = null;
-  private Actor target2 = null;
-  private Actor enemy = null;
-  private long stamp = -1L;
-  private long prevTime = -1L;
-  private long roolTime = -1L;
-  private boolean bUse = false;
-  private boolean bPadlock = true;
-  private long tPadlockEnd = -1L;
-  private long tPadlockEndLen = 0L;
-  private boolean bPadlockEnd = false;
-  private boolean bForward = false;
-  private boolean bAim = false;
-  private boolean bUp = false;
-  private boolean bVisibleEnemy = true;
-  private boolean bSimpleUse = false;
 
-  private Point3d pCenter = new Point3d();
-  private Point3d pAim = new Point3d();
-  private Point3d pUp = new Point3d();
-
-  private static RangeRandom rnd = new RangeRandom();
-
-  private static Point3d P = new Point3d();
-  private static Vector3d tmpA = new Vector3d();
-  private static Vector3d tmpB = new Vector3d();
-  private static Vector3d headShift = new Vector3d();
-  private static Vector3d counterForce = new Vector3d();
-  private static long oldHeadTime = 0L;
-  private static double oldWx = 0.0D;
-  private static double oldWy = 0.0D;
-
-  private boolean bUseMouse = true;
-  private long timeViewSet = -2000L;
-  public static HookPilot current;
-  private static Orient oTmp = new Orient();
-  private static Orient oTmp2 = new Orient();
-  private static float shakeLVL;
-
-  public void resetGame()
-  {
-    this.enemy = null;
-    this.bUp = false;
-  }
-
-  public Point3d pCamera()
-  {
-    if (this.bAim) return this.pAim;
-    if (this.bUp) return this.pUp;
-    return this.pCenter;
-  }
-
-  public void setSimpleUse(boolean paramBoolean) {
-    this.bSimpleUse = paramBoolean;
-  }
-  public void setSimpleAimOrient(float paramFloat1, float paramFloat2, float paramFloat3) {
-    this.o.set(paramFloat1, paramFloat2, paramFloat3);
-    this.le.set(pCamera(), this.o);
-  }
-
-  public void setCenter(Point3d paramPoint3d) {
-    this.pCenter.set(paramPoint3d);
-  }
-  public void setAim(Point3d paramPoint3d) {
-    this.pAim.set(this.pCenter);
-    if (paramPoint3d != null)
-      this.pAim.set(paramPoint3d);
-    setUp(paramPoint3d);
-  }
-  public void setUp(Point3d paramPoint3d) {
-    this.pUp.set(this.pCenter);
-    if (paramPoint3d != null)
-      this.pUp.set(paramPoint3d); 
-  }
-
-  public void setSteps(float paramFloat1, float paramFloat2) {
-    this.stepAzimut = paramFloat1;
-    this.stepTangage = paramFloat2;
-  }
-  public void setMinMax(float paramFloat1, float paramFloat2, float paramFloat3) {
-    this.maxAzimut = paramFloat1;
-    this.minTangage = paramFloat2;
-    this.maxTangage = paramFloat3;
-  }
-
-  public void setForward(boolean paramBoolean) {
-    this.bForward = paramBoolean;
-  }
-  public void endPadlock() {
-    this.bPadlockEnd = true;
-  }
-
-  private void _reset() {
-    if (!AircraftHotKeys.bFirstHotCmd) {
-      this._Azimut = (this.Azimut = 0.0F);
-      this._Tangage = (this.Tangage = 0.0F);
-      this.o.set(0.0F, 0.0F, 0.0F);
-      this.le.set(pCamera(), this.o);
-    }
-    this.Px = (this.Py = this.Pz = 0.0F);
-
-    this.azimPadlock = 0.0F;
-    this.tangPadlock = 0.0F;
-    this.timeKoof = 1.0F;
-    this.prevTime = -1L;
-    this.roolTime = -1L;
-
-    this.enemy = null;
-
-    this.bPadlock = false;
-    this.tPadlockEnd = -1L;
-    this.tPadlockEndLen = 0L;
-    this.bPadlockEnd = false;
-    this.bForward = false;
-    if (!Main3D.cur3D().isDemoPlaying())
-      new MsgAction(64, 0.0D) {
-        public void doAction() { HotKeyCmd.exec("misc", "target_"); } } ;
-    this.timeViewSet = -2000L;
-
-    headShift.set(0.0D, 0.0D, 0.0D);
-    counterForce.set(0.0D, 0.0D, 0.0D);
-    oldHeadTime = -1L;
-    oldWx = 0.0D;
-    oldWy = 0.0D;
-  }
-
-  public void saveRecordedStates(PrintWriter paramPrintWriter) throws Exception {
-    paramPrintWriter.println(this.Azimut);
-    paramPrintWriter.println(this._Azimut);
-    paramPrintWriter.println(this.Tangage);
-    paramPrintWriter.println(this._Tangage);
-    paramPrintWriter.println(this.o.azimut());
-    paramPrintWriter.println(this.o.tangage());
-  }
-  public void loadRecordedStates(BufferedReader paramBufferedReader) throws Exception {
-    this.Azimut = Float.parseFloat(paramBufferedReader.readLine());
-    this._Azimut = Float.parseFloat(paramBufferedReader.readLine());
-    this.Tangage = Float.parseFloat(paramBufferedReader.readLine());
-    this._Tangage = Float.parseFloat(paramBufferedReader.readLine());
-    this.o.set(Float.parseFloat(paramBufferedReader.readLine()), Float.parseFloat(paramBufferedReader.readLine()), 0.0F);
-    this.le.set(pCamera(), this.o);
-  }
-
-  public void reset() {
-    this.stamp = -1L;
-
-    _reset();
-  }
-
-  private void setTimeKoof() {
-    long l = Time.current();
-    if (this.prevTime == -1L)
-      this.timeKoof = 1.0F;
-    else
-      this.timeKoof = ((float)(l - this.prevTime) / 30.0F);
-    this.prevTime = l;
-  }
-
-  private void headRoll(Aircraft paramAircraft)
-  {
-    if (!(paramAircraft.FM instanceof RealFlightModel)) {
-      return;
-    }
-    long l1 = this.roolTime - this.stamp;
-    if ((l1 >= 0L) && (l1 < 50L))
-      return;
-    this.roolTime = this.stamp;
-
-    shakeLVL = ((RealFlightModel)(RealFlightModel)paramAircraft.FM).shakeLevel;
-    float f2;
-    float f1;
-    float f3;
-    if (World.cur().diffCur.Head_Shake) {
-      long l2 = Time.current();
-      if (oldHeadTime == -1L) {
-        oldHeadTime = Time.current();
-        oldWx = paramAircraft.FM.getW().x;
-        oldWy = paramAircraft.FM.getW().y;
-      }
-      long l3 = l2 - oldHeadTime;
-      oldHeadTime = l2;
-      if (l3 > 200L) l3 = 200L;
-      double d2 = 0.003D * l3;
-      double d3 = paramAircraft.FM.getW().x - oldWx;
-      double d4 = paramAircraft.FM.getW().y - oldWy;
-      oldWx = paramAircraft.FM.getW().x;
-      if (d2 < 0.001D) d3 = 0.0D; else
-        d3 /= d2;
-      oldWy = paramAircraft.FM.getW().y;
-      if (d2 < 0.001D) d4 = 0.0D; else {
-        d4 /= d2;
-      }
-      if (paramAircraft.FM.Gears.onGround()) {
-        tmpA.set(0.0D, 0.0D, 0.0D);
-
-        headShift.scale(1.0D - d2);
-        tmpA.scale(d2);
-        headShift.add(tmpA);
-
-        f2 = (float)headShift.y;
-        f1 = (float)(headShift.x + 0.03F * shakeLVL * (0.5F - rnd.nextFloat()));
-        f3 = (float)(headShift.z + 1.2F * shakeLVL * (0.5F - rnd.nextFloat()));
-      }
-      else {
-        tmpB.set(0.0D, 0.0D, 0.0D);
-        tmpA.set(paramAircraft.FM.getAccel());
-        paramAircraft.FM.Or.transformInv(tmpA);
-        tmpA.scale(-0.6D);
-        if (tmpA.z > 0.0D) tmpA.z *= 0.8D;
-        tmpB.add(tmpA);
-
-        counterForce.scale(1.0D - 0.2D * d2);
-        tmpA.scale(0.2D * d2);
-        counterForce.add(tmpA);
-
-        tmpB.sub(counterForce);
-        counterForce.scale(1.0D - 0.05D * d2);
-        if (counterForce.z > 0.0D) counterForce.z *= (1.0D - 0.08D * d2);
-
-        tmpB.scale(0.08D);
-
-        tmpA.set(-0.7D * d4, d3, 0.0D);
-        tmpA.add(tmpB);
-
-        headShift.scale(1.0D - d2);
-        tmpA.scale(d2);
-        headShift.add(tmpA);
-
-        f2 = (float)headShift.y;
-        f1 = (float)(headShift.x + 0.3F * shakeLVL * (0.5F - rnd.nextFloat()));
-        f3 = (float)(headShift.z + 0.4F * shakeLVL * (0.5F - rnd.nextFloat()));
-      }
-    } else {
-      f2 = 0.0F;
-      f1 = 0.0F;
-      f3 = 0.0F;
-    }
-    if (World.cur().diffCur.Wind_N_Turbulence) {
-      float f4 = SpritesFog.dynamicFogAlpha;
-      double d1 = paramAircraft.pos.getAbsPoint().z;
-      if ((f4 > 0.01F) && (d1 > 300.0D) && (d1 < 2500.0D)) {
-        float f5 = paramAircraft.FM.getSpeed();
-        if (f5 > 138.88889F) f5 = 138.88889F;
-        f5 -= 55.555557F;
-        if (f5 < 0.0F) f5 = 0.0F;
-        f5 /= 83.333336F;
-        f2 += f5 * 0.05F * f4 * (0.5F - rnd.nextFloat());
-        f3 += f5 * 0.3F * f4 * (0.5F - rnd.nextFloat());
-      }
-    }
-    if ((f1 >= 1.0F) || (f1 <= -1.0F))
+    public void resetGame()
     {
-      if (f1 < -1.0F) f1 = -1.0F; else if (f1 > 1.0F) f1 = 1.0F; else
-        f1 = 0.0F;
+        enemy = null;
+        bUp = false;
     }
-    if ((f2 >= 1.0F) || (f2 <= -1.0F))
+
+    public com.maddox.JGP.Point3d pCamera()
     {
-      if (f2 < -1.0F) f2 = -1.0F; else if (f2 > 1.0F) f2 = 1.0F; else
-        f2 = 0.0F;
+        if(bAim)
+            return pAim;
+        if(bUp)
+            return pUp;
+        else
+            return pCenter;
     }
-    if ((f3 >= 1.0F) || (f3 <= -1.0F))
+
+    public void setSimpleUse(boolean flag)
     {
-      if (f3 < -1.0F) f3 = -1.0F; else if (f3 > 1.0F) f3 = 1.0F; else
-        f3 = 0.0F;
-    }
-    P.set(this.Px += (f1 * (this.bAim ? 0.01F : 0.03F) - this.Px) * 0.4F, this.Py += (f2 * (this.bAim ? 0.01F : 0.03F) - this.Py) * 0.4F, this.Pz += (f3 * (this.bAim ? 0.01F : 0.03F) - this.Pz) * 0.4F);
-
-    oTmp.set((float)(6.0D * P.y), (float)(6.0D * P.z), (float)(60.0D * P.y));
-    oTmp.increment(0.31F * rnd.nextFloat(-shakeLVL, shakeLVL), 0.31F * rnd.nextFloat(-shakeLVL, shakeLVL), 0.54F * rnd.nextFloat(-shakeLVL, shakeLVL));
-  }
-
-  public boolean isPadlock()
-  {
-    return this.bPadlock;
-  }
-  public Actor getEnemy() {
-    return this.enemy;
-  }
-  public void stopPadlock() {
-    if (!this.bPadlock) return;
-    this.stamp = -1L;
-    _reset();
-  }
-  public boolean startPadlock(Actor paramActor) {
-    if ((!this.bUse) || (this.bSimpleUse)) return false;
-    if (!Actor.isValid(paramActor)) {
-      this.bPadlock = false;
-      return false;
-    }
-    Aircraft localAircraft = World.getPlayerAircraft();
-    if (!Actor.isValid(localAircraft)) {
-      this.bPadlock = false;
-      return false;
+        bSimpleUse = flag;
     }
 
-    this.enemy = paramActor;
-
-    this.Azimut = this._Azimut;
-    this.Tangage = this._Tangage;
-    this.bPadlock = true;
-    this.bPadlockEnd = false;
-    this.bVisibleEnemy = true;
-
-    localAircraft.pos.getAbs(this.pAbs, this.oAbs);
-    Camera3D localCamera3D = (Camera3D)this.target2;
-    localCamera3D.pos.getAbs(this.o);
-    this.o.sub(this.oAbs);
-    this.azimPadlock = this.o.getAzimut();
-    this.tangPadlock = this.o.getTangage();
-    this.azimPadlock = ((this.azimPadlock + 3600.0F) % 360.0F);
-    if (this.azimPadlock > 180.0F) this.azimPadlock -= 360.0F;
-    this.stamp = -1L;
-
-    if (!Main3D.cur3D().isDemoPlaying())
-      new MsgAction(64, 0.0D) {
-        public void doAction() { HotKeyCmd.exec("misc", "target_"); } } ;
-    return true;
-  }
-  public boolean isAim() {
-    return this.bAim;
-  }
-  public void doAim(boolean paramBoolean) {
-    if (this.bAim == paramBoolean) return;
-    this.bAim = paramBoolean;
-  }
-
-  public boolean isUp()
-  {
-    return this.bUp;
-  }
-  public void doUp(boolean paramBoolean) {
-    if (this.bUp == paramBoolean) return;
-    this.bUp = paramBoolean;
-  }
-
-  private float bvalue(float paramFloat1, float paramFloat2, long paramLong)
-  {
-    float f = HookView.koofSpeed * (float)paramLong / 30.0F;
-    if (paramFloat1 == paramFloat2) return paramFloat1;
-    if (paramFloat1 > paramFloat2) {
-      if (paramFloat1 < paramFloat2 + f) return paramFloat1;
-      return paramFloat2 + f;
+    public void setSimpleAimOrient(float f, float f1, float f2)
+    {
+        o.set(f, f1, f2);
+        le.set(pCamera(), o);
     }
-    if (paramFloat1 > paramFloat2 - f) return paramFloat1;
-    return paramFloat2 - f;
-  }
 
-  public boolean computeRenderPos(Actor paramActor, Loc paramLoc1, Loc paramLoc2) {
-    if (this.bUse) {
-      if (this.bPadlock) {
-        Aircraft localAircraft1 = World.getPlayerAircraft();
-        if (!Actor.isValid(localAircraft1)) {
-          reset();
-          paramLoc2.add(this.le, paramLoc1);
-          return true;
+    public void setCenter(com.maddox.JGP.Point3d point3d)
+    {
+        pCenter.set(point3d);
+    }
+
+    public void setAim(com.maddox.JGP.Point3d point3d)
+    {
+        pAim.set(pCenter);
+        if(point3d != null)
+            pAim.set(point3d);
+        setUp(point3d);
+    }
+
+    public void setUp(com.maddox.JGP.Point3d point3d)
+    {
+        pUp.set(pCenter);
+        if(point3d != null)
+            pUp.set(point3d);
+    }
+
+    public void setSteps(float f, float f1)
+    {
+        stepAzimut = f;
+        stepTangage = f1;
+    }
+
+    public void setMinMax(float f, float f1, float f2)
+    {
+        maxAzimut = f;
+        minTangage = f1;
+        maxTangage = f2;
+    }
+
+    public void setForward(boolean flag)
+    {
+        bForward = flag;
+    }
+
+    public void endPadlock()
+    {
+        bPadlockEnd = true;
+    }
+
+    private void _reset()
+    {
+        if(!com.maddox.il2.game.AircraftHotKeys.bFirstHotCmd)
+        {
+            _Azimut = Azimut = 0.0F;
+            _Tangage = Tangage = 0.0F;
+            o.set(0.0F, 0.0F, 0.0F);
+            le.set(pCamera(), o);
         }
-        long l2 = Time.current();
-        if ((l2 != this.stamp) && (this.enemy.pos != null) && (localAircraft1.pos != null)) {
-          this.stamp = l2;
-          setTimeKoof();
-          this.enemy.pos.getRender(this.pe);
-          this.pEnemyAbs.set(this.pe);
-          localAircraft1.pos.getRender(this.pAbs, this.oAbs);
-          this.Ve.sub(this.pe, this.pAbs);
-          this.o.setAT0(this.Ve);
-          if ((World.cur().diffCur.Head_Shake) || (World.cur().diffCur.Wind_N_Turbulence)) {
-            headRoll(localAircraft1);
-            this.pe.add(pCamera(), P);
-            this.le.set(this.pe);
-          } else {
-            this.le.set(pCamera());
-          }
-          this.o.sub(this.oAbs);
-          padlockSet(this.o);
-          this.op.set(this.o);
-          this.op.add(this.oAbs);
+        Px = Py = Pz = 0.0F;
+        azimPadlock = 0.0F;
+        tangPadlock = 0.0F;
+        timeKoof = 1.0F;
+        prevTime = -1L;
+        roolTime = -1L;
+        enemy = null;
+        bPadlock = false;
+        tPadlockEnd = -1L;
+        tPadlockEndLen = 0L;
+        bPadlockEnd = false;
+        bForward = false;
+        if(!com.maddox.il2.game.Main3D.cur3D().isDemoPlaying())
+            new com.maddox.rts.MsgAction(64, 0.0D) {
+
+                public void doAction()
+                {
+                    com.maddox.rts.HotKeyCmd.exec("misc", "target_");
+                }
+
+            }
+;
+        timeViewSet = -2000L;
+        headShift.set(0.0D, 0.0D, 0.0D);
+        counterForce.set(0.0D, 0.0D, 0.0D);
+        oldHeadTime = -1L;
+        oldWx = 0.0D;
+        oldWy = 0.0D;
+    }
+
+    public void saveRecordedStates(java.io.PrintWriter printwriter)
+        throws java.lang.Exception
+    {
+        printwriter.println(Azimut);
+        printwriter.println(_Azimut);
+        printwriter.println(Tangage);
+        printwriter.println(_Tangage);
+        printwriter.println(o.azimut());
+        printwriter.println(o.tangage());
+    }
+
+    public void loadRecordedStates(java.io.BufferedReader bufferedreader)
+        throws java.lang.Exception
+    {
+        Azimut = java.lang.Float.parseFloat(bufferedreader.readLine());
+        _Azimut = java.lang.Float.parseFloat(bufferedreader.readLine());
+        Tangage = java.lang.Float.parseFloat(bufferedreader.readLine());
+        _Tangage = java.lang.Float.parseFloat(bufferedreader.readLine());
+        o.set(java.lang.Float.parseFloat(bufferedreader.readLine()), java.lang.Float.parseFloat(bufferedreader.readLine()), 0.0F);
+        le.set(pCamera(), o);
+    }
+
+    public void reset()
+    {
+        stamp = -1L;
+        _reset();
+    }
+
+    private void setTimeKoof()
+    {
+        long l = com.maddox.rts.Time.current();
+        if(prevTime == -1L)
+            timeKoof = 1.0F;
+        else
+            timeKoof = (float)(l - prevTime) / 30F;
+        prevTime = l;
+    }
+
+    private void headRoll(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        if(!(aircraft.FM instanceof com.maddox.il2.fm.RealFlightModel))
+            return;
+        long l = roolTime - stamp;
+        if(l >= 0L && l < 50L)
+            return;
+        roolTime = stamp;
+        shakeLVL = ((com.maddox.il2.fm.RealFlightModel)(com.maddox.il2.fm.RealFlightModel)aircraft.FM).shakeLevel;
+        float f;
+        float f1;
+        float f2;
+        if(com.maddox.il2.ai.World.cur().diffCur.Head_Shake)
+        {
+            long l1 = com.maddox.rts.Time.current();
+            if(oldHeadTime == -1L)
+            {
+                oldHeadTime = com.maddox.rts.Time.current();
+                oldWx = aircraft.FM.getW().x;
+                oldWy = aircraft.FM.getW().y;
+            }
+            long l2 = l1 - oldHeadTime;
+            oldHeadTime = l1;
+            if(l2 > 200L)
+                l2 = 200L;
+            double d1 = 0.0030000000000000001D * (double)l2;
+            double d2 = aircraft.FM.getW().x - oldWx;
+            double d3 = aircraft.FM.getW().y - oldWy;
+            oldWx = aircraft.FM.getW().x;
+            if(d1 < 0.001D)
+                d2 = 0.0D;
+            else
+                d2 /= d1;
+            oldWy = aircraft.FM.getW().y;
+            if(d1 < 0.001D)
+                d3 = 0.0D;
+            else
+                d3 /= d1;
+            if(aircraft.FM.Gears.onGround())
+            {
+                tmpA.set(0.0D, 0.0D, 0.0D);
+                headShift.scale(1.0D - d1);
+                tmpA.scale(d1);
+                headShift.add(tmpA);
+                f1 = (float)headShift.y;
+                f = (float)(headShift.x + (double)(0.03F * shakeLVL * (0.5F - rnd.nextFloat())));
+                f2 = (float)(headShift.z + (double)(1.2F * shakeLVL * (0.5F - rnd.nextFloat())));
+            } else
+            {
+                tmpB.set(0.0D, 0.0D, 0.0D);
+                tmpA.set(aircraft.FM.getAccel());
+                aircraft.FM.Or.transformInv(tmpA);
+                tmpA.scale(-0.59999999999999998D);
+                if(tmpA.z > 0.0D)
+                    tmpA.z *= 0.80000000000000004D;
+                tmpB.add(tmpA);
+                counterForce.scale(1.0D - 0.20000000000000001D * d1);
+                tmpA.scale(0.20000000000000001D * d1);
+                counterForce.add(tmpA);
+                tmpB.sub(counterForce);
+                counterForce.scale(1.0D - 0.050000000000000003D * d1);
+                if(counterForce.z > 0.0D)
+                    counterForce.z *= 1.0D - 0.080000000000000002D * d1;
+                tmpB.scale(0.080000000000000002D);
+                tmpA.set(-0.69999999999999996D * d3, d2, 0.0D);
+                tmpA.add(tmpB);
+                headShift.scale(1.0D - d1);
+                tmpA.scale(d1);
+                headShift.add(tmpA);
+                f1 = (float)headShift.y;
+                f = (float)(headShift.x + (double)(0.3F * shakeLVL * (0.5F - rnd.nextFloat())));
+                f2 = (float)(headShift.z + (double)(0.4F * shakeLVL * (0.5F - rnd.nextFloat())));
+            }
+        } else
+        {
+            f1 = 0.0F;
+            f = 0.0F;
+            f2 = 0.0F;
         }
-        paramLoc2.add(this.le, paramLoc1);
-        paramLoc2.set(this.op);
+        if(com.maddox.il2.ai.World.cur().diffCur.Wind_N_Turbulence)
+        {
+            float f3 = com.maddox.il2.objects.effects.SpritesFog.dynamicFogAlpha;
+            double d = aircraft.pos.getAbsPoint().z;
+            if(f3 > 0.01F && d > 300D && d < 2500D)
+            {
+                float f4 = aircraft.FM.getSpeed();
+                if(f4 > 138.8889F)
+                    f4 = 138.8889F;
+                f4 -= 55.55556F;
+                if(f4 < 0.0F)
+                    f4 = 0.0F;
+                f4 /= 83.33334F;
+                f1 += f4 * 0.05F * f3 * (0.5F - rnd.nextFloat());
+                f2 += f4 * 0.3F * f3 * (0.5F - rnd.nextFloat());
+            }
+        }
+        if(f >= 1.0F || f <= -1F)
+            if(f < -1F)
+                f = -1F;
+            else
+            if(f > 1.0F)
+                f = 1.0F;
+            else
+                f = 0.0F;
+        if(f1 >= 1.0F || f1 <= -1F)
+            if(f1 < -1F)
+                f1 = -1F;
+            else
+            if(f1 > 1.0F)
+                f1 = 1.0F;
+            else
+                f1 = 0.0F;
+        if(f2 >= 1.0F || f2 <= -1F)
+            if(f2 < -1F)
+                f2 = -1F;
+            else
+            if(f2 > 1.0F)
+                f2 = 1.0F;
+            else
+                f2 = 0.0F;
+        P.set(Px += (f * (bAim ? 0.01F : 0.03F) - Px) * 0.4F, Py += (f1 * (bAim ? 0.01F : 0.03F) - Py) * 0.4F, Pz += (f2 * (bAim ? 0.01F : 0.03F) - Pz) * 0.4F);
+        oTmp.set((float)(6D * P.y), (float)(6D * P.z), (float)(60D * P.y));
+        oTmp.increment(0.31F * rnd.nextFloat(-shakeLVL, shakeLVL), 0.31F * rnd.nextFloat(-shakeLVL, shakeLVL), 0.54F * rnd.nextFloat(-shakeLVL, shakeLVL));
+    }
+
+    public boolean isPadlock()
+    {
+        return bPadlock;
+    }
+
+    public com.maddox.il2.engine.Actor getEnemy()
+    {
+        return enemy;
+    }
+
+    public void stopPadlock()
+    {
+        if(!bPadlock)
+        {
+            return;
+        } else
+        {
+            stamp = -1L;
+            _reset();
+            return;
+        }
+    }
+
+    public boolean startPadlock(com.maddox.il2.engine.Actor actor)
+    {
+        if(!bUse || bSimpleUse)
+            return false;
+        if(!com.maddox.il2.engine.Actor.isValid(actor))
+        {
+            bPadlock = false;
+            return false;
+        }
+        com.maddox.il2.objects.air.Aircraft aircraft = com.maddox.il2.ai.World.getPlayerAircraft();
+        if(!com.maddox.il2.engine.Actor.isValid(aircraft))
+        {
+            bPadlock = false;
+            return false;
+        }
+        enemy = actor;
+        Azimut = _Azimut;
+        Tangage = _Tangage;
+        bPadlock = true;
+        bPadlockEnd = false;
+        bVisibleEnemy = true;
+        aircraft.pos.getAbs(pAbs, oAbs);
+        com.maddox.il2.engine.Camera3D camera3d = (com.maddox.il2.engine.Camera3D)target2;
+        camera3d.pos.getAbs(o);
+        o.sub(oAbs);
+        azimPadlock = o.getAzimut();
+        tangPadlock = o.getTangage();
+        azimPadlock = (azimPadlock + 3600F) % 360F;
+        if(azimPadlock > 180F)
+            azimPadlock -= 360F;
+        stamp = -1L;
+        if(!com.maddox.il2.game.Main3D.cur3D().isDemoPlaying())
+            new com.maddox.rts.MsgAction(64, 0.0D) {
+
+                public void doAction()
+                {
+                    com.maddox.rts.HotKeyCmd.exec("misc", "target_");
+                }
+
+            }
+;
         return true;
-      }
-      long l1 = Time.currentReal();
-      if ((l1 != this.rprevTime) && (!this.bSimpleUse)) {
-        long l3 = l1 - this.rprevTime;
-        this.rprevTime = l1;
-        if ((this._Azimut != this.Azimut) || (this._Tangage != this.Tangage)) {
-          this.Azimut = bvalue(this._Azimut, this.Azimut, l3);
-          this.Tangage = bvalue(this._Tangage, this.Tangage, l3);
-          this.o.set(this.Azimut, this.Tangage, 0.0F);
-        }
-      }
-
-      if (((World.cur().diffCur.Head_Shake) || (World.cur().diffCur.Wind_N_Turbulence)) && (!this.bSimpleUse))
-      {
-        Aircraft localAircraft2 = World.getPlayerAircraft();
-        if (Actor.isValid(localAircraft2)) {
-          l1 = Time.current();
-          if (l1 != this.stamp) {
-            this.stamp = l1;
-            headRoll(localAircraft2);
-          }
-        }
-        this.pe.add(pCamera(), P);
-
-        oTmp2.set(this.o);
-        oTmp2.increment(oTmp);
-        this.le.set(this.pe, oTmp2);
-      }
-      else {
-        this.le.set(pCamera(), this.o);
-      }
-      paramLoc2.add(this.le, paramLoc1);
-    } else {
-      paramLoc2.set(paramLoc1);
-    }
-    return true;
-  }
-
-  public void computePos(Actor paramActor, Loc paramLoc1, Loc paramLoc2) {
-    if (this.bUse) {
-      if ((Time.isPaused()) && (!this.bPadlock)) {
-        if (World.cur().diffCur.Head_Shake) {
-          this.pe.add(pCamera(), P);
-          this.le.set(this.pe, this.o);
-        } else {
-          this.le.set(pCamera(), this.o);
-        }
-        paramLoc2.add(this.le, paramLoc1);
-        return;
-      }
-      paramLoc2.add(this.le, paramLoc1);
-      if (this.bPadlock)
-        paramLoc2.set(this.op);
-    } else {
-      paramLoc2.set(paramLoc1);
-    }
-  }
-
-  private float avalue(float paramFloat1, float paramFloat2) {
-    if (paramFloat1 >= 0.0F) {
-      if (paramFloat1 <= paramFloat2) return 0.0F;
-      return paramFloat1 - paramFloat2;
-    }
-    if (paramFloat1 >= -paramFloat2) return 0.0F;
-    return paramFloat1 + paramFloat2;
-  }
-
-  private float bvalue(float paramFloat1, float paramFloat2) {
-    float f = HookView.koofSpeed * 4.0F / 6.0F * this.timeKoof;
-    if (paramFloat1 > paramFloat2) {
-      if (paramFloat1 < paramFloat2 + f) return paramFloat1;
-      return paramFloat2 + f;
-    }
-    if (paramFloat1 > paramFloat2 - f) return paramFloat1;
-    return paramFloat2 - f;
-  }
-
-  private void padlockSet(Orient paramOrient) {
-    float f1 = paramOrient.getAzimut();
-    float f2 = paramOrient.getTangage();
-    if ((this.bPadlockEnd) || (this.bForward)) {
-      f1 = f2 = 0.0F;
-      this.tPadlockEnd = -1L;
-    } else {
-      Camera3D localCamera3D = (Camera3D)this.target2;
-
-      float f3 = localCamera3D.FOV() * 0.3F;
-      float f4 = f3 / localCamera3D.aspect();
-      f1 = (f1 + 3600.0F) % 360.0F;
-      if (f1 > 180.0F) f1 -= 360.0F;
-
-      f1 = avalue(f1, f3);
-      f2 = avalue(f2, f4);
-      int i = 0;
-      if (f1 < -this.maxAzimut) { f1 = -this.maxAzimut; i = 1; }
-      if (f1 > this.maxAzimut) { f1 = this.maxAzimut; i = 1; }
-      if (f2 < this.minTangage) { f2 = this.minTangage; i = 1;
-      }
-      if ((i != 0) || (!this.bVisibleEnemy) || (!Actor.isAlive(this.enemy))) {
-        if (this.tPadlockEnd != -1L) {
-          this.tPadlockEndLen += Time.current() - this.tPadlockEnd;
-        }
-        this.tPadlockEnd = Time.current();
-        if (this.tPadlockEndLen > 4000L) {
-          this.bPadlockEnd = true;
-          this.tPadlockEnd = -1L;
-          this.tPadlockEndLen = 0L;
-        }
-      } else {
-        this.tPadlockEnd = -1L;
-        this.tPadlockEndLen = 0L;
-      }
     }
 
-    f1 = bvalue(f1, this.azimPadlock);
-    f2 = bvalue(f2, this.tangPadlock);
-    paramOrient.set(f1, f2, 0.0F);
-    this.azimPadlock = f1;
-    this.tangPadlock = f2;
-
-    if ((this.bPadlockEnd) && 
-      (-1.0F < this.azimPadlock) && (this.azimPadlock < 1.0F) && (-1.0F < this.tangPadlock) && (this.tangPadlock < 1.0F))
+    public boolean isAim()
     {
-      this.stamp = -1L;
-      _reset();
+        return bAim;
     }
-  }
 
-  public void checkPadlockState()
-  {
-    if (!this.bPadlock) return;
-    if (!Actor.isAlive(this.enemy)) return;
-
-    VisibilityChecker.checkLandObstacle = true;
-    VisibilityChecker.checkCabinObstacle = true;
-    VisibilityChecker.checkPlaneObstacle = true;
-    VisibilityChecker.checkObjObstacle = true;
-    this.bVisibleEnemy = (VisibilityChecker.computeVisibility(null, this.enemy) > 0.0F);
-  }
-
-  public void setTarget(Actor paramActor)
-  {
-    this.target = paramActor; } 
-  public void setTarget2(Actor paramActor) { this.target2 = paramActor; } 
-  public boolean use(boolean paramBoolean) {
-    boolean bool = this.bUse;
-    this.bUse = paramBoolean;
-    if (Actor.isValid(this.target))
-      this.target.pos.inValidate(true);
-    if (Actor.isValid(this.target2))
-      this.target2.pos.inValidate(true);
-    return bool;
-  }
-  public boolean useMouse(boolean paramBoolean) {
-    boolean bool = this.bUseMouse;
-    this.bUseMouse = paramBoolean;
-    return bool;
-  }
-
-  public void mouseMove(int paramInt1, int paramInt2, int paramInt3)
-  {
-    if ((!this.bUse) || (this.bPadlock) || (this.bSimpleUse)) return;
-    if ((this.bUseMouse) && (Time.real() > this.timeViewSet + 1000L)) {
-      float f1 = (this.o.azimut() + paramInt1 * HookView.koofAzimut) % 360.0F;
-      if (f1 > 180.0F) f1 -= 360.0F;
-      else if (f1 < -180.0F) f1 += 360.0F;
-      if (f1 < -this.maxAzimut) {
-        if (paramInt1 <= 0) f1 = -this.maxAzimut; else
-          f1 = this.maxAzimut;
-      } else if (f1 > this.maxAzimut) {
-        if (paramInt1 >= 0) f1 = this.maxAzimut; else
-          f1 = -this.maxAzimut;
-      }
-      float f2 = (this.o.tangage() + paramInt2 * HookView.koofTangage) % 360.0F;
-      if (f2 > 180.0F) f2 -= 360.0F;
-      else if (f2 < -180.0F) f2 += 360.0F;
-      if (f2 < this.minTangage) {
-        if (paramInt2 <= 0) f2 = this.minTangage; else
-          f2 = this.maxTangage;
-      } else if (f2 > this.maxTangage) {
-        if (paramInt2 >= 0) f2 = this.maxTangage; else
-          f2 = this.minTangage;
-      }
-      this.o.set(f1, f2, 0.0F);
-
-      if (Actor.isValid(this.target))
-        this.target.pos.inValidate(true);
-      if (Actor.isValid(this.target2))
-        this.target2.pos.inValidate(true);
-      this.Azimut = this._Azimut;
-      this.Tangage = this._Tangage;
+    public void doAim(boolean flag)
+    {
+        if(bAim == flag)
+        {
+            return;
+        } else
+        {
+            bAim = flag;
+            return;
+        }
     }
-  }
 
-  public void viewSet(float paramFloat1, float paramFloat2) {
-    if ((!this.bUse) || (this.bPadlock) || (this.bSimpleUse)) return;
-    if (this.bUseMouse) {
-      this.timeViewSet = Time.real();
-
-      paramFloat1 %= 360.0F;
-      if (paramFloat1 > 180.0F) paramFloat1 -= 360.0F;
-      else if (paramFloat1 < -180.0F) paramFloat1 += 360.0F;
-      paramFloat2 %= 360.0F;
-      if (paramFloat2 > 180.0F) paramFloat2 -= 360.0F;
-      else if (paramFloat2 < -180.0F) paramFloat2 += 360.0F;
-
-      if (paramFloat1 < -this.maxAzimut) paramFloat1 = -this.maxAzimut;
-      else if (paramFloat1 > this.maxAzimut) paramFloat1 = this.maxAzimut;
-      if (paramFloat2 > this.maxTangage) paramFloat2 = this.maxTangage;
-      else if (paramFloat2 < this.minTangage) paramFloat2 = this.minTangage;
-
-      this._Azimut = (this.Azimut = paramFloat1);
-      this._Tangage = (this.Tangage = paramFloat2);
-      this.o.set(paramFloat1, paramFloat2, 0.0F);
-
-      if (Actor.isValid(this.target))
-        this.target.pos.inValidate(true);
-      if (Actor.isValid(this.target2))
-        this.target2.pos.inValidate(true);
+    public boolean isUp()
+    {
+        return bUp;
     }
-  }
 
-  public void snapSet(float paramFloat1, float paramFloat2)
-  {
-    if ((!this.bUse) || (this.bPadlock) || (this.bSimpleUse)) return;
-    this._Azimut = (45.0F * paramFloat1);
-    this._Tangage = (44.0F * paramFloat2);
-
-    this.Azimut = (this.o.azimut() % 360.0F);
-    if (this.Azimut > 180.0F) this.Azimut -= 360.0F;
-    else if (this.Azimut < -180.0F) this.Azimut += 360.0F;
-    this.Tangage = (this.o.tangage() % 360.0F);
-    if (this.Tangage > 180.0F) this.Tangage -= 360.0F;
-    else if (this.Tangage < -180.0F) this.Tangage += 360.0F;
-
-    if (Actor.isValid(this.target))
-      this.target.pos.inValidate(true);
-    if (Actor.isValid(this.target2))
-      this.target2.pos.inValidate(true);
-  }
-
-  public void panSet(int paramInt1, int paramInt2) {
-    if ((!this.bUse) || (this.bPadlock) || (this.bSimpleUse)) return;
-    if ((paramInt1 == 0) && (paramInt2 == 0)) {
-      this._Azimut = 0.0F;
-      this._Tangage = 0.0F;
+    public void doUp(boolean flag)
+    {
+        if(bUp == flag)
+        {
+            return;
+        } else
+        {
+            bUp = flag;
+            return;
+        }
     }
-    int i;
-    if (this._Azimut == -this.maxAzimut) {
-      i = (int)(this._Azimut / this.stepAzimut);
-      if (-this._Azimut % this.stepAzimut > 0.01F * this.stepAzimut) i--;
-      this._Azimut = (i * this.stepAzimut);
-    } else if (this._Azimut == this.maxAzimut) {
-      i = (int)(this._Azimut / this.stepAzimut);
-      if (this._Azimut % this.stepAzimut > 0.01F * this.stepAzimut) i++;
-      this._Azimut = (i * this.stepAzimut);
+
+    private float bvalue(float f, float f1, long l)
+    {
+        float f2 = (com.maddox.il2.engine.hotkey.HookView.koofSpeed * (float)l) / 30F;
+        if(f == f1)
+            return f;
+        if(f > f1)
+            if(f < f1 + f2)
+                return f;
+            else
+                return f1 + f2;
+        if(f > f1 - f2)
+            return f;
+        else
+            return f1 - f2;
     }
-    this._Azimut = (paramInt1 * this.stepAzimut + this._Azimut);
-    if (this._Azimut < -this.maxAzimut) this._Azimut = (-this.maxAzimut);
-    if (this._Azimut > this.maxAzimut) this._Azimut = this.maxAzimut;
 
-    this._Tangage = (paramInt2 * this.stepTangage + this._Tangage);
-    if (this._Tangage < this.minTangage) this._Tangage = this.minTangage;
-    if (this._Tangage > this.maxTangage) this._Tangage = this.maxTangage;
+    public boolean computeRenderPos(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1)
+    {
+        if(bUse)
+        {
+            if(bPadlock)
+            {
+                com.maddox.il2.objects.air.Aircraft aircraft = com.maddox.il2.ai.World.getPlayerAircraft();
+                if(!com.maddox.il2.engine.Actor.isValid(aircraft))
+                {
+                    reset();
+                    loc1.add(le, loc);
+                    return true;
+                }
+                long l2 = com.maddox.rts.Time.current();
+                if(l2 != stamp && enemy.pos != null && aircraft.pos != null)
+                {
+                    stamp = l2;
+                    setTimeKoof();
+                    enemy.pos.getRender(pe);
+                    pEnemyAbs.set(pe);
+                    aircraft.pos.getRender(pAbs, oAbs);
+                    Ve.sub(pe, pAbs);
+                    o.setAT0(Ve);
+                    if(com.maddox.il2.ai.World.cur().diffCur.Head_Shake || com.maddox.il2.ai.World.cur().diffCur.Wind_N_Turbulence)
+                    {
+                        headRoll(aircraft);
+                        pe.add(pCamera(), P);
+                        le.set(pe);
+                    } else
+                    {
+                        le.set(pCamera());
+                    }
+                    o.sub(oAbs);
+                    padlockSet(o);
+                    op.set(o);
+                    op.add(oAbs);
+                }
+                loc1.add(le, loc);
+                loc1.set(op);
+                return true;
+            }
+            long l = com.maddox.rts.Time.currentReal();
+            if(l != rprevTime && !bSimpleUse)
+            {
+                long l3 = l - rprevTime;
+                rprevTime = l;
+                if(_Azimut != Azimut || _Tangage != Tangage)
+                {
+                    Azimut = bvalue(_Azimut, Azimut, l3);
+                    Tangage = bvalue(_Tangage, Tangage, l3);
+                    o.set(Azimut, Tangage, 0.0F);
+                }
+            }
+            if((com.maddox.il2.ai.World.cur().diffCur.Head_Shake || com.maddox.il2.ai.World.cur().diffCur.Wind_N_Turbulence) && !bSimpleUse)
+            {
+                com.maddox.il2.objects.air.Aircraft aircraft1 = com.maddox.il2.ai.World.getPlayerAircraft();
+                if(com.maddox.il2.engine.Actor.isValid(aircraft1))
+                {
+                    long l1 = com.maddox.rts.Time.current();
+                    if(l1 != stamp)
+                    {
+                        stamp = l1;
+                        headRoll(aircraft1);
+                    }
+                }
+                pe.add(pCamera(), P);
+                oTmp2.set(o);
+                oTmp2.increment(oTmp);
+                le.set(pe, oTmp2);
+            } else
+            {
+                le.set(pCamera(), o);
+            }
+            loc1.add(le, loc);
+        } else
+        {
+            loc1.set(loc);
+        }
+        return true;
+    }
 
-    this.Azimut = (this.o.azimut() % 360.0F);
-    if (this.Azimut > 180.0F) this.Azimut -= 360.0F;
-    else if (this.Azimut < -180.0F) this.Azimut += 360.0F;
-    this.Tangage = (this.o.tangage() % 360.0F);
-    if (this.Tangage > 180.0F) this.Tangage -= 360.0F;
-    else if (this.Tangage < -180.0F) this.Tangage += 360.0F;
+    public void computePos(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Loc loc, com.maddox.il2.engine.Loc loc1)
+    {
+        if(bUse)
+        {
+            if(com.maddox.rts.Time.isPaused() && !bPadlock)
+            {
+                if(com.maddox.il2.ai.World.cur().diffCur.Head_Shake)
+                {
+                    pe.add(pCamera(), P);
+                    le.set(pe, o);
+                } else
+                {
+                    le.set(pCamera(), o);
+                }
+                loc1.add(le, loc);
+                return;
+            }
+            loc1.add(le, loc);
+            if(bPadlock)
+                loc1.set(op);
+        } else
+        {
+            loc1.set(loc);
+        }
+    }
 
-    if (Actor.isValid(this.target))
-      this.target.pos.inValidate(true);
-    if (Actor.isValid(this.target2))
-      this.target2.pos.inValidate(true);
-  }
+    private float avalue(float f, float f1)
+    {
+        if(f >= 0.0F)
+            if(f <= f1)
+                return 0.0F;
+            else
+                return f - f1;
+        if(f >= -f1)
+            return 0.0F;
+        else
+            return f + f1;
+    }
 
-  public static HookPilot New()
-  {
-    if (current == null)
-      current = new HookPilot();
-    return current;
-  }
-  public static HookPilot cur() {
-    return New();
-  }
+    private float bvalue(float f, float f1)
+    {
+        float f2 = ((com.maddox.il2.engine.hotkey.HookView.koofSpeed * 4F) / 6F) * timeKoof;
+        if(f > f1)
+            if(f < f1 + f2)
+                return f;
+            else
+                return f1 + f2;
+        if(f > f1 - f2)
+            return f;
+        else
+            return f1 - f2;
+    }
+
+    private void padlockSet(com.maddox.il2.engine.Orient orient)
+    {
+        float f = orient.getAzimut();
+        float f1 = orient.getTangage();
+        if(bPadlockEnd || bForward)
+        {
+            f = f1 = 0.0F;
+            tPadlockEnd = -1L;
+        } else
+        {
+            com.maddox.il2.engine.Camera3D camera3d = (com.maddox.il2.engine.Camera3D)target2;
+            float f2 = camera3d.FOV() * 0.3F;
+            float f3 = f2 / camera3d.aspect();
+            f = (f + 3600F) % 360F;
+            if(f > 180F)
+                f -= 360F;
+            f = avalue(f, f2);
+            f1 = avalue(f1, f3);
+            boolean flag = false;
+            if(f < -maxAzimut)
+            {
+                f = -maxAzimut;
+                flag = true;
+            }
+            if(f > maxAzimut)
+            {
+                f = maxAzimut;
+                flag = true;
+            }
+            if(f1 < minTangage)
+            {
+                f1 = minTangage;
+                flag = true;
+            }
+            if(flag || !bVisibleEnemy || !com.maddox.il2.engine.Actor.isAlive(enemy))
+            {
+                if(tPadlockEnd != -1L)
+                    tPadlockEndLen += com.maddox.rts.Time.current() - tPadlockEnd;
+                tPadlockEnd = com.maddox.rts.Time.current();
+                if(tPadlockEndLen > 4000L)
+                {
+                    bPadlockEnd = true;
+                    tPadlockEnd = -1L;
+                    tPadlockEndLen = 0L;
+                }
+            } else
+            {
+                tPadlockEnd = -1L;
+                tPadlockEndLen = 0L;
+            }
+        }
+        f = bvalue(f, azimPadlock);
+        f1 = bvalue(f1, tangPadlock);
+        orient.set(f, f1, 0.0F);
+        azimPadlock = f;
+        tangPadlock = f1;
+        if(bPadlockEnd && -1F < azimPadlock && azimPadlock < 1.0F && -1F < tangPadlock && tangPadlock < 1.0F)
+        {
+            stamp = -1L;
+            _reset();
+        }
+    }
+
+    public void checkPadlockState()
+    {
+        if(!bPadlock)
+            return;
+        if(!com.maddox.il2.engine.Actor.isAlive(enemy))
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.game.VisibilityChecker.checkLandObstacle = true;
+            com.maddox.il2.game.VisibilityChecker.checkCabinObstacle = true;
+            com.maddox.il2.game.VisibilityChecker.checkPlaneObstacle = true;
+            com.maddox.il2.game.VisibilityChecker.checkObjObstacle = true;
+            bVisibleEnemy = com.maddox.il2.game.VisibilityChecker.computeVisibility(null, enemy) > 0.0F;
+            return;
+        }
+    }
+
+    public void setTarget(com.maddox.il2.engine.Actor actor)
+    {
+        target = actor;
+    }
+
+    public void setTarget2(com.maddox.il2.engine.Actor actor)
+    {
+        target2 = actor;
+    }
+
+    public boolean use(boolean flag)
+    {
+        boolean flag1 = bUse;
+        bUse = flag;
+        if(com.maddox.il2.engine.Actor.isValid(target))
+            target.pos.inValidate(true);
+        if(com.maddox.il2.engine.Actor.isValid(target2))
+            target2.pos.inValidate(true);
+        return flag1;
+    }
+
+    public boolean useMouse(boolean flag)
+    {
+        boolean flag1 = bUseMouse;
+        bUseMouse = flag;
+        return flag1;
+    }
+
+    public void mouseMove(int i, int j, int k)
+    {
+        if(!bUse || bPadlock || bSimpleUse)
+            return;
+        if(bUseMouse && com.maddox.rts.Time.real() > timeViewSet + 1000L)
+        {
+            float f = (o.azimut() + (float)i * com.maddox.il2.engine.hotkey.HookView.koofAzimut) % 360F;
+            if(f > 180F)
+                f -= 360F;
+            else
+            if(f < -180F)
+                f += 360F;
+            if(f < -maxAzimut)
+            {
+                if(i <= 0)
+                    f = -maxAzimut;
+                else
+                    f = maxAzimut;
+            } else
+            if(f > maxAzimut)
+                if(i >= 0)
+                    f = maxAzimut;
+                else
+                    f = -maxAzimut;
+            float f1 = (o.tangage() + (float)j * com.maddox.il2.engine.hotkey.HookView.koofTangage) % 360F;
+            if(f1 > 180F)
+                f1 -= 360F;
+            else
+            if(f1 < -180F)
+                f1 += 360F;
+            if(f1 < minTangage)
+            {
+                if(j <= 0)
+                    f1 = minTangage;
+                else
+                    f1 = maxTangage;
+            } else
+            if(f1 > maxTangage)
+                if(j >= 0)
+                    f1 = maxTangage;
+                else
+                    f1 = minTangage;
+            o.set(f, f1, 0.0F);
+            if(com.maddox.il2.engine.Actor.isValid(target))
+                target.pos.inValidate(true);
+            if(com.maddox.il2.engine.Actor.isValid(target2))
+                target2.pos.inValidate(true);
+            Azimut = _Azimut;
+            Tangage = _Tangage;
+        }
+    }
+
+    public void viewSet(float f, float f1)
+    {
+        if(!bUse || bPadlock || bSimpleUse)
+            return;
+        if(bUseMouse)
+        {
+            timeViewSet = com.maddox.rts.Time.real();
+            f %= 360F;
+            if(f > 180F)
+                f -= 360F;
+            else
+            if(f < -180F)
+                f += 360F;
+            f1 %= 360F;
+            if(f1 > 180F)
+                f1 -= 360F;
+            else
+            if(f1 < -180F)
+                f1 += 360F;
+            if(f < -maxAzimut)
+                f = -maxAzimut;
+            else
+            if(f > maxAzimut)
+                f = maxAzimut;
+            if(f1 > maxTangage)
+                f1 = maxTangage;
+            else
+            if(f1 < minTangage)
+                f1 = minTangage;
+            _Azimut = Azimut = f;
+            _Tangage = Tangage = f1;
+            o.set(f, f1, 0.0F);
+            if(com.maddox.il2.engine.Actor.isValid(target))
+                target.pos.inValidate(true);
+            if(com.maddox.il2.engine.Actor.isValid(target2))
+                target2.pos.inValidate(true);
+        }
+    }
+
+    public void snapSet(float f, float f1)
+    {
+        if(!bUse || bPadlock || bSimpleUse)
+            return;
+        _Azimut = 45F * f;
+        _Tangage = 44F * f1;
+        Azimut = o.azimut() % 360F;
+        if(Azimut > 180F)
+            Azimut -= 360F;
+        else
+        if(Azimut < -180F)
+            Azimut += 360F;
+        Tangage = o.tangage() % 360F;
+        if(Tangage > 180F)
+            Tangage -= 360F;
+        else
+        if(Tangage < -180F)
+            Tangage += 360F;
+        if(com.maddox.il2.engine.Actor.isValid(target))
+            target.pos.inValidate(true);
+        if(com.maddox.il2.engine.Actor.isValid(target2))
+            target2.pos.inValidate(true);
+    }
+
+    public void panSet(int i, int j)
+    {
+        if(!bUse || bPadlock || bSimpleUse)
+            return;
+        if(i == 0 && j == 0)
+        {
+            _Azimut = 0.0F;
+            _Tangage = 0.0F;
+        }
+        if(_Azimut == -maxAzimut)
+        {
+            int k = (int)(_Azimut / stepAzimut);
+            if(-_Azimut % stepAzimut > 0.01F * stepAzimut)
+                k--;
+            _Azimut = (float)k * stepAzimut;
+        } else
+        if(_Azimut == maxAzimut)
+        {
+            int l = (int)(_Azimut / stepAzimut);
+            if(_Azimut % stepAzimut > 0.01F * stepAzimut)
+                l++;
+            _Azimut = (float)l * stepAzimut;
+        }
+        _Azimut = (float)i * stepAzimut + _Azimut;
+        if(_Azimut < -maxAzimut)
+            _Azimut = -maxAzimut;
+        if(_Azimut > maxAzimut)
+            _Azimut = maxAzimut;
+        _Tangage = (float)j * stepTangage + _Tangage;
+        if(_Tangage < minTangage)
+            _Tangage = minTangage;
+        if(_Tangage > maxTangage)
+            _Tangage = maxTangage;
+        Azimut = o.azimut() % 360F;
+        if(Azimut > 180F)
+            Azimut -= 360F;
+        else
+        if(Azimut < -180F)
+            Azimut += 360F;
+        Tangage = o.tangage() % 360F;
+        if(Tangage > 180F)
+            Tangage -= 360F;
+        else
+        if(Tangage < -180F)
+            Tangage += 360F;
+        if(com.maddox.il2.engine.Actor.isValid(target))
+            target.pos.inValidate(true);
+        if(com.maddox.il2.engine.Actor.isValid(target2))
+            target2.pos.inValidate(true);
+    }
+
+    private HookPilot()
+    {
+        stepAzimut = 45F;
+        stepTangage = 30F;
+        maxAzimut = 155F;
+        maxTangage = 89F;
+        minTangage = -60F;
+        Azimut = 0.0F;
+        Tangage = 0.0F;
+        _Azimut = 0.0F;
+        _Tangage = 0.0F;
+        rprevTime = 0L;
+        timeKoof = 1.0F;
+        o = new Orient();
+        op = new Orient();
+        le = new Loc();
+        pe = new Point3d();
+        pEnemyAbs = new Point3d();
+        Ve = new Vector3d();
+        pAbs = new Point3d();
+        oAbs = new Orient();
+        target = null;
+        target2 = null;
+        enemy = null;
+        stamp = -1L;
+        prevTime = -1L;
+        roolTime = -1L;
+        bUse = false;
+        bPadlock = true;
+        tPadlockEnd = -1L;
+        tPadlockEndLen = 0L;
+        bPadlockEnd = false;
+        bForward = false;
+        bAim = false;
+        bUp = false;
+        bVisibleEnemy = true;
+        bSimpleUse = false;
+        pCenter = new Point3d();
+        pAim = new Point3d();
+        pUp = new Point3d();
+        bUseMouse = true;
+        timeViewSet = -2000L;
+    }
+
+    public static com.maddox.il2.engine.hotkey.HookPilot New()
+    {
+        if(current == null)
+            current = new HookPilot();
+        return current;
+    }
+
+    public static com.maddox.il2.engine.hotkey.HookPilot cur()
+    {
+        return com.maddox.il2.engine.hotkey.HookPilot.New();
+    }
+
+    private float stepAzimut;
+    private float stepTangage;
+    private float maxAzimut;
+    private float maxTangage;
+    private float minTangage;
+    private float Azimut;
+    private float Tangage;
+    private float _Azimut;
+    private float _Tangage;
+    private long rprevTime;
+    private float Px;
+    private float Py;
+    private float Pz;
+    private float azimPadlock;
+    private float tangPadlock;
+    private float timeKoof;
+    private com.maddox.il2.engine.Orient o;
+    private com.maddox.il2.engine.Orient op;
+    private com.maddox.il2.engine.Loc le;
+    private com.maddox.JGP.Point3d pe;
+    private com.maddox.JGP.Point3d pEnemyAbs;
+    private com.maddox.JGP.Vector3d Ve;
+    private com.maddox.JGP.Point3d pAbs;
+    private com.maddox.il2.engine.Orient oAbs;
+    private com.maddox.il2.engine.Actor target;
+    private com.maddox.il2.engine.Actor target2;
+    private com.maddox.il2.engine.Actor enemy;
+    private long stamp;
+    private long prevTime;
+    private long roolTime;
+    private boolean bUse;
+    private boolean bPadlock;
+    private long tPadlockEnd;
+    private long tPadlockEndLen;
+    private boolean bPadlockEnd;
+    private boolean bForward;
+    private boolean bAim;
+    private boolean bUp;
+    private boolean bVisibleEnemy;
+    private boolean bSimpleUse;
+    private com.maddox.JGP.Point3d pCenter;
+    private com.maddox.JGP.Point3d pAim;
+    private com.maddox.JGP.Point3d pUp;
+    private static com.maddox.il2.ai.RangeRandom rnd = new RangeRandom();
+    private static com.maddox.JGP.Point3d P = new Point3d();
+    private static com.maddox.JGP.Vector3d tmpA = new Vector3d();
+    private static com.maddox.JGP.Vector3d tmpB = new Vector3d();
+    private static com.maddox.JGP.Vector3d headShift = new Vector3d();
+    private static com.maddox.JGP.Vector3d counterForce = new Vector3d();
+    private static long oldHeadTime = 0L;
+    private static double oldWx = 0.0D;
+    private static double oldWy = 0.0D;
+    private boolean bUseMouse;
+    private long timeViewSet;
+    public static com.maddox.il2.engine.hotkey.HookPilot current;
+    private static com.maddox.il2.engine.Orient oTmp = new Orient();
+    private static com.maddox.il2.engine.Orient oTmp2 = new Orient();
+    private static float shakeLVL;
+
 }

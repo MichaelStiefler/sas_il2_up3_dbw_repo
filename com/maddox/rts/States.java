@@ -1,109 +1,126 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   States.java
+
 package com.maddox.rts;
 
+
+// Referenced classes of package com.maddox.rts:
+//            State, RTSException, MessageProxy, Destroy, 
+//            Message
+
 public class States
-  implements MessageProxy, Destroy
+    implements com.maddox.rts.MessageProxy, com.maddox.rts.Destroy
 {
-  private int indxState;
-  private int indxPrevState;
-  private Object[] states;
-  private Object state;
 
-  public int getState()
-  {
-    return this.indxState;
-  }
-
-  public int getPrevState()
-  {
-    return this.indxPrevState;
-  }
-
-  public Object getListener()
-  {
-    return this.state;
-  }
-
-  public boolean isDestroyed()
-  {
-    return this.indxState == -2;
-  }
-
-  public void destroy() {
-    for (int i = 0; i < this.states.length; i++)
-      if (this.states[i] != null) {
-        ((State)this.states[i]).setParentListener(null);
-        this.states[i] = null;
-      }
-    this.states = null;
-    this.state = null;
-  }
-
-  public Object getListener(Message paramMessage)
-  {
-    return this.state;
-  }
-
-  public Object getListener(int paramInt)
-  {
-    if (paramInt < 0)
-      return null;
-    return this.states[paramInt];
-  }
-
-  public void setListener(int paramInt, Object paramObject)
-  {
-    if (paramInt >= 0)
-      if (paramInt == this.indxState) {
-        int i = this.indxPrevState;
-        setState(-1);
-        this.states[paramInt] = paramObject;
-        setState(paramInt);
-        this.indxPrevState = i;
-      } else {
-        this.states[paramInt] = paramObject;
-      }
-  }
-
-  public void setState(int paramInt)
-  {
-    if (this.indxState == -2)
-      throw new RTSException("Destroyd object try change state");
-    if (this.indxState == paramInt)
-      return;
-    Object localObject1;
-    if (paramInt >= 0)
-      localObject1 = this.states[paramInt];
-    else {
-      localObject1 = null;
+    public int getState()
+    {
+        return indxState;
     }
-    Object localObject2 = getListener();
-    if ((localObject2 != null) && ((localObject2 instanceof State)))
-      ((State)localObject2).end(paramInt);
-    this.indxPrevState = this.indxState;
-    this.indxState = paramInt;
-    this.state = localObject1;
-    if ((this.state != null) && ((this.state instanceof State)))
-      ((State)this.state).begin(this.indxPrevState);
-  }
 
-  public String getStateName()
-  {
-    if (this.state != null)
-      return this.state.getClass().getName();
-    if (this.indxState == -2)
-      return "DESTROYED";
-    return "UNKNOWN";
-  }
+    public int getPrevState()
+    {
+        return indxPrevState;
+    }
 
-  public States(Object[] paramArrayOfObject)
-  {
-    this.states = paramArrayOfObject;
-    this.state = null;
-    this.indxState = -1;
-    this.indxPrevState = -1;
-  }
+    public java.lang.Object getListener()
+    {
+        return state;
+    }
 
-  public States()
-  {
-  }
+    public boolean isDestroyed()
+    {
+        return indxState == -2;
+    }
+
+    public void destroy()
+    {
+        for(int i = 0; i < states.length; i++)
+            if(states[i] != null)
+            {
+                ((com.maddox.rts.State)states[i]).setParentListener(null);
+                states[i] = null;
+            }
+
+        states = null;
+        state = null;
+    }
+
+    public java.lang.Object getListener(com.maddox.rts.Message message)
+    {
+        return state;
+    }
+
+    public java.lang.Object getListener(int i)
+    {
+        if(i < 0)
+            return null;
+        else
+            return states[i];
+    }
+
+    public void setListener(int i, java.lang.Object obj)
+    {
+        if(i >= 0)
+            if(i == indxState)
+            {
+                int j = indxPrevState;
+                setState(-1);
+                states[i] = obj;
+                setState(i);
+                indxPrevState = j;
+            } else
+            {
+                states[i] = obj;
+            }
+    }
+
+    public void setState(int i)
+    {
+        if(indxState == -2)
+            throw new RTSException("Destroyd object try change state");
+        if(indxState == i)
+            return;
+        java.lang.Object obj;
+        if(i >= 0)
+            obj = states[i];
+        else
+            obj = null;
+        java.lang.Object obj1 = getListener();
+        if(obj1 != null && (obj1 instanceof com.maddox.rts.State))
+            ((com.maddox.rts.State)obj1).end(i);
+        indxPrevState = indxState;
+        indxState = i;
+        state = obj;
+        if(state != null && (state instanceof com.maddox.rts.State))
+            ((com.maddox.rts.State)state).begin(indxPrevState);
+    }
+
+    public java.lang.String getStateName()
+    {
+        if(state != null)
+            return state.getClass().getName();
+        if(indxState == -2)
+            return "DESTROYED";
+        else
+            return "UNKNOWN";
+    }
+
+    public States(java.lang.Object aobj[])
+    {
+        states = aobj;
+        state = null;
+        indxState = -1;
+        indxPrevState = -1;
+    }
+
+    public States()
+    {
+    }
+
+    private int indxState;
+    private int indxPrevState;
+    private java.lang.Object states[];
+    private java.lang.Object state;
 }

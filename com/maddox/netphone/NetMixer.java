@@ -1,137 +1,160 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetMixer.java
+
 package com.maddox.netphone;
 
 import com.maddox.il2.engine.TextScr;
 import java.util.Iterator;
 import java.util.Vector;
 
-public class NetMixer extends MixBase
+// Referenced classes of package com.maddox.netphone:
+//            MixBase, GsmIO, LpcmIO, MixChannel, 
+//            HBitStr, BitStream, CodecIO
+
+public class NetMixer extends com.maddox.netphone.MixBase
 {
-  public static final int prDefault = 4;
-  public static final int prLevel = 50;
-  protected Vector channels = new Vector();
-  protected int cid = 1;
 
-  protected boolean oneSig = false;
-  protected CodecIO inStr;
-  protected CodecIO outStr;
-  protected int codec;
-  protected static boolean usePriority = false;
-
-  public NetMixer(int paramInt)
-  {
-    print("NETMIXER::INIT, Codec = " + paramInt);
-    this.codec = paramInt;
-    if (paramInt == 2) {
-      this.inStr = new GsmIO();
-      this.outStr = new GsmIO();
-    } else {
-      this.inStr = new LpcmIO();
-      this.outStr = new LpcmIO();
-    }
-  }
-
-  public void destroy()
-  {
-    while (!this.channels.isEmpty()) {
-      MixChannel localMixChannel = (MixChannel)this.channels.firstElement();
-      localMixChannel.destroy();
-    }
-    print("NETMIXER::DESTROY");
-  }
-
-  public MixChannel newChannel(boolean paramBoolean)
-  {
-    MixChannel localMixChannel = new MixChannel(this, this.cid++, this.codec);
-    localMixChannel.isVirtual = paramBoolean;
-    print("NETMIXER::ADDCH");
-    return localMixChannel;
-  }
-
-  public void tick()
-  {
-    Iterator localIterator1 = this.channels.iterator();
-
-    while (localIterator1.hasNext()) {
-      MixChannel localMixChannel = (MixChannel)localIterator1.next();
-      int i = 0;
-      if (localMixChannel.wasReset()) {
-        localIterator2 = localMixChannel.outList.iterator();
-        while (localIterator2.hasNext()) {
-          HBitStr localHBitStr1 = (HBitStr)localIterator2.next();
-          localHBitStr1.bs.clear();
-        }continue;
-      }
-      if (localMixChannel.act) {
-        while (true)
+    public NetMixer(int i)
+    {
+        channels = new Vector();
+        cid = 1;
+        oneSig = false;
+        print("NETMIXER::INIT, Codec = " + i);
+        codec = i;
+        if(i == 2)
         {
-          localIterator2 = localMixChannel.outList.iterator();
-          int j = 1;
-          int k = 1;
-          HBitStr localHBitStr3;
-          int m;
-          while (localIterator2.hasNext()) {
-            localHBitStr3 = (HBitStr)localIterator2.next();
-            if ((localHBitStr3.mc.act) && (!localHBitStr3.mc.isVirtual)) {
-              m = localHBitStr3.bs.bitlen();
-              if (m >= 1) {
-                if (localHBitStr3.bs.probe(1, 0) > 0) j = (j != 0) && (m >= this.inStr.getMaxBlockSize()) ? 1 : 0; 
-              }
-              else {
-                j = 0;
-              }
-              k = 0;
-            }
-          }
-          if ((j == 0) || (k != 0)) break;
-          localIterator2 = localMixChannel.outList.iterator();
-          this.outStr.reset();
-          while (localIterator2.hasNext()) {
-            localHBitStr3 = (HBitStr)localIterator2.next();
-            if ((localHBitStr3.mc.act) && (!localHBitStr3.mc.isVirtual) && 
-              (localHBitStr3.bs.get(1) != 0)) {
-              if (this.inStr.read(localHBitStr3.bs) != 0) {
-                i = 1000 + localHBitStr3.bs.bitlen();
-                break;
-              }
-              m = this.inStr.getRms();
-              if (usePriority) {
-                m *= (46 + localHBitStr3.mc.priority) / 50;
-              }
-              if (m > this.outStr.getRms()) {
-                this.outStr.copy(this.inStr);
-              }
-            }
-
-          }
-
-          if (this.outStr.isEmpty())
-          {
-            localMixChannel.slCnt += 1;
-          }
-          else {
-            localMixChannel.out.put(1, 1);
-            this.outStr.write(localMixChannel.out);
-            localMixChannel.slCnt = 0;
-          }
+            inStr = new GsmIO();
+            outStr = new GsmIO();
+        } else
+        {
+            inStr = new LpcmIO();
+            outStr = new LpcmIO();
         }
-      }
-      Iterator localIterator2 = localMixChannel.inList.iterator();
-      while (localIterator2.hasNext()) {
-        HBitStr localHBitStr2 = (HBitStr)localIterator2.next();
-
-        if (!localHBitStr2.pOut.act) localHBitStr2.bs.reset();
-      }
     }
-  }
 
-  public void printState(int paramInt)
-  {
-    Iterator localIterator = this.channels.iterator();
+    public void destroy()
+    {
+        com.maddox.netphone.MixChannel mixchannel;
+        for(; !channels.isEmpty(); mixchannel.destroy())
+            mixchannel = (com.maddox.netphone.MixChannel)channels.firstElement();
 
-    while (localIterator.hasNext()) {
-      MixChannel localMixChannel = (MixChannel)localIterator.next();
-      TextScr.output(100, paramInt, localMixChannel.act + " - " + Integer.toString(localMixChannel.getDataLength()));
-      paramInt += 20;
+        print("NETMIXER::DESTROY");
     }
-  }
+
+    public com.maddox.netphone.MixChannel newChannel(boolean flag)
+    {
+        com.maddox.netphone.MixChannel mixchannel = new MixChannel(this, cid++, codec);
+        mixchannel.isVirtual = flag;
+        print("NETMIXER::ADDCH");
+        return mixchannel;
+    }
+
+    public void tick()
+    {
+        for(java.util.Iterator iterator = channels.iterator(); iterator.hasNext();)
+        {
+            com.maddox.netphone.MixChannel mixchannel = (com.maddox.netphone.MixChannel)iterator.next();
+            boolean flag = false;
+            if(mixchannel.wasReset())
+            {
+                java.util.Iterator iterator1 = mixchannel.outList.iterator();
+                while(iterator1.hasNext()) 
+                {
+                    com.maddox.netphone.HBitStr hbitstr = (com.maddox.netphone.HBitStr)iterator1.next();
+                    hbitstr.bs.clear();
+                }
+            } else
+            {
+                if(mixchannel.act)
+                    do
+                    {
+                        java.util.Iterator iterator2 = mixchannel.outList.iterator();
+                        boolean flag1 = true;
+                        boolean flag2 = true;
+                        do
+                        {
+                            if(!iterator2.hasNext())
+                                break;
+                            com.maddox.netphone.HBitStr hbitstr2 = (com.maddox.netphone.HBitStr)iterator2.next();
+                            if(hbitstr2.mc.act && !hbitstr2.mc.isVirtual)
+                            {
+                                int j = hbitstr2.bs.bitlen();
+                                if(j >= 1)
+                                {
+                                    if(hbitstr2.bs.probe(1, 0) > 0)
+                                        flag1 = flag1 && j >= inStr.getMaxBlockSize();
+                                } else
+                                {
+                                    flag1 = false;
+                                }
+                                flag2 = false;
+                            }
+                        } while(true);
+                        if(!flag1 || flag2)
+                            break;
+                        iterator2 = mixchannel.outList.iterator();
+                        outStr.reset();
+                        do
+                        {
+                            if(!iterator2.hasNext())
+                                break;
+                            com.maddox.netphone.HBitStr hbitstr3 = (com.maddox.netphone.HBitStr)iterator2.next();
+                            if(!hbitstr3.mc.act || hbitstr3.mc.isVirtual || hbitstr3.bs.get(1) == 0)
+                                continue;
+                            if(inStr.read(hbitstr3.bs) != 0)
+                            {
+                                int i = 1000 + hbitstr3.bs.bitlen();
+                                break;
+                            }
+                            int k = inStr.getRms();
+                            if(usePriority)
+                                k *= (46 + hbitstr3.mc.priority) / 50;
+                            if(k > outStr.getRms())
+                                outStr.copy(inStr);
+                        } while(true);
+                        if(outStr.isEmpty())
+                        {
+                            mixchannel.slCnt++;
+                        } else
+                        {
+                            mixchannel.out.put(1, 1);
+                            outStr.write(mixchannel.out);
+                            mixchannel.slCnt = 0;
+                        }
+                    } while(true);
+                java.util.Iterator iterator3 = mixchannel.inList.iterator();
+                while(iterator3.hasNext()) 
+                {
+                    com.maddox.netphone.HBitStr hbitstr1 = (com.maddox.netphone.HBitStr)iterator3.next();
+                    if(!hbitstr1.pOut.act)
+                        hbitstr1.bs.reset();
+                }
+            }
+        }
+
+    }
+
+    public void printState(int i)
+    {
+        for(java.util.Iterator iterator = channels.iterator(); iterator.hasNext();)
+        {
+            com.maddox.netphone.MixChannel mixchannel = (com.maddox.netphone.MixChannel)iterator.next();
+            com.maddox.il2.engine.TextScr.output(100, i, mixchannel.act + " - " + java.lang.Integer.toString(mixchannel.getDataLength()));
+            i += 20;
+        }
+
+    }
+
+    public static final int prDefault = 4;
+    public static final int prLevel = 50;
+    protected java.util.Vector channels;
+    protected int cid;
+    protected boolean oneSig;
+    protected com.maddox.netphone.CodecIO inStr;
+    protected com.maddox.netphone.CodecIO outStr;
+    protected int codec;
+    protected static boolean usePriority = false;
+
 }

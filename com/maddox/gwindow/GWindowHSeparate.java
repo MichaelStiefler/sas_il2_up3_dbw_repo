@@ -1,24 +1,37 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowHSeparate.java
+
 package com.maddox.gwindow;
 
-public class GWindowHSeparate extends GWindow
+
+// Referenced classes of package com.maddox.gwindow:
+//            GWindow, GWindowLookAndFeel
+
+public class GWindowHSeparate extends com.maddox.gwindow.GWindow
 {
-  public void render()
-  {
-    lookAndFeel().render(this);
-  }
 
-  public boolean isMousePassThrough(float paramFloat1, float paramFloat2) {
-    return true;
-  }
+    public void render()
+    {
+        lookAndFeel().render(this);
+    }
 
-  public void created() {
-    this.bAlwaysBehind = true;
-    this.bAcceptsKeyFocus = false;
-    this.bTransient = true;
-  }
+    public boolean isMousePassThrough(float f, float f1)
+    {
+        return true;
+    }
 
-  public GWindowHSeparate(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3) {
-    float f = paramGWindow.lookAndFeel().getHSeparateH() / paramGWindow.lookAndFeel().metric();
-    doNew(paramGWindow, paramFloat1, paramFloat2, paramFloat3, f, true);
-  }
+    public void created()
+    {
+        bAlwaysBehind = true;
+        bAcceptsKeyFocus = false;
+        bTransient = true;
+    }
+
+    public GWindowHSeparate(com.maddox.gwindow.GWindow gwindow, float f, float f1, float f2)
+    {
+        float f3 = gwindow.lookAndFeel().getHSeparateH() / gwindow.lookAndFeel().metric();
+        doNew(gwindow, f, f1, f2, f3, true);
+    }
 }

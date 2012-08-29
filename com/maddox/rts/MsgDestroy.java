@@ -1,56 +1,87 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MsgDestroy.java
+
 package com.maddox.rts;
 
-public class MsgDestroy extends Message
+
+// Referenced classes of package com.maddox.rts:
+//            Message, Destroy, MessageCache, Time
+
+public class MsgDestroy extends com.maddox.rts.Message
 {
-  private static MessageCache cache = new MessageCache(MsgDestroy.class);
 
-  public static void Post(int paramInt, long paramLong, Object paramObject)
-  {
-    MsgDestroy localMsgDestroy = (MsgDestroy)cache.get();
-    localMsgDestroy.post(paramInt, paramObject, paramLong);
-  }
-
-  public static void Post(int paramInt, double paramDouble, Object paramObject)
-  {
-    MsgDestroy localMsgDestroy = (MsgDestroy)cache.get();
-    localMsgDestroy.post(paramInt, paramObject, paramDouble);
-  }
-
-  public static void Post(long paramLong, Object paramObject)
-  {
-    MsgDestroy localMsgDestroy = (MsgDestroy)cache.get();
-    localMsgDestroy.post(0, paramObject, paramLong);
-  }
-
-  public static void Post(double paramDouble, Object paramObject)
-  {
-    MsgDestroy localMsgDestroy = (MsgDestroy)cache.get();
-    localMsgDestroy.post(0, paramObject, paramDouble);
-  }
-
-  public static void Post(Object paramObject)
-  {
-    MsgDestroy localMsgDestroy = (MsgDestroy)cache.get();
-    localMsgDestroy.post(0, paramObject, Time.current());
-  }
-
-  public static void PostReal(long paramLong, Object paramObject)
-  {
-    MsgDestroy localMsgDestroy = (MsgDestroy)cache.get();
-    localMsgDestroy.post(64, paramObject, paramLong);
-  }
-
-  public static void PostReal(Object paramObject)
-  {
-    MsgDestroy localMsgDestroy = (MsgDestroy)cache.get();
-    localMsgDestroy.post(64, paramObject, Time.currentReal());
-  }
-
-  public boolean invokeListener(Object paramObject) {
-    if ((paramObject instanceof Destroy)) {
-      ((Destroy)paramObject).destroy();
-      return true;
+    public MsgDestroy()
+    {
     }
-    return false;
-  }
+
+    public static void Post(int i, long l, java.lang.Object obj)
+    {
+        com.maddox.rts.MsgDestroy msgdestroy = (com.maddox.rts.MsgDestroy)cache.get();
+        msgdestroy.post(i, obj, l);
+    }
+
+    public static void Post(int i, double d, java.lang.Object obj)
+    {
+        com.maddox.rts.MsgDestroy msgdestroy = (com.maddox.rts.MsgDestroy)cache.get();
+        msgdestroy.post(i, obj, d);
+    }
+
+    public static void Post(long l, java.lang.Object obj)
+    {
+        com.maddox.rts.MsgDestroy msgdestroy = (com.maddox.rts.MsgDestroy)cache.get();
+        msgdestroy.post(0, obj, l);
+    }
+
+    public static void Post(double d, java.lang.Object obj)
+    {
+        com.maddox.rts.MsgDestroy msgdestroy = (com.maddox.rts.MsgDestroy)cache.get();
+        msgdestroy.post(0, obj, d);
+    }
+
+    public static void Post(java.lang.Object obj)
+    {
+        com.maddox.rts.MsgDestroy msgdestroy = (com.maddox.rts.MsgDestroy)cache.get();
+        msgdestroy.post(0, obj, com.maddox.rts.Time.current());
+    }
+
+    public static void PostReal(long l, java.lang.Object obj)
+    {
+        com.maddox.rts.MsgDestroy msgdestroy = (com.maddox.rts.MsgDestroy)cache.get();
+        msgdestroy.post(64, obj, l);
+    }
+
+    public static void PostReal(java.lang.Object obj)
+    {
+        com.maddox.rts.MsgDestroy msgdestroy = (com.maddox.rts.MsgDestroy)cache.get();
+        msgdestroy.post(64, obj, com.maddox.rts.Time.currentReal());
+    }
+
+    public boolean invokeListener(java.lang.Object obj)
+    {
+        if(obj instanceof com.maddox.rts.Destroy)
+        {
+            ((com.maddox.rts.Destroy)obj).destroy();
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private static com.maddox.rts.MessageCache cache;
+
+    static 
+    {
+        cache = new MessageCache(com.maddox.rts.MsgDestroy.class);
+    }
 }

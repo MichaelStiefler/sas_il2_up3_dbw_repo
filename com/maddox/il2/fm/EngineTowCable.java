@@ -1,40 +1,61 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   EngineTowCable.java
+
 package com.maddox.il2.fm;
 
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.engine.Orientation;
 import com.maddox.rts.Time;
 
-public class EngineTowCable extends Engines
+// Referenced classes of package com.maddox.il2.fm:
+//            Engines, FlightModel, Mass, Gear
+
+public class EngineTowCable extends com.maddox.il2.fm.Engines
 {
-  public FlightModel traktor = null;
-  public FlightModel plough = null;
-  public float stringLength = 88.800003F;
-  public float stringKx = 88.0F;
-  public float boostThrust = 0.0F;
-  public long fireOutTime = 0L;
-  private static float a;
-  private static Vector3d tmpv = new Vector3d();
 
-  public float force(float paramFloat1, float paramFloat2)
-  {
-    a = 0.0F;
-    if (Time.current() < this.fireOutTime) a += this.boostThrust;
-    if (this.traktor == null) return this.plough.M.mass * (this.plough.Gears.onGround ? 0.0F : 1.0E-018F);
-    tmpv.sub(this.traktor.Loc, this.plough.Loc);
-    this.plough.Or.transformInv(tmpv);
-    if (tmpv.x > this.stringLength) {
-      a += ((float)tmpv.x - this.stringLength) * ((float)tmpv.x - this.stringLength) * this.stringKx;
+    public EngineTowCable()
+    {
+        traktor = null;
+        plough = null;
+        stringLength = 88.8F;
+        stringKx = 88F;
+        boostThrust = 0.0F;
+        fireOutTime = 0L;
     }
-    return a;
-  }
 
-  public float getPower()
-  {
-    return 1.0F;
-  }
+    public float force(float f, float f1)
+    {
+        a = 0.0F;
+        if(com.maddox.rts.Time.current() < fireOutTime)
+            a += boostThrust;
+        if(traktor == null)
+            return plough.M.mass * (plough.Gears.onGround ? 0.0F : 1E-018F);
+        tmpv.sub(traktor.Loc, plough.Loc);
+        plough.Or.transformInv(tmpv);
+        if(tmpv.x > (double)stringLength)
+            a += ((float)tmpv.x - stringLength) * ((float)tmpv.x - stringLength) * stringKx;
+        return a;
+    }
 
-  public int getEngineNumber()
-  {
-    return 0;
-  }
+    public float getPower()
+    {
+        return 1.0F;
+    }
+
+    public int getEngineNumber()
+    {
+        return 0;
+    }
+
+    public com.maddox.il2.fm.FlightModel traktor;
+    public com.maddox.il2.fm.FlightModel plough;
+    public float stringLength;
+    public float stringKx;
+    public float boostThrust;
+    public long fireOutTime;
+    private static float a;
+    private static com.maddox.JGP.Vector3d tmpv = new Vector3d();
+
 }

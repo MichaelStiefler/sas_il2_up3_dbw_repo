@@ -1,6 +1,13 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MsgTimeOutListener.java
+
 package com.maddox.rts;
 
-public abstract interface MsgTimeOutListener
+
+public interface MsgTimeOutListener
 {
-  public abstract void msgTimeOut(Object paramObject);
+
+    public abstract void msgTimeOut(java.lang.Object obj);
 }

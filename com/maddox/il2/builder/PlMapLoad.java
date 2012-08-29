@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PlMapLoad.java
+
 package com.maddox.il2.builder;
 
 import com.maddox.JGP.Point2d;
@@ -24,6 +29,7 @@ import com.maddox.il2.game.I18N;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.objects.Statics;
 import com.maddox.il2.objects.air.Runaway;
+import com.maddox.il2.objects.bridges.Bridge;
 import com.maddox.il2.tools.BridgesGenerator;
 import com.maddox.rts.HomePath;
 import com.maddox.rts.MsgAction;
@@ -32,377 +38,467 @@ import com.maddox.rts.SectFile;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-public class PlMapLoad extends Plugin
+// Referenced classes of package com.maddox.il2.builder:
+//            Plugin, PlMapLabel, PathFind, Builder, 
+//            BldConfig, PlMission
+
+public class PlMapLoad extends com.maddox.il2.builder.Plugin
 {
-  private static ArrayList lands = new ArrayList();
-
-  private static int landLoaded = -1;
-
-  public static ArrayList bridgeActors = new ArrayList();
-  public static boolean bDrawNumberBridge = false;
-
-  private static Point3d _p3d = new Point3d();
-  private Point2d p2d;
-  MenuItem[] menuItem;
-  private GWindowMessageBox loadMessageBox;
-  private Land _guiLand;
-
-  public PlMapLoad()
-  {
-    this.p2d = new Point2d();
-  }
-
-  public static Land getLandLoaded()
-  {
-    if (landLoaded < 0) return null;
-    return (Land)lands.get(landLoaded);
-  }
-
-  public static Land getLandForKeyName(String paramString) {
-    for (int i = 0; i < lands.size(); i++) {
-      Land localLand = (Land)lands.get(i);
-      if (localLand.keyName.equals(paramString))
-        return localLand;
-    }
-    return null;
-  }
-
-  public static Land getLandForFileName(String paramString) {
-    for (int i = 0; i < lands.size(); i++) {
-      Land localLand = (Land)lands.get(i);
-      if (localLand.fileName.equals(paramString))
-        return localLand;
-    }
-    return null;
-  }
-
-  public static String mapKeyName() {
-    Land localLand = getLandLoaded();
-    if (localLand == null) return null;
-    return localLand.keyName;
-  }
-  public static String mapI18nName() {
-    Land localLand = getLandLoaded();
-    if (localLand == null) return null;
-    return localLand.i18nName;
-  }
-  public static String mapFileName() {
-    Land localLand = getLandLoaded();
-    if (localLand == null) return null;
-    return localLand.fileName;
-  }
-  public static String mapDirName() {
-    Land localLand = getLandLoaded();
-    if (localLand == null) return null;
-    return localLand.dirName;
-  }
-
-  private static void bridgesClear()
-  {
-    for (int i = 0; i < bridgeActors.size(); i++) {
-      Actor localActor = (Actor)bridgeActors.get(i);
-      localActor.destroy();
-    }
-    bridgeActors.clear();
-  }
-
-  public static void bridgesCreate(TexImage paramTexImage) {
-    bridgesClear();
-    if (paramTexImage != null) {
-      com.maddox.il2.tools.Bridge[] arrayOfBridge = BridgesGenerator.getBridgesArray(paramTexImage);
-      for (int i = 0; i < arrayOfBridge.length; i++) {
-        com.maddox.il2.objects.bridges.Bridge localBridge = new com.maddox.il2.objects.bridges.Bridge(i, arrayOfBridge[i].type, arrayOfBridge[i].x1, arrayOfBridge[i].y1, arrayOfBridge[i].x2, arrayOfBridge[i].y2, 0.0F);
-
-        Property.set(localBridge, "builderSpawn", "");
-        bridgeActors.add(localBridge);
-
-        _p3d.x = World.land().PIX2WORLDX((arrayOfBridge[i].x1 + arrayOfBridge[i].x2) / 2);
-        _p3d.y = World.land().PIX2WORLDY((arrayOfBridge[i].y1 + arrayOfBridge[i].y2) / 2);
-        _p3d.z = 0.0D;
-        PlMapLabel.insert(_p3d);
-      }
-      System.out.println("" + arrayOfBridge.length + " bridges created");
-    }
-  }
-
-  public void mapUnload()
-  {
-    landLoaded = -1;
-    clearMenuItems();
-    bridgesClear();
-    Plugin.doMapLoaded();
-    PathFind.unloadMap();
-  }
-
-  public boolean mapLoad(Land paramLand) {
-    if (getLandLoaded() == paramLand)
-      return true;
-    builder.deleteAll();
-    bridgesClear();
-    landLoaded = -1;
-    clearMenuItems();
-    PathFind.unloadMap();
-    Main3D.cur3D().resetGame();
-    builder.tip(i18n("Loading") + " " + paramLand.i18nName + "...");
-    SectFile localSectFile = new SectFile("maps/" + paramLand.fileName, 0);
-    int i = localSectFile.sectionIndex("MAP2D");
-    if (i < 0) {
-      builder.tipErr("section [MAP2D] not found in 'maps/" + paramLand.fileName);
-      return false;
-    }
-    int j = localSectFile.vars(i);
-    if (j == 0) {
-      builder.tipErr("section [MAP2D] in 'maps/" + paramLand.fileName + " is empty");
-      return false;
-    }
-    try
+    class MenuItem extends com.maddox.gwindow.GWindowMenuItem
     {
-      if (builder.bMultiSelect) {
-        World.land().LoadMap(paramLand.fileName, null);
-      } else {
-        int[] arrayOfInt = null;
-        m = localSectFile.sectionIndex("static");
-        if ((m >= 0) && (localSectFile.vars(m) > 0)) {
-          String str1 = localSectFile.var(m, 0);
-          if ((str1 != null) && (str1.length() > 0)) {
-            str1 = HomePath.concatNames("maps/" + paramLand.fileName, str1);
-            arrayOfInt = Statics.readBridgesEndPoints(str1);
-          }
-        }
-        World.land().LoadMap(paramLand.fileName, arrayOfInt);
-      }
-    } catch (Exception localException1) {
-      builder.tipErr("World.land().LoadMap() error: " + localException1);
-      return false;
-    }
 
-    World.cur().setCamouflage(World.land().config.camouflage);
-
-    if (Main3D.cur3D().land2D != null) {
-      if (!Main3D.cur3D().land2D.isDestroyed())
-        Main3D.cur3D().land2D.destroy();
-      Main3D.cur3D().land2D = null;
-    }
-    Main3D.cur3D().land2D = new Land2Dn(paramLand.fileName, World.land().getSizeX(), World.land().getSizeY());
-    builder.computeViewMap2D(-1.0D, 0.0D, 0.0D);
-
-    PathFind.tShip = new TexImage();
-    PathFind.tNoShip = new TexImage();
-
-    int k = 0;
-    int m = localSectFile.sectionIndex("TMAPED");
-    int i4;
-    if (m >= 0) {
-      int n = localSectFile.vars(m);
-      if (n > 0) {
-        String str2 = "maps/" + paramLand.dirName + "/" + localSectFile.var(m, 0);
-        try {
-          PathFind.tShip.LoadTGA(str2);
-          PathFind.tNoShip.LoadTGA(str2);
-
-          TexImage localTexImage = new TexImage();
-          localTexImage.LoadTGA("maps/" + paramLand.dirName + "/" + World.land().config.typeMap);
-          for (i4 = 0; i4 < localTexImage.sy; i4++) {
-            for (int i5 = 0; i5 < localTexImage.sx; i5++) {
-              int i6 = localTexImage.I(i5, i4) & 0xE0;
-              if (i6 != 0) {
-                PathFind.tShip.I(i5, i4, PathFind.tShip.intI(i5, i4) & 0xFFFFFF1F | i6);
-                PathFind.tNoShip.I(i5, i4, PathFind.tNoShip.intI(i5, i4) & 0xFFFFFF1F | i6);
-              }
+        public void execute()
+        {
+            com.maddox.il2.builder.Land land = (com.maddox.il2.builder.Land)com.maddox.il2.builder.PlMapLoad.lands.get(indx);
+            if(land == com.maddox.il2.builder.PlMapLoad.getLandLoaded())
+                return;
+            if(!com.maddox.il2.builder.Plugin.builder.bMultiSelect)
+            {
+                _guiLand = land;
+                ((com.maddox.il2.builder.PlMission)com.maddox.il2.builder.Plugin.getPlugin("Mission")).loadNewMap();
+            } else
+            {
+                guiMapLoad(land);
             }
-          }
-          k = 1; } catch (Exception localException3) {
-        }
-      }
-    }
-    if (k == 0) {
-      try {
-        PathFind.tShip.LoadTGA("maps/" + paramLand.dirName + "/" + World.land().config.typeMap);
-        PathFind.tNoShip.LoadTGA("maps/" + paramLand.dirName + "/" + World.land().config.typeMap);
-      }
-      catch (Exception localException2)
-      {
-      }
-    }
-    for (int i1 = 0; i1 < PathFind.tShip.sy; i1++) {
-      for (i2 = 0; i2 < PathFind.tShip.sx; i2++)
-      {
-        if ((PathFind.tShip.I(i2, i1) & 0x1C) == 24) PathFind.tShip.I(i2, i1, PathFind.tShip.intI(i2, i1) & 0xFFFFFFE3);
-        if ((PathFind.tNoShip.I(i2, i1) & 0x1C) != 24) continue; PathFind.tNoShip.I(i2, i1, PathFind.tNoShip.intI(i2, i1) & 0xFFFFFFE3);
-      }
-    }
-
-    Landscape localLandscape = World.land();
-    int i3;
-    for (int i2 = 0; i2 < PathFind.tShip.sy; i2++) {
-      for (i3 = 0; i3 < PathFind.tShip.sx; i3++) {
-        if (((PathFind.tShip.intI(i3, i2) & 0x1C) != 28) || 
-          (Landscape.estimateNoWater(i3, i2, 128) <= 255 - builder.conf.iWaterLevel)) continue;
-        PathFind.tShip.I(i3, i2, PathFind.tShip.intI(i3, i2) & 0xFFFFFFE3);
-      }
-    }
-
-    for (i2 = 0; i2 < PathFind.tNoShip.sy; i2++) {
-      for (i3 = 0; i3 < PathFind.tNoShip.sx; i3++) {
-        if (((PathFind.tNoShip.intI(i3, i2) & 0x1C) != 28) || 
-          (Landscape.estimateNoWater(i3, i2, 128) <= 250)) continue;
-        PathFind.tNoShip.I(i3, i2, PathFind.tNoShip.intI(i3, i2) & 0xFFFFFFE3);
-      }
-
-    }
-
-    builder.tip(paramLand.i18nName);
-    landLoaded = paramLand.indx;
-    if (this.menuItem != null) {
-      for (i2 = 0; i2 < this.menuItem.length; i2++) {
-        this.menuItem[i2].bChecked = (i2 == landLoaded);
-      }
-    }
-    Plugin.doMapLoaded();
-
-    PathFind.b = new com.maddox.il2.tools.Bridge[bridgeActors.size()];
-    for (i2 = 0; i2 < bridgeActors.size(); i2++) {
-      com.maddox.il2.objects.bridges.Bridge localBridge = (com.maddox.il2.objects.bridges.Bridge)bridgeActors.get(i2);
-      i4 = localBridge.__indx;
-      PathFind.b[i4] = new com.maddox.il2.tools.Bridge();
-      PathFind.b[i4].x1 = localBridge.__x1;
-      PathFind.b[i4].y1 = localBridge.__y1;
-      PathFind.b[i4].x2 = localBridge.__x2;
-      PathFind.b[i4].y2 = localBridge.__y2;
-      PathFind.b[i4].type = localBridge.__type;
-    }
-
-    PathFind.setMoverType(0);
-    return true;
-  }
-
-  public void renderMap2D() {
-    if (builder.isFreeView()) return;
-    if (getLandLoaded() == null) return;
-    if (builder.conf.bViewBridge) {
-      Render.prepareStates();
-      IconDraw.setColor(255, 255, 255, 255);
-      com.maddox.il2.objects.bridges.Bridge localBridge;
-      for (int i = 0; i < bridgeActors.size(); i++) {
-        localBridge = (com.maddox.il2.objects.bridges.Bridge)bridgeActors.get(i);
-        if (builder.project2d(localBridge.pos.getAbsPoint(), this.p2d)) {
-          IconDraw.render(localBridge, this.p2d.x, this.p2d.y);
-        }
-      }
-      if ((bDrawNumberBridge) || (builder.bMultiSelect)) {
-        for (i = 0; i < bridgeActors.size(); i++) {
-          localBridge = (com.maddox.il2.objects.bridges.Bridge)bridgeActors.get(i);
-          if (builder.project2d(localBridge.pos.getAbsPoint(), this.p2d)) {
-            TextScr.font().output(-16711936, (int)this.p2d.x + IconDraw.scrSizeX() / 2 + 2, (int)this.p2d.y - IconDraw.scrSizeY() / 2 - 2, 0.0F, "" + localBridge.__indx);
-          }
         }
 
-      }
+        int indx;
 
+        public MenuItem(com.maddox.gwindow.GWindowMenu gwindowmenu, java.lang.String s, java.lang.String s1, int i)
+        {
+            super(gwindowmenu, s, s1);
+            indx = i;
+        }
     }
 
-    if (builder.conf.bViewRunaway) {
-      IconDraw.setColor(255, 255, 255, 255);
-      Runaway localRunaway = World.cur().runawayList;
-      while (localRunaway != null) {
-        if (builder.project2d(localRunaway.pos.getAbsPoint(), this.p2d))
-          IconDraw.render(localRunaway, this.p2d.x, this.p2d.y);
-        localRunaway = localRunaway.next();
-      }
-    }
-  }
-
-  private void clearMenuItems()
-  {
-    if (this.menuItem != null)
-      for (int i = 0; i < this.menuItem.length; i++)
-        this.menuItem[i].bChecked = false;
-  }
-
-  public void createGUI()
-  {
-    GWindowRootMenu localGWindowRootMenu = (GWindowRootMenu)builder.clientWindow.root;
-    GWindowMenuBarItem localGWindowMenuBarItem = localGWindowRootMenu.menuBar.getItem(0);
-    GWindowMenuItem localGWindowMenuItem = localGWindowMenuBarItem.subMenu.addItem(0, new GWindowMenuItem(localGWindowMenuBarItem.subMenu, i18n("&MapLoad"), i18n("TIPLoadLandscape")));
-    localGWindowMenuItem.subMenu = ((GWindowMenu)(GWindowMenu)localGWindowMenuItem.create(new GWindowMenu()));
-    localGWindowMenuItem.subMenu.close(false);
-    int i = lands.size();
-    this.menuItem = new MenuItem[i];
-    for (int j = 0; j < i; j++) {
-      Land localLand = (Land)lands.get(j);
-      localGWindowMenuItem.subMenu.addItem(this.menuItem[j] =  = new MenuItem(localGWindowMenuItem.subMenu, localLand.i18nName, null, j));
-      this.menuItem[j].bChecked = false;
-    }
-  }
-
-  public void guiMapLoad()
-  {
-    guiMapLoad(this._guiLand);
-  }
-
-  public void guiMapLoad(Land paramLand) {
-    this._guiLand = paramLand;
-    this.loadMessageBox = new GWindowMessageBox(builder.clientWindow.root, 20.0F, true, i18n("StandBy"), i18n("LoadingLandscape") + " " + paramLand.i18nName, 4, 0.0F);
-
-    new MsgAction(72, 0.0D) {
-      public void doAction() { PlMapLoad.this.mapLoad(PlMapLoad.this._guiLand);
-        PlMapLoad.this.loadMessageBox.close(false); PlMapLoad.access$202(PlMapLoad.this, null);
-      }
-    };
-  }
-
-  public void configure()
-  {
-    SectFile localSectFile = new SectFile("maps/all.ini", 0);
-
-    int i = localSectFile.sectionIndex("all");
-    if (i < 0) return;
-    int j = localSectFile.vars(i);
-    for (int k = 0; k < j; k++) {
-      Land localLand = new Land();
-      localLand.indx = k;
-      localLand.keyName = localSectFile.var(i, k);
-      localLand.fileName = localSectFile.value(i, k);
-      localLand.dirName = localLand.fileName.substring(0, localLand.fileName.lastIndexOf("/"));
-      localLand.i18nName = I18N.map(localLand.keyName);
-      lands.add(localLand);
-    }
-  }
-
-  static {
-    Property.set(PlMapLoad.class, "name", "MapLoad");
-  }
-
-  class MenuItem extends GWindowMenuItem
-  {
-    int indx;
-
-    public void execute()
+    public static class Land
     {
-      PlMapLoad.Land localLand = (PlMapLoad.Land)PlMapLoad.lands.get(this.indx);
-      if (localLand == PlMapLoad.getLandLoaded())
-        return;
-      if (!Plugin.builder.bMultiSelect) {
-        PlMapLoad.access$102(PlMapLoad.this, localLand);
-        ((PlMission)Plugin.getPlugin("Mission")).loadNewMap();
-      } else {
-        PlMapLoad.this.guiMapLoad(localLand);
-      }
+
+        public int indx;
+        public java.lang.String keyName;
+        public java.lang.String i18nName;
+        public java.lang.String fileName;
+        public java.lang.String dirName;
+
+        public Land()
+        {
+        }
     }
 
-    public MenuItem(GWindowMenu paramString1, String paramString2, String paramInt, int arg5) {
-      super(paramString2, paramInt);
-      int i;
-      this.indx = i;
-    }
-  }
 
-  public static class Land
-  {
-    public int indx;
-    public String keyName;
-    public String i18nName;
-    public String fileName;
-    public String dirName;
-  }
+    public PlMapLoad()
+    {
+        p2d = new Point2d();
+    }
+
+    public static com.maddox.il2.builder.Land getLandLoaded()
+    {
+        if(landLoaded < 0)
+            return null;
+        else
+            return (com.maddox.il2.builder.Land)lands.get(landLoaded);
+    }
+
+    public static com.maddox.il2.builder.Land getLandForKeyName(java.lang.String s)
+    {
+        for(int i = 0; i < lands.size(); i++)
+        {
+            com.maddox.il2.builder.Land land = (com.maddox.il2.builder.Land)lands.get(i);
+            if(land.keyName.equals(s))
+                return land;
+        }
+
+        return null;
+    }
+
+    public static com.maddox.il2.builder.Land getLandForFileName(java.lang.String s)
+    {
+        for(int i = 0; i < lands.size(); i++)
+        {
+            com.maddox.il2.builder.Land land = (com.maddox.il2.builder.Land)lands.get(i);
+            if(land.fileName.equals(s))
+                return land;
+        }
+
+        return null;
+    }
+
+    public static java.lang.String mapKeyName()
+    {
+        com.maddox.il2.builder.Land land = com.maddox.il2.builder.PlMapLoad.getLandLoaded();
+        if(land == null)
+            return null;
+        else
+            return land.keyName;
+    }
+
+    public static java.lang.String mapI18nName()
+    {
+        com.maddox.il2.builder.Land land = com.maddox.il2.builder.PlMapLoad.getLandLoaded();
+        if(land == null)
+            return null;
+        else
+            return land.i18nName;
+    }
+
+    public static java.lang.String mapFileName()
+    {
+        com.maddox.il2.builder.Land land = com.maddox.il2.builder.PlMapLoad.getLandLoaded();
+        if(land == null)
+            return null;
+        else
+            return land.fileName;
+    }
+
+    public static java.lang.String mapDirName()
+    {
+        com.maddox.il2.builder.Land land = com.maddox.il2.builder.PlMapLoad.getLandLoaded();
+        if(land == null)
+            return null;
+        else
+            return land.dirName;
+    }
+
+    private static void bridgesClear()
+    {
+        for(int i = 0; i < bridgeActors.size(); i++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)bridgeActors.get(i);
+            actor.destroy();
+        }
+
+        bridgeActors.clear();
+    }
+
+    public static void bridgesCreate(com.maddox.TexImage.TexImage teximage)
+    {
+        com.maddox.il2.builder.PlMapLoad.bridgesClear();
+        if(teximage != null)
+        {
+            com.maddox.il2.tools.Bridge abridge[] = com.maddox.il2.tools.BridgesGenerator.getBridgesArray(teximage);
+            for(int i = 0; i < abridge.length; i++)
+            {
+                com.maddox.il2.objects.bridges.Bridge bridge = new Bridge(i, abridge[i].type, abridge[i].x1, abridge[i].y1, abridge[i].x2, abridge[i].y2, 0.0F);
+                com.maddox.rts.Property.set(bridge, "builderSpawn", "");
+                bridgeActors.add(bridge);
+                _p3d.x = com.maddox.il2.ai.World.land().PIX2WORLDX((abridge[i].x1 + abridge[i].x2) / 2);
+                _p3d.y = com.maddox.il2.ai.World.land().PIX2WORLDY((abridge[i].y1 + abridge[i].y2) / 2);
+                _p3d.z = 0.0D;
+                com.maddox.il2.builder.PlMapLabel.insert(_p3d);
+            }
+
+            java.lang.System.out.println("" + abridge.length + " bridges created");
+        }
+    }
+
+    public void mapUnload()
+    {
+        landLoaded = -1;
+        clearMenuItems();
+        com.maddox.il2.builder.PlMapLoad.bridgesClear();
+        com.maddox.il2.builder.Plugin.doMapLoaded();
+        com.maddox.il2.builder.PathFind.unloadMap();
+    }
+
+    public boolean mapLoad(com.maddox.il2.builder.Land land)
+    {
+        if(com.maddox.il2.builder.PlMapLoad.getLandLoaded() == land)
+            return true;
+        builder.deleteAll();
+        com.maddox.il2.builder.PlMapLoad.bridgesClear();
+        landLoaded = -1;
+        clearMenuItems();
+        com.maddox.il2.builder.PathFind.unloadMap();
+        com.maddox.il2.game.Main3D.cur3D().resetGame();
+        builder.tip(com.maddox.il2.builder.PlMapLoad.i18n("Loading") + " " + land.i18nName + "...");
+        com.maddox.rts.SectFile sectfile = new SectFile("maps/" + land.fileName, 0);
+        int i = sectfile.sectionIndex("MAP2D");
+        if(i < 0)
+        {
+            builder.tipErr("section [MAP2D] not found in 'maps/" + land.fileName);
+            return false;
+        }
+        int j = sectfile.vars(i);
+        if(j == 0)
+        {
+            builder.tipErr("section [MAP2D] in 'maps/" + land.fileName + " is empty");
+            return false;
+        }
+        try
+        {
+            if(builder.bMultiSelect)
+            {
+                com.maddox.il2.ai.World.land().LoadMap(land.fileName, null);
+            } else
+            {
+                int ai[] = null;
+                int k = sectfile.sectionIndex("static");
+                if(k >= 0 && sectfile.vars(k) > 0)
+                {
+                    java.lang.String s = sectfile.var(k, 0);
+                    if(s != null && s.length() > 0)
+                    {
+                        s = com.maddox.rts.HomePath.concatNames("maps/" + land.fileName, s);
+                        ai = com.maddox.il2.objects.Statics.readBridgesEndPoints(s);
+                    }
+                }
+                com.maddox.il2.ai.World.land().LoadMap(land.fileName, ai);
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            builder.tipErr("World.land().LoadMap() error: " + exception);
+            return false;
+        }
+        com.maddox.il2.ai.World.cur().setCamouflage(com.maddox.il2.ai.World.land().config.camouflage);
+        if(com.maddox.il2.game.Main3D.cur3D().land2D != null)
+        {
+            if(!com.maddox.il2.game.Main3D.cur3D().land2D.isDestroyed())
+                com.maddox.il2.game.Main3D.cur3D().land2D.destroy();
+            com.maddox.il2.game.Main3D.cur3D().land2D = null;
+        }
+        com.maddox.il2.game.Main3D.cur3D().land2D = new Land2Dn(land.fileName, com.maddox.il2.ai.World.land().getSizeX(), com.maddox.il2.ai.World.land().getSizeY());
+        builder.computeViewMap2D(-1D, 0.0D, 0.0D);
+        com.maddox.il2.builder.PathFind.tShip = new TexImage();
+        com.maddox.il2.builder.PathFind.tNoShip = new TexImage();
+        boolean flag = false;
+        int l = sectfile.sectionIndex("TMAPED");
+        if(l >= 0)
+        {
+            int i1 = sectfile.vars(l);
+            if(i1 > 0)
+            {
+                java.lang.String s1 = "maps/" + land.dirName + "/" + sectfile.var(l, 0);
+                try
+                {
+                    com.maddox.il2.builder.PathFind.tShip.LoadTGA(s1);
+                    com.maddox.il2.builder.PathFind.tNoShip.LoadTGA(s1);
+                    com.maddox.TexImage.TexImage teximage = new TexImage();
+                    teximage.LoadTGA("maps/" + land.dirName + "/" + com.maddox.il2.ai.World.land().config.typeMap);
+                    for(int j3 = 0; j3 < teximage.sy; j3++)
+                    {
+                        for(int l3 = 0; l3 < teximage.sx; l3++)
+                        {
+                            int i4 = teximage.I(l3, j3) & 0xe0;
+                            if(i4 != 0)
+                            {
+                                com.maddox.il2.builder.PathFind.tShip.I(l3, j3, com.maddox.il2.builder.PathFind.tShip.intI(l3, j3) & 0xffffff1f | i4);
+                                com.maddox.il2.builder.PathFind.tNoShip.I(l3, j3, com.maddox.il2.builder.PathFind.tNoShip.intI(l3, j3) & 0xffffff1f | i4);
+                            }
+                        }
+
+                    }
+
+                    flag = true;
+                }
+                catch(java.lang.Exception exception2) { }
+            }
+        }
+        if(!flag)
+            try
+            {
+                com.maddox.il2.builder.PathFind.tShip.LoadTGA("maps/" + land.dirName + "/" + com.maddox.il2.ai.World.land().config.typeMap);
+                com.maddox.il2.builder.PathFind.tNoShip.LoadTGA("maps/" + land.dirName + "/" + com.maddox.il2.ai.World.land().config.typeMap);
+            }
+            catch(java.lang.Exception exception1) { }
+        for(int j1 = 0; j1 < com.maddox.il2.builder.PathFind.tShip.sy; j1++)
+        {
+            for(int k1 = 0; k1 < com.maddox.il2.builder.PathFind.tShip.sx; k1++)
+            {
+                if((com.maddox.il2.builder.PathFind.tShip.I(k1, j1) & 0x1c) == 24)
+                    com.maddox.il2.builder.PathFind.tShip.I(k1, j1, com.maddox.il2.builder.PathFind.tShip.intI(k1, j1) & 0xffffffe3);
+                if((com.maddox.il2.builder.PathFind.tNoShip.I(k1, j1) & 0x1c) == 24)
+                    com.maddox.il2.builder.PathFind.tNoShip.I(k1, j1, com.maddox.il2.builder.PathFind.tNoShip.intI(k1, j1) & 0xffffffe3);
+            }
+
+        }
+
+        com.maddox.il2.engine.Landscape landscape = com.maddox.il2.ai.World.land();
+        for(int l1 = 0; l1 < com.maddox.il2.builder.PathFind.tShip.sy; l1++)
+        {
+            for(int l2 = 0; l2 < com.maddox.il2.builder.PathFind.tShip.sx; l2++)
+            {
+                if((com.maddox.il2.builder.PathFind.tShip.intI(l2, l1) & 0x1c) != 28)
+                    continue;
+                com.maddox.il2.engine.Landscape _tmp = landscape;
+                if(com.maddox.il2.engine.Landscape.estimateNoWater(l2, l1, 128) > 255 - builder.conf.iWaterLevel)
+                    com.maddox.il2.builder.PathFind.tShip.I(l2, l1, com.maddox.il2.builder.PathFind.tShip.intI(l2, l1) & 0xffffffe3);
+            }
+
+        }
+
+        for(int i2 = 0; i2 < com.maddox.il2.builder.PathFind.tNoShip.sy; i2++)
+        {
+            for(int i3 = 0; i3 < com.maddox.il2.builder.PathFind.tNoShip.sx; i3++)
+            {
+                if((com.maddox.il2.builder.PathFind.tNoShip.intI(i3, i2) & 0x1c) != 28)
+                    continue;
+                com.maddox.il2.engine.Landscape _tmp1 = landscape;
+                if(com.maddox.il2.engine.Landscape.estimateNoWater(i3, i2, 128) > 250)
+                    com.maddox.il2.builder.PathFind.tNoShip.I(i3, i2, com.maddox.il2.builder.PathFind.tNoShip.intI(i3, i2) & 0xffffffe3);
+            }
+
+        }
+
+        builder.tip(land.i18nName);
+        landLoaded = land.indx;
+        if(menuItem != null)
+        {
+            for(int j2 = 0; j2 < menuItem.length; j2++)
+                menuItem[j2].bChecked = j2 == landLoaded;
+
+        }
+        com.maddox.il2.builder.Plugin.doMapLoaded();
+        com.maddox.il2.builder.PathFind.b = new com.maddox.il2.tools.Bridge[bridgeActors.size()];
+        for(int k2 = 0; k2 < bridgeActors.size(); k2++)
+        {
+            com.maddox.il2.objects.bridges.Bridge bridge = (com.maddox.il2.objects.bridges.Bridge)bridgeActors.get(k2);
+            int k3 = bridge.__indx;
+            com.maddox.il2.builder.PathFind.b[k3] = new com.maddox.il2.tools.Bridge();
+            com.maddox.il2.builder.PathFind.b[k3].x1 = bridge.__x1;
+            com.maddox.il2.builder.PathFind.b[k3].y1 = bridge.__y1;
+            com.maddox.il2.builder.PathFind.b[k3].x2 = bridge.__x2;
+            com.maddox.il2.builder.PathFind.b[k3].y2 = bridge.__y2;
+            com.maddox.il2.builder.PathFind.b[k3].type = bridge.__type;
+        }
+
+        com.maddox.il2.builder.PathFind.setMoverType(0);
+        return true;
+    }
+
+    public void renderMap2D()
+    {
+        if(builder.isFreeView())
+            return;
+        if(com.maddox.il2.builder.PlMapLoad.getLandLoaded() == null)
+            return;
+        if(builder.conf.bViewBridge)
+        {
+            com.maddox.il2.engine.Render.prepareStates();
+            com.maddox.il2.engine.IconDraw.setColor(255, 255, 255, 255);
+            for(int i = 0; i < bridgeActors.size(); i++)
+            {
+                com.maddox.il2.objects.bridges.Bridge bridge = (com.maddox.il2.objects.bridges.Bridge)bridgeActors.get(i);
+                if(builder.project2d(bridge.pos.getAbsPoint(), p2d))
+                    com.maddox.il2.engine.IconDraw.render(bridge, p2d.x, p2d.y);
+            }
+
+            if(bDrawNumberBridge || builder.bMultiSelect)
+            {
+                for(int j = 0; j < bridgeActors.size(); j++)
+                {
+                    com.maddox.il2.objects.bridges.Bridge bridge1 = (com.maddox.il2.objects.bridges.Bridge)bridgeActors.get(j);
+                    if(builder.project2d(bridge1.pos.getAbsPoint(), p2d))
+                        com.maddox.il2.engine.TextScr.font().output(0xff00ff00, (int)p2d.x + com.maddox.il2.engine.IconDraw.scrSizeX() / 2 + 2, (int)p2d.y - com.maddox.il2.engine.IconDraw.scrSizeY() / 2 - 2, 0.0F, "" + bridge1.__indx);
+                }
+
+            }
+        }
+        if(builder.conf.bViewRunaway)
+        {
+            com.maddox.il2.engine.IconDraw.setColor(255, 255, 255, 255);
+            for(com.maddox.il2.objects.air.Runaway runaway = com.maddox.il2.ai.World.cur().runawayList; runaway != null; runaway = runaway.next())
+                if(builder.project2d(runaway.pos.getAbsPoint(), p2d))
+                    com.maddox.il2.engine.IconDraw.render(runaway, p2d.x, p2d.y);
+
+        }
+    }
+
+    private void clearMenuItems()
+    {
+        if(menuItem != null)
+        {
+            for(int i = 0; i < menuItem.length; i++)
+                menuItem[i].bChecked = false;
+
+        }
+    }
+
+    public void createGUI()
+    {
+        com.maddox.gwindow.GWindowRootMenu gwindowrootmenu = (com.maddox.gwindow.GWindowRootMenu)builder.clientWindow.root;
+        com.maddox.gwindow.GWindowMenuBarItem gwindowmenubaritem = gwindowrootmenu.menuBar.getItem(0);
+        com.maddox.gwindow.GWindowMenuItem gwindowmenuitem = gwindowmenubaritem.subMenu.addItem(0, new GWindowMenuItem(gwindowmenubaritem.subMenu, com.maddox.il2.builder.PlMapLoad.i18n("&MapLoad"), com.maddox.il2.builder.PlMapLoad.i18n("TIPLoadLandscape")));
+        gwindowmenuitem.subMenu = (com.maddox.gwindow.GWindowMenu)(com.maddox.gwindow.GWindowMenu)gwindowmenuitem.create(new GWindowMenu());
+        gwindowmenuitem.subMenu.close(false);
+        int i = lands.size();
+        menuItem = new com.maddox.il2.builder.MenuItem[i];
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.builder.Land land = (com.maddox.il2.builder.Land)lands.get(j);
+            gwindowmenuitem.subMenu.addItem(menuItem[j] = new MenuItem(gwindowmenuitem.subMenu, land.i18nName, null, j));
+            menuItem[j].bChecked = false;
+        }
+
+    }
+
+    public void guiMapLoad()
+    {
+        guiMapLoad(_guiLand);
+    }
+
+    public void guiMapLoad(com.maddox.il2.builder.Land land)
+    {
+        _guiLand = land;
+        loadMessageBox = new GWindowMessageBox(builder.clientWindow.root, 20F, true, com.maddox.il2.builder.PlMapLoad.i18n("StandBy"), com.maddox.il2.builder.PlMapLoad.i18n("LoadingLandscape") + " " + land.i18nName, 4, 0.0F);
+        new com.maddox.rts.MsgAction(72, 0.0D) {
+
+            public void doAction()
+            {
+                mapLoad(_guiLand);
+                loadMessageBox.close(false);
+                loadMessageBox = null;
+            }
+
+        }
+;
+    }
+
+    public void configure()
+    {
+        com.maddox.rts.SectFile sectfile = new SectFile("maps/all.ini", 0);
+        int i = sectfile.sectionIndex("all");
+        if(i < 0)
+            return;
+        int j = sectfile.vars(i);
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.builder.Land land = new Land();
+            land.indx = k;
+            land.keyName = sectfile.var(i, k);
+            land.fileName = sectfile.value(i, k);
+            land.dirName = land.fileName.substring(0, land.fileName.lastIndexOf("/"));
+            land.i18nName = com.maddox.il2.game.I18N.map(land.keyName);
+            lands.add(land);
+        }
+
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private static java.util.ArrayList lands = new ArrayList();
+    private static int landLoaded = -1;
+    public static java.util.ArrayList bridgeActors = new ArrayList();
+    public static boolean bDrawNumberBridge = false;
+    private static com.maddox.JGP.Point3d _p3d = new Point3d();
+    private com.maddox.JGP.Point2d p2d;
+    com.maddox.il2.builder.MenuItem menuItem[];
+    private com.maddox.gwindow.GWindowMessageBox loadMessageBox;
+    private com.maddox.il2.builder.Land _guiLand;
+
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.il2.builder.PlMapLoad.class, "name", "MapLoad");
+    }
+
+
+
+
+
 }

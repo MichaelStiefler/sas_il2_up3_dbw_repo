@@ -1,111 +1,266 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowManager.java
+
 package com.maddox.gwindow;
+
+
+// Referenced classes of package com.maddox.gwindow:
+//            GRegion, GWindowRoot, GCanvas, GSize, 
+//            GPoint, GWindowLookAndFeel
 
 public abstract class GWindowManager
 {
-  protected boolean bTimeActive = false;
-  protected boolean bKeyboardActive = false;
-  protected boolean bMouseActive = false;
-  protected boolean bJoyActive = false;
 
-  protected boolean bTimeGameActive = true;
-  protected boolean bKeyboardGameActive = true;
-  protected boolean bMouseGameActive = true;
-  protected boolean bJoyGameActive = true;
-  public GWindowRoot root;
+    public GWindowManager()
+    {
+        bTimeActive = false;
+        bKeyboardActive = false;
+        bMouseActive = false;
+        bJoyActive = false;
+        bTimeGameActive = true;
+        bKeyboardGameActive = true;
+        bMouseGameActive = true;
+        bJoyGameActive = true;
+    }
 
-  public boolean isTimeActive()
-  {
-    return this.bTimeActive; } 
-  public boolean isKeyboardActive() { return this.bKeyboardActive; } 
-  public boolean isMouseActive() { return this.bMouseActive; } 
-  public boolean isJoyActive() { return this.bJoyActive; } 
-  public boolean isTimeGameActive() {
-    return this.bTimeGameActive; } 
-  public boolean isKeyboardGameActive() { return this.bKeyboardGameActive; } 
-  public boolean isMouseGameActive() { return this.bMouseGameActive; } 
-  public boolean isJoyGameActive() { return this.bJoyGameActive; } 
-  public void setTimeGameActive(boolean paramBoolean) {
-    this.bTimeGameActive = paramBoolean; } 
-  public void setKeyboardGameActive(boolean paramBoolean) { this.bKeyboardGameActive = paramBoolean; } 
-  public void setMouseGameActive(boolean paramBoolean) { this.bMouseGameActive = paramBoolean; } 
-  public void setJoyGameActive(boolean paramBoolean) { this.bJoyGameActive = paramBoolean; } 
-  public void activateTime(boolean paramBoolean) {
-    this.bTimeActive = paramBoolean; } 
-  public void activateKeyboard(boolean paramBoolean) { this.bKeyboardActive = paramBoolean; } 
-  public void activateMouse(boolean paramBoolean) { this.bMouseActive = paramBoolean; } 
-  public void activateJoy(boolean paramBoolean) { this.bJoyActive = paramBoolean; }
+    public boolean isTimeActive()
+    {
+        return bTimeActive;
+    }
 
-  public void unActivateAll() {
-    activateTime(false);
-    activateKeyboard(false);
-    activateMouse(false);
-    activateJoy(false);
-  }
+    public boolean isKeyboardActive()
+    {
+        return bKeyboardActive;
+    }
 
-  public void doPreRender(float paramFloat)
-  {
-    this.root.deltaTimeSec = paramFloat;
-    this.root.doPreRender();
-  }
-  public void doRender() {
-    this.root.bInRender = true;
-    this.root.doRender();
-    this.root.bInRender = false;
-  }
-  public void doCanvasResize(int paramInt1, int paramInt2) {
-    this.root.C.size.set(paramInt1, paramInt2);
-    this.root.C.clip.set(0.0F, 0.0F, paramInt1, paramInt2);
-    this.root.win.set(0.0F, 0.0F, paramInt1, paramInt2);
-    this.root.doResolutionChanged();
-  }
+    public boolean isMouseActive()
+    {
+        return bMouseActive;
+    }
 
-  public void doMouseButton(int paramInt, boolean paramBoolean) {
-    if (!this.bMouseActive) return;
-    this.root.doMouseButton(paramInt, paramBoolean, this.root.mousePos.x, this.root.mousePos.y);
-  }
-  public void doMouseMove(int paramInt1, int paramInt2, int paramInt3) {
-    if (!this.bMouseActive) return;
-    this.root.doMouseMove(paramInt1, paramInt2, paramInt3);
-  }
-  public void doMouseAbsMove(int paramInt1, int paramInt2, int paramInt3) {
-    if (!this.bMouseActive) return;
-    this.root.doMouseAbsMove(paramInt1, paramInt2, paramInt3);
-  }
+    public boolean isJoyActive()
+    {
+        return bJoyActive;
+    }
 
-  public void doKeyboardKey(int paramInt, boolean paramBoolean) {
-    if (!this.bKeyboardActive) return;
-    this.root.doKeyboardKey(paramInt, paramBoolean);
-  }
-  public void doKeyboardChar(char paramChar) {
-    if (!this.bKeyboardActive) return;
-    this.root.doKeyboardChar(paramChar);
-  }
+    public boolean isTimeGameActive()
+    {
+        return bTimeGameActive;
+    }
 
-  public void doJoyButton(int paramInt1, int paramInt2, boolean paramBoolean) {
-    if (!this.bJoyActive) return;
-    this.root.doJoyButton(paramInt1, paramInt2, paramBoolean);
-  }
-  public void doJoyMove(int paramInt1, int paramInt2, int paramInt3) {
-    if (!this.bJoyActive) return;
-    this.root.doJoyMove(paramInt1, paramInt2, paramInt3);
-  }
-  public void doJoyPov(int paramInt1, int paramInt2) {
-    if (!this.bJoyActive) return;
-    this.root.doJoyPov(paramInt1, paramInt2);
-  }
-  public void doJoyPoll() {
-    if (!this.bJoyActive) return;
-    this.root.doJoyPoll();
-  }
+    public boolean isKeyboardGameActive()
+    {
+        return bKeyboardGameActive;
+    }
 
-  public void doCreate(GCanvas paramGCanvas, GWindowRoot paramGWindowRoot, GWindowLookAndFeel paramGWindowLookAndFeel) {
-    this.root = paramGWindowRoot;
-    paramGWindowRoot.beforeCreate();
-    paramGWindowRoot.C = paramGCanvas;
-    paramGWindowRoot.manager = this;
-    paramGWindowRoot.win = new GRegion(0.0F, 0.0F, paramGCanvas.size.dx, paramGCanvas.size.dy);
-    paramGWindowRoot.lookAndFeel = paramGWindowLookAndFeel;
-    paramGWindowLookAndFeel.init(paramGWindowRoot);
-    paramGWindowRoot.created();
-  }
+    public boolean isMouseGameActive()
+    {
+        return bMouseGameActive;
+    }
+
+    public boolean isJoyGameActive()
+    {
+        return bJoyGameActive;
+    }
+
+    public void setTimeGameActive(boolean flag)
+    {
+        bTimeGameActive = flag;
+    }
+
+    public void setKeyboardGameActive(boolean flag)
+    {
+        bKeyboardGameActive = flag;
+    }
+
+    public void setMouseGameActive(boolean flag)
+    {
+        bMouseGameActive = flag;
+    }
+
+    public void setJoyGameActive(boolean flag)
+    {
+        bJoyGameActive = flag;
+    }
+
+    public void activateTime(boolean flag)
+    {
+        bTimeActive = flag;
+    }
+
+    public void activateKeyboard(boolean flag)
+    {
+        bKeyboardActive = flag;
+    }
+
+    public void activateMouse(boolean flag)
+    {
+        bMouseActive = flag;
+    }
+
+    public void activateJoy(boolean flag)
+    {
+        bJoyActive = flag;
+    }
+
+    public void unActivateAll()
+    {
+        activateTime(false);
+        activateKeyboard(false);
+        activateMouse(false);
+        activateJoy(false);
+    }
+
+    public void doPreRender(float f)
+    {
+        root.deltaTimeSec = f;
+        root.doPreRender();
+    }
+
+    public void doRender()
+    {
+        root.bInRender = true;
+        root.doRender();
+        root.bInRender = false;
+    }
+
+    public void doCanvasResize(int i, int j)
+    {
+        root.C.size.set(i, j);
+        root.C.clip.set(0.0F, 0.0F, i, j);
+        root.win.set(0.0F, 0.0F, i, j);
+        root.doResolutionChanged();
+    }
+
+    public void doMouseButton(int i, boolean flag)
+    {
+        if(!bMouseActive)
+        {
+            return;
+        } else
+        {
+            root.doMouseButton(i, flag, root.mousePos.x, root.mousePos.y);
+            return;
+        }
+    }
+
+    public void doMouseMove(int i, int j, int k)
+    {
+        if(!bMouseActive)
+        {
+            return;
+        } else
+        {
+            root.doMouseMove(i, j, k);
+            return;
+        }
+    }
+
+    public void doMouseAbsMove(int i, int j, int k)
+    {
+        if(!bMouseActive)
+        {
+            return;
+        } else
+        {
+            root.doMouseAbsMove(i, j, k);
+            return;
+        }
+    }
+
+    public void doKeyboardKey(int i, boolean flag)
+    {
+        if(!bKeyboardActive)
+        {
+            return;
+        } else
+        {
+            root.doKeyboardKey(i, flag);
+            return;
+        }
+    }
+
+    public void doKeyboardChar(char c)
+    {
+        if(!bKeyboardActive)
+        {
+            return;
+        } else
+        {
+            root.doKeyboardChar(c);
+            return;
+        }
+    }
+
+    public void doJoyButton(int i, int j, boolean flag)
+    {
+        if(!bJoyActive)
+        {
+            return;
+        } else
+        {
+            root.doJoyButton(i, j, flag);
+            return;
+        }
+    }
+
+    public void doJoyMove(int i, int j, int k)
+    {
+        if(!bJoyActive)
+        {
+            return;
+        } else
+        {
+            root.doJoyMove(i, j, k);
+            return;
+        }
+    }
+
+    public void doJoyPov(int i, int j)
+    {
+        if(!bJoyActive)
+        {
+            return;
+        } else
+        {
+            root.doJoyPov(i, j);
+            return;
+        }
+    }
+
+    public void doJoyPoll()
+    {
+        if(!bJoyActive)
+        {
+            return;
+        } else
+        {
+            root.doJoyPoll();
+            return;
+        }
+    }
+
+    public void doCreate(com.maddox.gwindow.GCanvas gcanvas, com.maddox.gwindow.GWindowRoot gwindowroot, com.maddox.gwindow.GWindowLookAndFeel gwindowlookandfeel)
+    {
+        root = gwindowroot;
+        gwindowroot.beforeCreate();
+        gwindowroot.C = gcanvas;
+        gwindowroot.manager = this;
+        gwindowroot.win = new GRegion(0.0F, 0.0F, gcanvas.size.dx, gcanvas.size.dy);
+        gwindowroot.lookAndFeel = gwindowlookandfeel;
+        gwindowlookandfeel.init(gwindowroot);
+        gwindowroot.created();
+    }
+
+    protected boolean bTimeActive;
+    protected boolean bKeyboardActive;
+    protected boolean bMouseActive;
+    protected boolean bJoyActive;
+    protected boolean bTimeGameActive;
+    protected boolean bKeyboardGameActive;
+    protected boolean bMouseGameActive;
+    protected boolean bJoyGameActive;
+    public com.maddox.gwindow.GWindowRoot root;
 }

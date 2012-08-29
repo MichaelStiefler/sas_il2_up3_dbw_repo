@@ -1,7 +1,11 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIRecordPlay.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
-import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowMessageBox;
 import com.maddox.gwindow.GWindowRoot;
@@ -9,6 +13,7 @@ import com.maddox.il2.engine.GUIWindowManager;
 import com.maddox.il2.engine.hotkey.HookView;
 import com.maddox.il2.game.GameState;
 import com.maddox.il2.game.GameStateStack;
+import com.maddox.il2.game.HUD;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.game.Mission;
@@ -28,352 +33,433 @@ import com.maddox.rts.Spawn;
 import com.maddox.rts.Time;
 import com.maddox.sound.AudioDevice;
 
-public class GUIRecordPlay extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIRecordSelect, GUIClient, GUIInfoMenu, GUIInfoName, 
+//            GUILookAndFeel, GUIButton, GUISwitchBox2, GUI, 
+//            GUIChatDialog, GUIDialogClient, GUISeparate
+
+public class GUIRecordPlay extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GUIButton bVideo;
-  public GUIButton b3d;
-  public GUIButton bSound;
-  public GUIButton bExit;
-  public GUIButton bBack;
-  public GUISwitchBox2 sTimeCompression;
-  public GUISwitchBox2 sViewControls;
-  public GUISwitchBox2 sViewMessages;
-  private boolean bDemoChanges = false;
-  private GWindowMessageBox loadMessageBox;
-  private String selectedFileName;
-  private String _replayRecordFile;
-
-  public void enterPush(GameState paramGameState)
-  {
-    _enter();
-    this.bDemoChanges = ((this.sTimeCompression.isChecked()) || (this.sViewControls.isChecked()));
-  }
-  public void enterPop(GameState paramGameState) {
-    this.client.activateWindow();
-  }
-
-  public void _enter() {
-    GUIRecordSelect localGUIRecordSelect = (GUIRecordSelect)GameState.get(7);
-    this.sTimeCompression.showWindow();
-    this.sTimeCompression.setChecked(localGUIRecordSelect.bManualTimeCompression, false);
-    this.sViewControls.setChecked(localGUIRecordSelect.bManualViewControls, false);
-    this.sViewMessages.setChecked(localGUIRecordSelect.bDrawAllMessages, false);
-    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("record.StandBy"), i18n("record.LoadingTrack"), 5, 0.0F)
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-      public void result(int paramInt)
-      {
-        if (paramInt == 1)
-          BackgroundTask.cancel(GUIRecordPlay.this.i18n("miss.UserCancel"));
-      }
-    };
-    new MsgAction(72, 0.0D) {
-      public void doAction() { Main.closeAllNetChannels();
-        GUIRecordSelect localGUIRecordSelect = (GUIRecordSelect)GameState.get(7);
-        GUIRecordPlay.MissionListener localMissionListener = new GUIRecordPlay.MissionListener(GUIRecordPlay.this);
-        GUIRecordPlay.access$002(GUIRecordPlay.this, localGUIRecordSelect.selectedFile);
-        String str = Main3D.cur3D().playRecordedMission("Records/" + localGUIRecordSelect.selectedFile);
-        if (str != null) {
-          BackgroundTask.removeListener(localMissionListener);
-          GUIRecordPlay.this.recordBad(str);
-        } else if (Main3D.cur3D().playRecordedStreams() != null) {
-          Main.cur().netMissionListener = localMissionListener;
-        } } } ;
-  }
 
-  public void doReplayMission(String paramString, boolean paramBoolean) {
-    GUI.activate();
-    GUIRecordSelect localGUIRecordSelect = (GUIRecordSelect)GameState.get(7);
-    if ((!localGUIRecordSelect.bCycle) && (paramBoolean)) {
-      doExit(true);
-      return;
-    }
-    if (NetMissionTrack.isRecording()) {
-      NetMissionTrack.stopRecording();
-      GUI.activate();
-    }
-    if (Main.cur().netServerParams != null)
-      Main.cur().netServerParams.destroy();
-    if (RTSConf.cur.netEnv.control != null)
-      RTSConf.cur.netEnv.control.destroy();
-    this.loadMessageBox = new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("record.StandBy"), i18n("record.LoadingTrack"), 5, 0.0F)
-    {
-      public void result(int paramInt)
-      {
-        if (paramInt == 1)
-          BackgroundTask.cancel(GUIRecordPlay.this.i18n("miss.UserCancel"));
-      }
-    };
-    this._replayRecordFile = paramString;
-    new MsgAction(72, 0.0D) {
-      public void doAction() { Main.closeAllNetChannels();
-        GUIRecordPlay.MissionListener localMissionListener = new GUIRecordPlay.MissionListener(GUIRecordPlay.this);
-        String str = Main3D.cur3D().playRecordedMission(GUIRecordPlay.this._replayRecordFile, false);
-        if (str != null) {
-          BackgroundTask.removeListener(localMissionListener);
-          GUIRecordPlay.this.recordBad(str);
-        } else if (Main3D.cur3D().playRecordedStreams() != null) {
-          Main.cur().netMissionListener = localMissionListener;
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bVideo)
+            {
+                com.maddox.il2.game.Main.stateStack().push(12);
+                return true;
+            }
+            if(gwindow == b3d)
+            {
+                com.maddox.il2.game.Main.stateStack().push(11);
+                return true;
+            }
+            if(gwindow == bSound)
+            {
+                com.maddox.il2.game.Main.stateStack().push(13);
+                return true;
+            }
+            if(gwindow == sTimeCompression)
+            {
+                bDemoChanges = true;
+                return true;
+            }
+            if(gwindow == sViewControls)
+            {
+                bDemoChanges = true;
+                return true;
+            }
+            if(gwindow == sViewMessages)
+            {
+                com.maddox.il2.game.Main3D.cur3D().hud.bDrawAllMessages = sViewMessages.isChecked();
+                com.maddox.il2.gui.GUIRecordSelect guirecordselect = (com.maddox.il2.gui.GUIRecordSelect)com.maddox.il2.game.GameState.get(7);
+                guirecordselect.bDrawAllMessages = sViewMessages.isChecked();
+                return true;
+            }
+            if(gwindow == bExit)
+            {
+                doExit();
+                return true;
+            }
+            if(gwindow == bBack)
+            {
+                com.maddox.il2.gui.GUIRecordSelect guirecordselect1 = (com.maddox.il2.gui.GUIRecordSelect)com.maddox.il2.game.GameState.get(7);
+                guirecordselect1.bManualTimeCompression = sTimeCompression.isChecked();
+                guirecordselect1.bManualViewControls = sViewControls.isChecked();
+                com.maddox.rts.HotKeyEnv.enable("timeCompression", guirecordselect1.bManualTimeCompression);
+                com.maddox.rts.HotKeyEnv.enable("aircraftView", guirecordselect1.bManualViewControls);
+                com.maddox.rts.HotKeyEnv.enable("HookView", guirecordselect1.bManualViewControls);
+                com.maddox.rts.HotKeyEnv.enable("PanView", guirecordselect1.bManualViewControls);
+                com.maddox.rts.HotKeyEnv.enable("SnapView", guirecordselect1.bManualViewControls);
+                com.maddox.il2.game.Main3D.cur3D().keyRecord.setEnablePlayArgs(!guirecordselect1.bManualViewControls);
+                client.hideWindow();
+                com.maddox.il2.gui.GUI.unActivate();
+                if(com.maddox.il2.game.Main3D.cur3D().playRecordedStreams() != null)
+                    com.maddox.il2.gui.GUI.chatDlg.showWindow();
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
         }
-      }
-    };
-  }
 
-  private void doExit()
-  {
-    doExit(false);
-  }
-  private void doExit(boolean paramBoolean) {
-    int i = Main3D.cur3D().playRecordedStreams() != null ? 1 : 0;
-    if (NetMissionTrack.isRecording()) {
-      NetMissionTrack.stopRecording();
-      GUI.activate();
-    }
-    Main.cur().netMissionListener = null;
-    Main3D.cur3D().stopPlayRecordedMission();
-    if ((Mission.cur() != null) && (!Mission.cur().isDestroyed())) {
-      CmdEnv.top().exec("mission END");
-    }
-    if (Main.cur().netServerParams != null)
-      Main.cur().netServerParams.destroy();
-    if (RTSConf.cur.netEnv.control != null) {
-      RTSConf.cur.netEnv.control.destroy();
-    }
-    if ((this.bDemoChanges) && (NetMissionTrack.countRecorded == 0) && (i == 0)) {
-      Main.stateStack().change(9);
-    } else {
-      HookView.loadConfig();
-      Main.stateStack().pop();
-    }
-  }
-
-  private void recordBad(String paramString) {
-    this.loadMessageBox.close(false);
-    new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("record.Error"), paramString, 3, 0.0F)
-    {
-      public void result(int paramInt) {
-        GUIRecordPlay.access$702(GUIRecordPlay.this, false);
-        GUIRecordPlay.this.doExit();
-      } } ;
-  }
-
-  private void gameBeginNet() {
-    GUIWindowManager localGUIWindowManager = Main3D.cur3D().guiManager;
-    this.loadMessageBox.close(false);
-    GUI.unActivate();
-    RTSConf.cur.time.setEnableChangePause1(true);
-    RTSConf.cur.time.setEnableChangeSpeed(true);
-    GUI.chatDlg.showWindow();
-    if (Mission.isNet())
-      AudioDevice.soundsOn();
-  }
-
-  private void gameBeginSingle() {
-    new MsgAction(72, 0.0D) {
-      public void doAction() { GUIWindowManager localGUIWindowManager = Main3D.cur3D().guiManager;
-        GUIRecordPlay.this.loadMessageBox.close(false);
-        localGUIWindowManager.setTimeGameActive(false);
-        GUI.unActivate();
-        CmdEnv.top().exec("mission BEGIN");
-        GUIRecordPlay.this.gameBeginEnvs(); } } ;
-  }
-
-  private void gameBeginEnvs() {
-    GUIRecordSelect localGUIRecordSelect = (GUIRecordSelect)GameState.get(7);
-    HotKeyEnv.enable("timeCompression", localGUIRecordSelect.bManualTimeCompression);
-    HotKeyEnv.enable("aircraftView", localGUIRecordSelect.bManualViewControls);
-    HotKeyEnv.enable("HookView", localGUIRecordSelect.bManualViewControls);
-    HotKeyEnv.enable("PanView", localGUIRecordSelect.bManualViewControls);
-    HotKeyEnv.enable("SnapView", localGUIRecordSelect.bManualViewControls);
-    Main3D.cur3D().keyRecord.setEnablePlayArgs(!localGUIRecordSelect.bManualViewControls);
-  }
-
-  public void _leave() {
-    this.client.hideWindow();
-  }
-
-  public void doQuitMission() {
-    if (Main3D.cur3D().playRecordedStreams() != null)
-      GUI.chatDlg.hideWindow();
-    GUI.activate();
-
-    if (Time.isEnableChangeSpeed()) this.sTimeCompression.showWindow(); else
-      this.sTimeCompression.hideWindow();
-    this.client.activateWindow();
-  }
-
-  public GUIRecordPlay(GWindowRoot paramGWindowRoot)
-  {
-    super(8);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("record.infoPlay");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-
-    this.bVideo = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.b3d = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.bSound = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.bBack = ((GUIButton)this.dialogClient.addDefault(new GUIButton(this.dialogClient, localGTexture, 0.0F, 192.0F, 48.0F, 48.0F)));
-    this.bExit = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-    this.sTimeCompression = ((GUISwitchBox2)this.dialogClient.addControl(new GUISwitchBox2(this.dialogClient)));
-    this.sViewControls = ((GUISwitchBox2)this.dialogClient.addControl(new GUISwitchBox2(this.dialogClient)));
-    this.sViewMessages = ((GUISwitchBox2)this.dialogClient.addControl(new GUISwitchBox2(this.dialogClient)));
-
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  static {
-    Spawn.get("com.maddox.il2.fm.FlightModelTrack");
-    Spawn.get("com.maddox.il2.game.GameTrack");
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
-    {
-    }
-
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-
-      if (paramGWindow == GUIRecordPlay.this.bVideo) {
-        Main.stateStack().push(12);
-        return true;
-      }
-      if (paramGWindow == GUIRecordPlay.this.b3d) {
-        Main.stateStack().push(11);
-        return true;
-      }
-      if (paramGWindow == GUIRecordPlay.this.bSound) {
-        Main.stateStack().push(13);
-        return true;
-      }
-      if (paramGWindow == GUIRecordPlay.this.sTimeCompression) {
-        GUIRecordPlay.access$702(GUIRecordPlay.this, true);
-        return true;
-      }if (paramGWindow == GUIRecordPlay.this.sViewControls) {
-        GUIRecordPlay.access$702(GUIRecordPlay.this, true);
-        return true;
-      }
-      GUIRecordSelect localGUIRecordSelect;
-      if (paramGWindow == GUIRecordPlay.this.sViewMessages) {
-        Main3D.cur3D().hud.bDrawAllMessages = GUIRecordPlay.this.sViewMessages.isChecked();
-        localGUIRecordSelect = (GUIRecordSelect)GameState.get(7);
-        localGUIRecordSelect.bDrawAllMessages = GUIRecordPlay.this.sViewMessages.isChecked();
-        return true;
-      }
-      if (paramGWindow == GUIRecordPlay.this.bExit) {
-        GUIRecordPlay.this.doExit();
-        return true;
-      }
-      if (paramGWindow == GUIRecordPlay.this.bBack) {
-        localGUIRecordSelect = (GUIRecordSelect)GameState.get(7);
-        localGUIRecordSelect.bManualTimeCompression = GUIRecordPlay.this.sTimeCompression.isChecked();
-        localGUIRecordSelect.bManualViewControls = GUIRecordPlay.this.sViewControls.isChecked();
-        HotKeyEnv.enable("timeCompression", localGUIRecordSelect.bManualTimeCompression);
-        HotKeyEnv.enable("aircraftView", localGUIRecordSelect.bManualViewControls);
-        HotKeyEnv.enable("HookView", localGUIRecordSelect.bManualViewControls);
-        HotKeyEnv.enable("PanView", localGUIRecordSelect.bManualViewControls);
-        HotKeyEnv.enable("SnapView", localGUIRecordSelect.bManualViewControls);
-        Main3D.cur3D().keyRecord.setEnablePlayArgs(!localGUIRecordSelect.bManualViewControls);
-
-        GUIRecordPlay.this.client.hideWindow();
-        GUI.unActivate();
-        if (Main3D.cur3D().playRecordedStreams() != null)
-          GUI.chatDlg.showWindow();
-        return true;
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
-    }
-
-    public void render() {
-      super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(240.0F), x1024(320.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(512.0F), x1024(320.0F), 2.0F);
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(624.0F), x1024(320.0F), 2.0F);
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-      draw(x1024(96.0F), y1024(32.0F), x1024(224.0F), y1024(48.0F), 0, GUIRecordPlay.this.i18n("record.VideoModes"));
-      draw(x1024(96.0F), y1024(96.0F), x1024(224.0F), y1024(48.0F), 0, GUIRecordPlay.this.i18n("record.VideoOptions"));
-      draw(x1024(96.0F), y1024(160.0F), x1024(224.0F), y1024(48.0F), 0, GUIRecordPlay.this.i18n("record.SoundSetup"));
-      if (RTSConf.cur.time.isEnableChangePause1())
-        draw(x1024(96.0F), y1024(272.0F), x1024(224.0F), y1024(48.0F), 0, GUIRecordPlay.this.i18n("record.ManualTime"));
-      draw(x1024(96.0F), y1024(352.0F), x1024(224.0F), y1024(48.0F), 0, GUIRecordPlay.this.i18n("record.ManualView"));
-      draw(x1024(96.0F), y1024(432.0F), x1024(224.0F), y1024(48.0F), 0, GUIRecordPlay.this.i18n("record.InflightMessages"));
-      draw(x1024(96.0F), y1024(544.0F), x1024(224.0F), y1024(48.0F), 0, GUIRecordPlay.this.i18n("record.Return2track"));
-      draw(x1024(96.0F), y1024(656.0F), x1024(224.0F), y1024(48.0F), 0, GUIRecordPlay.this.i18n("record.Stop"));
-    }
-
-    public void setPosSize()
-    {
-      set1024PosSize(334.0F, 32.0F, 384.0F, 736.0F);
-
-      GUIRecordPlay.this.bVideo.setPosC(x1024(56.0F), y1024(56.0F));
-      GUIRecordPlay.this.b3d.setPosC(x1024(56.0F), y1024(120.0F));
-      GUIRecordPlay.this.bSound.setPosC(x1024(56.0F), y1024(184.0F));
-      GUIRecordPlay.this.sTimeCompression.setPosC(x1024(64.0F), y1024(296.0F));
-      GUIRecordPlay.this.sViewControls.setPosC(x1024(64.0F), y1024(376.0F));
-      GUIRecordPlay.this.sViewMessages.setPosC(x1024(64.0F), y1024(458.0F));
-      GUIRecordPlay.this.bBack.setPosC(x1024(56.0F), y1024(568.0F));
-      GUIRecordPlay.this.bExit.setPosC(x1024(56.0F), y1024(682.0F));
-    }
-  }
-
-  class MissionListener
-    implements NetMissionListener, MsgBackgroundTaskListener
-  {
-    public void netMissionState(int paramInt, float paramFloat, String paramString)
-    {
-      switch (paramInt) {
-      case 6:
-        GUIRecordPlay.this.gameBeginEnvs();
-        break;
-      case 9:
-        GUIRecordPlay.this.gameBeginNet();
-        break;
-      case 7:
-      case 8:
-        BackgroundTask.removeListener(this);
-        break;
-      }
-    }
-    public void netMissionCoopEnter() {
-    }
-
-    public void msgBackgroundTaskStarted(BackgroundTask paramBackgroundTask) {
-    }
-
-    public void msgBackgroundTaskStep(BackgroundTask paramBackgroundTask) {
-      GUIRecordPlay.this.loadMessageBox.message = ((int)paramBackgroundTask.percentComplete() + "% " + GUIRecordPlay.this.i18n(paramBackgroundTask.messageComplete()));
-    }
-
-    public void msgBackgroundTaskStoped(BackgroundTask paramBackgroundTask)
-    {
-      BackgroundTask.removeListener(this);
-      if (paramBackgroundTask.isComplete()) {
-        if (Main3D.cur3D().playRecordedStreams() == null) {
-          String str = Main3D.cur3D().startPlayRecordedMission();
-          if (str == null)
-            GUIRecordPlay.this.gameBeginSingle();
-          else
-            GUIRecordPlay.this.recordBad(GUIRecordPlay.this.i18n("miss.LoadBad") + " " + str);
+        public void render()
+        {
+            super.render();
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(240F), x1024(320F), 2.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(512F), x1024(320F), 2.0F);
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(624F), x1024(320F), 2.0F);
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(96F), y1024(32F), x1024(224F), y1024(48F), 0, i18n("record.VideoModes"));
+            draw(x1024(96F), y1024(96F), x1024(224F), y1024(48F), 0, i18n("record.VideoOptions"));
+            draw(x1024(96F), y1024(160F), x1024(224F), y1024(48F), 0, i18n("record.SoundSetup"));
+            if(com.maddox.rts.RTSConf.cur.time.isEnableChangePause1())
+                draw(x1024(96F), y1024(272F), x1024(224F), y1024(48F), 0, i18n("record.ManualTime"));
+            draw(x1024(96F), y1024(352F), x1024(224F), y1024(48F), 0, i18n("record.ManualView"));
+            draw(x1024(96F), y1024(432F), x1024(224F), y1024(48F), 0, i18n("record.InflightMessages"));
+            draw(x1024(96F), y1024(544F), x1024(224F), y1024(48F), 0, i18n("record.Return2track"));
+            draw(x1024(96F), y1024(656F), x1024(224F), y1024(48F), 0, i18n("record.Stop"));
         }
-      }
-      else
-        GUIRecordPlay.this.recordBad(GUIRecordPlay.this.i18n("miss.LoadBad") + " " + paramBackgroundTask.messageCancel());
+
+        public void setPosSize()
+        {
+            set1024PosSize(334F, 32F, 384F, 736F);
+            bVideo.setPosC(x1024(56F), y1024(56F));
+            b3d.setPosC(x1024(56F), y1024(120F));
+            bSound.setPosC(x1024(56F), y1024(184F));
+            sTimeCompression.setPosC(x1024(64F), y1024(296F));
+            sViewControls.setPosC(x1024(64F), y1024(376F));
+            sViewMessages.setPosC(x1024(64F), y1024(458F));
+            bBack.setPosC(x1024(56F), y1024(568F));
+            bExit.setPosC(x1024(56F), y1024(682F));
+        }
+
+        public DialogClient()
+        {
+        }
     }
 
-    public MissionListener() {
-      BackgroundTask.addListener(this);
+    class MissionListener
+        implements com.maddox.il2.net.NetMissionListener, com.maddox.rts.MsgBackgroundTaskListener
+    {
+
+        public void netMissionState(int i, float f, java.lang.String s)
+        {
+            switch(i)
+            {
+            case 6: // '\006'
+                gameBeginEnvs();
+                break;
+
+            case 9: // '\t'
+                gameBeginNet();
+                break;
+
+            case 7: // '\007'
+            case 8: // '\b'
+                com.maddox.rts.BackgroundTask.removeListener(this);
+                break;
+            }
+        }
+
+        public void netMissionCoopEnter()
+        {
+        }
+
+        public void msgBackgroundTaskStarted(com.maddox.rts.BackgroundTask backgroundtask)
+        {
+        }
+
+        public void msgBackgroundTaskStep(com.maddox.rts.BackgroundTask backgroundtask)
+        {
+            loadMessageBox.message = (int)backgroundtask.percentComplete() + "% " + i18n(backgroundtask.messageComplete());
+        }
+
+        public void msgBackgroundTaskStoped(com.maddox.rts.BackgroundTask backgroundtask)
+        {
+            com.maddox.rts.BackgroundTask.removeListener(this);
+            if(backgroundtask.isComplete())
+            {
+                if(com.maddox.il2.game.Main3D.cur3D().playRecordedStreams() == null)
+                {
+                    java.lang.String s = com.maddox.il2.game.Main3D.cur3D().startPlayRecordedMission();
+                    if(s == null)
+                        gameBeginSingle();
+                    else
+                        recordBad(i18n("miss.LoadBad") + " " + s);
+                }
+            } else
+            {
+                recordBad(i18n("miss.LoadBad") + " " + backgroundtask.messageCancel());
+            }
+        }
+
+        public MissionListener()
+        {
+            com.maddox.rts.BackgroundTask.addListener(this);
+        }
     }
-  }
+
+
+    public void enterPush(com.maddox.il2.game.GameState gamestate)
+    {
+        _enter();
+        bDemoChanges = sTimeCompression.isChecked() || sViewControls.isChecked();
+    }
+
+    public void enterPop(com.maddox.il2.game.GameState gamestate)
+    {
+        client.activateWindow();
+    }
+
+    public void _enter()
+    {
+        com.maddox.il2.gui.GUIRecordSelect guirecordselect = (com.maddox.il2.gui.GUIRecordSelect)com.maddox.il2.game.GameState.get(7);
+        sTimeCompression.showWindow();
+        sTimeCompression.setChecked(guirecordselect.bManualTimeCompression, false);
+        sViewControls.setChecked(guirecordselect.bManualViewControls, false);
+        sViewMessages.setChecked(guirecordselect.bDrawAllMessages, false);
+        loadMessageBox = new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("record.StandBy"), i18n("record.LoadingTrack"), 5, 0.0F) {
+
+            public void result(int i)
+            {
+                if(i == 1)
+                    com.maddox.rts.BackgroundTask.cancel(i18n("miss.UserCancel"));
+            }
+
+        }
+;
+        new com.maddox.rts.MsgAction(72, 0.0D) {
+
+            public void doAction()
+            {
+                com.maddox.il2.game.Main.closeAllNetChannels();
+                com.maddox.il2.gui.GUIRecordSelect guirecordselect1 = (com.maddox.il2.gui.GUIRecordSelect)com.maddox.il2.game.GameState.get(7);
+                com.maddox.il2.gui.MissionListener missionlistener = new MissionListener();
+                selectedFileName = guirecordselect1.selectedFile;
+                java.lang.String s = com.maddox.il2.game.Main3D.cur3D().playRecordedMission("Records/" + guirecordselect1.selectedFile);
+                if(s != null)
+                {
+                    com.maddox.rts.BackgroundTask.removeListener(missionlistener);
+                    recordBad(s);
+                } else
+                if(com.maddox.il2.game.Main3D.cur3D().playRecordedStreams() != null)
+                    com.maddox.il2.game.Main.cur().netMissionListener = missionlistener;
+            }
+
+        }
+;
+    }
+
+    public void doReplayMission(java.lang.String s, boolean flag)
+    {
+        com.maddox.il2.gui.GUI.activate();
+        com.maddox.il2.gui.GUIRecordSelect guirecordselect = (com.maddox.il2.gui.GUIRecordSelect)com.maddox.il2.game.GameState.get(7);
+        if(!guirecordselect.bCycle && flag)
+        {
+            doExit(true);
+            return;
+        }
+        if(com.maddox.il2.net.NetMissionTrack.isRecording())
+        {
+            com.maddox.il2.net.NetMissionTrack.stopRecording();
+            com.maddox.il2.gui.GUI.activate();
+        }
+        if(com.maddox.il2.game.Main.cur().netServerParams != null)
+            com.maddox.il2.game.Main.cur().netServerParams.destroy();
+        if(com.maddox.rts.RTSConf.cur.netEnv.control != null)
+            com.maddox.rts.RTSConf.cur.netEnv.control.destroy();
+        loadMessageBox = new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("record.StandBy"), i18n("record.LoadingTrack"), 5, 0.0F) {
+
+            public void result(int i)
+            {
+                if(i == 1)
+                    com.maddox.rts.BackgroundTask.cancel(i18n("miss.UserCancel"));
+            }
+
+        }
+;
+        _replayRecordFile = s;
+        new com.maddox.rts.MsgAction(72, 0.0D) {
+
+            public void doAction()
+            {
+                com.maddox.il2.game.Main.closeAllNetChannels();
+                com.maddox.il2.gui.MissionListener missionlistener = new MissionListener();
+                java.lang.String s1 = com.maddox.il2.game.Main3D.cur3D().playRecordedMission(_replayRecordFile, false);
+                if(s1 != null)
+                {
+                    com.maddox.rts.BackgroundTask.removeListener(missionlistener);
+                    recordBad(s1);
+                } else
+                if(com.maddox.il2.game.Main3D.cur3D().playRecordedStreams() != null)
+                    com.maddox.il2.game.Main.cur().netMissionListener = missionlistener;
+            }
+
+        }
+;
+    }
+
+    private void doExit()
+    {
+        doExit(false);
+    }
+
+    private void doExit(boolean flag)
+    {
+        boolean flag1 = com.maddox.il2.game.Main3D.cur3D().playRecordedStreams() != null;
+        if(com.maddox.il2.net.NetMissionTrack.isRecording())
+        {
+            com.maddox.il2.net.NetMissionTrack.stopRecording();
+            com.maddox.il2.gui.GUI.activate();
+        }
+        com.maddox.il2.game.Main.cur().netMissionListener = null;
+        com.maddox.il2.game.Main3D.cur3D().stopPlayRecordedMission();
+        if(com.maddox.il2.game.Mission.cur() != null && !com.maddox.il2.game.Mission.cur().isDestroyed())
+            com.maddox.rts.CmdEnv.top().exec("mission END");
+        if(com.maddox.il2.game.Main.cur().netServerParams != null)
+            com.maddox.il2.game.Main.cur().netServerParams.destroy();
+        if(com.maddox.rts.RTSConf.cur.netEnv.control != null)
+            com.maddox.rts.RTSConf.cur.netEnv.control.destroy();
+        if(bDemoChanges && com.maddox.il2.net.NetMissionTrack.countRecorded == 0 && !flag1)
+        {
+            com.maddox.il2.game.Main.stateStack().change(9);
+        } else
+        {
+            com.maddox.il2.engine.hotkey.HookView.loadConfig();
+            com.maddox.il2.game.Main.stateStack().pop();
+        }
+    }
+
+    private void recordBad(java.lang.String s)
+    {
+        loadMessageBox.close(false);
+        new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("record.Error"), s, 3, 0.0F) {
+
+            public void result(int i)
+            {
+                bDemoChanges = false;
+                doExit();
+            }
+
+        }
+;
+    }
+
+    private void gameBeginNet()
+    {
+        com.maddox.il2.engine.GUIWindowManager guiwindowmanager = com.maddox.il2.game.Main3D.cur3D().guiManager;
+        loadMessageBox.close(false);
+        com.maddox.il2.gui.GUI.unActivate();
+        com.maddox.rts.RTSConf.cur.time.setEnableChangePause1(true);
+        com.maddox.rts.RTSConf.cur.time.setEnableChangeSpeed(true);
+        com.maddox.il2.gui.GUI.chatDlg.showWindow();
+        if(com.maddox.il2.game.Mission.isNet())
+            com.maddox.sound.AudioDevice.soundsOn();
+    }
+
+    private void gameBeginSingle()
+    {
+        new com.maddox.rts.MsgAction(72, 0.0D) {
+
+            public void doAction()
+            {
+                com.maddox.il2.engine.GUIWindowManager guiwindowmanager = com.maddox.il2.game.Main3D.cur3D().guiManager;
+                loadMessageBox.close(false);
+                guiwindowmanager.setTimeGameActive(false);
+                com.maddox.il2.gui.GUI.unActivate();
+                com.maddox.rts.CmdEnv.top().exec("mission BEGIN");
+                gameBeginEnvs();
+            }
+
+        }
+;
+    }
+
+    private void gameBeginEnvs()
+    {
+        com.maddox.il2.gui.GUIRecordSelect guirecordselect = (com.maddox.il2.gui.GUIRecordSelect)com.maddox.il2.game.GameState.get(7);
+        com.maddox.rts.HotKeyEnv.enable("timeCompression", guirecordselect.bManualTimeCompression);
+        com.maddox.rts.HotKeyEnv.enable("aircraftView", guirecordselect.bManualViewControls);
+        com.maddox.rts.HotKeyEnv.enable("HookView", guirecordselect.bManualViewControls);
+        com.maddox.rts.HotKeyEnv.enable("PanView", guirecordselect.bManualViewControls);
+        com.maddox.rts.HotKeyEnv.enable("SnapView", guirecordselect.bManualViewControls);
+        com.maddox.il2.game.Main3D.cur3D().keyRecord.setEnablePlayArgs(!guirecordselect.bManualViewControls);
+    }
+
+    public void _leave()
+    {
+        client.hideWindow();
+    }
+
+    public void doQuitMission()
+    {
+        if(com.maddox.il2.game.Main3D.cur3D().playRecordedStreams() != null)
+            com.maddox.il2.gui.GUI.chatDlg.hideWindow();
+        com.maddox.il2.gui.GUI.activate();
+        com.maddox.rts.Time _tmp = com.maddox.rts.RTSConf.cur.time;
+        if(com.maddox.rts.Time.isEnableChangeSpeed())
+            sTimeCompression.showWindow();
+        else
+            sTimeCompression.hideWindow();
+        client.activateWindow();
+    }
+
+    public GUIRecordPlay(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(8);
+        bDemoChanges = false;
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("record.infoPlay");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bVideo = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        b3d = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        bSound = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        bBack = (com.maddox.il2.gui.GUIButton)dialogClient.addDefault(new GUIButton(dialogClient, gtexture, 0.0F, 192F, 48F, 48F));
+        bExit = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        sTimeCompression = (com.maddox.il2.gui.GUISwitchBox2)dialogClient.addControl(new GUISwitchBox2(dialogClient));
+        sViewControls = (com.maddox.il2.gui.GUISwitchBox2)dialogClient.addControl(new GUISwitchBox2(dialogClient));
+        sViewMessages = (com.maddox.il2.gui.GUISwitchBox2)dialogClient.addControl(new GUISwitchBox2(dialogClient));
+        dialogClient.activateWindow();
+        client.hideWindow();
+    }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.GUIButton bVideo;
+    public com.maddox.il2.gui.GUIButton b3d;
+    public com.maddox.il2.gui.GUIButton bSound;
+    public com.maddox.il2.gui.GUIButton bExit;
+    public com.maddox.il2.gui.GUIButton bBack;
+    public com.maddox.il2.gui.GUISwitchBox2 sTimeCompression;
+    public com.maddox.il2.gui.GUISwitchBox2 sViewControls;
+    public com.maddox.il2.gui.GUISwitchBox2 sViewMessages;
+    private boolean bDemoChanges;
+    private com.maddox.gwindow.GWindowMessageBox loadMessageBox;
+    private java.lang.String selectedFileName;
+    private java.lang.String _replayRecordFile;
+
+    static 
+    {
+        com.maddox.rts.Spawn.get("com.maddox.il2.fm.FlightModelTrack");
+        com.maddox.rts.Spawn.get("com.maddox.il2.game.GameTrack");
+    }
+
+
+
+
+
+
+
+
+
 }

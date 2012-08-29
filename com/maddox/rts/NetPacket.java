@@ -1,104 +1,126 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetPacket.java
+
 package com.maddox.rts;
+
+
+// Referenced classes of package com.maddox.rts:
+//            NetAddress
 
 public class NetPacket
 {
-  private byte[] buf;
-  private int offset;
-  private int length;
-  private NetAddress address;
-  private int port;
-  public long time;
 
-  protected NetPacket()
-  {
-  }
-
-  public NetPacket(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
-  {
-    setData(paramArrayOfByte, paramInt1, paramInt2);
-    this.address = null;
-    this.port = -1;
-  }
-
-  public NetPacket(byte[] paramArrayOfByte, int paramInt)
-  {
-    this(paramArrayOfByte, 0, paramInt);
-  }
-
-  public NetPacket(byte[] paramArrayOfByte, int paramInt1, int paramInt2, NetAddress paramNetAddress, int paramInt3)
-  {
-    setData(paramArrayOfByte, paramInt1, paramInt2);
-    setAddress(paramNetAddress);
-    setPort(paramInt3);
-  }
-
-  public NetPacket(byte[] paramArrayOfByte, int paramInt1, NetAddress paramNetAddress, int paramInt2)
-  {
-    this(paramArrayOfByte, 0, paramInt1, paramNetAddress, paramInt2);
-  }
-
-  public NetAddress getAddress()
-  {
-    return this.address;
-  }
-
-  public int getPort()
-  {
-    return this.port;
-  }
-
-  public byte[] getData()
-  {
-    return this.buf;
-  }
-
-  public int getOffset()
-  {
-    return this.offset;
-  }
-
-  public int getLength()
-  {
-    return this.length;
-  }
-
-  public void setData(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
-  {
-    if ((paramInt2 < 0) || (paramInt1 < 0) || (paramInt2 + paramInt1 > paramArrayOfByte.length)) {
-      throw new IllegalArgumentException("illegal length or offset");
+    protected NetPacket()
+    {
     }
-    this.buf = paramArrayOfByte;
-    this.length = paramInt2;
-    this.offset = paramInt1;
-  }
 
-  public void setAddress(NetAddress paramNetAddress) {
-    this.address = paramNetAddress;
-  }
-
-  public void setPort(int paramInt) {
-    if ((paramInt < 0) || (paramInt > 65535)) {
-      throw new IllegalArgumentException("Port out of range:" + paramInt);
+    public NetPacket(byte abyte0[], int i, int j)
+    {
+        setData(abyte0, i, j);
+        address = null;
+        port = -1;
     }
-    this.port = paramInt;
-  }
 
-  public void setData(byte[] paramArrayOfByte)
-  {
-    if (paramArrayOfByte == null) {
-      throw new NullPointerException("null packet buffer");
+    public NetPacket(byte abyte0[], int i)
+    {
+        this(abyte0, 0, i);
     }
-    this.buf = paramArrayOfByte;
 
-    if (this.offset + this.length > paramArrayOfByte.length)
-      setLength(paramArrayOfByte.length - this.offset);
-  }
-
-  public void setLength(int paramInt)
-  {
-    if ((this.offset + paramInt > this.buf.length) || (paramInt < 0)) {
-      throw new IllegalArgumentException("illegal length");
+    public NetPacket(byte abyte0[], int i, int j, com.maddox.rts.NetAddress netaddress, int k)
+    {
+        setData(abyte0, i, j);
+        setAddress(netaddress);
+        setPort(k);
     }
-    this.length = paramInt;
-  }
+
+    public NetPacket(byte abyte0[], int i, com.maddox.rts.NetAddress netaddress, int j)
+    {
+        this(abyte0, 0, i, netaddress, j);
+    }
+
+    public com.maddox.rts.NetAddress getAddress()
+    {
+        return address;
+    }
+
+    public int getPort()
+    {
+        return port;
+    }
+
+    public byte[] getData()
+    {
+        return buf;
+    }
+
+    public int getOffset()
+    {
+        return offset;
+    }
+
+    public int getLength()
+    {
+        return length;
+    }
+
+    public void setData(byte abyte0[], int i, int j)
+    {
+        if(j < 0 || i < 0 || j + i > abyte0.length)
+        {
+            throw new IllegalArgumentException("illegal length or offset");
+        } else
+        {
+            buf = abyte0;
+            length = j;
+            offset = i;
+            return;
+        }
+    }
+
+    public void setAddress(com.maddox.rts.NetAddress netaddress)
+    {
+        address = netaddress;
+    }
+
+    public void setPort(int i)
+    {
+        if(i < 0 || i > 65535)
+        {
+            throw new IllegalArgumentException("Port out of range:" + i);
+        } else
+        {
+            port = i;
+            return;
+        }
+    }
+
+    public void setData(byte abyte0[])
+    {
+        if(abyte0 == null)
+            throw new NullPointerException("null packet buffer");
+        buf = abyte0;
+        if(offset + length > abyte0.length)
+            setLength(abyte0.length - offset);
+    }
+
+    public void setLength(int i)
+    {
+        if(offset + i > buf.length || i < 0)
+        {
+            throw new IllegalArgumentException("illegal length");
+        } else
+        {
+            length = i;
+            return;
+        }
+    }
+
+    private byte buf[];
+    private int offset;
+    private int length;
+    private com.maddox.rts.NetAddress address;
+    private int port;
+    public long time;
 }

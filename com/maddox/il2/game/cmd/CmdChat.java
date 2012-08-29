@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdChat.java
+
 package com.maddox.il2.game.cmd;
 
 import com.maddox.il2.ai.Army;
@@ -13,156 +18,179 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdChat extends Cmd
+public class CmdChat extends com.maddox.rts.Cmd
 {
-  public static final String ALL = "ALL";
-  public static final String MY_ARMY = "MY_ARMY";
-  public static final String ARMY = "ARMY";
-  public static final String TO = "TO";
-  public static final String TON = "TO#";
-  public static final String BUFSIZE = "BUFSIZE";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    if (Main.cur().netServerParams == null)
-      return null;
-    if (Main.cur().chat == null)
-      return null;
-    if (nargs(paramMap, "_$$") == 0) {
-      if (paramMap.containsKey("BUFSIZE")) {
-        if (nargs(paramMap, "BUFSIZE") == 0) {
-          INFO_HARD("Chat Buffer Size = " + Main.cur().chat.getMaxBuflen());
-        } else {
-          int i = arg(paramMap, "BUFSIZE", 0, Main.cur().chat.getMaxBuflen(), 1, 1000);
-          Main.cur().chat.setMaxBufLen(i);
-        }
-        return CmdEnv.RETURN_OK;
-      }
-      return null;
-    }
-
-    ArrayList localArrayList = new ArrayList();
-    fillUsers(paramMap, localArrayList);
-    if (localArrayList.size() == 0) return null;
-
-    String str = args(paramMap, "_$$");
-    if (localArrayList.size() == NetEnv.hosts().size())
-      Main.cur().chat.send(NetEnv.host(), str, null);
-    else {
-      Main.cur().chat.send(NetEnv.host(), str, localArrayList);
-    }
-    return CmdEnv.RETURN_OK;
-  }
-
-  private void fillUsers(Map paramMap, List paramList) {
-    if (paramMap.containsKey("ALL")) {
-      for (int i = 0; i < NetEnv.hosts().size(); i++)
-        paramList.add(NetEnv.hosts().get(i));
-      return;
-    }
-    int m;
-    if (paramMap.containsKey("MY_ARMY")) {
-      NetUser localNetUser1 = (NetUser)NetEnv.host();
-      int k = localNetUser1.getArmy();
-      for (m = 0; m < NetEnv.hosts().size(); m++) {
-        localNetUser1 = (NetUser)NetEnv.hosts().get(m);
-        if (localNetUser1.getArmy() == k)
-          paramList.add(localNetUser1);
-      }
-      return;
-    }
-
-    if ((!paramMap.containsKey("TO")) && (!paramMap.containsKey("TO#")) && (!paramMap.containsKey("ARMY")))
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
     {
-      for (int j = 0; j < NetEnv.hosts().size(); j++)
-        paramList.add(NetEnv.hosts().get(j));
-      return;
-    }
-
-    ArrayList localArrayList = new ArrayList();
-    HashMap localHashMap = new HashMap();
-    int n;
-    String str1;
-    int i2;
-    NetUser localNetUser2;
-    Object localObject;
-    if (paramMap.containsKey("TO")) {
-      m = nargs(paramMap, "TO");
-      if ((m == 1) && ("*".equals(arg(paramMap, "TO", 0)))) {
-        for (n = 0; n < NetEnv.hosts().size(); n++)
-          paramList.add(NetEnv.hosts().get(n));
-        return;
-      }
-      for (n = 0; n < m; n++) {
-        str1 = arg(paramMap, "TO", n);
-        for (i2 = 0; i2 < NetEnv.hosts().size(); i2++) {
-          localNetUser2 = (NetUser)NetEnv.hosts().get(i2);
-          localObject = localNetUser2.uniqueName();
-          if (str1.equals(localObject)) {
-            if (localHashMap.containsKey(localNetUser2)) break;
-            localHashMap.put(localNetUser2, null);
-            localArrayList.add(localNetUser2); break;
-          }
-        }
-
-      }
-
-    }
-
-    if (paramMap.containsKey("TO#")) {
-      m = nargs(paramMap, "TO#");
-      for (n = 0; n < m; n++) {
-        str1 = arg(paramMap, "TO#", n);
-        if ((str1.charAt(0) >= '0') && (str1.charAt(0) <= '9')) {
-          i2 = arg(paramMap, "TO#", n, 1000, 0, 1000);
-          if ((i2 > 0) && (i2 <= NetEnv.hosts().size())) {
-            localNetUser2 = (NetUser)NetEnv.hosts().get(i2 - 1);
-            if (!localHashMap.containsKey(localNetUser2)) {
-              localHashMap.put(localNetUser2, null);
-              localArrayList.add(localNetUser2);
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return null;
+        if(com.maddox.il2.game.Main.cur().chat == null)
+            return null;
+        if(com.maddox.il2.game.cmd.CmdChat.nargs(map, "_$$") == 0)
+            if(map.containsKey("BUFSIZE"))
+            {
+                if(com.maddox.il2.game.cmd.CmdChat.nargs(map, "BUFSIZE") == 0)
+                {
+                    INFO_HARD("Chat Buffer Size = " + com.maddox.il2.game.Main.cur().chat.getMaxBuflen());
+                } else
+                {
+                    int i = com.maddox.il2.game.cmd.CmdChat.arg(map, "BUFSIZE", 0, com.maddox.il2.game.Main.cur().chat.getMaxBuflen(), 1, 1000);
+                    com.maddox.il2.game.Main.cur().chat.setMaxBufLen(i);
+                }
+                return com.maddox.rts.CmdEnv.RETURN_OK;
+            } else
+            {
+                return null;
             }
-          }
-        }
-      }
+        java.util.ArrayList arraylist = new ArrayList();
+        fillUsers(map, arraylist);
+        if(arraylist.size() == 0)
+            return null;
+        java.lang.String s = com.maddox.il2.game.cmd.CmdChat.args(map, "_$$");
+        if(arraylist.size() == com.maddox.rts.NetEnv.hosts().size())
+            com.maddox.il2.game.Main.cur().chat.send(com.maddox.rts.NetEnv.host(), s, null);
+        else
+            com.maddox.il2.game.Main.cur().chat.send(com.maddox.rts.NetEnv.host(), s, arraylist);
+        return com.maddox.rts.CmdEnv.RETURN_OK;
     }
 
-    if (paramMap.containsKey("ARMY")) {
-      m = nargs(paramMap, "ARMY");
-      for (n = 0; n < m; n++) {
-        int i1 = -1;
-        String str2 = arg(paramMap, "ARMY", n);
-        if ((str2.charAt(0) >= '0') && (str2.charAt(0) <= '9')) {
-          i1 = arg(paramMap, "ARMY", n, 1000, 0, 1000);
-          if (i1 >= Army.amountNet())
-            continue;
-        } else {
-          for (i1 = 0; (i1 < Army.amountNet()) && 
-            (!Army.name(i1).equals(str2)); i1++);
-          if (i1 == Army.amountNet())
-            continue;
-        }
-        for (int i3 = 0; i3 < NetEnv.hosts().size(); i3++) {
-          localObject = (NetUser)NetEnv.hosts().get(i3);
-          if ((((NetUser)localObject).getArmy() != i1) || 
-            (localHashMap.containsKey(localObject))) continue;
-          localHashMap.put(localObject, null);
-          localArrayList.add(localObject);
-        }
-      }
+    private void fillUsers(java.util.Map map, java.util.List list)
+    {
+        if(map.containsKey("ALL"))
+        {
+            for(int i = 0; i < com.maddox.rts.NetEnv.hosts().size(); i++)
+                list.add(com.maddox.rts.NetEnv.hosts().get(i));
 
+            return;
+        }
+        if(map.containsKey("MY_ARMY"))
+        {
+            com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+            int k = netuser.getArmy();
+            for(int l = 0; l < com.maddox.rts.NetEnv.hosts().size(); l++)
+            {
+                com.maddox.il2.net.NetUser netuser1 = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.hosts().get(l);
+                if(netuser1.getArmy() == k)
+                    list.add(netuser1);
+            }
+
+            return;
+        }
+        if(!map.containsKey("TO") && !map.containsKey("TO#") && !map.containsKey("ARMY"))
+        {
+            for(int j = 0; j < com.maddox.rts.NetEnv.hosts().size(); j++)
+                list.add(com.maddox.rts.NetEnv.hosts().get(j));
+
+            return;
+        }
+        java.util.ArrayList arraylist = new ArrayList();
+        java.util.HashMap hashmap = new HashMap();
+        if(map.containsKey("TO"))
+        {
+            int i1 = com.maddox.il2.game.cmd.CmdChat.nargs(map, "TO");
+            if(i1 == 1 && "*".equals(com.maddox.il2.game.cmd.CmdChat.arg(map, "TO", 0)))
+            {
+                for(int l1 = 0; l1 < com.maddox.rts.NetEnv.hosts().size(); l1++)
+                    list.add(com.maddox.rts.NetEnv.hosts().get(l1));
+
+                return;
+            }
+label0:
+            for(int i2 = 0; i2 < i1; i2++)
+            {
+                java.lang.String s = com.maddox.il2.game.cmd.CmdChat.arg(map, "TO", i2);
+                int i3 = 0;
+                do
+                {
+                    if(i3 >= com.maddox.rts.NetEnv.hosts().size())
+                        continue label0;
+                    com.maddox.il2.net.NetUser netuser2 = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.hosts().get(i3);
+                    java.lang.String s3 = netuser2.uniqueName();
+                    if(s.equals(s3))
+                    {
+                        if(!hashmap.containsKey(netuser2))
+                        {
+                            hashmap.put(netuser2, null);
+                            arraylist.add(netuser2);
+                        }
+                        continue label0;
+                    }
+                    i3++;
+                } while(true);
+            }
+
+        }
+        if(map.containsKey("TO#"))
+        {
+            int j1 = com.maddox.il2.game.cmd.CmdChat.nargs(map, "TO#");
+            for(int j2 = 0; j2 < j1; j2++)
+            {
+                java.lang.String s1 = com.maddox.il2.game.cmd.CmdChat.arg(map, "TO#", j2);
+                if(s1.charAt(0) < '0' || s1.charAt(0) > '9')
+                    continue;
+                int j3 = com.maddox.il2.game.cmd.CmdChat.arg(map, "TO#", j2, 1000, 0, 1000);
+                if(j3 <= 0 || j3 > com.maddox.rts.NetEnv.hosts().size())
+                    continue;
+                com.maddox.il2.net.NetUser netuser3 = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.hosts().get(j3 - 1);
+                if(!hashmap.containsKey(netuser3))
+                {
+                    hashmap.put(netuser3, null);
+                    arraylist.add(netuser3);
+                }
+            }
+
+        }
+        if(map.containsKey("ARMY"))
+        {
+            int k1 = com.maddox.il2.game.cmd.CmdChat.nargs(map, "ARMY");
+            for(int k2 = 0; k2 < k1; k2++)
+            {
+                int l2 = -1;
+                java.lang.String s2 = com.maddox.il2.game.cmd.CmdChat.arg(map, "ARMY", k2);
+                if(s2.charAt(0) >= '0' && s2.charAt(0) <= '9')
+                {
+                    l2 = com.maddox.il2.game.cmd.CmdChat.arg(map, "ARMY", k2, 1000, 0, 1000);
+                    if(l2 >= com.maddox.il2.ai.Army.amountNet())
+                        continue;
+                } else
+                {
+                    for(l2 = 0; l2 < com.maddox.il2.ai.Army.amountNet() && !com.maddox.il2.ai.Army.name(l2).equals(s2); l2++);
+                    if(l2 == com.maddox.il2.ai.Army.amountNet())
+                        continue;
+                }
+                for(int k3 = 0; k3 < com.maddox.rts.NetEnv.hosts().size(); k3++)
+                {
+                    com.maddox.il2.net.NetUser netuser4 = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.hosts().get(k3);
+                    if(netuser4.getArmy() == l2 && !hashmap.containsKey(netuser4))
+                    {
+                        hashmap.put(netuser4, null);
+                        arraylist.add(netuser4);
+                    }
+                }
+
+            }
+
+        }
+        list.addAll(arraylist);
     }
 
-    paramList.addAll(localArrayList);
-  }
+    public CmdChat()
+    {
+        param.put("ALL", null);
+        param.put("MY_ARMY", null);
+        param.put("ARMY", null);
+        param.put("TO", null);
+        param.put("TO#", null);
+        param.put("BUFSIZE", null);
+        _properties.put("NAME", "chat");
+        _levelAccess = 1;
+    }
 
-  public CmdChat() {
-    this.param.put("ALL", null);
-    this.param.put("MY_ARMY", null);
-    this.param.put("ARMY", null);
-    this.param.put("TO", null);
-    this.param.put("TO#", null);
-    this.param.put("BUFSIZE", null);
-    this._properties.put("NAME", "chat");
-    this._levelAccess = 1;
-  }
+    public static final java.lang.String ALL = "ALL";
+    public static final java.lang.String MY_ARMY = "MY_ARMY";
+    public static final java.lang.String ARMY = "ARMY";
+    public static final java.lang.String TO = "TO";
+    public static final java.lang.String TON = "TO#";
+    public static final java.lang.String BUFSIZE = "BUFSIZE";
 }

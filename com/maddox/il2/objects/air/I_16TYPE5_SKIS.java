@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   I_16TYPE5_SKIS.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.RangeRandom;
@@ -11,206 +16,228 @@ import com.maddox.il2.game.Main3D;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
-public class I_16TYPE5_SKIS extends I_16FixedSkis
-  implements TypeTNBFighter
+// Referenced classes of package com.maddox.il2.objects.air:
+//            I_16FixedSkis, PaintSchemeFCSPar07, TypeTNBFighter, Aircraft, 
+//            Cockpit, NetAircraft
+
+public class I_16TYPE5_SKIS extends com.maddox.il2.objects.air.I_16FixedSkis
+    implements com.maddox.il2.objects.air.TypeTNBFighter
 {
-  private boolean bailingOut = false;
-  private boolean canopyForward = false;
-  private boolean okToJump = false;
-  private float flaperonAngle = 0.0F;
-  private float aileronsAngle = 0.0F;
-  private boolean oneTimeCheckDone = false;
-  private boolean sideDoorOpened = false;
 
-  public void moveCockpitDoor(float paramFloat)
-  {
-    if ((this.bailingOut) && (paramFloat >= 1.0F) && (!this.canopyForward))
+    public I_16TYPE5_SKIS()
     {
-      this.canopyForward = true;
-      this.FM.CT.forceCockpitDoor(0.0F);
-      this.FM.AS.setCockpitDoor(this, 1);
-    }
-    else if (this.canopyForward)
-    {
-      hierMesh().chunkSetAngles("Blister2_D0", 0.0F, 160.0F * paramFloat, 0.0F);
-      if (paramFloat >= 1.0F)
-      {
-        this.okToJump = true;
-        super.hitDaSilk();
-      }
-    }
-    else
-    {
-      Aircraft.xyz[0] = 0.0F;
-      Aircraft.xyz[2] = 0.0F;
-      Aircraft.ypr[0] = 0.0F;
-      Aircraft.ypr[1] = 0.0F;
-      Aircraft.ypr[2] = 0.0F;
-      Aircraft.xyz[1] = (paramFloat * 0.548F);
-      hierMesh().chunkSetLocate("Blister1_D0", Aircraft.xyz, Aircraft.ypr);
+        bailingOut = false;
+        canopyForward = false;
+        okToJump = false;
+        flaperonAngle = 0.0F;
+        aileronsAngle = 0.0F;
+        oneTimeCheckDone = false;
+        sideDoorOpened = false;
     }
 
-    if (Config.isUSE_RENDER())
+    public void moveCockpitDoor(float f)
     {
-      if ((Main3D.cur3D().cockpits != null) && (Main3D.cur3D().cockpits[0] != null))
-      {
-        Main3D.cur3D().cockpits[0].onDoorMoved(paramFloat);
-      }setDoorSnd(paramFloat);
-    }
-  }
-
-  public void hitDaSilk()
-  {
-    if (this.okToJump)
-    {
-      super.hitDaSilk();
-    }
-    else if ((this.FM.isPlayers()) || (isNetPlayer()))
-    {
-      if ((this.FM.CT.getCockpitDoor() == 1.0D) && (!this.bailingOut))
-      {
-        this.bailingOut = true;
-        this.okToJump = true;
-        this.canopyForward = true;
-        super.hitDaSilk();
-      }
-    }
-    else if (!this.FM.AS.isPilotDead(0))
-    {
-      if ((this.FM.CT.getCockpitDoor() < 1.0D) && (!this.bailingOut))
-      {
-        this.bailingOut = true;
-        this.FM.AS.setCockpitDoor(this, 1);
-      }
-      else if ((this.FM.CT.getCockpitDoor() == 1.0D) && (!this.bailingOut))
-      {
-        this.bailingOut = true;
-        this.okToJump = true;
-        this.canopyForward = true;
-        super.hitDaSilk();
-      }
-
-    }
-
-    if ((!this.sideDoorOpened) && (this.FM.AS.bIsAboutToBailout) && (!this.FM.AS.isPilotDead(0)))
-    {
-      this.sideDoorOpened = true;
-      this.FM.CT.forceCockpitDoor(0.0F);
-      this.FM.AS.setCockpitDoor(this, 1);
-    }
-  }
-
-  public void missionStarting()
-  {
-    super.missionStarting();
-    hierMesh().chunkVisible("pilotarm2_d0", true);
-    hierMesh().chunkVisible("pilotarm1_d0", true);
-  }
-
-  public void prepareCamouflage() {
-    super.prepareCamouflage();
-    hierMesh().chunkVisible("pilotarm2_d0", true);
-    hierMesh().chunkVisible("pilotarm1_d0", true);
-  }
-
-  public void moveWheelSink()
-  {
-  }
-
-  public void moveGear(float paramFloat)
-  {
-  }
-
-  protected void moveAileron(float paramFloat)
-  {
-    this.aileronsAngle = paramFloat;
-    hierMesh().chunkSetAngles("AroneL_D0", 0.0F, -30.0F * paramFloat - this.flaperonAngle, 0.0F);
-    hierMesh().chunkSetAngles("AroneR_D0", 0.0F, -30.0F * paramFloat + this.flaperonAngle, 0.0F);
-  }
-
-  protected void moveFlap(float paramFloat)
-  {
-    this.flaperonAngle = (paramFloat * 17.0F);
-    hierMesh().chunkSetAngles("AroneL_D0", 0.0F, -30.0F * this.aileronsAngle - this.flaperonAngle, 0.0F);
-    hierMesh().chunkSetAngles("AroneR_D0", 0.0F, -30.0F * this.aileronsAngle + this.flaperonAngle, 0.0F);
-  }
-
-  public void rareAction(float paramFloat, boolean paramBoolean)
-  {
-    super.rareAction(paramFloat, paramBoolean);
-    if ((!this.oneTimeCheckDone) && (!this.FM.isPlayers()) && (!isNetPlayer()))
-    {
-      if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
-      {
-        this.oneTimeCheckDone = true;
-        if (World.cur().camouflage == 1)
+        if(bailingOut && f >= 1.0F && !canopyForward)
         {
-          if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.25F)
-          {
-            this.FM.CT.cockpitDoorControl = 1.0F;
-            this.FM.AS.setCockpitDoor(this, 1);
-          }
-
-        }
-        else if (World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F)
+            canopyForward = true;
+            FM.CT.forceCockpitDoor(0.0F);
+            FM.AS.setCockpitDoor(this, 1);
+        } else
+        if(canopyForward)
         {
-          this.FM.CT.cockpitDoorControl = 1.0F;
-          this.FM.AS.setCockpitDoor(this, 1);
+            hierMesh().chunkSetAngles("Blister2_D0", 0.0F, 160F * f, 0.0F);
+            if(f >= 1.0F)
+            {
+                okToJump = true;
+                super.hitDaSilk();
+            }
+        } else
+        {
+            com.maddox.il2.objects.air.Aircraft.xyz[0] = 0.0F;
+            com.maddox.il2.objects.air.Aircraft.xyz[2] = 0.0F;
+            com.maddox.il2.objects.air.Aircraft.ypr[0] = 0.0F;
+            com.maddox.il2.objects.air.Aircraft.ypr[1] = 0.0F;
+            com.maddox.il2.objects.air.Aircraft.ypr[2] = 0.0F;
+            com.maddox.il2.objects.air.Aircraft.xyz[1] = f * 0.548F;
+            hierMesh().chunkSetLocate("Blister1_D0", com.maddox.il2.objects.air.Aircraft.xyz, com.maddox.il2.objects.air.Aircraft.ypr);
         }
-      }
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            if(com.maddox.il2.game.Main3D.cur3D().cockpits != null && com.maddox.il2.game.Main3D.cur3D().cockpits[0] != null)
+                com.maddox.il2.game.Main3D.cur3D().cockpits[0].onDoorMoved(f);
+            setDoorSnd(f);
+        }
     }
-  }
 
-  public void doMurderPilot(int paramInt)
-  {
-    switch (paramInt)
+    public void hitDaSilk()
     {
-    case 0:
-      hierMesh().chunkVisible("Pilot1_D0", false);
-      hierMesh().chunkVisible("Head1_D0", false);
-      hierMesh().chunkVisible("HMask1_D0", false);
-      hierMesh().chunkVisible("Pilot1_D1", true);
-      hierMesh().chunkVisible("Head1_D1", true);
-      hierMesh().chunkVisible("pilotarm2_d0", false);
-      hierMesh().chunkVisible("pilotarm1_d0", false);
+        if(okToJump)
+            super.hitDaSilk();
+        else
+        if(FM.isPlayers() || isNetPlayer())
+        {
+            if((double)FM.CT.getCockpitDoor() == 1.0D && !bailingOut)
+            {
+                bailingOut = true;
+                okToJump = true;
+                canopyForward = true;
+                super.hitDaSilk();
+            }
+        } else
+        if(!FM.AS.isPilotDead(0))
+            if((double)FM.CT.getCockpitDoor() < 1.0D && !bailingOut)
+            {
+                bailingOut = true;
+                FM.AS.setCockpitDoor(this, 1);
+            } else
+            if((double)FM.CT.getCockpitDoor() == 1.0D && !bailingOut)
+            {
+                bailingOut = true;
+                okToJump = true;
+                canopyForward = true;
+                super.hitDaSilk();
+            }
+        if(!sideDoorOpened && FM.AS.bIsAboutToBailout && !FM.AS.isPilotDead(0))
+        {
+            sideDoorOpened = true;
+            FM.CT.forceCockpitDoor(0.0F);
+            FM.AS.setCockpitDoor(this, 1);
+        }
     }
-  }
 
-  public void doRemoveBodyFromPlane(int paramInt)
-  {
-    super.doRemoveBodyFromPlane(paramInt);
-    hierMesh().chunkVisible("pilotarm2_d0", false);
-    hierMesh().chunkVisible("pilotarm1_d0", false);
-  }
+    public void missionStarting()
+    {
+        super.missionStarting();
+        hierMesh().chunkVisible("pilotarm2_d0", true);
+        hierMesh().chunkVisible("pilotarm1_d0", true);
+    }
 
-  static
-  {
-    Class localClass = CLASS.THIS();
-    new NetAircraft.SPAWN(localClass);
-    Property.set(localClass, "iconFar_shortClassName", "I-16");
-    Property.set(localClass, "meshName", "3DO/Plane/I-16type5(multi)/hier_skis.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFCSPar07());
-    Property.set(localClass, "meshName_ru", "3DO/Plane/I-16type5/hier_skis.him");
-    Property.set(localClass, "PaintScheme_ru", new PaintSchemeFCSPar07());
-    Property.set(localClass, "yearService", 1935.0F);
-    Property.set(localClass, "yearExpired", 1942.0F);
-    Property.set(localClass, "FlightModel", "FlightModels/I-16type5Skis.fmd");
-    Property.set(localClass, "cockpitClass", new Class[] { CockpitI_16TYPE5.class });
+    public void prepareCamouflage()
+    {
+        super.prepareCamouflage();
+        hierMesh().chunkVisible("pilotarm2_d0", true);
+        hierMesh().chunkVisible("pilotarm1_d0", true);
+    }
 
-    Property.set(localClass, "LOSElevation", 0.82595F);
+    public void moveWheelSink()
+    {
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 3, 3, 9, 9 });
+    public void moveGear(float f)
+    {
+    }
 
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev07", "_ExternalDev08" });
+    protected void moveAileron(float f)
+    {
+        aileronsAngle = f;
+        hierMesh().chunkSetAngles("AroneL_D0", 0.0F, -30F * f - flaperonAngle, 0.0F);
+        hierMesh().chunkSetAngles("AroneR_D0", 0.0F, -30F * f + flaperonAngle, 0.0F);
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunShKASk 900", "MGunShKASk 900", null, null, null, null });
+    protected void moveFlap(float f)
+    {
+        flaperonAngle = f * 17F;
+        hierMesh().chunkSetAngles("AroneL_D0", 0.0F, -30F * aileronsAngle - flaperonAngle, 0.0F);
+        hierMesh().chunkSetAngles("AroneR_D0", 0.0F, -30F * aileronsAngle + flaperonAngle, 0.0F);
+    }
 
-    weaponsRegister(localClass, "2x50kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", "BombGunFAB50 1", "BombGunFAB50 1", null, null });
+    public void rareAction(float f, boolean flag)
+    {
+        super.rareAction(f, flag);
+        if(!oneTimeCheckDone && !FM.isPlayers() && !isNetPlayer() && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.1F)
+        {
+            oneTimeCheckDone = true;
+            if(com.maddox.il2.ai.World.cur().camouflage == 1)
+            {
+                if(com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.25F)
+                {
+                    FM.CT.cockpitDoorControl = 1.0F;
+                    FM.AS.setCockpitDoor(this, 1);
+                }
+            } else
+            if(com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < 0.5F)
+            {
+                FM.CT.cockpitDoorControl = 1.0F;
+                FM.AS.setCockpitDoor(this, 1);
+            }
+        }
+    }
 
-    weaponsRegister(localClass, "2x100kg", new String[] { "MGunShKASk 900", "MGunShKASk 900", "BombGunFAB100 1", "BombGunFAB100 1", null, null });
+    public void doMurderPilot(int i)
+    {
+        switch(i)
+        {
+        case 0: // '\0'
+            hierMesh().chunkVisible("Pilot1_D0", false);
+            hierMesh().chunkVisible("Head1_D0", false);
+            hierMesh().chunkVisible("HMask1_D0", false);
+            hierMesh().chunkVisible("Pilot1_D1", true);
+            hierMesh().chunkVisible("Head1_D1", true);
+            hierMesh().chunkVisible("pilotarm2_d0", false);
+            hierMesh().chunkVisible("pilotarm1_d0", false);
+            break;
+        }
+    }
 
-    weaponsRegister(localClass, "PV-1", new String[] { "MGunPV1 900", "MGunPV1 900", null, null, null, null });
+    public void doRemoveBodyFromPlane(int i)
+    {
+        super.doRemoveBodyFromPlane(i);
+        hierMesh().chunkVisible("pilotarm2_d0", false);
+        hierMesh().chunkVisible("pilotarm1_d0", false);
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
-  }
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private boolean bailingOut;
+    private boolean canopyForward;
+    private boolean okToJump;
+    private float flaperonAngle;
+    private float aileronsAngle;
+    private boolean oneTimeCheckDone;
+    private boolean sideDoorOpened;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.rts.CLASS.THIS();
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "I-16");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/I-16type5(multi)/hier_skis.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFCSPar07());
+        com.maddox.rts.Property.set(class1, "meshName_ru", "3DO/Plane/I-16type5/hier_skis.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_ru", new PaintSchemeFCSPar07());
+        com.maddox.rts.Property.set(class1, "yearService", 1935F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1942F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/I-16type5Skis.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", new java.lang.Class[] {
+            com.maddox.il2.objects.air.CockpitI_16TYPE5.class
+        });
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.82595F);
+        com.maddox.il2.objects.air.I_16TYPE5_SKIS.weaponTriggersRegister(class1, new int[] {
+            0, 0, 3, 3, 9, 9
+        });
+        com.maddox.il2.objects.air.I_16TYPE5_SKIS.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev07", "_ExternalDev08"
+        });
+        com.maddox.il2.objects.air.I_16TYPE5_SKIS.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunShKASk 900", "MGunShKASk 900", null, null, null, null
+        });
+        com.maddox.il2.objects.air.I_16TYPE5_SKIS.weaponsRegister(class1, "2x50kg", new java.lang.String[] {
+            "MGunShKASk 900", "MGunShKASk 900", "BombGunFAB50 1", "BombGunFAB50 1", null, null
+        });
+        com.maddox.il2.objects.air.I_16TYPE5_SKIS.weaponsRegister(class1, "2x100kg", new java.lang.String[] {
+            "MGunShKASk 900", "MGunShKASk 900", "BombGunFAB100 1", "BombGunFAB100 1", null, null
+        });
+        com.maddox.il2.objects.air.I_16TYPE5_SKIS.weaponsRegister(class1, "PV-1", new java.lang.String[] {
+            "MGunPV1 900", "MGunPV1 900", null, null, null, null
+        });
+        com.maddox.il2.objects.air.I_16TYPE5_SKIS.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null
+        });
+    }
 }

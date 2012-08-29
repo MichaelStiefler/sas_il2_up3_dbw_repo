@@ -1,80 +1,97 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CollideEnv.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
 import java.util.AbstractCollection;
 import java.util.List;
 
+// Referenced classes of package com.maddox.il2.engine:
+//            Actor, ActorFilter, Accumulator
+
 public abstract class CollideEnv
 {
-  public boolean isDoCollision()
-  {
-    return false;
-  }
 
-  protected void doCollision(List paramList)
-  {
-  }
+    public boolean isDoCollision()
+    {
+        return false;
+    }
 
-  protected void doBulletMoveAndCollision()
-  {
-  }
+    protected void doCollision(java.util.List list)
+    {
+    }
 
-  public void getSphere(AbstractCollection paramAbstractCollection, Point3d paramPoint3d, double paramDouble)
-  {
-  }
+    protected void doBulletMoveAndCollision()
+    {
+    }
 
-  public Actor getLine(Point3d paramPoint3d1, Point3d paramPoint3d2, boolean paramBoolean, Actor paramActor, Point3d paramPoint3d3)
-  {
-    return null;
-  }
-  public Actor getLine(Point3d paramPoint3d1, Point3d paramPoint3d2, boolean paramBoolean, ActorFilter paramActorFilter, Point3d paramPoint3d3) { return null;
-  }
+    public void getSphere(java.util.AbstractCollection abstractcollection, com.maddox.JGP.Point3d point3d, double d)
+    {
+    }
 
-  public void getFiltered(AbstractCollection paramAbstractCollection, Point3d paramPoint3d, double paramDouble, ActorFilter paramActorFilter)
-  {
-  }
+    public com.maddox.il2.engine.Actor getLine(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, boolean flag, com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d2)
+    {
+        return null;
+    }
 
-  public void getNearestEnemies(Point3d paramPoint3d, double paramDouble, int paramInt, Accumulator paramAccumulator)
-  {
-  }
+    public com.maddox.il2.engine.Actor getLine(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, boolean flag, com.maddox.il2.engine.ActorFilter actorfilter, com.maddox.JGP.Point3d point3d2)
+    {
+        return null;
+    }
 
-  public void getNearestEnemiesCyl(Point3d paramPoint3d, double paramDouble1, double paramDouble2, double paramDouble3, int paramInt, Accumulator paramAccumulator)
-  {
-  }
+    public void getFiltered(java.util.AbstractCollection abstractcollection, com.maddox.JGP.Point3d point3d, double d, com.maddox.il2.engine.ActorFilter actorfilter)
+    {
+    }
 
-  protected void changedPos(Actor paramActor, Point3d paramPoint3d1, Point3d paramPoint3d2)
-  {
-  }
+    public void getNearestEnemies(com.maddox.JGP.Point3d point3d, double d, int i, com.maddox.il2.engine.Accumulator accumulator)
+    {
+    }
 
-  protected void add(Actor paramActor)
-  {
-  }
+    public void getNearestEnemiesCyl(com.maddox.JGP.Point3d point3d, double d, double d1, double d2, 
+            int i, com.maddox.il2.engine.Accumulator accumulator)
+    {
+    }
 
-  protected void remove(Actor paramActor)
-  {
-  }
+    protected void changedPos(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+    }
 
-  protected void changedPosStatic(Actor paramActor, Point3d paramPoint3d1, Point3d paramPoint3d2)
-  {
-  }
+    protected void add(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  protected void addStatic(Actor paramActor)
-  {
-  }
+    protected void remove(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  protected void removeStatic(Actor paramActor)
-  {
-  }
+    protected void changedPosStatic(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+    }
 
-  protected void clear()
-  {
-  }
+    protected void addStatic(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  protected void resetGameClear()
-  {
-  }
+    protected void removeStatic(com.maddox.il2.engine.Actor actor)
+    {
+    }
 
-  protected void resetGameCreate()
-  {
-  }
+    protected void clear()
+    {
+    }
+
+    protected void resetGameClear()
+    {
+    }
+
+    protected void resetGameCreate()
+    {
+    }
+
+    protected CollideEnv()
+    {
+    }
 }

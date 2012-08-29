@@ -1,63 +1,95 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   KI_61_IKO.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.rts.Property;
 
-public class KI_61_IKO extends KI_61
+// Referenced classes of package com.maddox.il2.objects.air:
+//            KI_61, PaintSchemeFMPar03, PaintSchemeBCSPar01, NetAircraft
+
+public class KI_61_IKO extends com.maddox.il2.objects.air.KI_61
 {
-  public static void moveGear(HierMesh paramHierMesh, float paramFloat)
-  {
-    paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, cvt(paramFloat, 0.01F, 0.9F, 0.0F, 72.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearC5_D0", 0.0F, 0.0F, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC3_D0", 0.0F, cvt(paramFloat, 0.01F, 0.21F, 0.0F, 57.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearC4_D0", 0.0F, cvt(paramFloat, 0.01F, 0.21F, 0.0F, -57.0F), 0.0F);
 
-    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, cvt(paramFloat, 0.1F, 0.82F, 0.0F, -82.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearL7_D0", 0.0F, cvt(paramFloat, 0.1F, 0.82F, 0.0F, -90.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearL6_D0", 0.0F, cvt(paramFloat, 0.1F, 0.16F, 0.0F, 86.0F), 0.0F);
+    public KI_61_IKO()
+    {
+    }
 
-    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, cvt(paramFloat, 0.34F, 0.91F, 0.0F, -82.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearR7_D0", 0.0F, cvt(paramFloat, 0.34F, 0.91F, 0.0F, 90.0F), 0.0F);
-    paramHierMesh.chunkSetAngles("GearR6_D0", 0.0F, cvt(paramFloat, 0.34F, 0.4F, 0.0F, -86.0F), 0.0F);
-  }
-  protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat); } 
-  public void moveSteering(float paramFloat) {
-    hierMesh().chunkSetAngles("GearC5_D0", 0.0F, -paramFloat, 0.0F);
-  }
+    public static void moveGear(com.maddox.il2.engine.HierMesh hiermesh, float f)
+    {
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, com.maddox.il2.objects.air.KI_61_IKO.cvt(f, 0.01F, 0.9F, 0.0F, 72F), 0.0F);
+        hiermesh.chunkSetAngles("GearC5_D0", 0.0F, 0.0F, 0.0F);
+        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, com.maddox.il2.objects.air.KI_61_IKO.cvt(f, 0.01F, 0.21F, 0.0F, 57F), 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, com.maddox.il2.objects.air.KI_61_IKO.cvt(f, 0.01F, 0.21F, 0.0F, -57F), 0.0F);
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, com.maddox.il2.objects.air.KI_61_IKO.cvt(f, 0.1F, 0.82F, 0.0F, -82F), 0.0F);
+        hiermesh.chunkSetAngles("GearL7_D0", 0.0F, com.maddox.il2.objects.air.KI_61_IKO.cvt(f, 0.1F, 0.82F, 0.0F, -90F), 0.0F);
+        hiermesh.chunkSetAngles("GearL6_D0", 0.0F, com.maddox.il2.objects.air.KI_61_IKO.cvt(f, 0.1F, 0.16F, 0.0F, 86F), 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, com.maddox.il2.objects.air.KI_61_IKO.cvt(f, 0.34F, 0.91F, 0.0F, -82F), 0.0F);
+        hiermesh.chunkSetAngles("GearR7_D0", 0.0F, com.maddox.il2.objects.air.KI_61_IKO.cvt(f, 0.34F, 0.91F, 0.0F, 90F), 0.0F);
+        hiermesh.chunkSetAngles("GearR6_D0", 0.0F, com.maddox.il2.objects.air.KI_61_IKO.cvt(f, 0.34F, 0.4F, 0.0F, -86F), 0.0F);
+    }
 
-  static
-  {
-    Class localClass = KI_61_IKO.class;
-    new NetAircraft.SPAWN(localClass);
+    protected void moveGear(float f)
+    {
+        com.maddox.il2.objects.air.KI_61_IKO.moveGear(hierMesh(), f);
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "Ki-61");
-    Property.set(localClass, "meshName", "3DO/Plane/Ki-61-I(Ko)(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar03());
-    Property.set(localClass, "meshName_ja", "3DO/Plane/Ki-61-I(Ko)(ja)/hier.him");
-    Property.set(localClass, "PaintScheme_ja", new PaintSchemeBCSPar01());
+    public void moveSteering(float f)
+    {
+        hierMesh().chunkSetAngles("GearC5_D0", 0.0F, -f, 0.0F);
+    }
 
-    Property.set(localClass, "yearService", 1941.0F);
-    Property.set(localClass, "yearExpired", 1946.0F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/Ki-61-IKo.fmd");
-    Property.set(localClass, "cockpitClass", CockpitKI_61.class);
-    Property.set(localClass, "LOSElevation", 0.81055F);
-
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 1, 1, 3, 3, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunHo103si 250", "MGunHo103si 250", "MGunBrowning303k_jap 500", "MGunBrowning303k_jap 500", null, null, null, null });
-
-    weaponsRegister(localClass, "1x250", new String[] { "MGunHo103si 250", "MGunHo103si 250", "MGunBrowning303k_jap 500", "MGunBrowning303k_jap 500", null, "BombGun250kgJ 1", null, null });
-
-    weaponsRegister(localClass, "2x250", new String[] { "MGunHo103si 250", "MGunHo103si 250", "MGunBrowning303k_jap 500", "MGunBrowning303k_jap 500", "BombGun250kgJ 1", "BombGun250kgJ 1", null, null });
-
-    weaponsRegister(localClass, "2x150dt", new String[] { "MGunHo103si 250", "MGunHo103si 250", "MGunBrowning303k_jap 500", "MGunBrowning303k_jap 500", null, null, "FuelTankGun_TankKi61Underwing", "FuelTankGun_TankKi61Underwing" });
-
-    weaponsRegister(localClass, "1x150dt", new String[] { "MGunHo103si 250", "MGunHo103si 250", "MGunBrowning303k_jap 500", "MGunBrowning303k_jap 500", null, null, null, "FuelTankGun_TankKi61Underwing" });
-
-    weaponsRegister(localClass, "1x150dt+1x250kg", new String[] { "MGunHo103si 250", "MGunHo103si 250", "MGunBrowning303k_jap 500", "MGunBrowning303k_jap 500", null, "BombGun250kgJ 1", "FuelTankGun_TankKi61Underwing", null });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.KI_61_IKO.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "Ki-61");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/Ki-61-I(Ko)(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar03());
+        com.maddox.rts.Property.set(class1, "meshName_ja", "3DO/Plane/Ki-61-I(Ko)(ja)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_ja", new PaintSchemeBCSPar01());
+        com.maddox.rts.Property.set(class1, "yearService", 1941F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1946F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/Ki-61-IKo.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitKI_61.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.81055F);
+        com.maddox.il2.objects.air.KI_61_IKO.weaponTriggersRegister(class1, new int[] {
+            0, 0, 1, 1, 3, 3, 9, 9
+        });
+        com.maddox.il2.objects.air.KI_61_IKO.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_ExternalBomb01", "_ExternalBomb02", "_ExternalDev01", "_ExternalDev02"
+        });
+        com.maddox.il2.objects.air.KI_61_IKO.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunHo103si 250", "MGunHo103si 250", "MGunBrowning303k_jap 500", "MGunBrowning303k_jap 500", null, null, null, null
+        });
+        com.maddox.il2.objects.air.KI_61_IKO.weaponsRegister(class1, "1x250", new java.lang.String[] {
+            "MGunHo103si 250", "MGunHo103si 250", "MGunBrowning303k_jap 500", "MGunBrowning303k_jap 500", null, "BombGun250kgJ 1", null, null
+        });
+        com.maddox.il2.objects.air.KI_61_IKO.weaponsRegister(class1, "2x250", new java.lang.String[] {
+            "MGunHo103si 250", "MGunHo103si 250", "MGunBrowning303k_jap 500", "MGunBrowning303k_jap 500", "BombGun250kgJ 1", "BombGun250kgJ 1", null, null
+        });
+        com.maddox.il2.objects.air.KI_61_IKO.weaponsRegister(class1, "2x150dt", new java.lang.String[] {
+            "MGunHo103si 250", "MGunHo103si 250", "MGunBrowning303k_jap 500", "MGunBrowning303k_jap 500", null, null, "FuelTankGun_TankKi61Underwing", "FuelTankGun_TankKi61Underwing"
+        });
+        com.maddox.il2.objects.air.KI_61_IKO.weaponsRegister(class1, "1x150dt", new java.lang.String[] {
+            "MGunHo103si 250", "MGunHo103si 250", "MGunBrowning303k_jap 500", "MGunBrowning303k_jap 500", null, null, null, "FuelTankGun_TankKi61Underwing"
+        });
+        com.maddox.il2.objects.air.KI_61_IKO.weaponsRegister(class1, "1x150dt+1x250kg", new java.lang.String[] {
+            "MGunHo103si 250", "MGunHo103si 250", "MGunBrowning303k_jap 500", "MGunBrowning303k_jap 500", null, "BombGun250kgJ 1", "FuelTankGun_TankKi61Underwing", null
+        });
+        com.maddox.il2.objects.air.KI_61_IKO.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null
+        });
+    }
 }

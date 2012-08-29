@@ -1,60 +1,69 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BlindLandingData.java
+
 package com.maddox.il2.objects.vehicles.radios;
+
 
 public class BlindLandingData
 {
-  public boolean isOnOuterMarker = false;
-  public boolean isOnInnerMarker = false;
-  public float blindLandingAzimuthPB = 0.0F;
-  public float blindLandingAzimuthBP = 0.0F;
-  public float blindLandingRange = 0.0F;
-  public float signalStrength = 0.0F;
-  private final float markerFanLength = 85.0F;
-  public float runwayLength = 1700.0F;
 
-  public void reset()
-  {
-    this.isOnOuterMarker = false;
-    this.isOnInnerMarker = false;
-    this.blindLandingAzimuthPB = 0.0F;
-    this.blindLandingAzimuthBP = 0.0F;
-    this.blindLandingRange = 50000.0F;
-    this.signalStrength = 0.0F;
-  }
-
-  public void addSignal(float paramFloat1, float paramFloat2, float paramFloat3, boolean paramBoolean, float paramFloat4, float paramFloat5, float paramFloat6)
-  {
-    this.blindLandingAzimuthPB = paramFloat2;
-    this.blindLandingAzimuthBP = paramFloat1;
-    this.blindLandingRange = paramFloat3;
-    this.signalStrength = paramFloat4;
-    if (paramBoolean)
+    public BlindLandingData()
     {
-      this.runwayLength = 1700.0F;
-      if (paramFloat6 > 500.0F)
-      {
-        this.runwayLength = 2300.0F;
-      }
-    }
-    else
-    {
-      this.isOnInnerMarker = false;
-      this.isOnOuterMarker = false;
-      this.runwayLength = 0.0F;
-      return;
+        isOnOuterMarker = false;
+        isOnInnerMarker = false;
+        blindLandingAzimuthPB = 0.0F;
+        blindLandingAzimuthBP = 0.0F;
+        blindLandingRange = 0.0F;
+        signalStrength = 0.0F;
+        runwayLength = 1700F;
     }
 
-    if ((Math.abs(this.blindLandingAzimuthBP) < 10.0F) && (paramFloat3 > paramFloat6 - 85.0F + this.runwayLength) && (paramFloat3 < paramFloat6 + 85.0F + this.runwayLength))
+    public void reset()
     {
-      this.isOnInnerMarker = true;
+        isOnOuterMarker = false;
+        isOnInnerMarker = false;
+        blindLandingAzimuthPB = 0.0F;
+        blindLandingAzimuthBP = 0.0F;
+        blindLandingRange = 50000F;
+        signalStrength = 0.0F;
     }
-    else {
-      this.isOnInnerMarker = false;
-    }
-    if ((Math.abs(this.blindLandingAzimuthBP) < 10.0F) && (paramFloat3 > paramFloat5 - 85.0F + this.runwayLength) && (paramFloat3 < paramFloat5 + 85.0F + this.runwayLength))
+
+    public void addSignal(float f, float f1, float f2, boolean flag, float f3, float f4, float f5)
     {
-      this.isOnOuterMarker = true;
+        blindLandingAzimuthPB = f1;
+        blindLandingAzimuthBP = f;
+        blindLandingRange = f2;
+        signalStrength = f3;
+        if(flag)
+        {
+            runwayLength = 1700F;
+            if(f5 > 500F)
+                runwayLength = 2300F;
+        } else
+        {
+            isOnInnerMarker = false;
+            isOnOuterMarker = false;
+            runwayLength = 0.0F;
+            return;
+        }
+        if(java.lang.Math.abs(blindLandingAzimuthBP) < 10F && f2 > (f5 - 85F) + runwayLength && f2 < f5 + 85F + runwayLength)
+            isOnInnerMarker = true;
+        else
+            isOnInnerMarker = false;
+        if(java.lang.Math.abs(blindLandingAzimuthBP) < 10F && f2 > (f4 - 85F) + runwayLength && f2 < f4 + 85F + runwayLength)
+            isOnOuterMarker = true;
+        else
+            isOnOuterMarker = false;
     }
-    else
-      this.isOnOuterMarker = false;
-  }
+
+    public boolean isOnOuterMarker;
+    public boolean isOnInnerMarker;
+    public float blindLandingAzimuthPB;
+    public float blindLandingAzimuthBP;
+    public float blindLandingRange;
+    public float signalStrength;
+    private final float markerFanLength = 85F;
+    public float runwayLength;
 }

@@ -1,46 +1,80 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   LocomotiveUSSR.java
+
 package com.maddox.il2.objects.trains;
 
 import com.maddox.il2.ai.World;
 import com.maddox.rts.Spawn;
 
-public class LocomotiveUSSR extends LocomotiveVerm
+// Referenced classes of package com.maddox.il2.objects.trains:
+//            LocomotiveVerm, Train, WagonSpawn, Wagon
+
+public class LocomotiveUSSR extends com.maddox.il2.objects.trains.LocomotiveVerm
 {
-  private static Class cls = LocomotiveUSSR.class;
-
-  public LocomotiveUSSR(Train paramTrain) {
-    super(paramTrain, getMeshName(0), getMeshName(1));
-  }
-
-  private static String getMeshName(int paramInt)
-  {
-    String str;
-    switch (World.cur().camouflage)
+    public static class SPAWN
+        implements com.maddox.il2.objects.trains.WagonSpawn
     {
-    case 0:
-      str = "summer";
-      break;
-    case 1:
-      str = "winter";
-      break;
-    default:
-      str = "summer";
+
+        public com.maddox.il2.objects.trains.Wagon wagonSpawn(com.maddox.il2.objects.trains.Train train)
+        {
+            return new LocomotiveUSSR(train);
+        }
+
+        public SPAWN()
+        {
+        }
     }
 
-    return "3do/Trains/Prvz" + (paramInt != 1 ? "" : "_Dmg") + "/" + str + "/hier.him";
-  }
 
-  public static String getMeshNameForEditor()
-  {
-    return getMeshName(0);
-  }
-
-  static {
-    Spawn.add(cls, new SPAWN());
-  }
-
-  public static class SPAWN implements WagonSpawn {
-    public Wagon wagonSpawn(Train paramTrain) {
-      return new LocomotiveUSSR(paramTrain);
+    public LocomotiveUSSR(com.maddox.il2.objects.trains.Train train)
+    {
+        super(train, com.maddox.il2.objects.trains.LocomotiveUSSR.getMeshName(0), com.maddox.il2.objects.trains.LocomotiveUSSR.getMeshName(1));
     }
-  }
+
+    private static java.lang.String getMeshName(int i)
+    {
+        java.lang.String s;
+        switch(com.maddox.il2.ai.World.cur().camouflage)
+        {
+        case 0: // '\0'
+            s = "summer";
+            break;
+
+        case 1: // '\001'
+            s = "winter";
+            break;
+
+        case 2: // '\002'
+            s = "desert";
+            break;
+
+        default:
+            s = "summer";
+            break;
+        }
+        return "3do/Trains/Prvz" + (i == 1 ? "_Dmg" : "") + "/" + s + "/hier.him";
+    }
+
+    public static java.lang.String getMeshNameForEditor()
+    {
+        return com.maddox.il2.objects.trains.LocomotiveUSSR.getMeshName(0);
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private static java.lang.Class cls;
+
+    static 
+    {
+        cls = com.maddox.il2.objects.trains.LocomotiveUSSR.class;
+        com.maddox.rts.Spawn.add(cls, new SPAWN());
+    }
 }

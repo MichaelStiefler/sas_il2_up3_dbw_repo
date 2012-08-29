@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ArtilleryGeneric.java
+
 package com.maddox.il2.objects.vehicles.artillery;
 
 import com.maddox.JGP.Matrix4d;
@@ -60,7 +65,6 @@ import com.maddox.rts.NetChannelInStream;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.NetObj;
 import com.maddox.rts.ObjState;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
@@ -70,1475 +74,1379 @@ import com.maddox.util.TableFunction2;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public abstract class ArtilleryGeneric extends ActorHMesh
-  implements MsgCollisionRequestListener, MsgExplosionListener, MsgShotListener, Predator, Obstacle, ActorAlign, HunterInterface
+public abstract class ArtilleryGeneric extends com.maddox.il2.engine.ActorHMesh
+    implements com.maddox.il2.engine.MsgCollisionRequestListener, com.maddox.il2.ai.MsgExplosionListener, com.maddox.il2.ai.MsgShotListener, com.maddox.il2.ai.ground.Predator, com.maddox.il2.ai.ground.Obstacle, com.maddox.il2.objects.ActorAlign, com.maddox.il2.ai.ground.HunterInterface
 {
-  private ArtilleryProperties prop = null;
-
-  private boolean nearAirfield = false;
-  private boolean dontShoot = false;
-  private long time_lastCheckShoot = 0L;
-  private static final int DELAY_CHECK_SHOOT = 12000;
-  private static final int DIST_TO_FRIEND_PLANES = 4000;
-  private static final int DIST_TO_AIRFIELD = 2000;
-  private float heightAboveLandSurface;
-  private float heightAboveLandSurface2;
-  protected Gun gun;
-  private Aim aime;
-  private float headYaw;
-  private float gunPitch;
-  private long startDelay;
-  public int dying = 0;
-  static final int DYING_NONE = 0;
-  static final int DYING_DEAD = 1;
-  private short deathSeed;
-  private long respawnDelay = 0L;
-
-  private long hideTmr = 0L;
-  private static long delay_hide_ticks = 0L;
-  public float RADIUS_HIDE = 0.0F;
-
-  public static float new_RADIUS_HIDE = 0.0F;
-
-  private static ArtilleryProperties constr_arg1 = null;
-  private static ActorSpawnArg constr_arg2 = null;
-
-  private static Point3d p = new Point3d();
-  private static Point3d p1 = new Point3d();
-  private static Orient o = new Orient();
-  private static Vector3f n = new Vector3f();
-  private static Vector3d tmpv = new Vector3d();
-
-  private NetMsgFiltered outCommand = new NetMsgFiltered();
-
-  public static final double Rnd(double paramDouble1, double paramDouble2)
-  {
-    return World.Rnd().nextDouble(paramDouble1, paramDouble2);
-  }
-  public static final float Rnd(float paramFloat1, float paramFloat2) {
-    return World.Rnd().nextFloat(paramFloat1, paramFloat2);
-  }
-  private boolean RndB(float paramFloat) {
-    return World.Rnd().nextFloat(0.0F, 1.0F) < paramFloat;
-  }
-
-  private static final long SecsToTicks(float paramFloat) {
-    long l = ()(0.5D + paramFloat / Time.tickLenFs());
-    return l < 1L ? 1L : l;
-  }
-
-  private boolean friendPlanesAreNear(Aircraft paramAircraft)
-  {
-    this.time_lastCheckShoot = (Time.current() - ()Rnd(0.0F, 1200.0F));
-    this.dontShoot = false;
-
-    Point3d localPoint3d = paramAircraft.pos.getAbsPoint();
-    double d1 = 16000000.0D;
-
-    if (!(paramAircraft.FM instanceof Maneuver))
-      return false;
-    AirGroup localAirGroup1 = ((Maneuver)(Maneuver)paramAircraft.FM).Group;
-    if (localAirGroup1 == null)
-      return false;
-    int i = AirGroupList.length(localAirGroup1.enemies[0]);
-    for (int j = 0; j < i; j++) {
-      AirGroup localAirGroup2 = AirGroupList.getGroup(localAirGroup1.enemies[0], j);
-      if (localAirGroup2.nOfAirc > 0) {
-        double d2 = localAirGroup2.Pos.x - localPoint3d.x;
-        double d3 = localAirGroup2.Pos.y - localPoint3d.y;
-        double d4 = localAirGroup2.Pos.z - localPoint3d.z;
-        if (d2 * d2 + d3 * d3 + d4 * d4 > d1)
-          continue;
-        d4 = localPoint3d.z - Engine.land().HQ(localPoint3d.x, localPoint3d.y);
-        if (d4 <= 50.0D)
-          continue;
-        this.dontShoot = true;
-        break;
-      }
-
-    }
-
-    return this.dontShoot;
-  }
-
-  protected final boolean Head360()
-  {
-    return this.prop.HEAD_YAW_RANGE.fullcircle();
-  }
-
-  public void msgCollisionRequest(Actor paramActor, boolean[] paramArrayOfBoolean)
-  {
-    if (((paramActor instanceof ActorMesh)) && (((ActorMesh)paramActor).isStaticPos())) {
-      paramArrayOfBoolean[0] = false;
-      return;
-    }
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    paramShot.bodyMaterial = 2;
-
-    if (this.dying != 0) {
-      return;
-    }
-
-    if (paramShot.power <= 0.0F) {
-      return;
-    }
-
-    if ((isNetMirror()) && 
-      (paramShot.isMirage())) {
-      return;
-    }
-
-    if (paramShot.powerType == 1) {
-      if (RndB(0.15F)) {
-        return;
-      }
-
-      Die(paramShot.initiator, 0, true);
-      return;
-    }
-
-    float f1 = Shot.panzerThickness(this.pos.getAbsOrient(), paramShot.v, paramShot.chunkName.equalsIgnoreCase("Head"), this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP);
-
-    f1 *= Rnd(0.93F, 1.07F);
-
-    float f2 = this.prop.fnShotPanzer.Value(paramShot.power, f1);
-
-    if ((f2 < 1000.0F) && ((f2 <= 1.0F) || (RndB(1.0F / f2))))
-      Die(paramShot.initiator, 0, true);
-  }
-
-  public void msgExplosion(Explosion paramExplosion)
-  {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if ((isNetMirror()) && (paramExplosion.isMirage())) {
-      return;
-    }
-
-    if (paramExplosion.power <= 0.0F) {
-      return;
-    }
-
-    if (paramExplosion.powerType == 1) {
-      if (TankGeneric.splintersKill(paramExplosion, this.prop.fnShotPanzer, Rnd(0.0F, 1.0F), Rnd(0.0F, 1.0F), this, 0.7F, 0.25F, this.prop.PANZER_BODY_FRONT, this.prop.PANZER_BODY_SIDE, this.prop.PANZER_BODY_BACK, this.prop.PANZER_BODY_TOP, this.prop.PANZER_HEAD, this.prop.PANZER_HEAD_TOP))
-      {
-        Die(paramExplosion.initiator, 0, true);
-      }
-      return;
-    }
-
-    if ((paramExplosion.powerType == 2) && (paramExplosion.chunkName != null)) {
-      Die(paramExplosion.initiator, 0, true);
-      return;
-    }
-    float f1;
-    if (paramExplosion.chunkName != null)
-      f1 = 0.5F * paramExplosion.power;
-    else {
-      f1 = paramExplosion.receivedTNTpower(this);
-    }
-    f1 *= Rnd(0.95F, 1.05F);
-
-    float f2 = this.prop.fnExplodePanzer.Value(f1, this.prop.PANZER_TNT_TYPE);
-
-    if ((f2 < 1000.0F) && ((f2 <= 1.0F) || (RndB(1.0F / f2))))
-      Die(paramExplosion.initiator, 0, true);
-  }
-
-  private void ShowExplode(float paramFloat)
-  {
-    if (paramFloat > 0.0F) {
-      paramFloat = Rnd(paramFloat, paramFloat * 1.6F);
-    }
-    Explosions.runByName(this.prop.explodeName, this, "SmokeHead", "", paramFloat);
-  }
-
-  private float[] computeDeathPose(short paramShort)
-  {
-    RangeRandom localRangeRandom = new RangeRandom(paramShort);
-
-    float[] arrayOfFloat = new float[10];
-
-    arrayOfFloat[0] = (this.headYaw + localRangeRandom.nextFloat(-15.0F, 15.0F));
-    arrayOfFloat[1] = ((localRangeRandom.nextBoolean() ? 1.0F : -1.0F) * localRangeRandom.nextFloat(4.0F, 9.0F));
-    arrayOfFloat[2] = ((localRangeRandom.nextBoolean() ? 1.0F : -1.0F) * localRangeRandom.nextFloat(4.0F, 9.0F));
-
-    arrayOfFloat[3] = (-this.gunPitch + localRangeRandom.nextFloat(-15.0F, 15.0F));
-    arrayOfFloat[4] = ((localRangeRandom.nextBoolean() ? 1.0F : -1.0F) * localRangeRandom.nextFloat(2.0F, 5.0F));
-    arrayOfFloat[5] = ((localRangeRandom.nextBoolean() ? 1.0F : -1.0F) * localRangeRandom.nextFloat(5.0F, 9.0F));
-
-    arrayOfFloat[6] = 0.0F;
-    arrayOfFloat[7] = ((localRangeRandom.nextBoolean() ? 1.0F : -1.0F) * localRangeRandom.nextFloat(4.0F, 8.0F));
-    arrayOfFloat[8] = ((localRangeRandom.nextBoolean() ? 1.0F : -1.0F) * localRangeRandom.nextFloat(7.0F, 12.0F));
-
-    arrayOfFloat[9] = (-localRangeRandom.nextFloat(0.0F, 0.25F));
-
-    return arrayOfFloat;
-  }
-
-  private void Die(Actor paramActor, short paramShort, boolean paramBoolean) {
-    if (this.dying != 0) {
-      return;
-    }
-
-    if (paramShort <= 0) {
-      if (isNetMirror()) {
-        send_DeathRequest(paramActor);
-        return;
-      }
-
-      paramShort = (short)(int)Rnd(1.0F, 30000.0F);
-    }
-    this.deathSeed = paramShort;
-
-    this.dying = 1;
-
-    World.onActorDied(this, paramActor);
-
-    if (this.aime != null) {
-      this.aime.forgetAiming();
-    }
-
-    float[] arrayOfFloat = computeDeathPose(paramShort);
-
-    hierMesh().chunkSetAngles("Head", arrayOfFloat[0], arrayOfFloat[1], arrayOfFloat[2]);
-    hierMesh().chunkSetAngles("Gun", arrayOfFloat[3], arrayOfFloat[4], arrayOfFloat[5]);
-    hierMesh().chunkSetAngles("Body", arrayOfFloat[6], arrayOfFloat[7], arrayOfFloat[8]);
-
-    if (this.prop.meshName2 == null)
+    public static class SPAWN
+        implements com.maddox.il2.engine.ActorSpawn
     {
-      mesh().makeAllMaterialsDarker(0.22F, 0.35F);
-      this.heightAboveLandSurface2 = this.heightAboveLandSurface;
-      this.heightAboveLandSurface = (this.heightAboveLandSurface2 + arrayOfFloat[9]);
-    } else {
-      setMesh(this.prop.meshName2);
 
-      this.heightAboveLandSurface2 = 0.0F;
-
-      int i = mesh().hookFind("Ground_Level");
-      if (i != -1) {
-        Matrix4d localMatrix4d = new Matrix4d();
-        mesh().hookMatrix(i, localMatrix4d);
-        this.heightAboveLandSurface2 = (float)(-localMatrix4d.m23);
-      }
-
-      this.heightAboveLandSurface = this.heightAboveLandSurface2;
-    }
-
-    Align();
-
-    if (paramBoolean) {
-      ShowExplode(15.0F);
-    }
-
-    if (paramBoolean)
-      send_DeathCommand(paramActor);
-  }
-
-  private void setGunAngles(float paramFloat1, float paramFloat2)
-  {
-    this.headYaw = paramFloat1;
-    this.gunPitch = paramFloat2;
-    hierMesh().chunkSetAngles("Head", this.headYaw, 0.0F, 0.0F);
-    hierMesh().chunkSetAngles("Gun", -this.gunPitch, 0.0F, 0.0F);
-    hierMesh().chunkSetAngles("Body", 0.0F, 0.0F, 0.0F);
-    this.pos.inValidate(false);
-  }
-
-  public void destroy()
-  {
-    if (isDestroyed())
-      return;
-    if (this.aime != null) {
-      this.aime.forgetAll();
-      this.aime = null;
-    }
-    if (this.gun != null) {
-      destroy(this.gun);
-      this.gun = null;
-    }
-    super.destroy();
-  }
-
-  public Object getSwitchListener(Message paramMessage)
-  {
-    return this;
-  }
-
-  public boolean isStaticPos() {
-    return true;
-  }
-
-  private void setDefaultLivePose()
-  {
-    this.heightAboveLandSurface = 0.0F;
-    int i = hierMesh().hookFind("Ground_Level");
-    if (i != -1) {
-      Matrix4d localMatrix4d = new Matrix4d();
-      hierMesh().hookMatrix(i, localMatrix4d);
-      this.heightAboveLandSurface = (float)(-localMatrix4d.m23);
-    }
-    setGunAngles(0.0F, this.prop.GUN_STD_PITCH);
-    Align();
-  }
-
-  protected ArtilleryGeneric()
-  {
-    this(constr_arg1, constr_arg2);
-  }
-
-  public void setMesh(String paramString) {
-    super.setMesh(paramString);
-    if (Config.cur.b3dgunners) return;
-    mesh().materialReplaceToNull("Pilot1");
-  }
-
-  private ArtilleryGeneric(ArtilleryProperties paramArtilleryProperties, ActorSpawnArg paramActorSpawnArg)
-  {
-    super(paramArtilleryProperties.meshName);
-    this.prop = paramArtilleryProperties;
-
-    delay_hide_ticks = SecsToTicks(240.0F);
-
-    paramActorSpawnArg.setStationary(this);
-
-    collide(true);
-    drawing(true);
-
-    createNetObject(paramActorSpawnArg.netChannel, paramActorSpawnArg.netIdRemote);
-
-    this.startDelay = 0L;
-    if (paramActorSpawnArg.timeLenExist) {
-      this.startDelay = ()(paramActorSpawnArg.timeLen * 60.0F * 1000.0F + 0.5F);
-      if (this.startDelay < 0L) this.startDelay = 0L;
-    }
-
-    this.RADIUS_HIDE = new_RADIUS_HIDE;
-    this.hideTmr = 0L;
-
-    this.gun = null;
-    try {
-      this.gun = ((Gun)this.prop.gunClass.newInstance());
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-      System.out.println("Artillery: Can't create gun '" + this.prop.gunClass.getName() + "'");
-    }
-
-    this.gun.set(this, "Gun");
-    this.gun.loadBullets(-1);
-
-    this.headYaw = 0.0F;
-    this.gunPitch = 0.0F;
-
-    if ((!isNetMirror()) && (this.RADIUS_HIDE > 0.0F)) {
-      this.hideTmr = -1L;
-    }
-
-    setDefaultLivePose();
-    startMove();
-
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    Airport localAirport = Airport.nearest(localPoint3d, -1, 7);
-    if (localAirport != null) {
-      float f = (float)localAirport.pos.getAbsPoint().distance(localPoint3d);
-      this.nearAirfield = (f <= 2000.0F);
-    } else {
-      this.nearAirfield = false;
-    }
-
-    this.dontShoot = false;
-    this.time_lastCheckShoot = (Time.current() - ()Rnd(0.0F, 12000.0F));
-  }
-
-  private void Align() {
-    this.pos.getAbs(p);
-    p.z = (Engine.land().HQ(p.x, p.y) + this.heightAboveLandSurface);
-    o.setYPR(this.pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
-    Engine.land().N(p.x, p.y, n);
-    o.orient(n);
-    this.pos.setAbs(p, o);
-  }
-
-  public void align()
-  {
-    Align();
-  }
-
-  public void startMove()
-  {
-    if (!interpEnd("move")) {
-      if (this.aime != null) {
-        this.aime.forgetAll();
-        this.aime = null;
-      }
-      this.aime = new Aim(this, isNetMirror());
-      interpPut(new Move(), "move", Time.current(), null);
-    }
-  }
-
-  public int WeaponsMask()
-  {
-    return this.prop.WEAPONS_MASK;
-  }
-
-  public int HitbyMask() {
-    return this.prop.HITBY_MASK;
-  }
-
-  public int chooseBulletType(BulletProperties[] paramArrayOfBulletProperties)
-  {
-    if (this.dying != 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties.length == 1) {
-      return 0;
-    }
-
-    if (paramArrayOfBulletProperties.length <= 0) {
-      return -1;
-    }
-
-    if ((this instanceof TgtTank)) {
-      if (paramArrayOfBulletProperties[0].cumulativePower > 0.0F)
-      {
-        return 0;
-      }
-      if (paramArrayOfBulletProperties[1].cumulativePower > 0.0F)
-      {
-        return 1;
-      }
-
-      if (paramArrayOfBulletProperties[0].power <= 0.0F)
-      {
-        return 0;
-      }
-      if (paramArrayOfBulletProperties[1].power <= 0.0F)
-      {
-        return 1;
-      }
-    } else {
-      if (paramArrayOfBulletProperties[0].power <= 0.0F)
-      {
-        return 0;
-      }
-      if (paramArrayOfBulletProperties[1].power <= 0.0F)
-      {
-        return 1;
-      }
-
-      if (paramArrayOfBulletProperties[0].cumulativePower > 0.0F)
-      {
-        return 0;
-      }
-      if (paramArrayOfBulletProperties[1].cumulativePower > 0.0F)
-      {
-        return 1;
-      }
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 1)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].powerType == 1)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 0)
-    {
-      return 1;
-    }
-
-    return 0;
-  }
-
-  public int chooseShotpoint(BulletProperties paramBulletProperties) {
-    if (this.dying != 0) {
-      return -1;
-    }
-    return 0;
-  }
-
-  public boolean getShotpointOffset(int paramInt, Point3d paramPoint3d) {
-    if (this.dying != 0) {
-      return false;
-    }
-
-    if (paramInt != 0) {
-      return false;
-    }
-
-    if (paramPoint3d != null) {
-      paramPoint3d.set(0.0D, 0.0D, 0.0D);
-    }
-    return true;
-  }
-
-  public float AttackMaxDistance()
-  {
-    return this.prop.ATTACK_MAX_DISTANCE;
-  }
-
-  public float AttackMaxRadius()
-  {
-    return this.prop.ATTACK_MAX_RADIUS;
-  }
-
-  public float AttackMaxHeight() {
-    return this.prop.ATTACK_MAX_HEIGHT;
-  }
-
-  public boolean unmovableInFuture()
-  {
-    return true;
-  }
-
-  public void collisionDeath()
-  {
-    if (isNet()) {
-      return;
-    }
-
-    ShowExplode(-1.0F);
-
-    destroy();
-  }
-
-  public float futurePosition(float paramFloat, Point3d paramPoint3d)
-  {
-    this.pos.getAbs(paramPoint3d);
-    return paramFloat <= 0.0F ? 0.0F : paramFloat;
-  }
-
-  private void send_DeathCommand(Actor paramActor)
-  {
-    if (!isNetMaster()) {
-      return;
-    }
-
-    if (Mission.isDeathmatch()) {
-      float f = Mission.respawnTime("Artillery");
-      this.respawnDelay = SecsToTicks(Rnd(f, f * 1.2F));
-    } else {
-      this.respawnDelay = 0L;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(68);
-      localNetMsgGuaranted.writeShort(this.deathSeed);
-      localNetMsgGuaranted.writeFloat(this.headYaw);
-      localNetMsgGuaranted.writeFloat(this.gunPitch);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void send_RespawnCommand()
-  {
-    if ((!isNetMaster()) || (!Mission.isDeathmatch())) {
-      return;
-    }
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(82);
-      this.net.post(localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void send_FireCommand(Actor paramActor, int paramInt, float paramFloat)
-  {
-    if (!isNetMaster()) {
-      return;
-    }
-    if (!this.net.isMirrored()) {
-      return;
-    }
-    if ((!Actor.isValid(paramActor)) || (!paramActor.isNet())) {
-      return;
-    }
-
-    paramInt &= 255;
-
-    if (paramFloat < 0.0F)
-      try {
-        this.outCommand.unLockAndClear();
-        this.outCommand.writeByte(84);
-        this.outCommand.writeNetObj(paramActor.net);
-        this.outCommand.writeByte(paramInt);
-        this.outCommand.setIncludeTime(false);
-        this.net.post(Time.current(), this.outCommand);
-      } catch (Exception localException1) {
-        System.out.println(localException1.getMessage());
-        localException1.printStackTrace();
-      }
-    else
-      try {
-        this.outCommand.unLockAndClear();
-        this.outCommand.writeByte(70);
-        this.outCommand.writeFloat(paramFloat);
-        this.outCommand.writeNetObj(paramActor.net);
-        this.outCommand.writeByte(paramInt);
-        this.outCommand.setIncludeTime(true);
-        this.net.post(Time.current(), this.outCommand);
-      } catch (Exception localException2) {
-        System.out.println(localException2.getMessage());
-        localException2.printStackTrace();
-      }
-  }
-
-  private void send_DeathRequest(Actor paramActor)
-  {
-    if (!isNetMirror()) {
-      return;
-    }
-
-    if ((this.net.masterChannel() instanceof NetChannelInStream))
-      return;
-    try
-    {
-      NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
-      localNetMsgFiltered.writeByte(68);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
-      localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  public void createNetObject(NetChannel paramNetChannel, int paramInt)
-  {
-    if (paramNetChannel == null)
-    {
-      this.net = new Master(this);
-    }
-    else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
-  }
-
-  public void netFirstUpdate(NetChannel paramNetChannel)
-    throws IOException
-  {
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    localNetMsgGuaranted.writeByte(73);
-    if (this.dying == 0)
-      localNetMsgGuaranted.writeShort(0);
-    else {
-      localNetMsgGuaranted.writeShort(this.deathSeed);
-    }
-    localNetMsgGuaranted.writeFloat(this.headYaw);
-    localNetMsgGuaranted.writeFloat(this.gunPitch);
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-  }
-
-  public float getReloadingTime(Aim paramAim)
-  {
-    return this.prop.DELAY_AFTER_SHOOT;
-  }
-
-  public float chainFireTime(Aim paramAim)
-  {
-    return this.prop.CHAINFIRE_TIME <= 0.0F ? 0.0F : this.prop.CHAINFIRE_TIME * Rnd(0.75F, 1.25F);
-  }
-
-  public float probabKeepSameEnemy(Actor paramActor)
-  {
-    if ((this.nearAirfield) || (isNetMirror()) || (paramActor == null) || (!(paramActor instanceof Aircraft)) || (Math.abs(this.time_lastCheckShoot - Time.current()) < 12000L) || ((float)paramActor.getSpeed(null) < 10.0F))
-    {
-      return 0.75F;
-    }
-
-    if (friendPlanesAreNear((Aircraft)paramActor)) {
-      return 0.0F;
-    }
-
-    return 0.75F;
-  }
-
-  public float minTimeRelaxAfterFight()
-  {
-    return 0.0F;
-  }
-
-  public void gunStartParking(Aim paramAim)
-  {
-    paramAim.setRotationForParking(this.headYaw, this.gunPitch, 0.0F, this.prop.GUN_STD_PITCH, this.prop.HEAD_YAW_RANGE, this.prop.HEAD_MAX_YAW_SPEED, this.prop.GUN_MAX_PITCH_SPEED);
-  }
-
-  public void gunInMove(boolean paramBoolean, Aim paramAim)
-  {
-    float f1 = paramAim.t();
-    float f2 = paramAim.anglesYaw.getDeg(f1);
-    float f3 = paramAim.anglesPitch.getDeg(f1);
-    setGunAngles(f2, f3);
-  }
-
-  public static final float KmHourToMSec(float paramFloat)
-  {
-    return paramFloat * 0.27778F;
-  }
-
-  public Actor findEnemy(Aim paramAim)
-  {
-    if (isNetMirror()) {
-      return null;
-    }
-
-    if (Time.current() < this.startDelay) {
-      return null;
-    }
-
-    Actor localActor = null;
-
-    if (this.prop.ATTACK_FAST_TARGETS)
-      NearestEnemies.set(WeaponsMask());
-    else {
-      NearestEnemies.set(WeaponsMask(), -9999.9004F, KmHourToMSec(100.0F));
-    }
-
-    localActor = NearestEnemies.getAFoundEnemy(this.pos.getAbsPoint(), AttackMaxRadius(), getArmy());
-
-    if (localActor == null) {
-      return null;
-    }
-
-    if (!(localActor instanceof Prey)) {
-      System.out.println("arti: nearest enemies: non-Prey");
-      return null;
-    }
-
-    int i = 1;
-    if ((!this.nearAirfield) && (!isNetMirror()) && ((localActor instanceof Aircraft)) && ((float)localActor.getSpeed(null) >= 10.0F))
-    {
-      if (Math.abs(this.time_lastCheckShoot - Time.current()) < 12000L)
-      {
-        if (this.dontShoot) {
-          return null;
-        }
-
-      }
-      else if (friendPlanesAreNear((Aircraft)localActor)) {
-        return null;
-      }
-
-    }
-
-    BulletProperties localBulletProperties = null;
-
-    if (this.gun.prop != null) {
-      j = ((Prey)localActor).chooseBulletType(this.gun.prop.bullet);
-
-      if (j < 0)
-      {
-        return null;
-      }
-
-      localBulletProperties = this.gun.prop.bullet[j];
-    }
-
-    int j = ((Prey)localActor).chooseShotpoint(localBulletProperties);
-
-    if (j < 0) {
-      return null;
-    }
-
-    paramAim.shotpoint_idx = j;
-
-    return localActor;
-  }
-
-  public boolean enterToFireMode(int paramInt, Actor paramActor, float paramFloat, Aim paramAim)
-  {
-    if ((paramInt == 1) && (this.hideTmr < 0L))
-    {
-      float f = (float)paramActor.pos.getAbsPoint().distanceSquared(this.pos.getAbsPoint());
-      if (f > this.RADIUS_HIDE * this.RADIUS_HIDE) {
-        return false;
-      }
-      this.hideTmr = 0L;
-    }
-
-    if (!isNetMirror()) {
-      send_FireCommand(paramActor, paramAim.shotpoint_idx, paramInt == 0 ? -1.0F : paramFloat);
-    }
-
-    return true;
-  }
-
-  private void Track_Mirror(Actor paramActor, int paramInt)
-  {
-    if (this.dying == 1) {
-      return;
-    }
-
-    if (paramActor == null) {
-      return;
-    }
-
-    if (this.aime == null) {
-      return;
-    }
-
-    this.aime.passive_StartFiring(0, paramActor, paramInt, 0.0F);
-  }
-
-  private void Fire_Mirror(Actor paramActor, int paramInt, float paramFloat)
-  {
-    if (this.dying == 1) {
-      return;
-    }
-
-    if (paramActor == null) {
-      return;
-    }
-
-    if (this.aime == null) {
-      return;
-    }
-
-    if (paramFloat <= 0.2F) {
-      paramFloat = 0.2F;
-    }
-
-    if (paramFloat >= 15.0F) {
-      paramFloat = 15.0F;
-    }
-
-    this.aime.passive_StartFiring(1, paramActor, paramInt, paramFloat);
-  }
-
-  public int targetGun(Aim paramAim, Actor paramActor, float paramFloat, boolean paramBoolean)
-  {
-    if ((!Actor.isValid(paramActor)) || (!paramActor.isAlive()) || (paramActor.getArmy() == 0)) {
-      return 0;
-    }
-
-    if ((this.gun instanceof CannonMidrangeGeneric)) {
-      int i = ((Prey)paramActor).chooseBulletType(this.gun.prop.bullet);
-      if (i < 0) {
-        return 0;
-      }
-      ((CannonMidrangeGeneric)this.gun).setBulletType(i);
-    }
-
-    boolean bool = ((Prey)paramActor).getShotpointOffset(paramAim.shotpoint_idx, p1);
-    if (!bool) {
-      return 0;
-    }
-
-    float f1 = paramFloat * Rnd(0.8F, 1.2F);
-
-    if (!Aimer.Aim((BulletAimer)this.gun, paramActor, this, f1, p1, null)) {
-      return 0;
-    }
-
-    Point3d localPoint3d1 = new Point3d();
-    Aimer.GetPredictedTargetPosition(localPoint3d1);
-
-    Point3d localPoint3d2 = Aimer.GetHunterFirePoint();
-
-    float f2 = 0.19F;
-
-    double d1 = localPoint3d1.distance(localPoint3d2);
-    double d2 = localPoint3d1.z;
-
-    localPoint3d1.sub(localPoint3d2);
-    localPoint3d1.scale(Rnd(0.96D, 1.04D));
-    localPoint3d1.add(localPoint3d2);
-
-    if (f1 > 0.001F) {
-      Point3d localPoint3d3 = new Point3d();
-      paramActor.pos.getAbs(localPoint3d3);
-
-      tmpv.sub(localPoint3d1, localPoint3d3);
-      double d3 = tmpv.length();
-
-      if (d3 > 0.001D) {
-        float f7 = (float)d3 / f1;
-        if (f7 > 200.0F) {
-          f7 = 200.0F;
-        }
-        float f8 = f7 * 0.015F;
-
-        localPoint3d3.sub(localPoint3d2);
-        double d4 = localPoint3d3.x * localPoint3d3.x + localPoint3d3.y * localPoint3d3.y + localPoint3d3.z * localPoint3d3.z;
-
-        if (d4 > 0.01D) {
-          float f9 = (float)tmpv.dot(localPoint3d3);
-          f9 /= (float)(d3 * Math.sqrt(d4));
-
-          f9 = (float)Math.sqrt(1.0F - f9 * f9);
-
-          f8 *= (0.4F + 0.6F * f9);
-        }
-        f8 *= 1.1F;
-
-        int k = 0;
-
-        k = Mission.curCloudsType();
-        if (k > 2) {
-          float f10 = k > 4 ? 300.0F : 500.0F;
-          float f11 = (float)(d1 / f10);
-          if (f11 > 1.0F) {
-            if (f11 > 10.0F) {
-              return 0;
-            }
-            f11 = (f11 - 1.0F) / 9.0F * 2.0F + 1.0F;
-            f8 *= f11;
-          }
-        }
-
-        if ((k >= 3) && (d2 > Mission.curCloudsHeight())) {
-          f8 *= 1.25F;
-        }
-
-        f2 += f8;
-      }
-
-    }
-
-    if (World.Sun().ToSun.z < -0.15F) {
-      f5 = (-World.Sun().ToSun.z - 0.15F) / 0.13F;
-      if (f5 >= 1.0F) {
-        f5 = 1.0F;
-      }
-
-      if (((paramActor instanceof Aircraft)) && (Time.current() - ((Aircraft)paramActor).tmSearchlighted < 1000L))
-      {
-        f5 = 0.0F;
-      }
-      f2 += 12.0F * f5;
-    }
-
-    float f5 = (float)paramActor.getSpeed(null) - 10.0F;
-    if (f5 > 0.0F) {
-      float f6 = 83.333336F;
-      f5 = f5 >= f6 ? 1.0F : f5 / f6;
-      f2 += f5 * this.prop.FAST_TARGETS_ANGLE_ERROR;
-    }
-
-    Vector3d localVector3d = new Vector3d();
-    if (!((BulletAimer)this.gun).FireDirection(localPoint3d2, localPoint3d1, localVector3d))
-    {
-      return 0;
-    }
-    float f3;
-    float f4;
-    if (paramBoolean) {
-      f3 = 99999.0F;
-      f4 = 99999.0F;
-    } else {
-      f3 = this.prop.HEAD_MAX_YAW_SPEED;
-      f4 = this.prop.GUN_MAX_PITCH_SPEED;
-    }
-
-    int j = paramAim.setRotationForTargeting(this, this.pos.getAbs().getOrient(), localPoint3d2, this.headYaw, this.gunPitch, localVector3d, f2, f1, this.prop.HEAD_YAW_RANGE, this.prop.GUN_MIN_PITCH, this.prop.GUN_MAX_PITCH, f3, f4, 0.0F);
-
-    return j;
-  }
-
-  public void singleShot(Aim paramAim)
-  {
-    this.gun.shots(1);
-  }
-
-  public void startFire(Aim paramAim)
-  {
-    this.gun.shots(-1);
-  }
-
-  public void continueFire(Aim paramAim)
-  {
-  }
-
-  public void stopFire(Aim paramAim)
-  {
-    this.gun.shots(0);
-  }
-
-  public static class SPAWN
-    implements ActorSpawn
-  {
-    public Class cls;
-    public ArtilleryGeneric.ArtilleryProperties proper;
-
-    private static float getF(SectFile paramSectFile, String paramString1, String paramString2, float paramFloat1, float paramFloat2)
-    {
-      float f = paramSectFile.get(paramString1, paramString2, -9865.3447F);
-      if ((f == -9865.3447F) || (f < paramFloat1) || (f > paramFloat2)) {
-        if (f == -9865.3447F) {
-          System.out.println("Artillery: Parameter [" + paramString1 + "]:<" + paramString2 + "> " + "not found");
-        }
-        else {
-          System.out.println("Artillery: Value of [" + paramString1 + "]:<" + paramString2 + "> (" + f + ")" + " is out of range (" + paramFloat1 + ";" + paramFloat2 + ")");
-        }
-
-        throw new RuntimeException("Can't set property");
-      }
-      return f;
-    }
-
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2) {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        System.out.print("Artillery: Parameter [" + paramString1 + "]:<" + paramString2 + "> ");
-        System.out.println(str == null ? "not found" : "is empty");
-        throw new RuntimeException("Can't set property");
-      }
-      return str;
-    }
-
-    private static String getS(SectFile paramSectFile, String paramString1, String paramString2, String paramString3) {
-      String str = paramSectFile.get(paramString1, paramString2);
-      if ((str == null) || (str.length() <= 0)) {
-        return paramString3;
-      }
-      return str;
-    }
-
-    private static ArtilleryGeneric.ArtilleryProperties LoadArtilleryProperties(SectFile paramSectFile, String paramString, Class paramClass)
-    {
-      ArtilleryGeneric.ArtilleryProperties localArtilleryProperties = new ArtilleryGeneric.ArtilleryProperties();
-
-      String str1 = getS(paramSectFile, paramString, "PanzerType", null);
-      if (str1 == null) {
-        str1 = "Tank";
-      }
-      localArtilleryProperties.fnShotPanzer = TableFunctions.GetFunc2(str1 + "ShotPanzer");
-      localArtilleryProperties.fnExplodePanzer = TableFunctions.GetFunc2(str1 + "ExplodePanzer");
-
-      localArtilleryProperties.PANZER_TNT_TYPE = getF(paramSectFile, paramString, "PanzerSubtype", 0.0F, 100.0F);
-
-      localArtilleryProperties.meshSummer = getS(paramSectFile, paramString, "MeshSummer");
-      localArtilleryProperties.meshDesert = getS(paramSectFile, paramString, "MeshDesert", localArtilleryProperties.meshSummer);
-      localArtilleryProperties.meshWinter = getS(paramSectFile, paramString, "MeshWinter", localArtilleryProperties.meshSummer);
-      localArtilleryProperties.meshSummer1 = getS(paramSectFile, paramString, "MeshSummerDamage", null);
-      localArtilleryProperties.meshDesert1 = getS(paramSectFile, paramString, "MeshDesertDamage", localArtilleryProperties.meshSummer1);
-      localArtilleryProperties.meshWinter1 = getS(paramSectFile, paramString, "MeshWinterDamage", localArtilleryProperties.meshSummer1);
-
-      int i = (localArtilleryProperties.meshSummer1 == null ? 1 : 0) + (localArtilleryProperties.meshDesert1 == null ? 1 : 0) + (localArtilleryProperties.meshWinter1 == null ? 1 : 0);
-
-      if ((i != 0) && (i != 3)) {
-        System.out.println("Artillery: Uncomplete set of damage meshes for '" + paramString + "'");
-
-        throw new RuntimeException("Can't register artillery object");
-      }
-
-      localArtilleryProperties.PANZER_BODY_FRONT = getF(paramSectFile, paramString, "PanzerBodyFront", 0.001F, 9.999F);
-
-      if (paramSectFile.get(paramString, "PanzerBodyBack", -9865.3447F) == -9865.3447F) {
-        localArtilleryProperties.PANZER_BODY_BACK = localArtilleryProperties.PANZER_BODY_FRONT;
-        localArtilleryProperties.PANZER_BODY_SIDE = localArtilleryProperties.PANZER_BODY_FRONT;
-        localArtilleryProperties.PANZER_BODY_TOP = localArtilleryProperties.PANZER_BODY_FRONT;
-      } else {
-        localArtilleryProperties.PANZER_BODY_BACK = getF(paramSectFile, paramString, "PanzerBodyBack", 0.001F, 9.999F);
-        localArtilleryProperties.PANZER_BODY_SIDE = getF(paramSectFile, paramString, "PanzerBodySide", 0.001F, 9.999F);
-        localArtilleryProperties.PANZER_BODY_TOP = getF(paramSectFile, paramString, "PanzerBodyTop", 0.001F, 9.999F);
-      }
-
-      if (paramSectFile.get(paramString, "PanzerHead", -9865.3447F) == -9865.3447F)
-        localArtilleryProperties.PANZER_HEAD = localArtilleryProperties.PANZER_BODY_FRONT;
-      else {
-        localArtilleryProperties.PANZER_HEAD = getF(paramSectFile, paramString, "PanzerHead", 0.001F, 9.999F);
-      }
-
-      if (paramSectFile.get(paramString, "PanzerHeadTop", -9865.3447F) == -9865.3447F)
-        localArtilleryProperties.PANZER_HEAD_TOP = localArtilleryProperties.PANZER_BODY_TOP;
-      else {
-        localArtilleryProperties.PANZER_HEAD_TOP = getF(paramSectFile, paramString, "PanzerHeadTop", 0.001F, 9.999F);
-      }
-
-      float f1 = Math.min(Math.min(localArtilleryProperties.PANZER_BODY_BACK, localArtilleryProperties.PANZER_BODY_TOP), Math.min(localArtilleryProperties.PANZER_BODY_SIDE, localArtilleryProperties.PANZER_HEAD_TOP));
-
-      localArtilleryProperties.HITBY_MASK = (f1 > 0.015F ? -2 : -1);
-
-      localArtilleryProperties.explodeName = getS(paramSectFile, paramString, "Explode", "Artillery");
-
-      String str2 = "com.maddox.il2.objects.weapons." + getS(paramSectFile, paramString, "Gun");
-      try
-      {
-        localArtilleryProperties.gunClass = Class.forName(str2);
-      } catch (Exception localException) {
-        System.out.println("Artillery: Can't find gun class '" + str2 + "'");
-
-        throw new RuntimeException("Can't register artillery object");
-      }
-
-      localArtilleryProperties.WEAPONS_MASK = Gun.getProperties(localArtilleryProperties.gunClass).weaponType;
-      if (localArtilleryProperties.WEAPONS_MASK == 0) {
-        System.out.println("Artillery: Undefined weapon type in gun class '" + str2 + "'");
-
-        throw new RuntimeException("Can't register artillery object");
-      }
-
-      localArtilleryProperties.ATTACK_FAST_TARGETS = true;
-      float f2 = paramSectFile.get(paramString, "FireFastTargets", -9865.3447F);
-      if (f2 != -9865.3447F) {
-        localArtilleryProperties.ATTACK_FAST_TARGETS = (f2 > 0.5F);
-      }
-      else if (str1.equals("Tank"))
-      {
-        localArtilleryProperties.ATTACK_FAST_TARGETS = false;
-      }
-
-      localArtilleryProperties.ATTACK_MAX_DISTANCE = getF(paramSectFile, paramString, "AttackMaxDistance", 6.0F, 12000.0F);
-      localArtilleryProperties.ATTACK_MAX_RADIUS = getF(paramSectFile, paramString, "AttackMaxRadius", 6.0F, 12000.0F);
-      localArtilleryProperties.ATTACK_MAX_HEIGHT = getF(paramSectFile, paramString, "AttackMaxHeight", 6.0F, 12000.0F);
-
-      float f3 = getF(paramSectFile, paramString, "HeadYawHalfRange", 0.0F, 180.0F);
-      localArtilleryProperties.HEAD_YAW_RANGE.set(-f3, f3);
-      localArtilleryProperties.GUN_MIN_PITCH = getF(paramSectFile, paramString, "GunMinPitch", -15.0F, 85.0F);
-      localArtilleryProperties.GUN_STD_PITCH = getF(paramSectFile, paramString, "GunStdPitch", -15.0F, 89.900002F);
-      localArtilleryProperties.GUN_MAX_PITCH = getF(paramSectFile, paramString, "GunMaxPitch", 0.0F, 89.900002F);
-      localArtilleryProperties.HEAD_MAX_YAW_SPEED = getF(paramSectFile, paramString, "HeadMaxYawSpeed", 0.1F, 999.0F);
-      localArtilleryProperties.GUN_MAX_PITCH_SPEED = getF(paramSectFile, paramString, "GunMaxPitchSpeed", 0.1F, 999.0F);
-      localArtilleryProperties.DELAY_AFTER_SHOOT = getF(paramSectFile, paramString, "DelayAfterShoot", 0.0F, 999.0F);
-      localArtilleryProperties.CHAINFIRE_TIME = getF(paramSectFile, paramString, "ChainfireTime", 0.0F, 600.0F);
-
-      float f4 = paramSectFile.get(paramString, "FastTargetsAngleError", -9865.3447F);
-      if (f4 <= 0.0F)
-        f4 = 0.0F;
-      else if (f4 >= 45.0F) {
-        f4 = 45.0F;
-      }
-      localArtilleryProperties.FAST_TARGETS_ANGLE_ERROR = f4;
-
-      Property.set(paramClass, "iconName", "icons/" + getS(paramSectFile, paramString, "Icon") + ".mat");
-      Property.set(paramClass, "meshName", localArtilleryProperties.meshSummer);
-
-      return localArtilleryProperties;
-    }
-
-    public SPAWN(Class paramClass)
-    {
-      try
-      {
-        String str1 = paramClass.getName();
-        int i = str1.lastIndexOf('.');
-        int j = str1.lastIndexOf('$');
-        if (i < j) {
-          i = j;
-        }
-        String str2 = str1.substring(i + 1);
-        this.proper = LoadArtilleryProperties(Statics.getTechnicsFile(), str2, paramClass);
-      }
-      catch (Exception localException)
-      {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("Problem in spawn: " + paramClass.getName());
-      }
-
-      this.cls = paramClass;
-      Spawn.add(this.cls, this);
-    }
-
-    public Actor actorSpawn(ActorSpawnArg paramActorSpawnArg)
-    {
-      switch (World.cur().camouflage) {
-      case 1:
-        this.proper.meshName = this.proper.meshWinter;
-        this.proper.meshName2 = this.proper.meshWinter1;
-        break;
-      case 2:
-        this.proper.meshName = this.proper.meshDesert;
-        this.proper.meshName2 = this.proper.meshDesert1;
-        break;
-      default:
-        this.proper.meshName = this.proper.meshSummer;
-        this.proper.meshName2 = this.proper.meshSummer1;
-      }
-
-      ArtilleryGeneric localArtilleryGeneric = null;
-      try
-      {
-        ArtilleryGeneric.access$1302(this.proper);
-        ArtilleryGeneric.access$1402(paramActorSpawnArg);
-        localArtilleryGeneric = (ArtilleryGeneric)this.cls.newInstance();
-        ArtilleryGeneric.access$1302(null);
-        ArtilleryGeneric.access$1402(null);
-      } catch (Exception localException) {
-        ArtilleryGeneric.access$1302(null);
-        ArtilleryGeneric.access$1402(null);
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-        System.out.println("SPAWN: Can't create Artillery object [class:" + this.cls.getName() + "]");
-
-        return null;
-      }
-      return localArtilleryGeneric;
-    }
-  }
-
-  class Mirror extends ActorNet
-  {
-    NetMsgFiltered out = new NetMsgFiltered();
-
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted())
-      {
-        Object localObject;
-        short s;
-        float f1;
-        float f2;
-        switch (paramNetMsgInput.readByte()) {
-        case 73:
-          if (isMirrored()) {
-            localObject = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post((NetMsgGuaranted)localObject);
-          }
-          s = paramNetMsgInput.readShort();
-          f1 = paramNetMsgInput.readFloat();
-          f2 = paramNetMsgInput.readFloat();
-          if (s <= 0)
-          {
-            if (ArtilleryGeneric.this.dying != 1) {
-              ArtilleryGeneric.this.aime.forgetAiming();
-              ArtilleryGeneric.this.setGunAngles(f1, f2);
-            }
-          }
-          else if (ArtilleryGeneric.this.dying != 1) {
-            ArtilleryGeneric.this.setGunAngles(f1, f2);
-            ArtilleryGeneric.this.Die(null, s, false);
-          }
-
-          return true;
-        case 82:
-          if (isMirrored()) {
-            localObject = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post((NetMsgGuaranted)localObject);
-          }
-          ArtilleryGeneric.this.dying = 0;
-
-          ArtilleryGeneric.this.setDiedFlag(false);
-
-          ArtilleryGeneric.this.aime.forgetAiming();
-
-          ArtilleryGeneric.this.setMesh(ArtilleryGeneric.this.prop.meshName);
-          ArtilleryGeneric.this.setDefaultLivePose();
-          return true;
-        case 68:
-          if (isMirrored()) {
-            localObject = new NetMsgGuaranted(paramNetMsgInput, 1);
-            post((NetMsgGuaranted)localObject);
-          }
-          s = paramNetMsgInput.readShort();
-          f1 = paramNetMsgInput.readFloat();
-          f2 = paramNetMsgInput.readFloat();
-          if ((s > 0) && (ArtilleryGeneric.this.dying != 1)) {
-            ArtilleryGeneric.this.setGunAngles(f1, f2);
-            localObject = paramNetMsgInput.readNetObj();
-            Actor localActor2 = localObject == null ? null : ((ActorNet)localObject).actor();
-            ArtilleryGeneric.this.Die(localActor2, s, true);
-          }
-          return true;
-        }
-        return false;
-      }
-      NetObj localNetObj;
-      Actor localActor1;
-      switch (paramNetMsgInput.readByte())
-      {
-      case 84:
-        if (isMirrored()) {
-          this.out.unLockAndSet(paramNetMsgInput, 1);
-          this.out.setIncludeTime(false);
-          postReal(Message.currentRealTime(), this.out);
-        }
-
-        localNetObj = paramNetMsgInput.readNetObj();
-        localActor1 = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-
-        int i = paramNetMsgInput.readUnsignedByte();
-
-        ArtilleryGeneric.this.Track_Mirror(localActor1, i);
-
-        break;
-      case 70:
-        if (isMirrored()) {
-          this.out.unLockAndSet(paramNetMsgInput, 1);
-          this.out.setIncludeTime(true);
-          postReal(Message.currentRealTime(), this.out);
-        }
-
-        localNetObj = paramNetMsgInput.readNetObj();
-        localActor1 = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-
-        float f3 = paramNetMsgInput.readFloat();
-        float f4 = 0.001F * (float)(Message.currentGameTime() - Time.current()) + f3;
-
-        int j = paramNetMsgInput.readUnsignedByte();
-
-        ArtilleryGeneric.this.Fire_Mirror(localActor1, j, f4);
-
-        break;
-      case 68:
-        this.out.unLockAndSet(paramNetMsgInput, 1);
-        this.out.setIncludeTime(false);
-        postRealTo(Message.currentRealTime(), masterChannel(), this.out);
-        return true;
-      }
-
-      return true;
-    }
-
-    public Mirror(Actor paramNetChannel, NetChannel paramInt, int arg4) {
-      super(paramInt, i);
-    }
-  }
-
-  class Master extends ActorNet
-  {
-    public Master(Actor arg2)
-    {
-      super();
-    }
-
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      if (paramNetMsgInput.isGuaranted()) {
-        return true;
-      }
-      if (paramNetMsgInput.readByte() != 68)
-        return false;
-      if (ArtilleryGeneric.this.dying == 1) {
-        return true;
-      }
-      NetObj localNetObj = paramNetMsgInput.readNetObj();
-      Actor localActor = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-      ArtilleryGeneric.this.Die(localActor, 0, true);
-      return true;
-    }
-  }
-
-  class Move extends Interpolate
-  {
-    Move()
-    {
-    }
-
-    public boolean tick()
-    {
-      if (ArtilleryGeneric.this.dying == 1) {
-        if (ArtilleryGeneric.access$010(ArtilleryGeneric.this) <= 0L) {
-          if (!Mission.isDeathmatch())
-          {
-            if (ArtilleryGeneric.this.aime != null) {
-              ArtilleryGeneric.this.aime.forgetAll();
-              ArtilleryGeneric.access$102(ArtilleryGeneric.this, null);
-            }
-            if (ArtilleryGeneric.this.gun != null) {
-              ObjState.destroy(ArtilleryGeneric.this.gun);
-              ArtilleryGeneric.this.gun = null;
-            }
-            return false;
-          }
-          if (!ArtilleryGeneric.this.isNetMaster()) {
-            ArtilleryGeneric.access$002(ArtilleryGeneric.this, 10000L);
-            return true;
-          }
-
-          ArtilleryGeneric.this.dying = 0;
-
-          ArtilleryGeneric.access$202(ArtilleryGeneric.this, 0L);
-          if ((!ArtilleryGeneric.this.isNetMirror()) && (ArtilleryGeneric.this.RADIUS_HIDE > 0.0F)) {
-            ArtilleryGeneric.access$202(ArtilleryGeneric.this, -1L);
-          }
-
-          ArtilleryGeneric.this.setDiedFlag(false);
-
-          ArtilleryGeneric.this.aime.forgetAiming();
-
-          ArtilleryGeneric.this.setMesh(ArtilleryGeneric.this.prop.meshName);
-          ArtilleryGeneric.this.setDefaultLivePose();
-          ArtilleryGeneric.this.send_RespawnCommand();
-
-          ArtilleryGeneric.access$602(ArtilleryGeneric.this, false);
-          ArtilleryGeneric.access$702(ArtilleryGeneric.this, Time.current() - 12000L);
-          return true;
-        }
-        return true;
-      }
-
-      ArtilleryGeneric.this.aime.tick_();
-
-      if ((ArtilleryGeneric.this.RADIUS_HIDE > 0.0F) && (ArtilleryGeneric.this.hideTmr >= 0L) && (!ArtilleryGeneric.this.isNetMirror()))
-      {
-        if (ArtilleryGeneric.this.aime.getEnemy() != null)
+        private static float getF(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, float f, float f1)
         {
-          ArtilleryGeneric.access$202(ArtilleryGeneric.this, 0L);
-        }
-        else if (ArtilleryGeneric.access$204(ArtilleryGeneric.this) > ArtilleryGeneric.delay_hide_ticks) {
-          ArtilleryGeneric.access$202(ArtilleryGeneric.this, -1L);
+            float f2 = sectfile.get(s, s1, -9865.345F);
+            if(f2 == -9865.345F || f2 < f || f2 > f1)
+            {
+                if(f2 == -9865.345F)
+                    java.lang.System.out.println("Artillery: Parameter [" + s + "]:<" + s1 + "> " + "not found");
+                else
+                    java.lang.System.out.println("Artillery: Value of [" + s + "]:<" + s1 + "> (" + f2 + ")" + " is out of range (" + f + ";" + f1 + ")");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return f2;
+            }
         }
 
-      }
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1)
+        {
+            java.lang.String s2 = sectfile.get(s, s1);
+            if(s2 == null || s2.length() <= 0)
+            {
+                java.lang.System.out.print("Artillery: Parameter [" + s + "]:<" + s1 + "> ");
+                java.lang.System.out.println(s2 != null ? "is empty" : "not found");
+                throw new RuntimeException("Can't set property");
+            } else
+            {
+                return s2;
+            }
+        }
 
-      return true;
+        private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, java.lang.String s2)
+        {
+            java.lang.String s3 = sectfile.get(s, s1);
+            if(s3 == null || s3.length() <= 0)
+                return s2;
+            else
+                return s3;
+        }
+
+        private static com.maddox.il2.objects.vehicles.artillery.ArtilleryProperties LoadArtilleryProperties(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.Class class1)
+        {
+            com.maddox.il2.objects.vehicles.artillery.ArtilleryProperties artilleryproperties = new ArtilleryProperties();
+            java.lang.String s1 = com.maddox.il2.objects.vehicles.artillery.SPAWN.getS(sectfile, s, "PanzerType", null);
+            if(s1 == null)
+                s1 = "Tank";
+            artilleryproperties.fnShotPanzer = com.maddox.il2.ai.TableFunctions.GetFunc2(s1 + "ShotPanzer");
+            artilleryproperties.fnExplodePanzer = com.maddox.il2.ai.TableFunctions.GetFunc2(s1 + "ExplodePanzer");
+            artilleryproperties.PANZER_TNT_TYPE = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "PanzerSubtype", 0.0F, 100F);
+            artilleryproperties.meshSummer = com.maddox.il2.objects.vehicles.artillery.SPAWN.getS(sectfile, s, "MeshSummer");
+            artilleryproperties.meshDesert = com.maddox.il2.objects.vehicles.artillery.SPAWN.getS(sectfile, s, "MeshDesert", artilleryproperties.meshSummer);
+            artilleryproperties.meshWinter = com.maddox.il2.objects.vehicles.artillery.SPAWN.getS(sectfile, s, "MeshWinter", artilleryproperties.meshSummer);
+            artilleryproperties.meshSummer1 = com.maddox.il2.objects.vehicles.artillery.SPAWN.getS(sectfile, s, "MeshSummerDamage", null);
+            artilleryproperties.meshDesert1 = com.maddox.il2.objects.vehicles.artillery.SPAWN.getS(sectfile, s, "MeshDesertDamage", artilleryproperties.meshSummer1);
+            artilleryproperties.meshWinter1 = com.maddox.il2.objects.vehicles.artillery.SPAWN.getS(sectfile, s, "MeshWinterDamage", artilleryproperties.meshSummer1);
+            float f = (artilleryproperties.meshSummer1 != null ? 0 : 1) + (artilleryproperties.meshDesert1 != null ? 0 : 1) + (artilleryproperties.meshWinter1 != null ? 0 : 1);
+            if(f != 0 && f != 3)
+            {
+                java.lang.System.out.println("Artillery: Uncomplete set of damage meshes for '" + s + "'");
+                throw new RuntimeException("Can't register artillery object");
+            }
+            artilleryproperties.PANZER_BODY_FRONT = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "PanzerBodyFront", 0.001F, 9.999F);
+            if(sectfile.get(s, "PanzerBodyBack", -9865.345F) == -9865.345F)
+            {
+                artilleryproperties.PANZER_BODY_BACK = artilleryproperties.PANZER_BODY_FRONT;
+                artilleryproperties.PANZER_BODY_SIDE = artilleryproperties.PANZER_BODY_FRONT;
+                artilleryproperties.PANZER_BODY_TOP = artilleryproperties.PANZER_BODY_FRONT;
+            } else
+            {
+                artilleryproperties.PANZER_BODY_BACK = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "PanzerBodyBack", 0.001F, 9.999F);
+                artilleryproperties.PANZER_BODY_SIDE = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "PanzerBodySide", 0.001F, 9.999F);
+                artilleryproperties.PANZER_BODY_TOP = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "PanzerBodyTop", 0.001F, 9.999F);
+            }
+            if(sectfile.get(s, "PanzerHead", -9865.345F) == -9865.345F)
+                artilleryproperties.PANZER_HEAD = artilleryproperties.PANZER_BODY_FRONT;
+            else
+                artilleryproperties.PANZER_HEAD = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "PanzerHead", 0.001F, 9.999F);
+            if(sectfile.get(s, "PanzerHeadTop", -9865.345F) == -9865.345F)
+                artilleryproperties.PANZER_HEAD_TOP = artilleryproperties.PANZER_BODY_TOP;
+            else
+                artilleryproperties.PANZER_HEAD_TOP = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "PanzerHeadTop", 0.001F, 9.999F);
+            f = java.lang.Math.min(java.lang.Math.min(artilleryproperties.PANZER_BODY_BACK, artilleryproperties.PANZER_BODY_TOP), java.lang.Math.min(artilleryproperties.PANZER_BODY_SIDE, artilleryproperties.PANZER_HEAD_TOP));
+            artilleryproperties.HITBY_MASK = f <= 0.015F ? -1 : -2;
+            artilleryproperties.explodeName = com.maddox.il2.objects.vehicles.artillery.SPAWN.getS(sectfile, s, "Explode", "Artillery");
+            java.lang.String s2 = "com.maddox.il2.objects.weapons." + com.maddox.il2.objects.vehicles.artillery.SPAWN.getS(sectfile, s, "Gun");
+            try
+            {
+                artilleryproperties.gunClass = java.lang.Class.forName(s2);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println("Artillery: Can't find gun class '" + s2 + "'");
+                throw new RuntimeException("Can't register artillery object");
+            }
+            artilleryproperties.WEAPONS_MASK = com.maddox.il2.objects.weapons.Gun.getProperties(artilleryproperties.gunClass).weaponType;
+            if(artilleryproperties.WEAPONS_MASK == 0)
+            {
+                java.lang.System.out.println("Artillery: Undefined weapon type in gun class '" + s2 + "'");
+                throw new RuntimeException("Can't register artillery object");
+            }
+            artilleryproperties.ATTACK_FAST_TARGETS = true;
+            float f1 = sectfile.get(s, "FireFastTargets", -9865.345F);
+            if(f1 != -9865.345F)
+                artilleryproperties.ATTACK_FAST_TARGETS = f1 > 0.5F;
+            else
+            if(s1.equals("Tank"))
+                artilleryproperties.ATTACK_FAST_TARGETS = false;
+            artilleryproperties.ATTACK_MAX_DISTANCE = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "AttackMaxDistance", 6F, 12000F);
+            artilleryproperties.ATTACK_MAX_RADIUS = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "AttackMaxRadius", 6F, 12000F);
+            artilleryproperties.ATTACK_MAX_HEIGHT = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "AttackMaxHeight", 6F, 12000F);
+            float f2 = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "HeadYawHalfRange", 0.0F, 180F);
+            artilleryproperties.HEAD_YAW_RANGE.set(-f2, f2);
+            artilleryproperties.GUN_MIN_PITCH = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "GunMinPitch", -15F, 85F);
+            artilleryproperties.GUN_STD_PITCH = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "GunStdPitch", -15F, 89.9F);
+            artilleryproperties.GUN_MAX_PITCH = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "GunMaxPitch", 0.0F, 89.9F);
+            artilleryproperties.HEAD_MAX_YAW_SPEED = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "HeadMaxYawSpeed", 0.1F, 999F);
+            artilleryproperties.GUN_MAX_PITCH_SPEED = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "GunMaxPitchSpeed", 0.1F, 999F);
+            artilleryproperties.DELAY_AFTER_SHOOT = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "DelayAfterShoot", 0.0F, 999F);
+            artilleryproperties.CHAINFIRE_TIME = com.maddox.il2.objects.vehicles.artillery.SPAWN.getF(sectfile, s, "ChainfireTime", 0.0F, 600F);
+            float f3 = sectfile.get(s, "FastTargetsAngleError", -9865.345F);
+            if(f3 <= 0.0F)
+                f3 = 0.0F;
+            else
+            if(f3 >= 45F)
+                f3 = 45F;
+            artilleryproperties.FAST_TARGETS_ANGLE_ERROR = f3;
+            com.maddox.rts.Property.set(class1, "iconName", "icons/" + com.maddox.il2.objects.vehicles.artillery.SPAWN.getS(sectfile, s, "Icon") + ".mat");
+            com.maddox.rts.Property.set(class1, "meshName", artilleryproperties.meshSummer);
+            return artilleryproperties;
+        }
+
+        public com.maddox.il2.engine.Actor actorSpawn(com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+        {
+            switch(com.maddox.il2.ai.World.cur().camouflage)
+            {
+            case 1: // '\001'
+                proper.meshName = proper.meshWinter;
+                proper.meshName2 = proper.meshWinter1;
+                break;
+
+            case 2: // '\002'
+                proper.meshName = proper.meshDesert;
+                proper.meshName2 = proper.meshDesert1;
+                break;
+
+            default:
+                proper.meshName = proper.meshSummer;
+                proper.meshName2 = proper.meshSummer1;
+                break;
+            }
+            com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric artillerygeneric = null;
+            try
+            {
+                com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.constr_arg1 = proper;
+                com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.constr_arg2 = actorspawnarg;
+                artillerygeneric = (com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric)cls.newInstance();
+                com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.constr_arg2 = null;
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.constr_arg1 = null;
+                com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.constr_arg2 = null;
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("SPAWN: Can't create Artillery object [class:" + cls.getName() + "]");
+                return null;
+            }
+            return artillerygeneric;
+        }
+
+        public java.lang.Class cls;
+        public com.maddox.il2.objects.vehicles.artillery.ArtilleryProperties proper;
+
+        public SPAWN(java.lang.Class class1)
+        {
+            try
+            {
+                java.lang.String s = class1.getName();
+                int i = s.lastIndexOf('.');
+                int j = s.lastIndexOf('$');
+                if(i < j)
+                    i = j;
+                java.lang.String s1 = s.substring(i + 1);
+                proper = com.maddox.il2.objects.vehicles.artillery.SPAWN.LoadArtilleryProperties(com.maddox.il2.objects.Statics.getTechnicsFile(), s1, class1);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                java.lang.System.out.println("Problem in spawn: " + class1.getName());
+            }
+            cls = class1;
+            com.maddox.rts.Spawn.add(cls, this);
+        }
     }
-  }
 
-  public static class ArtilleryProperties
-  {
-    public String meshName = null;
-    public String meshName2 = null;
+    class Mirror extends com.maddox.il2.engine.ActorNet
+    {
 
-    public String meshSummer = null;
-    public String meshDesert = null;
-    public String meshWinter = null;
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+            {
+                switch(netmsginput.readByte())
+                {
+                case 73: // 'I'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted);
+                    }
+                    short word0 = netmsginput.readShort();
+                    float f = netmsginput.readFloat();
+                    float f2 = netmsginput.readFloat();
+                    if(word0 <= 0)
+                    {
+                        if(dying != 1)
+                        {
+                            aime.forgetAiming();
+                            setGunAngles(f, f2);
+                        }
+                    } else
+                    if(dying != 1)
+                    {
+                        setGunAngles(f, f2);
+                        Die(null, word0, false);
+                    }
+                    return true;
 
-    public String meshSummer1 = null;
-    public String meshDesert1 = null;
-    public String meshWinter1 = null;
+                case 82: // 'R'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted1 = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted1);
+                    }
+                    dying = 0;
+                    setDiedFlag(false);
+                    aime.forgetAiming();
+                    setMesh(prop.meshName);
+                    setDefaultLivePose();
+                    return true;
 
-    public Class gunClass = null;
+                case 68: // 'D'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted2 = new NetMsgGuaranted(netmsginput, 1);
+                        post(netmsgguaranted2);
+                    }
+                    short word1 = netmsginput.readShort();
+                    float f1 = netmsginput.readFloat();
+                    float f3 = netmsginput.readFloat();
+                    if(word1 > 0 && dying != 1)
+                    {
+                        setGunAngles(f1, f3);
+                        com.maddox.rts.NetObj netobj2 = netmsginput.readNetObj();
+                        com.maddox.il2.engine.Actor actor2 = netobj2 != null ? ((com.maddox.il2.engine.ActorNet)netobj2).actor() : null;
+                        Die(actor2, word1, true);
+                    }
+                    return true;
+                }
+                return false;
+            }
+            switch(netmsginput.readByte())
+            {
+            default:
+                break;
 
-    public TableFunction2 fnShotPanzer = null;
-    public TableFunction2 fnExplodePanzer = null;
+            case 84: // 'T'
+                if(isMirrored())
+                {
+                    out.unLockAndSet(netmsginput, 1);
+                    out.setIncludeTime(false);
+                    postReal(com.maddox.rts.Message.currentRealTime(), out);
+                }
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                int i = netmsginput.readUnsignedByte();
+                Track_Mirror(actor, i);
+                break;
 
-    public float PANZER_BODY_FRONT = 0.001F;
-    public float PANZER_BODY_BACK = 0.001F;
-    public float PANZER_BODY_SIDE = 0.001F;
-    public float PANZER_BODY_TOP = 0.001F;
-    public float PANZER_HEAD = 0.001F;
-    public float PANZER_HEAD_TOP = 0.001F;
+            case 70: // 'F'
+                if(isMirrored())
+                {
+                    out.unLockAndSet(netmsginput, 1);
+                    out.setIncludeTime(true);
+                    postReal(com.maddox.rts.Message.currentRealTime(), out);
+                }
+                com.maddox.rts.NetObj netobj1 = netmsginput.readNetObj();
+                com.maddox.il2.engine.Actor actor1 = netobj1 != null ? ((com.maddox.il2.engine.ActorNet)netobj1).actor() : null;
+                float f4 = netmsginput.readFloat();
+                float f5 = 0.001F * (float)(com.maddox.rts.Message.currentGameTime() - com.maddox.rts.Time.current()) + f4;
+                int j = netmsginput.readUnsignedByte();
+                Fire_Mirror(actor1, j, f5);
+                break;
 
-    public float PANZER_TNT_TYPE = 1.0F;
+            case 68: // 'D'
+                out.unLockAndSet(netmsginput, 1);
+                out.setIncludeTime(false);
+                postRealTo(com.maddox.rts.Message.currentRealTime(), masterChannel(), out);
+                return true;
+            }
+            return true;
+        }
 
-    public String explodeName = null;
+        com.maddox.rts.NetMsgFiltered out;
 
-    public int WEAPONS_MASK = 4;
-    public int HITBY_MASK = -2;
+        public Mirror(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(actor, netchannel, i);
+            out = new NetMsgFiltered();
+        }
+    }
 
-    public boolean ATTACK_FAST_TARGETS = true;
+    class Master extends com.maddox.il2.engine.ActorNet
+    {
 
-    public float ATTACK_MAX_DISTANCE = 1.0F;
-    public float ATTACK_MAX_RADIUS = 1.0F;
-    public float ATTACK_MAX_HEIGHT = 1.0F;
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+                return true;
+            if(netmsginput.readByte() != 68)
+                return false;
+            if(dying == 1)
+            {
+                return true;
+            } else
+            {
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                Die(actor, (short)0, true);
+                return true;
+            }
+        }
 
-    public AnglesRange HEAD_YAW_RANGE = new AnglesRange(-1.0F, 1.0F);
-    public float GUN_MIN_PITCH = -20.0F;
-    public float GUN_STD_PITCH = -18.0F;
-    public float GUN_MAX_PITCH = -15.0F;
-    public float HEAD_MAX_YAW_SPEED = 720.0F;
-    public float GUN_MAX_PITCH_SPEED = 60.0F;
-    public float DELAY_AFTER_SHOOT = 1.0F;
-    public float CHAINFIRE_TIME = 0.0F;
-    public float FAST_TARGETS_ANGLE_ERROR = 0.0F;
-  }
+        public Master(com.maddox.il2.engine.Actor actor)
+        {
+            super(actor);
+        }
+    }
+
+    class Move extends com.maddox.il2.engine.Interpolate
+    {
+
+        public boolean tick()
+        {
+            if(dying == 1)
+                if(respawnDelay-- <= 0L)
+                {
+                    if(!com.maddox.il2.game.Mission.isDeathmatch())
+                    {
+                        if(aime != null)
+                        {
+                            aime.forgetAll();
+                            aime = null;
+                        }
+                        if(gun != null)
+                        {
+                            com.maddox.rts.ObjState.destroy(gun);
+                            gun = null;
+                        }
+                        return false;
+                    }
+                    if(!isNetMaster())
+                    {
+                        respawnDelay = 10000L;
+                        return true;
+                    }
+                    dying = 0;
+                    hideTmr = 0L;
+                    if(!isNetMirror() && RADIUS_HIDE > 0.0F)
+                        hideTmr = -1L;
+                    setDiedFlag(false);
+                    aime.forgetAiming();
+                    setMesh(prop.meshName);
+                    setDefaultLivePose();
+                    send_RespawnCommand();
+                    dontShoot = false;
+                    time_lastCheckShoot = com.maddox.rts.Time.current() - 12000L;
+                    return true;
+                } else
+                {
+                    return true;
+                }
+            aime.tick_();
+            if(RADIUS_HIDE > 0.0F && hideTmr >= 0L && !isNetMirror())
+                if(aime.getEnemy() != null)
+                    hideTmr = 0L;
+                else
+                if(++hideTmr > com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.delay_hide_ticks)
+                    hideTmr = -1L;
+            return true;
+        }
+
+        Move()
+        {
+        }
+    }
+
+    public static class ArtilleryProperties
+    {
+
+        public java.lang.String meshName;
+        public java.lang.String meshName2;
+        public java.lang.String meshSummer;
+        public java.lang.String meshDesert;
+        public java.lang.String meshWinter;
+        public java.lang.String meshSummer1;
+        public java.lang.String meshDesert1;
+        public java.lang.String meshWinter1;
+        public java.lang.Class gunClass;
+        public com.maddox.util.TableFunction2 fnShotPanzer;
+        public com.maddox.util.TableFunction2 fnExplodePanzer;
+        public float PANZER_BODY_FRONT;
+        public float PANZER_BODY_BACK;
+        public float PANZER_BODY_SIDE;
+        public float PANZER_BODY_TOP;
+        public float PANZER_HEAD;
+        public float PANZER_HEAD_TOP;
+        public float PANZER_TNT_TYPE;
+        public java.lang.String explodeName;
+        public int WEAPONS_MASK;
+        public int HITBY_MASK;
+        public boolean ATTACK_FAST_TARGETS;
+        public float ATTACK_MAX_DISTANCE;
+        public float ATTACK_MAX_RADIUS;
+        public float ATTACK_MAX_HEIGHT;
+        public com.maddox.il2.ai.AnglesRange HEAD_YAW_RANGE;
+        public float GUN_MIN_PITCH;
+        public float GUN_STD_PITCH;
+        public float GUN_MAX_PITCH;
+        public float HEAD_MAX_YAW_SPEED;
+        public float GUN_MAX_PITCH_SPEED;
+        public float DELAY_AFTER_SHOOT;
+        public float CHAINFIRE_TIME;
+        public float FAST_TARGETS_ANGLE_ERROR;
+
+        public ArtilleryProperties()
+        {
+            meshName = null;
+            meshName2 = null;
+            meshSummer = null;
+            meshDesert = null;
+            meshWinter = null;
+            meshSummer1 = null;
+            meshDesert1 = null;
+            meshWinter1 = null;
+            gunClass = null;
+            fnShotPanzer = null;
+            fnExplodePanzer = null;
+            PANZER_BODY_FRONT = 0.001F;
+            PANZER_BODY_BACK = 0.001F;
+            PANZER_BODY_SIDE = 0.001F;
+            PANZER_BODY_TOP = 0.001F;
+            PANZER_HEAD = 0.001F;
+            PANZER_HEAD_TOP = 0.001F;
+            PANZER_TNT_TYPE = 1.0F;
+            explodeName = null;
+            WEAPONS_MASK = 4;
+            HITBY_MASK = -2;
+            ATTACK_FAST_TARGETS = true;
+            ATTACK_MAX_DISTANCE = 1.0F;
+            ATTACK_MAX_RADIUS = 1.0F;
+            ATTACK_MAX_HEIGHT = 1.0F;
+            HEAD_YAW_RANGE = new AnglesRange(-1F, 1.0F);
+            GUN_MIN_PITCH = -20F;
+            GUN_STD_PITCH = -18F;
+            GUN_MAX_PITCH = -15F;
+            HEAD_MAX_YAW_SPEED = 720F;
+            GUN_MAX_PITCH_SPEED = 60F;
+            DELAY_AFTER_SHOOT = 1.0F;
+            CHAINFIRE_TIME = 0.0F;
+            FAST_TARGETS_ANGLE_ERROR = 0.0F;
+        }
+    }
+
+
+    public static final double Rnd(double d, double d1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextDouble(d, d1);
+    }
+
+    public static final float Rnd(float f, float f1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(f, f1);
+    }
+
+    private boolean RndB(float f)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 1.0F) < f;
+    }
+
+    private static final long SecsToTicks(float f)
+    {
+        long l = (long)(0.5D + (double)(f / com.maddox.rts.Time.tickLenFs()));
+        return l >= 1L ? l : 1L;
+    }
+
+    private boolean friendPlanesAreNear(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        time_lastCheckShoot = com.maddox.rts.Time.current() - (long)com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.Rnd(0.0F, 1200F);
+        dontShoot = false;
+        com.maddox.JGP.Point3d point3d = aircraft.pos.getAbsPoint();
+        double d = 16000000D;
+        if(!(aircraft.FM instanceof com.maddox.il2.ai.air.Maneuver))
+            return false;
+        com.maddox.il2.ai.air.AirGroup airgroup = ((com.maddox.il2.ai.air.Maneuver)(com.maddox.il2.ai.air.Maneuver)aircraft.FM).Group;
+        if(airgroup == null)
+            return false;
+        int i = com.maddox.il2.ai.air.AirGroupList.length(airgroup.enemies[0]);
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.air.AirGroup airgroup1 = com.maddox.il2.ai.air.AirGroupList.getGroup(airgroup.enemies[0], j);
+            if(airgroup1.nOfAirc <= 0)
+                continue;
+            double d1 = airgroup1.Pos.x - point3d.x;
+            double d2 = airgroup1.Pos.y - point3d.y;
+            double d3 = airgroup1.Pos.z - point3d.z;
+            if(d1 * d1 + d2 * d2 + d3 * d3 > d)
+                continue;
+            d3 = point3d.z - com.maddox.il2.engine.Engine.land().HQ(point3d.x, point3d.y);
+            if(d3 <= 50D)
+                continue;
+            dontShoot = true;
+            break;
+        }
+
+        return dontShoot;
+    }
+
+    protected final boolean Head360()
+    {
+        return prop.HEAD_YAW_RANGE.fullcircle();
+    }
+
+    public void msgCollisionRequest(com.maddox.il2.engine.Actor actor, boolean aflag[])
+    {
+        if((actor instanceof com.maddox.il2.engine.ActorMesh) && ((com.maddox.il2.engine.ActorMesh)actor).isStaticPos())
+        {
+            aflag[0] = false;
+            return;
+        } else
+        {
+            return;
+        }
+    }
+
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        shot.bodyMaterial = 2;
+        if(dying != 0)
+            return;
+        if(shot.power <= 0.0F)
+            return;
+        if(isNetMirror() && shot.isMirage())
+            return;
+        if(shot.powerType == 1)
+            if(RndB(0.15F))
+            {
+                return;
+            } else
+            {
+                Die(shot.initiator, (short)0, true);
+                return;
+            }
+        float f = com.maddox.il2.ai.Shot.panzerThickness(pos.getAbsOrient(), shot.v, shot.chunkName.equalsIgnoreCase("Head"), prop.PANZER_BODY_FRONT, prop.PANZER_BODY_SIDE, prop.PANZER_BODY_BACK, prop.PANZER_BODY_TOP, prop.PANZER_HEAD, prop.PANZER_HEAD_TOP);
+        f *= com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.Rnd(0.93F, 1.07F);
+        float f1 = prop.fnShotPanzer.Value(shot.power, f);
+        if(f1 < 1000F && (f1 <= 1.0F || RndB(1.0F / f1)))
+            Die(shot.initiator, (short)0, true);
+    }
+
+    public void msgExplosion(com.maddox.il2.ai.Explosion explosion)
+    {
+        if(dying != 0)
+            return;
+        if(isNetMirror() && explosion.isMirage())
+            return;
+        if(explosion.power <= 0.0F)
+            return;
+        com.maddox.il2.ai.Explosion _tmp = explosion;
+        if(explosion.powerType == 1)
+        {
+            if(com.maddox.il2.objects.vehicles.tanks.TankGeneric.splintersKill(explosion, prop.fnShotPanzer, com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.Rnd(0.0F, 1.0F), com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.Rnd(0.0F, 1.0F), this, 0.7F, 0.25F, prop.PANZER_BODY_FRONT, prop.PANZER_BODY_SIDE, prop.PANZER_BODY_BACK, prop.PANZER_BODY_TOP, prop.PANZER_HEAD, prop.PANZER_HEAD_TOP))
+                Die(explosion.initiator, (short)0, true);
+            return;
+        }
+        com.maddox.il2.ai.Explosion _tmp1 = explosion;
+        if(explosion.powerType == 2 && explosion.chunkName != null)
+        {
+            Die(explosion.initiator, (short)0, true);
+            return;
+        }
+        float f;
+        if(explosion.chunkName != null)
+            f = 0.5F * explosion.power;
+        else
+            f = explosion.receivedTNTpower(this);
+        f *= com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.Rnd(0.95F, 1.05F);
+        float f1 = prop.fnExplodePanzer.Value(f, prop.PANZER_TNT_TYPE);
+        if(f1 < 1000F && (f1 <= 1.0F || RndB(1.0F / f1)))
+            Die(explosion.initiator, (short)0, true);
+    }
+
+    private void ShowExplode(float f)
+    {
+        if(f > 0.0F)
+            f = com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.Rnd(f, f * 1.6F);
+        com.maddox.il2.objects.effects.Explosions.runByName(prop.explodeName, this, "SmokeHead", "", f);
+    }
+
+    private float[] computeDeathPose(short word0)
+    {
+        com.maddox.il2.ai.RangeRandom rangerandom = new RangeRandom(word0);
+        float af[] = new float[10];
+        af[0] = headYaw + rangerandom.nextFloat(-15F, 15F);
+        af[1] = (rangerandom.nextBoolean() ? 1.0F : -1F) * rangerandom.nextFloat(4F, 9F);
+        af[2] = (rangerandom.nextBoolean() ? 1.0F : -1F) * rangerandom.nextFloat(4F, 9F);
+        af[3] = -gunPitch + rangerandom.nextFloat(-15F, 15F);
+        af[4] = (rangerandom.nextBoolean() ? 1.0F : -1F) * rangerandom.nextFloat(2.0F, 5F);
+        af[5] = (rangerandom.nextBoolean() ? 1.0F : -1F) * rangerandom.nextFloat(5F, 9F);
+        af[6] = 0.0F;
+        af[7] = (rangerandom.nextBoolean() ? 1.0F : -1F) * rangerandom.nextFloat(4F, 8F);
+        af[8] = (rangerandom.nextBoolean() ? 1.0F : -1F) * rangerandom.nextFloat(7F, 12F);
+        af[9] = -rangerandom.nextFloat(0.0F, 0.25F);
+        return af;
+    }
+
+    private void Die(com.maddox.il2.engine.Actor actor, short word0, boolean flag)
+    {
+        if(dying != 0)
+            return;
+        if(word0 <= 0)
+        {
+            if(isNetMirror())
+            {
+                send_DeathRequest(actor);
+                return;
+            }
+            word0 = (short)(int)com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.Rnd(1.0F, 30000F);
+        }
+        deathSeed = word0;
+        dying = 1;
+        com.maddox.il2.ai.World.onActorDied(this, actor);
+        if(aime != null)
+            aime.forgetAiming();
+        float af[] = computeDeathPose(word0);
+        hierMesh().chunkSetAngles("Head", af[0], af[1], af[2]);
+        hierMesh().chunkSetAngles("Gun", af[3], af[4], af[5]);
+        hierMesh().chunkSetAngles("Body", af[6], af[7], af[8]);
+        if(prop.meshName2 == null)
+        {
+            mesh().makeAllMaterialsDarker(0.22F, 0.35F);
+            heightAboveLandSurface2 = heightAboveLandSurface;
+            heightAboveLandSurface = heightAboveLandSurface2 + af[9];
+        } else
+        {
+            setMesh(prop.meshName2);
+            heightAboveLandSurface2 = 0.0F;
+            int i = mesh().hookFind("Ground_Level");
+            if(i != -1)
+            {
+                com.maddox.JGP.Matrix4d matrix4d = new Matrix4d();
+                mesh().hookMatrix(i, matrix4d);
+                heightAboveLandSurface2 = (float)(-matrix4d.m23);
+            }
+            heightAboveLandSurface = heightAboveLandSurface2;
+        }
+        Align();
+        if(flag)
+            ShowExplode(15F);
+        if(flag)
+            send_DeathCommand(actor);
+    }
+
+    private void setGunAngles(float f, float f1)
+    {
+        headYaw = f;
+        gunPitch = f1;
+        hierMesh().chunkSetAngles("Head", headYaw, 0.0F, 0.0F);
+        hierMesh().chunkSetAngles("Gun", -gunPitch, 0.0F, 0.0F);
+        hierMesh().chunkSetAngles("Body", 0.0F, 0.0F, 0.0F);
+        pos.inValidate(false);
+    }
+
+    public void destroy()
+    {
+        if(isDestroyed())
+            return;
+        if(aime != null)
+        {
+            aime.forgetAll();
+            aime = null;
+        }
+        if(gun != null)
+        {
+            com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.destroy(((com.maddox.rts.Destroy) (gun)));
+            gun = null;
+        }
+        super.destroy();
+    }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    public boolean isStaticPos()
+    {
+        return true;
+    }
+
+    private void setDefaultLivePose()
+    {
+        heightAboveLandSurface = 0.0F;
+        int i = hierMesh().hookFind("Ground_Level");
+        if(i != -1)
+        {
+            com.maddox.JGP.Matrix4d matrix4d = new Matrix4d();
+            hierMesh().hookMatrix(i, matrix4d);
+            heightAboveLandSurface = (float)(-matrix4d.m23);
+        }
+        setGunAngles(0.0F, prop.GUN_STD_PITCH);
+        Align();
+    }
+
+    protected ArtilleryGeneric()
+    {
+        this(constr_arg1, constr_arg2);
+    }
+
+    public void setMesh(java.lang.String s)
+    {
+        super.setMesh(s);
+        if(com.maddox.il2.engine.Config.cur.b3dgunners)
+        {
+            return;
+        } else
+        {
+            mesh().materialReplaceToNull("Pilot1");
+            return;
+        }
+    }
+
+    private ArtilleryGeneric(com.maddox.il2.objects.vehicles.artillery.ArtilleryProperties artilleryproperties, com.maddox.il2.engine.ActorSpawnArg actorspawnarg)
+    {
+        super(artilleryproperties.meshName);
+        prop = null;
+        nearAirfield = false;
+        dontShoot = false;
+        time_lastCheckShoot = 0L;
+        dying = 0;
+        respawnDelay = 0L;
+        hideTmr = 0L;
+        RADIUS_HIDE = 0.0F;
+        outCommand = new NetMsgFiltered();
+        prop = artilleryproperties;
+        delay_hide_ticks = com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.SecsToTicks(240F);
+        actorspawnarg.setStationary(this);
+        collide(true);
+        drawing(true);
+        createNetObject(actorspawnarg.netChannel, actorspawnarg.netIdRemote);
+        startDelay = 0L;
+        if(actorspawnarg.timeLenExist)
+        {
+            startDelay = (long)(actorspawnarg.timeLen * 60F * 1000F + 0.5F);
+            if(startDelay < 0L)
+                startDelay = 0L;
+        }
+        RADIUS_HIDE = new_RADIUS_HIDE;
+        hideTmr = 0L;
+        gun = null;
+        try
+        {
+            gun = (com.maddox.il2.objects.weapons.Gun)prop.gunClass.newInstance();
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            java.lang.System.out.println("Artillery: Can't create gun '" + prop.gunClass.getName() + "'");
+        }
+        gun.set(this, "Gun");
+        gun.loadBullets(-1);
+        headYaw = 0.0F;
+        gunPitch = 0.0F;
+        if(!isNetMirror() && RADIUS_HIDE > 0.0F)
+            hideTmr = -1L;
+        setDefaultLivePose();
+        startMove();
+        com.maddox.JGP.Point3d point3d = pos.getAbsPoint();
+        com.maddox.il2.ai.Airport airport = com.maddox.il2.ai.Airport.nearest(point3d, -1, 7);
+        if(airport != null)
+        {
+            float f = (float)airport.pos.getAbsPoint().distance(point3d);
+            nearAirfield = f <= 2000F;
+        } else
+        {
+            nearAirfield = false;
+        }
+        dontShoot = false;
+        time_lastCheckShoot = com.maddox.rts.Time.current() - (long)com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.Rnd(0.0F, 12000F);
+    }
+
+    private void Align()
+    {
+        pos.getAbs(p);
+        p.z = com.maddox.il2.engine.Engine.land().HQ(p.x, p.y) + (double)heightAboveLandSurface;
+        o.setYPR(pos.getAbsOrient().getYaw(), 0.0F, 0.0F);
+        com.maddox.il2.engine.Engine.land().N(p.x, p.y, n);
+        o.orient(n);
+        pos.setAbs(p, o);
+    }
+
+    public void align()
+    {
+        Align();
+    }
+
+    public void startMove()
+    {
+        if(!interpEnd("move"))
+        {
+            if(aime != null)
+            {
+                aime.forgetAll();
+                aime = null;
+            }
+            aime = new Aim(this, isNetMirror());
+            interpPut(new Move(), "move", com.maddox.rts.Time.current(), null);
+        }
+    }
+
+    public int WeaponsMask()
+    {
+        return prop.WEAPONS_MASK;
+    }
+
+    public int HitbyMask()
+    {
+        return prop.HITBY_MASK;
+    }
+
+    public int chooseBulletType(com.maddox.il2.engine.BulletProperties abulletproperties[])
+    {
+        if(dying != 0)
+            return -1;
+        if(abulletproperties.length == 1)
+            return 0;
+        if(abulletproperties.length <= 0)
+            return -1;
+        if(this instanceof com.maddox.il2.ai.ground.TgtTank)
+        {
+            if(abulletproperties[0].cumulativePower > 0.0F)
+                return 0;
+            if(abulletproperties[1].cumulativePower > 0.0F)
+                return 1;
+            if(abulletproperties[0].power <= 0.0F)
+                return 0;
+            if(abulletproperties[1].power <= 0.0F)
+                return 1;
+        } else
+        {
+            if(abulletproperties[0].power <= 0.0F)
+                return 0;
+            if(abulletproperties[1].power <= 0.0F)
+                return 1;
+            if(abulletproperties[0].cumulativePower > 0.0F)
+                return 0;
+            if(abulletproperties[1].cumulativePower > 0.0F)
+                return 1;
+        }
+        if(abulletproperties[0].powerType == 1)
+            return 0;
+        if(abulletproperties[1].powerType == 1)
+            return 1;
+        return abulletproperties[0].powerType != 0 ? 0 : 1;
+    }
+
+    public int chooseShotpoint(com.maddox.il2.engine.BulletProperties bulletproperties)
+    {
+        return dying == 0 ? 0 : -1;
+    }
+
+    public boolean getShotpointOffset(int i, com.maddox.JGP.Point3d point3d)
+    {
+        if(dying != 0)
+            return false;
+        if(i != 0)
+            return false;
+        if(point3d != null)
+            point3d.set(0.0D, 0.0D, 0.0D);
+        return true;
+    }
+
+    public float AttackMaxDistance()
+    {
+        return prop.ATTACK_MAX_DISTANCE;
+    }
+
+    public float AttackMaxRadius()
+    {
+        return prop.ATTACK_MAX_RADIUS;
+    }
+
+    public float AttackMaxHeight()
+    {
+        return prop.ATTACK_MAX_HEIGHT;
+    }
+
+    public boolean unmovableInFuture()
+    {
+        return true;
+    }
+
+    public void collisionDeath()
+    {
+        if(isNet())
+        {
+            return;
+        } else
+        {
+            ShowExplode(-1F);
+            destroy();
+            return;
+        }
+    }
+
+    public float futurePosition(float f, com.maddox.JGP.Point3d point3d)
+    {
+        pos.getAbs(point3d);
+        return f > 0.0F ? f : 0.0F;
+    }
+
+    private void send_DeathCommand(com.maddox.il2.engine.Actor actor)
+    {
+        if(!isNetMaster())
+            return;
+        if(com.maddox.il2.game.Mission.isDeathmatch())
+        {
+            float f = com.maddox.il2.game.Mission.respawnTime("Artillery");
+            respawnDelay = com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.SecsToTicks(com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.Rnd(f, f * 1.2F));
+        } else
+        {
+            respawnDelay = 0L;
+        }
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(68);
+            netmsgguaranted.writeShort(deathSeed);
+            netmsgguaranted.writeFloat(headYaw);
+            netmsgguaranted.writeFloat(gunPitch);
+            netmsgguaranted.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void send_RespawnCommand()
+    {
+        if(!isNetMaster() || !com.maddox.il2.game.Mission.isDeathmatch())
+            return;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(82);
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void send_FireCommand(com.maddox.il2.engine.Actor actor, int i, float f)
+    {
+        if(!isNetMaster())
+            return;
+        if(!net.isMirrored())
+            return;
+        if(!com.maddox.il2.engine.Actor.isValid(actor) || !actor.isNet())
+            return;
+        i &= 0xff;
+        if(f < 0.0F)
+            try
+            {
+                outCommand.unLockAndClear();
+                outCommand.writeByte(84);
+                outCommand.writeNetObj(actor.net);
+                outCommand.writeByte(i);
+                outCommand.setIncludeTime(false);
+                net.post(com.maddox.rts.Time.current(), outCommand);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+        else
+            try
+            {
+                outCommand.unLockAndClear();
+                outCommand.writeByte(70);
+                outCommand.writeFloat(f);
+                outCommand.writeNetObj(actor.net);
+                outCommand.writeByte(i);
+                outCommand.setIncludeTime(true);
+                net.post(com.maddox.rts.Time.current(), outCommand);
+            }
+            catch(java.lang.Exception exception1)
+            {
+                java.lang.System.out.println(exception1.getMessage());
+                exception1.printStackTrace();
+            }
+    }
+
+    private void send_DeathRequest(com.maddox.il2.engine.Actor actor)
+    {
+        if(!isNetMirror())
+            return;
+        if(net.masterChannel() instanceof com.maddox.rts.NetChannelInStream)
+            return;
+        try
+        {
+            com.maddox.rts.NetMsgFiltered netmsgfiltered = new NetMsgFiltered();
+            netmsgfiltered.writeByte(68);
+            netmsgfiltered.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            netmsgfiltered.setIncludeTime(false);
+            net.postTo(com.maddox.rts.Time.current(), net.masterChannel(), netmsgfiltered);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    public void createNetObject(com.maddox.rts.NetChannel netchannel, int i)
+    {
+        if(netchannel == null)
+            net = new Master(this);
+        else
+            net = new Mirror(this, netchannel, i);
+    }
+
+    public void netFirstUpdate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
+    {
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        netmsgguaranted.writeByte(73);
+        if(dying == 0)
+            netmsgguaranted.writeShort(0);
+        else
+            netmsgguaranted.writeShort(deathSeed);
+        netmsgguaranted.writeFloat(headYaw);
+        netmsgguaranted.writeFloat(gunPitch);
+        net.postTo(netchannel, netmsgguaranted);
+    }
+
+    public float getReloadingTime(com.maddox.il2.ai.ground.Aim aim)
+    {
+        return prop.DELAY_AFTER_SHOOT;
+    }
+
+    public float chainFireTime(com.maddox.il2.ai.ground.Aim aim)
+    {
+        return prop.CHAINFIRE_TIME > 0.0F ? prop.CHAINFIRE_TIME * com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.Rnd(0.75F, 1.25F) : 0.0F;
+    }
+
+    public float probabKeepSameEnemy(com.maddox.il2.engine.Actor actor)
+    {
+        if(nearAirfield || isNetMirror() || actor == null || !(actor instanceof com.maddox.il2.objects.air.Aircraft) || java.lang.Math.abs(time_lastCheckShoot - com.maddox.rts.Time.current()) < 12000L || (float)actor.getSpeed(null) < 10F)
+            return 0.75F;
+        return !friendPlanesAreNear((com.maddox.il2.objects.air.Aircraft)actor) ? 0.75F : 0.0F;
+    }
+
+    public float minTimeRelaxAfterFight()
+    {
+        return 0.0F;
+    }
+
+    public void gunStartParking(com.maddox.il2.ai.ground.Aim aim)
+    {
+        aim.setRotationForParking(headYaw, gunPitch, 0.0F, prop.GUN_STD_PITCH, prop.HEAD_YAW_RANGE, prop.HEAD_MAX_YAW_SPEED, prop.GUN_MAX_PITCH_SPEED);
+    }
+
+    public void gunInMove(boolean flag, com.maddox.il2.ai.ground.Aim aim)
+    {
+        float f = aim.t();
+        float f1 = aim.anglesYaw.getDeg(f);
+        float f2 = aim.anglesPitch.getDeg(f);
+        setGunAngles(f1, f2);
+    }
+
+    public static final float KmHourToMSec(float f)
+    {
+        return f * 0.27778F;
+    }
+
+    public com.maddox.il2.engine.Actor findEnemy(com.maddox.il2.ai.ground.Aim aim)
+    {
+        if(isNetMirror())
+            return null;
+        if(com.maddox.rts.Time.current() < startDelay)
+            return null;
+        com.maddox.il2.engine.Actor actor = null;
+        if(prop.ATTACK_FAST_TARGETS)
+            com.maddox.il2.ai.ground.NearestEnemies.set(WeaponsMask());
+        else
+            com.maddox.il2.ai.ground.NearestEnemies.set(WeaponsMask(), -9999.9F, com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.KmHourToMSec(100F));
+        actor = com.maddox.il2.ai.ground.NearestEnemies.getAFoundEnemy(pos.getAbsPoint(), AttackMaxRadius(), getArmy());
+        if(actor == null)
+            return null;
+        if(!(actor instanceof com.maddox.il2.ai.ground.Prey))
+        {
+            java.lang.System.out.println("arti: nearest enemies: non-Prey");
+            return null;
+        }
+        boolean flag = true;
+        if(!nearAirfield && !isNetMirror() && (actor instanceof com.maddox.il2.objects.air.Aircraft) && (float)actor.getSpeed(null) >= 10F)
+            if(java.lang.Math.abs(time_lastCheckShoot - com.maddox.rts.Time.current()) < 12000L)
+            {
+                if(dontShoot)
+                    return null;
+            } else
+            if(friendPlanesAreNear((com.maddox.il2.objects.air.Aircraft)actor))
+                return null;
+        com.maddox.il2.engine.BulletProperties bulletproperties = null;
+        if(gun.prop != null)
+        {
+            int i = ((com.maddox.il2.ai.ground.Prey)actor).chooseBulletType(gun.prop.bullet);
+            if(i < 0)
+                return null;
+            bulletproperties = gun.prop.bullet[i];
+        }
+        int j = ((com.maddox.il2.ai.ground.Prey)actor).chooseShotpoint(bulletproperties);
+        if(j < 0)
+        {
+            return null;
+        } else
+        {
+            aim.shotpoint_idx = j;
+            return actor;
+        }
+    }
+
+    public boolean enterToFireMode(int i, com.maddox.il2.engine.Actor actor, float f, com.maddox.il2.ai.ground.Aim aim)
+    {
+        if(i == 1 && hideTmr < 0L)
+        {
+            float f1 = (float)actor.pos.getAbsPoint().distanceSquared(pos.getAbsPoint());
+            if(f1 > RADIUS_HIDE * RADIUS_HIDE)
+                return false;
+            hideTmr = 0L;
+        }
+        if(!isNetMirror())
+            send_FireCommand(actor, aim.shotpoint_idx, i != 0 ? f : -1F);
+        return true;
+    }
+
+    private void Track_Mirror(com.maddox.il2.engine.Actor actor, int i)
+    {
+        if(dying == 1)
+            return;
+        if(actor == null)
+            return;
+        if(aime == null)
+        {
+            return;
+        } else
+        {
+            aime.passive_StartFiring(0, actor, i, 0.0F);
+            return;
+        }
+    }
+
+    private void Fire_Mirror(com.maddox.il2.engine.Actor actor, int i, float f)
+    {
+        if(dying == 1)
+            return;
+        if(actor == null)
+            return;
+        if(aime == null)
+            return;
+        if(f <= 0.2F)
+            f = 0.2F;
+        if(f >= 15F)
+            f = 15F;
+        aime.passive_StartFiring(1, actor, i, f);
+    }
+
+    public int targetGun(com.maddox.il2.ai.ground.Aim aim, com.maddox.il2.engine.Actor actor, float f, boolean flag)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor) || !actor.isAlive() || actor.getArmy() == 0)
+            return 0;
+        if(gun instanceof com.maddox.il2.objects.weapons.CannonMidrangeGeneric)
+        {
+            int i = ((com.maddox.il2.ai.ground.Prey)actor).chooseBulletType(gun.prop.bullet);
+            if(i < 0)
+                return 0;
+            ((com.maddox.il2.objects.weapons.CannonMidrangeGeneric)gun).setBulletType(i);
+        }
+        boolean flag1 = ((com.maddox.il2.ai.ground.Prey)actor).getShotpointOffset(aim.shotpoint_idx, p1);
+        if(!flag1)
+            return 0;
+        float f1 = f * com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.Rnd(0.8F, 1.2F);
+        if(!com.maddox.il2.ai.Aimer.Aim((com.maddox.il2.ai.BulletAimer)gun, actor, this, f1, p1, null))
+            return 0;
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        com.maddox.il2.ai.Aimer.GetPredictedTargetPosition(point3d);
+        com.maddox.JGP.Point3d point3d1 = com.maddox.il2.ai.Aimer.GetHunterFirePoint();
+        float f2 = 0.19F;
+        double d = point3d.distance(point3d1);
+        double d1 = point3d.z;
+        point3d.sub(point3d1);
+        point3d.scale(com.maddox.il2.objects.vehicles.artillery.ArtilleryGeneric.Rnd(0.95999999999999996D, 1.04D));
+        point3d.add(point3d1);
+        if(f1 > 0.001F)
+        {
+            com.maddox.JGP.Point3d point3d2 = new Point3d();
+            actor.pos.getAbs(point3d2);
+            tmpv.sub(point3d, point3d2);
+            double d2 = tmpv.length();
+            if(d2 > 0.001D)
+            {
+                float f7 = (float)d2 / f1;
+                if(f7 > 200F)
+                    f7 = 200F;
+                float f8 = f7 * 0.015F;
+                point3d2.sub(point3d1);
+                double d3 = point3d2.x * point3d2.x + point3d2.y * point3d2.y + point3d2.z * point3d2.z;
+                if(d3 > 0.01D)
+                {
+                    float f9 = (float)tmpv.dot(point3d2);
+                    f9 /= (float)(d2 * java.lang.Math.sqrt(d3));
+                    f9 = (float)java.lang.Math.sqrt(1.0F - f9 * f9);
+                    f8 *= 0.4F + 0.6F * f9;
+                }
+                f8 *= 1.1F;
+                int k = 0;
+                k = com.maddox.il2.game.Mission.curCloudsType();
+                if(k > 2)
+                {
+                    float f10 = k <= 4 ? 500F : 300F;
+                    float f11 = (float)(d / (double)f10);
+                    if(f11 > 1.0F)
+                    {
+                        if(f11 > 10F)
+                            return 0;
+                        f11 = ((f11 - 1.0F) / 9F) * 2.0F + 1.0F;
+                        f8 *= f11;
+                    }
+                }
+                if(k >= 3 && d1 > (double)com.maddox.il2.game.Mission.curCloudsHeight())
+                    f8 *= 1.25F;
+                f2 += f8;
+            }
+        }
+        if(com.maddox.il2.ai.World.Sun().ToSun.z < -0.15F)
+        {
+            float f4 = (-com.maddox.il2.ai.World.Sun().ToSun.z - 0.15F) / 0.13F;
+            if(f4 >= 1.0F)
+                f4 = 1.0F;
+            if((actor instanceof com.maddox.il2.objects.air.Aircraft) && com.maddox.rts.Time.current() - ((com.maddox.il2.objects.air.Aircraft)actor).tmSearchlighted < 1000L)
+                f4 = 0.0F;
+            f2 += 12F * f4;
+        }
+        float f5 = (float)actor.getSpeed(null) - 10F;
+        if(f5 > 0.0F)
+        {
+            float f6 = 83.33334F;
+            f5 = f5 < f6 ? f5 / f6 : 1.0F;
+            f2 += f5 * prop.FAST_TARGETS_ANGLE_ERROR;
+        }
+        com.maddox.JGP.Vector3d vector3d = new Vector3d();
+        if(!((com.maddox.il2.ai.BulletAimer)gun).FireDirection(point3d1, point3d, vector3d))
+            return 0;
+        float f3;
+        if(flag)
+        {
+            f3 = 99999F;
+            d1 = 99999F;
+        } else
+        {
+            f3 = prop.HEAD_MAX_YAW_SPEED;
+            d1 = prop.GUN_MAX_PITCH_SPEED;
+        }
+        int j = aim.setRotationForTargeting(this, pos.getAbs().getOrient(), point3d1, headYaw, gunPitch, vector3d, f2, f1, prop.HEAD_YAW_RANGE, prop.GUN_MIN_PITCH, prop.GUN_MAX_PITCH, f3, d1, 0.0F);
+        return j;
+    }
+
+    public void singleShot(com.maddox.il2.ai.ground.Aim aim)
+    {
+        gun.shots(1);
+    }
+
+    public void startFire(com.maddox.il2.ai.ground.Aim aim)
+    {
+        gun.shots(-1);
+    }
+
+    public void continueFire(com.maddox.il2.ai.ground.Aim aim)
+    {
+    }
+
+    public void stopFire(com.maddox.il2.ai.ground.Aim aim)
+    {
+        gun.shots(0);
+    }
+
+    private com.maddox.il2.objects.vehicles.artillery.ArtilleryProperties prop;
+    private boolean nearAirfield;
+    private boolean dontShoot;
+    private long time_lastCheckShoot;
+    private static final int DELAY_CHECK_SHOOT = 12000;
+    private static final int DIST_TO_FRIEND_PLANES = 4000;
+    private static final int DIST_TO_AIRFIELD = 2000;
+    private float heightAboveLandSurface;
+    private float heightAboveLandSurface2;
+    protected com.maddox.il2.objects.weapons.Gun gun;
+    private com.maddox.il2.ai.ground.Aim aime;
+    private float headYaw;
+    private float gunPitch;
+    private long startDelay;
+    public int dying;
+    static final int DYING_NONE = 0;
+    static final int DYING_DEAD = 1;
+    private short deathSeed;
+    private long respawnDelay;
+    private long hideTmr;
+    private static long delay_hide_ticks = 0L;
+    public float RADIUS_HIDE;
+    public static float new_RADIUS_HIDE = 0.0F;
+    private static com.maddox.il2.objects.vehicles.artillery.ArtilleryProperties constr_arg1 = null;
+    private static com.maddox.il2.engine.ActorSpawnArg constr_arg2 = null;
+    private static com.maddox.JGP.Point3d p = new Point3d();
+    private static com.maddox.JGP.Point3d p1 = new Point3d();
+    private static com.maddox.il2.engine.Orient o = new Orient();
+    private static com.maddox.JGP.Vector3f n = new Vector3f();
+    private static com.maddox.JGP.Vector3d tmpv = new Vector3d();
+    private com.maddox.rts.NetMsgFiltered outCommand;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

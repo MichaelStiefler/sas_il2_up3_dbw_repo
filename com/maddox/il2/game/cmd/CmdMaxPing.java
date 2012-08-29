@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdMaxPing.java
+
 package com.maddox.il2.game.cmd;
 
 import com.maddox.il2.engine.Actor;
@@ -18,91 +23,102 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdMaxPing extends Cmd
-  implements MsgTimeOutListener
+public class CmdMaxPing extends com.maddox.rts.Cmd
+    implements com.maddox.rts.MsgTimeOutListener
 {
-  public static final String DELAY = "DELAY";
-  public static final String NUM = "WARNINGS";
-  private int maxping = 3000;
-  private int delay = 10;
-  private int num = 3;
-  private MsgTimeOut msg;
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    if (Main.cur().netServerParams == null) return null;
-    if (Main.cur().netServerParams.isMirror()) return null;
-
-    if (paramMap.containsKey("DELAY")) {
-      this.delay = arg(paramMap, "DELAY", 0, 5, 0, 60);
-    }
-    if (paramMap.containsKey("WARNINGS")) {
-      this.num = arg(paramMap, "WARNINGS", 0, 3, 0, 100);
-    }
-    if (paramMap.containsKey("_$$")) {
-      this.maxping = arg(paramMap, "_$$", 0, 3000, 0, 30000);
-    } else {
-      INFO_HARD(" maxping  " + this.maxping + " ms");
-      INFO_HARD(" delay    " + this.delay + " s");
-      INFO_HARD(" warnings " + this.num);
-    }
-
-    checkTimeMsg();
-    return CmdEnv.RETURN_OK;
-  }
-
-  public void msgTimeOut(Object paramObject)
-  {
-    if (this.delay <= 0) return;
-    if (this.maxping <= 0) return;
-    this.msg.post(this.delay);
-
-    for (int i = 0; i < NetEnv.hosts().size(); i++) {
-      NetUser localNetUser = (NetUser)NetEnv.hosts().get(i);
-      if (Actor.isAlive(localNetUser.findAircraft())) {
-        NetChannel localNetChannel = localNetUser.masterChannel();
-        int j = localNetChannel.ping();
-        if (j > this.maxping) {
-          int k = 0;
-          if (!Property.containsValue(localNetUser, "maxpingCounter"))
-            Property.set(localNetUser, "maxpingCounter", k);
-          else {
-            k = Property.intValue(localNetUser, "maxpingCounter");
-          }
-          k++;
-          if (k > this.num) {
-            Chat.sendLog(0, "user_timeouts", localNetUser, null);
-            ((NetUser)NetEnv.host()).kick(localNetUser);
-          } else {
-            Property.set(localNetUser, "maxpingCounter", k);
-            ArrayList localArrayList = new ArrayList();
-            localArrayList.add(localNetUser);
-            String str = "Your ping (" + j + ") is larger than allowed (" + this.maxping + ").";
-            Main.cur().chat.send(null, str, localArrayList, 0, false);
-          }
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        if(com.maddox.il2.game.Main.cur().netServerParams == null)
+            return null;
+        if(com.maddox.il2.game.Main.cur().netServerParams.isMirror())
+            return null;
+        if(map.containsKey("DELAY"))
+            delay = com.maddox.il2.game.cmd.CmdMaxPing.arg(map, "DELAY", 0, 5, 0, 60);
+        if(map.containsKey("WARNINGS"))
+            num = com.maddox.il2.game.cmd.CmdMaxPing.arg(map, "WARNINGS", 0, 3, 0, 100);
+        if(map.containsKey("_$$"))
+        {
+            maxping = com.maddox.il2.game.cmd.CmdMaxPing.arg(map, "_$$", 0, 3000, 0, 30000);
+        } else
+        {
+            INFO_HARD(" maxping  " + maxping + " ms");
+            INFO_HARD(" delay    " + delay + " s");
+            INFO_HARD(" warnings " + num);
         }
-      }
+        checkTimeMsg();
+        return com.maddox.rts.CmdEnv.RETURN_OK;
     }
-  }
 
-  private void checkTimeMsg() {
-    if (this.msg == null) {
-      this.msg = new MsgTimeOut();
-      this.msg.setListener(this);
-      this.msg.setNotCleanAfterSend();
-      this.msg.setFlags(64);
+    public void msgTimeOut(java.lang.Object obj)
+    {
+        if(delay <= 0)
+            return;
+        if(maxping <= 0)
+            return;
+        msg.post(delay);
+        for(int i = 0; i < com.maddox.rts.NetEnv.hosts().size(); i++)
+        {
+            com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.hosts().get(i);
+            if(!com.maddox.il2.engine.Actor.isAlive(netuser.findAircraft()))
+                continue;
+            com.maddox.rts.NetChannel netchannel = netuser.masterChannel();
+            int j = netchannel.ping();
+            if(j <= maxping)
+                continue;
+            int k = 0;
+            if(!com.maddox.rts.Property.containsValue(netuser, "maxpingCounter"))
+                com.maddox.rts.Property.set(netuser, "maxpingCounter", k);
+            else
+                k = com.maddox.rts.Property.intValue(netuser, "maxpingCounter");
+            if(++k > num)
+            {
+                com.maddox.il2.net.Chat.sendLog(0, "user_timeouts", netuser, null);
+                ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).kick(netuser);
+            } else
+            {
+                com.maddox.rts.Property.set(netuser, "maxpingCounter", k);
+                java.util.ArrayList arraylist = new ArrayList();
+                arraylist.add(netuser);
+                java.lang.String s = "Your ping (" + j + ") is larger than allowed (" + maxping + ").";
+                com.maddox.il2.game.Main.cur().chat.send(null, s, arraylist, (byte)0, false);
+            }
+        }
+
     }
-    if (this.delay <= 0) return;
-    if (this.maxping <= 0) return;
-    if (!this.msg.busy())
-      this.msg.post(this.delay);
-  }
 
-  public CmdMaxPing()
-  {
-    this.param.put("DELAY", null);
-    this.param.put("WARNINGS", null);
-    this._properties.put("NAME", "maxping");
-    this._levelAccess = 1;
-  }
+    private void checkTimeMsg()
+    {
+        if(msg == null)
+        {
+            msg = new MsgTimeOut();
+            msg.setListener(this);
+            msg.setNotCleanAfterSend();
+            msg.setFlags(64);
+        }
+        if(delay <= 0)
+            return;
+        if(maxping <= 0)
+            return;
+        if(!msg.busy())
+            msg.post(delay);
+    }
+
+    public CmdMaxPing()
+    {
+        maxping = 3000;
+        delay = 10;
+        num = 3;
+        param.put("DELAY", null);
+        param.put("WARNINGS", null);
+        _properties.put("NAME", "maxping");
+        _levelAccess = 1;
+    }
+
+    public static final java.lang.String DELAY = "DELAY";
+    public static final java.lang.String NUM = "WARNINGS";
+    private int maxping;
+    private int delay;
+    private int num;
+    private com.maddox.rts.MsgTimeOut msg;
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SectFile.java
+
 package com.maddox.rts;
 
 import com.maddox.util.UnicodeTo8bit;
@@ -14,813 +19,996 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Set;
+
+// Referenced classes of package com.maddox.rts:
+//            SFSReader, KryptoOutputFilter, HomePath, Finger, 
+//            ObjIO
 
 public class SectFile
 {
-  public static final int NOT_SAVE = 0;
-  public static final int SAVE = 1;
-  public static final int SAVE_ON_CHANGE = 2;
-  public static final int NOT_COMMENT = 4;
-  protected ArrayList sectNames = null;
 
-  private HashMap hashNames = null;
-
-  protected ArrayList sectVars = null;
-
-  private ArrayList hashVars = null;
-
-  protected ArrayList sectValues = null;
-
-  protected String fileName = null;
-
-  protected boolean saveOnChange = false;
-
-  protected boolean bChanged = false;
-
-  protected boolean bNotSave = false;
-
-  protected boolean bComment = true;
-
-  protected boolean bTypeErrorMessages = true;
-
-  private int[] kryptoKey = null;
-  private String enc = null;
-  private boolean bUseUnicodeTo8bit = false;
-
-  private static char[] strBuf = new char[256];
-  private static int strPtr = 0;
-  private static int strEnd = 0;
-
-  private static HashMap _getsetMap = new HashMap();
-
-  public int[] kryptoGetKey()
-  {
-    return this.kryptoKey;
-  }
-  public void kryptoSetKey(int[] paramArrayOfInt) { this.kryptoKey = paramArrayOfInt;
-    if ((this.kryptoKey != null) && (this.kryptoKey.length == 0))
-      this.kryptoKey = null;
-  }
-
-  public SectFile(String paramString)
-  {
-    this(paramString, 0, true, null, null, false);
-  }
-
-  public SectFile(String paramString, int paramInt)
-  {
-    this(paramString, paramInt, true, null, null, false);
-  }
-
-  public SectFile(String paramString, int paramInt, boolean paramBoolean)
-  {
-    this(paramString, paramInt, paramBoolean, null, null, false);
-  }
-
-  public SectFile(String paramString, int paramInt, boolean paramBoolean, int[] paramArrayOfInt) {
-    this(paramString, paramInt, paramBoolean, paramArrayOfInt, null, false);
-  }
-
-  public SectFile(String paramString1, int paramInt, boolean paramBoolean1, int[] paramArrayOfInt, String paramString2, boolean paramBoolean2) {
-    this.bTypeErrorMessages = paramBoolean1;
-    this.enc = paramString2;
-    this.bUseUnicodeTo8bit = paramBoolean2;
-    kryptoSetKey(paramArrayOfInt);
-    switch (paramInt & 0x3) { case 0:
-      this.bNotSave = true; break;
-    case 2:
-      this.saveOnChange = true; break;
-    case 1:
-    }
-
-    if ((paramInt & 0x4) == 4)
-      this.bComment = false;
-    this.fileName = paramString1;
-    if (!loadFile()) {
-      if (!createFile())
-        return;
-      loadFile();
-    }
-  }
-
-  public SectFile(InputStreamReader paramInputStreamReader) {
-    this.bTypeErrorMessages = true;
-    this.bNotSave = true;
-    this.bChanged = false;
-    this.fileName = "";
-    loadFile(paramInputStreamReader);
-  }
-
-  public SectFile()
-  {
-    this.bNotSave = true;
-    this.sectNames = new ArrayList();
-    this.sectVars = new ArrayList();
-    this.sectValues = new ArrayList();
-    this.bChanged = false;
-  }
-
-  public boolean loadFile()
-  {
-    return loadFile(null);
-  }
-
-  private boolean loadFile(InputStreamReader paramInputStreamReader) {
-    this.sectNames = new ArrayList();
-    this.sectVars = new ArrayList();
-    this.sectValues = new ArrayList();
-    clearIndexes();
-    this.bChanged = false;
-    try
+    public int[] kryptoGetKey()
     {
-      ArrayList localArrayList1 = null;
-      ArrayList localArrayList2 = null;
-      BufferedReader localBufferedReader = null;
-      if (paramInputStreamReader != null) {
-        localBufferedReader = new BufferedReader(paramInputStreamReader);
-      }
-      else if (this.enc == null) {
-        if (this.kryptoKey != null)
-          localBufferedReader = new BufferedReader(new SFSReader(this.fileName, this.kryptoKey));
-        else {
-          localBufferedReader = new BufferedReader(new SFSReader(this.fileName));
-        }
-      }
-      else if (this.kryptoKey != null)
-        localBufferedReader = new BufferedReader(new SFSReader(this.fileName, this.enc, this.kryptoKey));
-      else {
-        localBufferedReader = new BufferedReader(new SFSReader(this.fileName, this.enc));
-      }
-
-      while (true)
-      {
-        String str1 = localBufferedReader.readLine();
-        if (str1 == null)
-          break;
-        if (this.bUseUnicodeTo8bit)
-          str1 = UnicodeTo8bit.load(str1, false);
-        int i = str1.length();
-        if (i == 0)
-          continue;
-        if (strBuf.length < i) {
-          strBuf = new char[i];
-        }
-        str1.getChars(0, i, strBuf, 0);
-        strPtr = 0; strEnd = i;
-        removeComments();
-        if (strEnd - strPtr > 0)
-        {
-          if ((strBuf[strPtr] == '[') && (strBuf[(strEnd - 1)] == ']'))
-          {
-            if (strEnd - strPtr > 2) {
-              strPtr += 1; strEnd -= 1;
-              localArrayList1 = new ArrayList();
-              localArrayList2 = new ArrayList();
-              this.sectNames.add(new String(strBuf, strPtr, strEnd - strPtr));
-              this.sectVars.add(localArrayList1);
-              this.sectValues.add(localArrayList2);
-            }
-          }
-          else if (localArrayList1 != null) {
-            String str2 = readVariable();
-            if (str2 != null) {
-              localArrayList1.add(str2);
-              localArrayList2.add(readValue());
-            }
-          }
-        }
-      }
-      if (paramInputStreamReader == null)
-        localBufferedReader.close();
-      return true;
+        return kryptoKey;
     }
-    catch (IOException localIOException) {
-      if (this.bTypeErrorMessages) {
-        System.out.println("SectFile load failed: " + localIOException.getMessage());
-        localIOException.printStackTrace();
-      }
+
+    public void kryptoSetKey(int ai[])
+    {
+        kryptoKey = ai;
+        if(kryptoKey != null && kryptoKey.length == 0)
+            kryptoKey = null;
     }
-    return false;
-  }
 
-  private void removeComments()
-  {
-    while ((strPtr < strEnd) && 
-      (strBuf[strPtr] <= ' ')) strPtr += 1;
+    public SectFile(java.lang.String s)
+    {
+        this(s, 0, true, null, null, false);
+    }
 
-    if (this.bComment) {
-      int i = strPtr;
-      int j = 0;
-      while (i < strEnd) {
-        int k = strBuf[i];
-        if (k == 9) { k = 32; strBuf[i] = 32; }
-        if ((k < 32) || (k == 35) || (k == 59))
+    public SectFile(java.lang.String s, int i)
+    {
+        this(s, i, true, null, null, false);
+    }
+
+    public SectFile(java.lang.String s, int i, boolean flag)
+    {
+        this(s, i, flag, null, null, false);
+    }
+
+    public SectFile(java.lang.String s, int i, boolean flag, int ai[])
+    {
+        this(s, i, flag, ai, null, false);
+    }
+
+    public SectFile(java.lang.String s, int i, boolean flag, int ai[], java.lang.String s1, boolean flag1)
+    {
+        sectNames = null;
+        hashNames = null;
+        sectVars = null;
+        hashVars = null;
+        sectValues = null;
+        fileName = null;
+        saveOnChange = false;
+        bChanged = false;
+        bNotSave = false;
+        bComment = true;
+        bTypeErrorMessages = true;
+        kryptoKey = null;
+        enc = null;
+        bUseUnicodeTo8bit = false;
+        bTypeErrorMessages = flag;
+        enc = s1;
+        bUseUnicodeTo8bit = flag1;
+        kryptoSetKey(ai);
+        switch(i & 3)
         {
-          strEnd = i;
-          break;
-        }
-        if (k == 47) {
-          if (j != 0) {
-            strEnd = i - 1;
+        case 0: // '\0'
+            bNotSave = true;
             break;
-          }
-          j = 1;
-        } else {
-          j = 0;
+
+        case 2: // '\002'
+            saveOnChange = true;
+            break;
         }
-        i++;
-      }
-
-    }
-
-    while ((strEnd > strPtr) && 
-      (strBuf[(strEnd - 1)] <= ' ')) strEnd -= 1;
-  }
-
-  private String readVariable()
-  {
-    int i = strPtr;
-    while ((i < strEnd) && 
-      (strBuf[i] > ' ')) i++;
-
-    String str = new String(strBuf, strPtr, i - strPtr);
-    strPtr = i;
-    return str;
-  }
-
-  private String readValue() {
-    while ((strPtr < strEnd) && 
-      (strBuf[strPtr] <= ' ')) strPtr += 1;
-
-    if (strPtr >= strEnd)
-      return "";
-    return new String(strBuf, strPtr, strEnd - strPtr);
-  }
-
-  protected boolean createFile()
-  {
-    if (this.bNotSave) return false; try
-    {
-      PrintWriter localPrintWriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(this.fileName, 0))));
-
-      localPrintWriter.close();
-      return true;
-    } catch (IOException localIOException) {
-      if (this.bTypeErrorMessages) {
-        System.out.println("SectFile create failed: " + localIOException.getMessage());
-        localIOException.printStackTrace();
-      }
-    }
-    return false;
-  }
-
-  public boolean saveFile(String paramString)
-  {
-    try
-    {
-      PrintWriter localPrintWriter = null;
-      if (this.enc == null) {
-        if (this.kryptoKey != null) {
-          localPrintWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new KryptoOutputFilter(new FileOutputStream(HomePath.toFileSystemName(paramString, 0)), this.kryptoKey))));
-        }
-        else
+        if((i & 4) == 4)
+            bComment = false;
+        fileName = s;
+        if(!loadFile())
         {
-          localPrintWriter = new PrintWriter(new BufferedWriter(new FileWriter(HomePath.toFileSystemName(paramString, 0))));
+            if(!createFile())
+                return;
+            loadFile();
         }
-      }
-      else if (this.kryptoKey != null) {
-        localPrintWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new KryptoOutputFilter(new FileOutputStream(HomePath.toFileSystemName(paramString, 0)), this.kryptoKey), this.enc)));
-      }
-      else
-      {
-        localPrintWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(HomePath.toFileSystemName(paramString, 0)), this.enc)));
-      }
-      int i;
-      List localList1;
-      List localList2;
-      int j;
-      String str1;
-      String str2;
-      if (this.bUseUnicodeTo8bit)
-        for (i = 0; i < this.sectNames.size(); i++) {
-          localPrintWriter.println('[' + UnicodeTo8bit.save((String)(String)this.sectNames.get(i), false) + ']');
-          localList1 = (List)this.sectVars.get(i);
-          localList2 = (List)this.sectValues.get(i);
-          for (j = 0; j < localList1.size(); j++) {
-            str1 = (String)localList1.get(j);
-            str2 = (String)localList2.get(j);
-            if (str2.length() > 0) localPrintWriter.println("  " + UnicodeTo8bit.save(str1, false) + ' ' + UnicodeTo8bit.save(str2, false)); else
-              localPrintWriter.println("  " + UnicodeTo8bit.save(str1, false));
-          }
+    }
+
+    public SectFile(java.io.InputStreamReader inputstreamreader)
+    {
+        sectNames = null;
+        hashNames = null;
+        sectVars = null;
+        hashVars = null;
+        sectValues = null;
+        fileName = null;
+        saveOnChange = false;
+        bChanged = false;
+        bNotSave = false;
+        bComment = true;
+        bTypeErrorMessages = true;
+        kryptoKey = null;
+        enc = null;
+        bUseUnicodeTo8bit = false;
+        bTypeErrorMessages = true;
+        bNotSave = true;
+        bChanged = false;
+        fileName = "";
+        loadFile(inputstreamreader);
+    }
+
+    public SectFile()
+    {
+        sectNames = null;
+        hashNames = null;
+        sectVars = null;
+        hashVars = null;
+        sectValues = null;
+        fileName = null;
+        saveOnChange = false;
+        bChanged = false;
+        bNotSave = false;
+        bComment = true;
+        bTypeErrorMessages = true;
+        kryptoKey = null;
+        enc = null;
+        bUseUnicodeTo8bit = false;
+        bNotSave = true;
+        sectNames = new ArrayList();
+        sectVars = new ArrayList();
+        sectValues = new ArrayList();
+        bChanged = false;
+    }
+
+    public boolean loadFile()
+    {
+        return loadFile(null);
+    }
+
+    private boolean loadFile(java.io.InputStreamReader inputstreamreader)
+    {
+        sectNames = new ArrayList();
+        sectVars = new ArrayList();
+        sectValues = new ArrayList();
+        clearIndexes();
+        bChanged = false;
+        java.util.ArrayList arraylist = null;
+        java.util.ArrayList arraylist1 = null;
+        java.io.BufferedReader bufferedreader = null;
+        if(inputstreamreader != null)
+            bufferedreader = new BufferedReader(inputstreamreader);
+        else
+        if(enc == null)
+        {
+            if(kryptoKey != null)
+                bufferedreader = new BufferedReader(new SFSReader(fileName, kryptoKey));
+            else
+                bufferedreader = new BufferedReader(new SFSReader(fileName));
+        } else
+        if(kryptoKey != null)
+            bufferedreader = new BufferedReader(new SFSReader(fileName, enc, kryptoKey));
+        else
+            bufferedreader = new BufferedReader(new SFSReader(fileName, enc));
+        do
+        {
+            java.lang.String s = bufferedreader.readLine();
+            if(s == null)
+                break;
+            if(bUseUnicodeTo8bit)
+                s = com.maddox.util.UnicodeTo8bit.load(s, false);
+            int i = s.length();
+            if(i != 0)
+            {
+                if(strBuf.length < i)
+                    strBuf = new char[i];
+                s.getChars(0, i, strBuf, 0);
+                strPtr = 0;
+                strEnd = i;
+                removeComments();
+                if(strEnd - strPtr > 0)
+                    if(strBuf[strPtr] == '[' && strBuf[strEnd - 1] == ']')
+                    {
+                        if(strEnd - strPtr > 2)
+                        {
+                            strPtr++;
+                            strEnd--;
+                            arraylist = new ArrayList();
+                            arraylist1 = new ArrayList();
+                            sectNames.add(new String(strBuf, strPtr, strEnd - strPtr));
+                            sectVars.add(arraylist);
+                            sectValues.add(arraylist1);
+                        }
+                    } else
+                    if(arraylist != null)
+                    {
+                        java.lang.String s1 = readVariable();
+                        if(s1 != null)
+                        {
+                            arraylist.add(s1);
+                            arraylist1.add(readValue());
+                        }
+                    }
+            }
+        } while(true);
+        if(inputstreamreader == null)
+            bufferedreader.close();
+        return true;
+        java.io.IOException ioexception;
+        ioexception;
+        if(bTypeErrorMessages)
+        {
+            java.lang.System.out.println("SectFile load failed: " + ioexception.getMessage());
+            ioexception.printStackTrace();
         }
-      else {
-        for (i = 0; i < this.sectNames.size(); i++) {
-          localPrintWriter.println('[' + (String)(String)this.sectNames.get(i) + ']');
-          localList1 = (List)this.sectVars.get(i);
-          localList2 = (List)this.sectValues.get(i);
-          for (j = 0; j < localList1.size(); j++) {
-            str1 = (String)localList1.get(j);
-            str2 = (String)localList2.get(j);
-            if (str2.length() > 0) localPrintWriter.println("  " + str1 + ' ' + str2); else
-              localPrintWriter.println("  " + str1);
-          }
+        return false;
+    }
+
+    private void removeComments()
+    {
+        for(; strPtr < strEnd && strBuf[strPtr] <= ' '; strPtr++);
+        if(bComment)
+        {
+            int i = strPtr;
+            boolean flag = false;
+            for(; i < strEnd; i++)
+            {
+                char c = strBuf[i];
+                if(c == '\t')
+                    strBuf[i] = c = ' ';
+                if(c < ' ' || c == '#' || c == ';')
+                {
+                    strEnd = i;
+                    break;
+                }
+                if(c == '/')
+                {
+                    if(flag)
+                    {
+                        strEnd = i - 1;
+                        break;
+                    }
+                    flag = true;
+                } else
+                {
+                    flag = false;
+                }
+            }
+
         }
-      }
-      localPrintWriter.close();
-      return true;
-    } catch (IOException localIOException) {
-      if (this.bTypeErrorMessages) {
-        System.out.println("SectFile save failed: " + localIOException.getMessage());
-        localIOException.printStackTrace();
-      }
+        for(; strEnd > strPtr && strBuf[strEnd - 1] <= ' '; strEnd--);
     }
-    return false;
-  }
 
-  public void saveFile()
-  {
-    if (this.bNotSave) return;
-    this.bChanged = (!saveFile(this.fileName));
-  }
-
-  public boolean isChanged()
-  {
-    return this.bChanged;
-  }
-
-  private void checkSaved() {
-    if (this.saveOnChange) saveFile(); else
-      this.bChanged = true;
-  }
-
-  protected void finalize()
-  {
-    if (this.bChanged)
-      saveFile();
-  }
-
-  private long _finger(long paramLong, ArrayList paramArrayList) {
-    int i = paramArrayList.size();
-    for (int j = 0; j < i; j++) {
-      String str = (String)paramArrayList.get(j);
-      if ((str != null) && (str.length() > 0))
-        paramLong = Finger.incLong(paramLong, str);
+    private java.lang.String readVariable()
+    {
+        int i;
+        for(i = strPtr; i < strEnd && strBuf[i] > ' '; i++);
+        java.lang.String s = new String(strBuf, strPtr, i - strPtr);
+        strPtr = i;
+        return s;
     }
-    return paramLong;
-  }
 
-  public long finger() {
-    return finger(0L);
-  }
-  public long finger(long paramLong) {
-    long l = _finger(paramLong, this.sectNames);
-    int i = this.sectVars.size();
-    ArrayList localArrayList;
-    for (int j = 0; j < i; j++) {
-      localArrayList = (ArrayList)this.sectVars.get(j);
-      if (localArrayList != null)
-        l = _finger(l, localArrayList);
+    private java.lang.String readValue()
+    {
+        for(; strPtr < strEnd && strBuf[strPtr] <= ' '; strPtr++);
+        if(strPtr >= strEnd)
+            return "";
+        else
+            return new String(strBuf, strPtr, strEnd - strPtr);
     }
-    i = this.sectValues.size();
-    for (j = 0; j < i; j++) {
-      localArrayList = (ArrayList)this.sectValues.get(j);
-      if (localArrayList != null)
-        l = _finger(l, localArrayList);
+
+    protected boolean createFile()
+    {
+        if(bNotSave)
+            return false;
+        java.io.PrintWriter printwriter = new PrintWriter(new BufferedWriter(new FileWriter(com.maddox.rts.HomePath.toFileSystemName(fileName, 0))));
+        printwriter.close();
+        return true;
+        java.io.IOException ioexception;
+        ioexception;
+        if(bTypeErrorMessages)
+        {
+            java.lang.System.out.println("SectFile create failed: " + ioexception.getMessage());
+            ioexception.printStackTrace();
+        }
+        return false;
     }
-    return l;
-  }
 
-  public long fingerExcludeSectPrefix(String paramString) {
-    long l = 0L;
-    int i = this.sectNames.size();
-    for (int j = 0; j < i; j++) {
-      String str = (String)this.sectNames.get(j);
-      if (str.startsWith(paramString))
-        continue;
-      l = Finger.incLong(l, str);
-      ArrayList localArrayList = (ArrayList)this.sectVars.get(j);
-      if (localArrayList != null)
-        l = _finger(l, localArrayList);
-      localArrayList = (ArrayList)this.sectValues.get(j);
-      if (localArrayList != null)
-        l = _finger(l, localArrayList);
+    public boolean saveFile(java.lang.String s)
+    {
+        java.io.PrintWriter printwriter = null;
+        if(enc == null)
+        {
+            if(kryptoKey != null)
+                printwriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new KryptoOutputFilter(new FileOutputStream(com.maddox.rts.HomePath.toFileSystemName(s, 0)), kryptoKey))));
+            else
+                printwriter = new PrintWriter(new BufferedWriter(new FileWriter(com.maddox.rts.HomePath.toFileSystemName(s, 0))));
+        } else
+        if(kryptoKey != null)
+            printwriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new KryptoOutputFilter(new FileOutputStream(com.maddox.rts.HomePath.toFileSystemName(s, 0)), kryptoKey), enc)));
+        else
+            printwriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(com.maddox.rts.HomePath.toFileSystemName(s, 0)), enc)));
+        if(bUseUnicodeTo8bit)
+        {
+            for(int i = 0; i < sectNames.size(); i++)
+            {
+                printwriter.println('[' + com.maddox.util.UnicodeTo8bit.save((java.lang.String)(java.lang.String)sectNames.get(i), false) + ']');
+                java.util.List list = (java.util.List)sectVars.get(i);
+                java.util.List list2 = (java.util.List)sectValues.get(i);
+                for(int k = 0; k < list.size(); k++)
+                {
+                    java.lang.String s1 = (java.lang.String)list.get(k);
+                    java.lang.String s3 = (java.lang.String)list2.get(k);
+                    if(s3.length() > 0)
+                        printwriter.println("  " + com.maddox.util.UnicodeTo8bit.save(s1, false) + ' ' + com.maddox.util.UnicodeTo8bit.save(s3, false));
+                    else
+                        printwriter.println("  " + com.maddox.util.UnicodeTo8bit.save(s1, false));
+                }
+
+            }
+
+        } else
+        {
+            for(int j = 0; j < sectNames.size(); j++)
+            {
+                printwriter.println('[' + (java.lang.String)(java.lang.String)sectNames.get(j) + ']');
+                java.util.List list1 = (java.util.List)sectVars.get(j);
+                java.util.List list3 = (java.util.List)sectValues.get(j);
+                for(int l = 0; l < list1.size(); l++)
+                {
+                    java.lang.String s2 = (java.lang.String)list1.get(l);
+                    java.lang.String s4 = (java.lang.String)list3.get(l);
+                    if(s4.length() > 0)
+                        printwriter.println("  " + s2 + ' ' + s4);
+                    else
+                        printwriter.println("  " + s2);
+                }
+
+            }
+
+        }
+        printwriter.close();
+        return true;
+        java.io.IOException ioexception;
+        ioexception;
+        if(bTypeErrorMessages)
+        {
+            java.lang.System.out.println("SectFile save failed: " + ioexception.getMessage());
+            ioexception.printStackTrace();
+        }
+        return false;
     }
-    return l;
-  }
 
-  private int listFindString(List paramList, int paramInt, String paramString) {
-    for (; paramInt < paramList.size(); paramInt++) {
-      String str = (String)paramList.get(paramInt);
-      if (paramString.compareToIgnoreCase(str) == 0)
-        return paramInt;
+    public void saveFile()
+    {
+        if(bNotSave)
+        {
+            return;
+        } else
+        {
+            bChanged = !saveFile(fileName);
+            return;
+        }
     }
-    return -1;
-  }
-  public String fileName() {
-    return this.fileName;
-  }
-  public void setFileName(String paramString) {
-    this.fileName = paramString;
-  }
 
-  public void createIndexes() {
-    clearIndexes();
-    int i = this.sectNames.size();
-    this.hashNames = new HashMap();
-    this.hashVars = new ArrayList(i);
-    for (int j = 0; j < i; j++) {
-      String str1 = (String)this.sectNames.get(j);
-      if (!this.hashNames.containsKey(str1)) {
-        this.hashNames.put(str1, new Integer(j));
-      }
-      List localList = (List)this.sectVars.get(j);
-      int k = localList.size();
-      HashMap localHashMap = new HashMap();
-      this.hashVars.add(localHashMap);
-      for (int m = 0; m < k; m++) {
-        String str2 = (String)localList.get(m);
-        if (!localHashMap.containsKey(str2))
-          localHashMap.put(str2, new Integer(m));
-      }
+    public boolean isChanged()
+    {
+        return bChanged;
     }
-  }
 
-  public void clearIndexes()
-  {
-    this.hashNames = null;
-    this.hashVars = null;
-  }
-
-  public int sections() {
-    return this.sectNames.size();
-  }
-  public String sectionName(int paramInt) {
-    return (String)this.sectNames.get(paramInt);
-  }
-  public void sectionRename(int paramInt, String paramString) {
-    this.sectNames.set(paramInt, paramString);
-    checkSaved();
-  }
-
-  public int sectionAdd(String paramString) {
-    clearIndexes();
-    ArrayList localArrayList1 = new ArrayList();
-    ArrayList localArrayList2 = new ArrayList();
-    this.sectNames.add(paramString);
-    this.sectVars.add(localArrayList1);
-    this.sectValues.add(localArrayList2);
-    checkSaved();
-    return this.sectNames.size() - 1;
-  }
-  public boolean sectionExist(String paramString, int paramInt) {
-    return sectionIndex(paramString, paramInt) != -1;
-  }
-  public boolean sectionExist(String paramString) {
-    return sectionIndex(paramString, 0) != -1;
-  }
-
-  public int sectionIndex(String paramString, int paramInt) {
-    if ((paramInt == 0) && (this.hashNames != null)) {
-      Integer localInteger = (Integer)this.hashNames.get(paramString);
-      if (localInteger != null) {
-        return localInteger.intValue();
-      }
+    private void checkSaved()
+    {
+        if(saveOnChange)
+            saveFile();
+        else
+            bChanged = true;
     }
-    return listFindString(this.sectNames, paramInt, paramString);
-  }
 
-  public int sectionIndex(String paramString) {
-    return sectionIndex(paramString, 0);
-  }
-
-  public void sectionClear(int paramInt) {
-    clearIndexes();
-    List localList1 = (List)this.sectVars.get(paramInt);
-    List localList2 = (List)this.sectValues.get(paramInt);
-    localList1.clear();
-    localList2.clear();
-    checkSaved();
-  }
-  public void sectionRemove(int paramInt) {
-    sectionClear(paramInt);
-    this.sectNames.remove(paramInt);
-    this.sectVars.remove(paramInt);
-    this.sectValues.remove(paramInt);
-  }
-  public void clear() {
-    int i = sections();
-    while (i-- > 0)
-      sectionRemove(0);
-  }
-
-  public int vars(int paramInt) {
-    List localList = (List)this.sectVars.get(paramInt);
-    return localList.size();
-  }
-  public String var(int paramInt1, int paramInt2) {
-    List localList = (List)this.sectVars.get(paramInt1);
-    return (String)localList.get(paramInt2);
-  }
-
-  public String value(int paramInt1, int paramInt2) {
-    List localList = (List)this.sectValues.get(paramInt1);
-    return (String)localList.get(paramInt2);
-  }
-  public String line(int paramInt1, int paramInt2) {
-    List localList1 = (List)this.sectVars.get(paramInt1);
-    List localList2 = (List)this.sectValues.get(paramInt1);
-    String str = (String)localList2.get(paramInt2);
-    if ("".equals(str)) {
-      return (String)localList1.get(paramInt2);
+    protected void finalize()
+    {
+        if(bChanged)
+            saveFile();
     }
-    return (String)localList1.get(paramInt2) + ' ' + str;
-  }
-  public void var(int paramInt1, int paramInt2, String paramString) {
-    List localList = (List)this.sectVars.get(paramInt1);
-    localList.set(paramInt2, paramString);
-    checkSaved();
-  }
 
-  public void value(int paramInt1, int paramInt2, String paramString) {
-    List localList = (List)this.sectValues.get(paramInt1);
-    localList.set(paramInt2, paramString);
-    checkSaved();
-  }
-  public void line(int paramInt1, int paramInt2, String paramString1, String paramString2) {
-    List localList1 = (List)this.sectVars.get(paramInt1);
-    List localList2 = (List)this.sectValues.get(paramInt1);
-    localList1.set(paramInt2, paramString1);
-    localList2.set(paramInt2, paramString2);
-    checkSaved();
-  }
-  public void line(int paramInt1, int paramInt2, String paramString) {
-    List localList1 = (List)this.sectVars.get(paramInt1);
-    List localList2 = (List)this.sectValues.get(paramInt1);
-    if ((paramString == null) || (paramString.length() == 0)) {
-      localList1.remove(paramInt2);
-      localList2.remove(paramInt2);
-      checkSaved();
-      return;
-    }
-    int i = paramString.length();
-    if (strBuf.length < i) {
-      strBuf = new char[i];
-    }
-    paramString.getChars(0, i, strBuf, 0);
-    strPtr = 0; strEnd = i;
-    removeComments();
-    if (strEnd - strPtr > 0) {
-      String str = readVariable();
-      if (str != null) {
-        localList1.set(paramInt2, str);
-        localList2.set(paramInt2, readValue());
-      } else {
-        localList1.remove(paramInt2);
-        localList2.remove(paramInt2);
-      }
-    } else {
-      localList1.remove(paramInt2);
-      localList2.remove(paramInt2);
-    }
-    checkSaved();
-  }
-  public void lineRemove(int paramInt1, int paramInt2) {
-    clearIndexes();
-    List localList1 = (List)this.sectVars.get(paramInt1);
-    List localList2 = (List)this.sectValues.get(paramInt1);
-    localList1.remove(paramInt2);
-    localList2.remove(paramInt2);
-    checkSaved();
-  }
+    private long _finger(long l, java.util.ArrayList arraylist)
+    {
+        int i = arraylist.size();
+        for(int j = 0; j < i; j++)
+        {
+            java.lang.String s = (java.lang.String)arraylist.get(j);
+            if(s != null && s.length() > 0)
+                l = com.maddox.rts.Finger.incLong(l, s);
+        }
 
-  public int varAdd(int paramInt, String paramString) {
-    clearIndexes();
-    List localList1 = (List)this.sectVars.get(paramInt);
-    List localList2 = (List)this.sectValues.get(paramInt);
-    localList1.add(paramString);
-    localList2.add("");
-    checkSaved();
-    return localList1.size() - 1;
-  }
-
-  public int lineAdd(int paramInt, String paramString1, String paramString2) {
-    clearIndexes();
-    List localList1 = (List)this.sectVars.get(paramInt);
-    List localList2 = (List)this.sectValues.get(paramInt);
-    localList1.add(paramString1);
-    localList2.add(paramString2);
-    checkSaved();
-    return localList1.size() - 1;
-  }
-
-  public int lineAdd(int paramInt, String paramString) {
-    clearIndexes();
-    List localList1 = (List)this.sectVars.get(paramInt);
-    List localList2 = (List)this.sectValues.get(paramInt);
-    if ((paramString == null) || (paramString.length() == 0)) {
-      return -1;
+        return l;
     }
-    int i = paramString.length();
-    if (strBuf.length < i) {
-      strBuf = new char[i];
+
+    public long finger()
+    {
+        return finger(0L);
     }
-    paramString.getChars(0, i, strBuf, 0);
-    strPtr = 0; strEnd = i;
-    removeComments();
-    if (strEnd - strPtr > 0) {
-      String str = readVariable();
-      if (str != null) {
-        localList1.add(str);
-        localList2.add(readValue());
-      } else {
+
+    public long finger(long l)
+    {
+        long l1 = _finger(l, sectNames);
+        int i = sectVars.size();
+        for(int j = 0; j < i; j++)
+        {
+            java.util.ArrayList arraylist = (java.util.ArrayList)sectVars.get(j);
+            if(arraylist != null)
+                l1 = _finger(l1, arraylist);
+        }
+
+        i = sectValues.size();
+        for(int k = 0; k < i; k++)
+        {
+            java.util.ArrayList arraylist1 = (java.util.ArrayList)sectValues.get(k);
+            if(arraylist1 != null)
+                l1 = _finger(l1, arraylist1);
+        }
+
+        return l1;
+    }
+
+    public long fingerExcludeSectPrefix(java.lang.String s)
+    {
+        long l = 0L;
+        int i = sectNames.size();
+        for(int j = 0; j < i; j++)
+        {
+            java.lang.String s1 = (java.lang.String)sectNames.get(j);
+            if(s1.startsWith(s))
+                continue;
+            l = com.maddox.rts.Finger.incLong(l, s1);
+            java.util.ArrayList arraylist = (java.util.ArrayList)sectVars.get(j);
+            if(arraylist != null)
+                l = _finger(l, arraylist);
+            arraylist = (java.util.ArrayList)sectValues.get(j);
+            if(arraylist != null)
+                l = _finger(l, arraylist);
+        }
+
+        return l;
+    }
+
+    private int listFindString(java.util.List list, int i, java.lang.String s)
+    {
+        for(; i < list.size(); i++)
+        {
+            java.lang.String s1 = (java.lang.String)list.get(i);
+            if(s.compareToIgnoreCase(s1) == 0)
+                return i;
+        }
+
         return -1;
-      }
-    } else {
-      return -1;
     }
-    checkSaved();
-    return localList1.size() - 1;
-  }
-  public boolean varExist(int paramInt1, String paramString, int paramInt2) {
-    return varIndex(paramInt1, paramString, paramInt2) != -1;
-  }
-  public boolean varExist(int paramInt, String paramString) {
-    return varIndex(paramInt, paramString, 0) != -1;
-  }
 
-  public int varIndex(int paramInt1, String paramString, int paramInt2) {
-    List localList = (List)this.sectVars.get(paramInt1);
-    if ((paramInt2 == 0) && (this.hashNames != null)) {
-      HashMap localHashMap = (HashMap)this.hashVars.get(paramInt1);
-      Integer localInteger = (Integer)localHashMap.get(paramString);
-      if (localInteger != null) {
-        return localInteger.intValue();
-      }
+    public java.lang.String fileName()
+    {
+        return fileName;
     }
-    return listFindString(localList, paramInt2, paramString);
-  }
 
-  public int varIndex(int paramInt, String paramString) {
-    return varIndex(paramInt, paramString, 0);
-  }
-
-  public boolean exist(String paramString1, String paramString2)
-  {
-    int i = sectionIndex(paramString1);
-    if (i == -1)
-      return false;
-    return varExist(i, paramString2);
-  }
-
-  public String get(String paramString1, String paramString2) {
-    int i = sectionIndex(paramString1);
-    if (i == -1)
-      return null;
-    int j = varIndex(i, paramString2);
-    if (j == -1)
-      return null;
-    return value(i, j);
-  }
-
-  public Object get(String paramString1, String paramString2, Object paramObject) {
-    String str = get(paramString1, paramString2);
-    if (str == null)
-      return null;
-    return ObjIO.fromString(paramObject, str);
-  }
-
-  public Object get(String paramString1, String paramString2, Object paramObject, Class paramClass) {
-    String str = get(paramString1, paramString2);
-    if (str == null)
-      return null;
-    return ObjIO.fromString(paramObject, paramClass, str);
-  }
-
-  public Object get(String paramString, Object paramObject, Class paramClass) {
-    int i = sectionIndex(paramString);
-    if (i == -1)
-      return null;
-    int j = vars(i);
-    for (int k = 0; k < j; k++)
-      _getsetMap.put(var(i, k), value(i, k));
-    Object localObject = ObjIO.fromStrings(paramObject, paramClass, _getsetMap);
-    _getsetMap.clear();
-    return localObject;
-  }
-
-  public void remove(String paramString1, String paramString2) {
-    int i = sectionIndex(paramString1);
-    if (i == -1)
-      return;
-    int j = varIndex(i, paramString2);
-    if (j == -1)
-      return;
-    lineRemove(i, j);
-  }
-
-  public void set(String paramString1, String paramString2, String paramString3) {
-    int i = sectionIndex(paramString1);
-    if (i == -1)
-      i = sectionAdd(paramString1);
-    int j = varIndex(i, paramString2);
-    if (j == -1)
-      lineAdd(i, paramString2, paramString3);
-    else
-      value(i, j, paramString3); 
-  }
-
-  public void set(String paramString1, String paramString2, int paramInt) {
-    set(paramString1, paramString2, Integer.toString(paramInt));
-  }
-  public void set(String paramString1, String paramString2, float paramFloat) {
-    set(paramString1, paramString2, Float.toString(paramFloat));
-  }
-  public void set(String paramString1, String paramString2, boolean paramBoolean) {
-    set(paramString1, paramString2, paramBoolean ? "1" : "0");
-  }
-
-  public void set(String paramString1, String paramString2, Object paramObject, boolean paramBoolean) {
-    set(paramString1, paramString2, ObjIO.toString(paramObject, paramBoolean));
-  }
-
-  public void set(String paramString, Object paramObject) {
-    if ((ObjIO.toStrings(_getsetMap, paramObject)) && (_getsetMap.size() > 0)) {
-      Iterator localIterator = _getsetMap.entrySet().iterator();
-      while (localIterator.hasNext()) {
-        Map.Entry localEntry = (Map.Entry)localIterator.next();
-        set(paramString, (String)localEntry.getKey(), (String)localEntry.getValue());
-      }
-      _getsetMap.clear();
+    public void setFileName(java.lang.String s)
+    {
+        fileName = s;
     }
-  }
 
-  public String get(String paramString1, String paramString2, String paramString3, boolean paramBoolean)
-  {
-    int i = sectionIndex(paramString1);
-    if (i == -1) {
-      if (!paramBoolean)
-        return paramString3;
-      i = sectionAdd(paramString1);
+    public void createIndexes()
+    {
+        clearIndexes();
+        int i = sectNames.size();
+        hashNames = new HashMap();
+        hashVars = new ArrayList(i);
+        for(int j = 0; j < i; j++)
+        {
+            java.lang.String s = (java.lang.String)sectNames.get(j);
+            if(!hashNames.containsKey(s))
+                hashNames.put(s, new Integer(j));
+            java.util.List list = (java.util.List)sectVars.get(j);
+            int k = list.size();
+            java.util.HashMap hashmap = new HashMap();
+            hashVars.add(hashmap);
+            for(int l = 0; l < k; l++)
+            {
+                java.lang.String s1 = (java.lang.String)list.get(l);
+                if(!hashmap.containsKey(s1))
+                    hashmap.put(s1, new Integer(l));
+            }
+
+        }
+
     }
-    int j = varIndex(i, paramString2);
-    if (j == -1) {
-      if (paramBoolean)
-        lineAdd(i, paramString2, paramString3 == null ? "" : paramString3);
-      return paramString3;
+
+    public void clearIndexes()
+    {
+        hashNames = null;
+        hashVars = null;
     }
-    return value(i, j);
-  }
-  public String get(String paramString1, String paramString2, String paramString3) {
-    return get(paramString1, paramString2, paramString3, paramString3 != null);
-  }
 
-  public float get(String paramString1, String paramString2, float paramFloat, boolean paramBoolean) {
-    String str = get(paramString1, paramString2, Float.toString(paramFloat), paramBoolean);
-    float f = paramFloat;
-    try { f = Float.parseFloat(str); } catch (Exception localException) {
-    }return f;
-  }
-  public float get(String paramString1, String paramString2, float paramFloat) {
-    return get(paramString1, paramString2, paramFloat, !this.bNotSave);
-  }
+    public int sections()
+    {
+        return sectNames.size();
+    }
 
-  public float get(String paramString1, String paramString2, float paramFloat1, float paramFloat2, float paramFloat3, boolean paramBoolean) {
-    float f = get(paramString1, paramString2, paramFloat1, paramBoolean);
-    if (f < paramFloat2) f = paramFloat2;
-    if (f > paramFloat3) f = paramFloat3;
-    return f;
-  }
-  public float get(String paramString1, String paramString2, float paramFloat1, float paramFloat2, float paramFloat3) {
-    return get(paramString1, paramString2, paramFloat1, paramFloat2, paramFloat3, !this.bNotSave);
-  }
+    public java.lang.String sectionName(int i)
+    {
+        return (java.lang.String)sectNames.get(i);
+    }
 
-  public int get(String paramString1, String paramString2, int paramInt, boolean paramBoolean) {
-    String str = get(paramString1, paramString2, Integer.toString(paramInt), paramBoolean);
-    int i = paramInt;
-    try { i = Integer.parseInt(str); } catch (Exception localException) {
-    }return i;
-  }
-  public int get(String paramString1, String paramString2, int paramInt) {
-    return get(paramString1, paramString2, paramInt, !this.bNotSave);
-  }
+    public void sectionRename(int i, java.lang.String s)
+    {
+        sectNames.set(i, s);
+        checkSaved();
+    }
 
-  public int get(String paramString1, String paramString2, int paramInt1, int paramInt2, int paramInt3, boolean paramBoolean) {
-    int i = get(paramString1, paramString2, paramInt1, paramBoolean);
-    if (i < paramInt2) i = paramInt2;
-    if (i > paramInt3) i = paramInt3;
-    return i;
-  }
-  public int get(String paramString1, String paramString2, int paramInt1, int paramInt2, int paramInt3) {
-    return get(paramString1, paramString2, paramInt1, paramInt2, paramInt3, !this.bNotSave);
-  }
+    public int sectionAdd(java.lang.String s)
+    {
+        clearIndexes();
+        java.util.ArrayList arraylist = new ArrayList();
+        java.util.ArrayList arraylist1 = new ArrayList();
+        sectNames.add(s);
+        sectVars.add(arraylist);
+        sectValues.add(arraylist1);
+        checkSaved();
+        return sectNames.size() - 1;
+    }
 
-  public boolean get(String paramString1, String paramString2, boolean paramBoolean1, boolean paramBoolean2) {
-    int i = get(paramString1, paramString2, paramBoolean1 ? 1 : 0, paramBoolean2);
-    return i != 0;
-  }
-  public boolean get(String paramString1, String paramString2, boolean paramBoolean) {
-    return get(paramString1, paramString2, paramBoolean, !this.bNotSave);
-  }
+    public boolean sectionExist(java.lang.String s, int i)
+    {
+        return sectionIndex(s, i) != -1;
+    }
+
+    public boolean sectionExist(java.lang.String s)
+    {
+        return sectionIndex(s, 0) != -1;
+    }
+
+    public int sectionIndex(java.lang.String s, int i)
+    {
+        if(i == 0 && hashNames != null)
+        {
+            java.lang.Integer integer = (java.lang.Integer)hashNames.get(s);
+            if(integer != null)
+                return integer.intValue();
+        }
+        return listFindString(sectNames, i, s);
+    }
+
+    public int sectionIndex(java.lang.String s)
+    {
+        return sectionIndex(s, 0);
+    }
+
+    public void sectionClear(int i)
+    {
+        clearIndexes();
+        java.util.List list = (java.util.List)sectVars.get(i);
+        java.util.List list1 = (java.util.List)sectValues.get(i);
+        list.clear();
+        list1.clear();
+        checkSaved();
+    }
+
+    public void sectionRemove(int i)
+    {
+        sectionClear(i);
+        sectNames.remove(i);
+        sectVars.remove(i);
+        sectValues.remove(i);
+    }
+
+    public void clear()
+    {
+        for(int i = sections(); i-- > 0;)
+            sectionRemove(0);
+
+    }
+
+    public int vars(int i)
+    {
+        java.util.List list = (java.util.List)sectVars.get(i);
+        return list.size();
+    }
+
+    public java.lang.String var(int i, int j)
+    {
+        java.util.List list = (java.util.List)sectVars.get(i);
+        return (java.lang.String)list.get(j);
+    }
+
+    public java.lang.String value(int i, int j)
+    {
+        java.util.List list = (java.util.List)sectValues.get(i);
+        return (java.lang.String)list.get(j);
+    }
+
+    public java.lang.String line(int i, int j)
+    {
+        java.util.List list = (java.util.List)sectVars.get(i);
+        java.util.List list1 = (java.util.List)sectValues.get(i);
+        java.lang.String s = (java.lang.String)list1.get(j);
+        if("".equals(s))
+            return (java.lang.String)list.get(j);
+        else
+            return (java.lang.String)list.get(j) + ' ' + s;
+    }
+
+    public void var(int i, int j, java.lang.String s)
+    {
+        java.util.List list = (java.util.List)sectVars.get(i);
+        list.set(j, s);
+        checkSaved();
+    }
+
+    public void value(int i, int j, java.lang.String s)
+    {
+        java.util.List list = (java.util.List)sectValues.get(i);
+        list.set(j, s);
+        checkSaved();
+    }
+
+    public void line(int i, int j, java.lang.String s, java.lang.String s1)
+    {
+        java.util.List list = (java.util.List)sectVars.get(i);
+        java.util.List list1 = (java.util.List)sectValues.get(i);
+        list.set(j, s);
+        list1.set(j, s1);
+        checkSaved();
+    }
+
+    public void line(int i, int j, java.lang.String s)
+    {
+        java.util.List list = (java.util.List)sectVars.get(i);
+        java.util.List list1 = (java.util.List)sectValues.get(i);
+        if(s == null || s.length() == 0)
+        {
+            list.remove(j);
+            list1.remove(j);
+            checkSaved();
+            return;
+        }
+        int k = s.length();
+        if(strBuf.length < k)
+            strBuf = new char[k];
+        s.getChars(0, k, strBuf, 0);
+        strPtr = 0;
+        strEnd = k;
+        removeComments();
+        if(strEnd - strPtr > 0)
+        {
+            java.lang.String s1 = readVariable();
+            if(s1 != null)
+            {
+                list.set(j, s1);
+                list1.set(j, readValue());
+            } else
+            {
+                list.remove(j);
+                list1.remove(j);
+            }
+        } else
+        {
+            list.remove(j);
+            list1.remove(j);
+        }
+        checkSaved();
+    }
+
+    public void lineRemove(int i, int j)
+    {
+        clearIndexes();
+        java.util.List list = (java.util.List)sectVars.get(i);
+        java.util.List list1 = (java.util.List)sectValues.get(i);
+        list.remove(j);
+        list1.remove(j);
+        checkSaved();
+    }
+
+    public int varAdd(int i, java.lang.String s)
+    {
+        clearIndexes();
+        java.util.List list = (java.util.List)sectVars.get(i);
+        java.util.List list1 = (java.util.List)sectValues.get(i);
+        list.add(s);
+        list1.add("");
+        checkSaved();
+        return list.size() - 1;
+    }
+
+    public int lineAdd(int i, java.lang.String s, java.lang.String s1)
+    {
+        clearIndexes();
+        java.util.List list = (java.util.List)sectVars.get(i);
+        java.util.List list1 = (java.util.List)sectValues.get(i);
+        list.add(s);
+        list1.add(s1);
+        checkSaved();
+        return list.size() - 1;
+    }
+
+    public int lineAdd(int i, java.lang.String s)
+    {
+        clearIndexes();
+        java.util.List list = (java.util.List)sectVars.get(i);
+        java.util.List list1 = (java.util.List)sectValues.get(i);
+        if(s == null || s.length() == 0)
+            return -1;
+        int j = s.length();
+        if(strBuf.length < j)
+            strBuf = new char[j];
+        s.getChars(0, j, strBuf, 0);
+        strPtr = 0;
+        strEnd = j;
+        removeComments();
+        if(strEnd - strPtr > 0)
+        {
+            java.lang.String s1 = readVariable();
+            if(s1 != null)
+            {
+                list.add(s1);
+                list1.add(readValue());
+            } else
+            {
+                return -1;
+            }
+        } else
+        {
+            return -1;
+        }
+        checkSaved();
+        return list.size() - 1;
+    }
+
+    public boolean varExist(int i, java.lang.String s, int j)
+    {
+        return varIndex(i, s, j) != -1;
+    }
+
+    public boolean varExist(int i, java.lang.String s)
+    {
+        return varIndex(i, s, 0) != -1;
+    }
+
+    public int varIndex(int i, java.lang.String s, int j)
+    {
+        java.util.List list = (java.util.List)sectVars.get(i);
+        if(j == 0 && hashNames != null)
+        {
+            java.util.HashMap hashmap = (java.util.HashMap)hashVars.get(i);
+            java.lang.Integer integer = (java.lang.Integer)hashmap.get(s);
+            if(integer != null)
+                return integer.intValue();
+        }
+        return listFindString(list, j, s);
+    }
+
+    public int varIndex(int i, java.lang.String s)
+    {
+        return varIndex(i, s, 0);
+    }
+
+    public boolean exist(java.lang.String s, java.lang.String s1)
+    {
+        int i = sectionIndex(s);
+        if(i == -1)
+            return false;
+        else
+            return varExist(i, s1);
+    }
+
+    public java.lang.String get(java.lang.String s, java.lang.String s1)
+    {
+        int i = sectionIndex(s);
+        if(i == -1)
+            return null;
+        int j = varIndex(i, s1);
+        if(j == -1)
+            return null;
+        else
+            return value(i, j);
+    }
+
+    public java.lang.Object get(java.lang.String s, java.lang.String s1, java.lang.Object obj)
+    {
+        java.lang.String s2 = get(s, s1);
+        if(s2 == null)
+            return null;
+        else
+            return com.maddox.rts.ObjIO.fromString(obj, s2);
+    }
+
+    public java.lang.Object get(java.lang.String s, java.lang.String s1, java.lang.Object obj, java.lang.Class class1)
+    {
+        java.lang.String s2 = get(s, s1);
+        if(s2 == null)
+            return null;
+        else
+            return com.maddox.rts.ObjIO.fromString(obj, class1, s2);
+    }
+
+    public java.lang.Object get(java.lang.String s, java.lang.Object obj, java.lang.Class class1)
+    {
+        int i = sectionIndex(s);
+        if(i == -1)
+            return null;
+        int j = vars(i);
+        for(int k = 0; k < j; k++)
+            _getsetMap.put(var(i, k), value(i, k));
+
+        java.lang.Object obj1 = com.maddox.rts.ObjIO.fromStrings(obj, class1, _getsetMap);
+        _getsetMap.clear();
+        return obj1;
+    }
+
+    public void remove(java.lang.String s, java.lang.String s1)
+    {
+        int i = sectionIndex(s);
+        if(i == -1)
+            return;
+        int j = varIndex(i, s1);
+        if(j == -1)
+        {
+            return;
+        } else
+        {
+            lineRemove(i, j);
+            return;
+        }
+    }
+
+    public void set(java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        int i = sectionIndex(s);
+        if(i == -1)
+            i = sectionAdd(s);
+        int j = varIndex(i, s1);
+        if(j == -1)
+            lineAdd(i, s1, s2);
+        else
+            value(i, j, s2);
+    }
+
+    public void set(java.lang.String s, java.lang.String s1, int i)
+    {
+        set(s, s1, java.lang.Integer.toString(i));
+    }
+
+    public void set(java.lang.String s, java.lang.String s1, float f)
+    {
+        set(s, s1, java.lang.Float.toString(f));
+    }
+
+    public void set(java.lang.String s, java.lang.String s1, boolean flag)
+    {
+        set(s, s1, flag ? "1" : "0");
+    }
+
+    public void set(java.lang.String s, java.lang.String s1, java.lang.Object obj, boolean flag)
+    {
+        set(s, s1, com.maddox.rts.ObjIO.toString(obj, flag));
+    }
+
+    public void set(java.lang.String s, java.lang.Object obj)
+    {
+        if(com.maddox.rts.ObjIO.toStrings(_getsetMap, obj) && _getsetMap.size() > 0)
+        {
+            java.util.Map.Entry entry;
+            for(java.util.Iterator iterator = _getsetMap.entrySet().iterator(); iterator.hasNext(); set(s, (java.lang.String)entry.getKey(), (java.lang.String)entry.getValue()))
+                entry = (java.util.Map.Entry)iterator.next();
+
+            _getsetMap.clear();
+        }
+    }
+
+    public java.lang.String get(java.lang.String s, java.lang.String s1, java.lang.String s2, boolean flag)
+    {
+        int i = sectionIndex(s);
+        if(i == -1)
+        {
+            if(!flag)
+                return s2;
+            i = sectionAdd(s);
+        }
+        int j = varIndex(i, s1);
+        if(j == -1)
+        {
+            if(flag)
+                lineAdd(i, s1, s2 != null ? s2 : "");
+            return s2;
+        } else
+        {
+            return value(i, j);
+        }
+    }
+
+    public java.lang.String get(java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        return get(s, s1, s2, s2 != null ? !bNotSave : false);
+    }
+
+    public float get(java.lang.String s, java.lang.String s1, float f, boolean flag)
+    {
+        java.lang.String s2 = get(s, s1, java.lang.Float.toString(f), flag);
+        float f1 = f;
+        try
+        {
+            f1 = java.lang.Float.parseFloat(s2);
+        }
+        catch(java.lang.Exception exception) { }
+        return f1;
+    }
+
+    public float get(java.lang.String s, java.lang.String s1, float f)
+    {
+        return get(s, s1, f, !bNotSave);
+    }
+
+    public float get(java.lang.String s, java.lang.String s1, float f, float f1, float f2, boolean flag)
+    {
+        float f3 = get(s, s1, f, flag);
+        if(f3 < f1)
+            f3 = f1;
+        if(f3 > f2)
+            f3 = f2;
+        return f3;
+    }
+
+    public float get(java.lang.String s, java.lang.String s1, float f, float f1, float f2)
+    {
+        return get(s, s1, f, f1, f2, !bNotSave);
+    }
+
+    public int get(java.lang.String s, java.lang.String s1, int i, boolean flag)
+    {
+        java.lang.String s2 = get(s, s1, java.lang.Integer.toString(i), flag);
+        int j = i;
+        try
+        {
+            j = java.lang.Integer.parseInt(s2);
+        }
+        catch(java.lang.Exception exception) { }
+        return j;
+    }
+
+    public int get(java.lang.String s, java.lang.String s1, int i)
+    {
+        return get(s, s1, i, !bNotSave);
+    }
+
+    public int get(java.lang.String s, java.lang.String s1, int i, int j, int k, boolean flag)
+    {
+        int l = get(s, s1, i, flag);
+        if(l < j)
+            l = j;
+        if(l > k)
+            l = k;
+        return l;
+    }
+
+    public int get(java.lang.String s, java.lang.String s1, int i, int j, int k)
+    {
+        return get(s, s1, i, j, k, !bNotSave);
+    }
+
+    public boolean get(java.lang.String s, java.lang.String s1, boolean flag, boolean flag1)
+    {
+        int i = get(s, s1, flag ? 1 : 0, flag1);
+        return i != 0;
+    }
+
+    public boolean get(java.lang.String s, java.lang.String s1, boolean flag)
+    {
+        return get(s, s1, flag, !bNotSave);
+    }
+
+    public static final int NOT_SAVE = 0;
+    public static final int SAVE = 1;
+    public static final int SAVE_ON_CHANGE = 2;
+    public static final int NOT_COMMENT = 4;
+    protected java.util.ArrayList sectNames;
+    private java.util.HashMap hashNames;
+    protected java.util.ArrayList sectVars;
+    private java.util.ArrayList hashVars;
+    protected java.util.ArrayList sectValues;
+    protected java.lang.String fileName;
+    protected boolean saveOnChange;
+    protected boolean bChanged;
+    protected boolean bNotSave;
+    protected boolean bComment;
+    protected boolean bTypeErrorMessages;
+    private int kryptoKey[];
+    private java.lang.String enc;
+    private boolean bUseUnicodeTo8bit;
+    private static char strBuf[] = new char[256];
+    private static int strPtr = 0;
+    private static int strEnd = 0;
+    private static java.util.HashMap _getsetMap = new HashMap();
+
 }

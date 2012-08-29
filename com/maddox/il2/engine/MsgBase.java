@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MsgBase.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.rts.Message;
@@ -5,70 +10,112 @@ import com.maddox.rts.MessageCache;
 import com.maddox.rts.RTSConf;
 import com.maddox.rts.Time;
 
-public class MsgBase extends Message
+// Referenced classes of package com.maddox.il2.engine:
+//            MsgBaseListener, Actor, Hook
+
+public class MsgBase extends com.maddox.rts.Message
 {
-  private int _id;
-  private Hook _hook;
-  private Actor _oldBase;
-  private Hook _oldHook;
-  public static final int ATTACH = 0;
-  public static final int DETACH = 1;
-  public static final int CHANGE = 2;
-  private static MessageCache cache = new MessageCache(MsgBase.class);
 
-  public MsgBase()
-  {
-    this._id = -1;
-    this._hook = null;
-    this._oldBase = null;
-    this._oldHook = null;
-  }
-
-  public void clean() {
-    super.clean();
-    this._hook = null;
-    this._oldBase = null;
-    this._oldHook = null;
-  }
-
-  protected static void attach(Actor paramActor1, Actor paramActor2) {
-    if (RTSConf.isResetGame()) return;
-    if (paramActor1.isRealTime()) cacheGet(0, null, null, null).post(64, paramActor1, Time.currentReal(), paramActor2); else
-      cacheGet(0, null, null, null).post(0, paramActor1, Time.current(), paramActor2);
-  }
-
-  protected static void detach(Actor paramActor1, Actor paramActor2) {
-    if (RTSConf.isResetGame()) return;
-    if (paramActor1.isRealTime()) cacheGet(1, null, null, null).post(64, paramActor1, Time.currentReal(), paramActor2); else
-      cacheGet(1, null, null, null).post(0, paramActor1, Time.current(), paramActor2);
-  }
-
-  protected static void change(Actor paramActor1, Actor paramActor2, Hook paramHook1, Actor paramActor3, Hook paramHook2) {
-    if (RTSConf.isResetGame()) return;
-    if (paramActor1.isRealTime()) cacheGet(2, paramHook1, paramActor3, paramHook2).post(64, paramActor1, Time.currentReal(), paramActor2); else
-      cacheGet(2, paramHook1, paramActor3, paramHook2).post(0, paramActor1, Time.current(), paramActor2);
-  }
-
-  public boolean invokeListener(Object paramObject) {
-    if ((paramObject instanceof MsgBaseListener)) {
-      switch (this._id) { case 0:
-        ((MsgBaseListener)paramObject).msgBaseAttach((Actor)this._sender); break;
-      case 1:
-        ((MsgBaseListener)paramObject).msgBaseDetach((Actor)this._sender); break;
-      case 2:
-        ((MsgBaseListener)paramObject).msgBaseChange((Actor)this._sender, this._hook, this._oldBase, this._oldHook);
-      }
-      return true;
+    public MsgBase()
+    {
+        _id = -1;
+        _hook = null;
+        _oldBase = null;
+        _oldHook = null;
     }
-    return false;
-  }
 
-  private static MsgBase cacheGet(int paramInt, Hook paramHook1, Actor paramActor, Hook paramHook2) {
-    MsgBase localMsgBase = (MsgBase)cache.get();
-    localMsgBase._id = paramInt;
-    localMsgBase._hook = paramHook1;
-    localMsgBase._oldBase = paramActor;
-    localMsgBase._oldHook = paramHook2;
-    return localMsgBase;
-  }
+    public void clean()
+    {
+        super.clean();
+        _hook = null;
+        _oldBase = null;
+        _oldHook = null;
+    }
+
+    protected static void attach(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        if(com.maddox.rts.RTSConf.isResetGame())
+            return;
+        if(actor.isRealTime())
+            com.maddox.il2.engine.MsgBase.cacheGet(0, null, null, null).post(64, actor, com.maddox.rts.Time.currentReal(), actor1);
+        else
+            com.maddox.il2.engine.MsgBase.cacheGet(0, null, null, null).post(0, actor, com.maddox.rts.Time.current(), actor1);
+    }
+
+    protected static void detach(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        if(com.maddox.rts.RTSConf.isResetGame())
+            return;
+        if(actor.isRealTime())
+            com.maddox.il2.engine.MsgBase.cacheGet(1, null, null, null).post(64, actor, com.maddox.rts.Time.currentReal(), actor1);
+        else
+            com.maddox.il2.engine.MsgBase.cacheGet(1, null, null, null).post(0, actor, com.maddox.rts.Time.current(), actor1);
+    }
+
+    protected static void change(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1, com.maddox.il2.engine.Hook hook, com.maddox.il2.engine.Actor actor2, com.maddox.il2.engine.Hook hook1)
+    {
+        if(com.maddox.rts.RTSConf.isResetGame())
+            return;
+        if(actor.isRealTime())
+            com.maddox.il2.engine.MsgBase.cacheGet(2, hook, actor2, hook1).post(64, actor, com.maddox.rts.Time.currentReal(), actor1);
+        else
+            com.maddox.il2.engine.MsgBase.cacheGet(2, hook, actor2, hook1).post(0, actor, com.maddox.rts.Time.current(), actor1);
+    }
+
+    public boolean invokeListener(java.lang.Object obj)
+    {
+        if(obj instanceof com.maddox.il2.engine.MsgBaseListener)
+        {
+            switch(_id)
+            {
+            case 0: // '\0'
+                ((com.maddox.il2.engine.MsgBaseListener)obj).msgBaseAttach((com.maddox.il2.engine.Actor)_sender);
+                break;
+
+            case 1: // '\001'
+                ((com.maddox.il2.engine.MsgBaseListener)obj).msgBaseDetach((com.maddox.il2.engine.Actor)_sender);
+                break;
+
+            case 2: // '\002'
+                ((com.maddox.il2.engine.MsgBaseListener)obj).msgBaseChange((com.maddox.il2.engine.Actor)_sender, _hook, _oldBase, _oldHook);
+                break;
+            }
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    private static com.maddox.il2.engine.MsgBase cacheGet(int i, com.maddox.il2.engine.Hook hook, com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Hook hook1)
+    {
+        com.maddox.il2.engine.MsgBase msgbase = (com.maddox.il2.engine.MsgBase)cache.get();
+        msgbase._id = i;
+        msgbase._hook = hook;
+        msgbase._oldBase = actor;
+        msgbase._oldHook = hook1;
+        return msgbase;
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    private int _id;
+    private com.maddox.il2.engine.Hook _hook;
+    private com.maddox.il2.engine.Actor _oldBase;
+    private com.maddox.il2.engine.Hook _oldHook;
+    public static final int ATTACH = 0;
+    public static final int DETACH = 1;
+    public static final int CHANGE = 2;
+    private static com.maddox.rts.MessageCache cache;
+
+    static 
+    {
+        cache = new MessageCache(com.maddox.il2.engine.MsgBase.class);
+    }
 }

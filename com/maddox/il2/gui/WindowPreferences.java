@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   WindowPreferences.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GSize;
@@ -25,381 +30,444 @@ import java.util.Iterator;
 
 public class WindowPreferences
 {
-  public static GWindowFramed framed;
-  public static GWindowComboControl comboResolution;
-  public static ArrayList screenModes = new ArrayList();
-
-  public static int _findVideoMode(ScreenMode paramScreenMode) {
-    for (int i = 0; i < screenModes.size(); i++) {
-      ScreenMode localScreenMode = (ScreenMode)screenModes.get(i);
-      if ((localScreenMode.width() == paramScreenMode.width()) && (localScreenMode.height() == paramScreenMode.height()) && (localScreenMode.colourBits() == paramScreenMode.colourBits()))
-      {
-        return i;
-      }
-    }
-    return 0;
-  }
-
-  public static GWindowFramed create(GWindowRoot paramGWindowRoot)
-  {
-    framed = (GWindowFramed)paramGWindowRoot.create(1.666667F, 8.333333F, 33.333332F, 25.0F, true, new GWindowFramed());
-
-    framed.title = "Preferences";
-    GWindowTabDialogClient localGWindowTabDialogClient = (GWindowTabDialogClient)framed.create(new GWindowTabDialogClient());
-    framed.clientWindow = localGWindowTabDialogClient;
-
-    ScreenMode[] arrayOfScreenMode = ScreenMode.all();
-    for (int i = 0; i < arrayOfScreenMode.length; i++) {
-      localObject1 = arrayOfScreenMode[i];
-      if ((((ScreenMode)localObject1).colourBits() >= 15) && (((ScreenMode)localObject1).height() >= 240.0F)) {
-        screenModes.add(localObject1);
-      }
-    }
-    if (screenModes.size() > 0)
+    static class CheckCfgFlag extends com.maddox.gwindow.GWindowCheckBox
     {
-      localGWindowScrollingDialogClient1 = (GWindowScrollingDialogClient)localGWindowTabDialogClient.create(new GWindowScrollingDialogClient());
 
-      localGWindowTabDialogClient.addTab("Video", localGWindowScrollingDialogClient1);
-      localObject1 = (GWindowDialogClient)localGWindowScrollingDialogClient1.create(new GWindowDialogClient() {
-        public void created() { super.created();
-          setMetricSize(24.0F, 14.0F); }
-
-        public GSize getMinSize(GSize paramGSize) {
-          paramGSize.dx = lookAndFeel().metric(24.0F);
-          paramGSize.dy = lookAndFeel().metric(14.0F);
-          return paramGSize;
-        }
-
-        public void render()
+        public void resolutionChanged()
         {
+            super.resolutionChanged();
+            cfg.reset();
+            setChecked(cfg.get(iFlag), false);
+            setEnable(cfg.isEnabledFlag(iFlag));
         }
-      });
-      localGWindowScrollingDialogClient1.fixed = ((GWindowDialogClient)localObject1);
 
-      ((GWindowDialogClient)localObject1).addLabel(new GWindowLabel((GWindow)localObject1, 2.0F, 2.0F, 8.0F, ((GWindowDialogClient)localObject1).lookAndFeel().getComboHmetric(), "Resolution", null));
-
-      ((GWindowDialogClient)localObject1).addControl(WindowPreferences.comboResolution = new GWindowComboControl((GWindow)localObject1, 10.0F, 2.0F, 12.0F)
-      {
-        public boolean notify(int paramInt1, int paramInt2) {
-          if (paramInt1 == 2)
-          {
-            new MsgAction(64, 0.2D, "") {
-              public void doAction(Object paramObject) {
-                int i = WindowPreferences.2.this.getSelected();
-                ScreenMode localScreenMode = (ScreenMode)WindowPreferences.screenModes.get(i);
-                CmdEnv.top().exec("window " + localScreenMode.width() + " " + localScreenMode.height() + " " + localScreenMode.colourBits() + " " + localScreenMode.colourBits() + " FULL");
-
-                WindowPreferences.2.this.setSelected(WindowPreferences._findVideoMode(ScreenMode.current()), true, false);
-              }
-            };
-            return true;
-          }
-          return super.notify(paramInt1, paramInt2);
+        public boolean notify(int i, int j)
+        {
+            if(i == 2)
+            {
+                bChecked = !bChecked;
+                if(bUpdate)
+                {
+                    cfg.set(iFlag, isChecked());
+                    int k = cfg.apply(iFlag);
+                    cfg.reset();
+                    cfg.applyExtends(k);
+                    boolean flag = cfg.get(iFlag);
+                    if(flag != isChecked())
+                        setChecked(flag, false);
+                } else
+                {
+                    bChanged = true;
+                }
+                return true;
+            } else
+            {
+                return super.notify(i, j);
+            }
         }
-      });
-      comboResolution.setEditable(false);
-      for (int j = 0; j < screenModes.size(); j++) {
-        ScreenMode localScreenMode = (ScreenMode)screenModes.get(j);
-        comboResolution.add(localScreenMode.width() + "x" + localScreenMode.height() + "x" + localScreenMode.colourBits());
-      }
-      comboResolution.setSelected(_findVideoMode(ScreenMode.current()), true, false);
-      comboResolution.resized();
-    }
 
-    GWindowScrollingDialogClient localGWindowScrollingDialogClient1 = (GWindowScrollingDialogClient)localGWindowTabDialogClient.create(new GWindowScrollingDialogClient());
+        public com.maddox.rts.CfgFlags cfg;
+        public int iFlag;
+        public boolean bUpdate;
+        public boolean bChanged;
 
-    localGWindowTabDialogClient.addTab("Render", localGWindowScrollingDialogClient1);
-    Object localObject1 = (GWindowDialogClient)localGWindowScrollingDialogClient1.create(new GWindowDialogClient() {
-      public void created() { super.created();
-        setMetricSize(24.0F, 53.0F); }
-
-      public GSize getMinSize(GSize paramGSize) {
-        paramGSize.dx = lookAndFeel().metric(24.0F);
-        paramGSize.dy = lookAndFeel().metric(14.0F);
-        return paramGSize;
-      }
-
-      public void render()
-      {
-      }
-    });
-    localGWindowScrollingDialogClient1.fixed = ((GWindowDialogClient)localObject1);
-
-    createCfgInt((GWindowDialogClient)localObject1, 2.0F, 2.0F, 8.0F, 10.0F, 8.0F, "TexQual", true);
-    createCfgInt((GWindowDialogClient)localObject1, 4.0F, 2.0F, 8.0F, 10.0F, 8.0F, "TexMipFilter", true);
-    createCfgInt((GWindowDialogClient)localObject1, 6.0F, 2.0F, 8.0F, 10.0F, 8.0F, "LandDetails", true);
-    createCfgInt((GWindowDialogClient)localObject1, 8.0F, 2.0F, 8.0F, 10.0F, 8.0F, "LandShading", true);
-    createCfgInt((GWindowDialogClient)localObject1, 10.0F, 2.0F, 8.0F, 10.0F, 8.0F, "Forest", true);
-    createCfgInt((GWindowDialogClient)localObject1, 12.0F, 2.0F, 8.0F, 10.0F, 8.0F, "Sky", true);
-
-    createCfgInt((GWindowDialogClient)localObject1, 15.0F, 2.0F, 8.0F, 10.0F, 8.0F, "DynamicalLights", true);
-    createCfgInt((GWindowDialogClient)localObject1, 17.0F, 2.0F, 8.0F, 10.0F, 8.0F, "DiffuseLight", true);
-    createCfgInt((GWindowDialogClient)localObject1, 19.0F, 2.0F, 8.0F, 10.0F, 8.0F, "SpecularLight", true);
-    createCfgInt((GWindowDialogClient)localObject1, 21.0F, 2.0F, 8.0F, 10.0F, 8.0F, "Specular", true);
-    createCfgInt((GWindowDialogClient)localObject1, 23.0F, 2.0F, 8.0F, 10.0F, 8.0F, "Shadows", true);
-    createCfgFlag((GWindowDialogClient)localObject1, 25.0F, 10.0F, 2.0F, 8.0F, "ShadowsFlags", 0, true);
-
-    CfgFlags localCfgFlags = (CfgFlags)CfgTools.get("TexFlags");
-    int k = localCfgFlags.firstFlag();
-    int m = localCfgFlags.countFlags();
-    for (int n = 0; n < m; n++) {
-      createCfgFlag((GWindowDialogClient)localObject1, 28.0F + n * 1.5F, 14.0F, 2.0F, 12.0F, "TexFlags", n + k, true);
-    }
-
-    GWindowScrollingDialogClient localGWindowScrollingDialogClient2 = (GWindowScrollingDialogClient)localGWindowTabDialogClient.create(new GWindowScrollingDialogClient());
-
-    localGWindowTabDialogClient.addTab("Sound", localGWindowScrollingDialogClient2);
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)localGWindowScrollingDialogClient2.create(new GWindowDialogClient() {
-      public void created() { super.created();
-        setMetricSize(24.0F, 28.0F); }
-
-      public GSize getMinSize(GSize paramGSize) {
-        paramGSize.dx = lookAndFeel().metric(24.0F);
-        paramGSize.dy = lookAndFeel().metric(14.0F);
-        return paramGSize;
-      }
-
-      public void render()
-      {
-      }
-    });
-    localGWindowScrollingDialogClient2.fixed = localGWindowDialogClient;
-
-    float f = 2.0F;
-    Collection localCollection = CfgTools.all();
-    Iterator localIterator = localCollection.iterator();
-    Object localObject2;
-    Object localObject3;
-    while (localIterator.hasNext()) {
-      localObject2 = localIterator.next();
-      if (((localObject2 instanceof CfgInt)) && (!(localObject2 instanceof CfgGObj))) {
-        localObject3 = (CfgInt)localObject2;
-        if (((CfgInt)localObject3).countStates() > 8) createSlider(localGWindowDialogClient, f, 2.0F, 8.0F, 10.0F, 8.0F, ((CfgInt)localObject3).name(), true); else
-          createCfgInt(localGWindowDialogClient, f, 2.0F, 8.0F, 10.0F, 8.0F, ((CfgInt)localObject3).name(), true);
-        f += 2.0F;
-      }
-    }
-    f += 3.0F;
-    localCollection = CfgTools.all();
-    localIterator = localCollection.iterator();
-    while (localIterator.hasNext()) {
-      localObject2 = localIterator.next();
-      if (((localObject2 instanceof CfgFlags)) && (!(localObject2 instanceof CfgGObj))) {
-        localObject3 = (CfgFlags)localObject2;
-        k = ((CfgFlags)localObject3).firstFlag();
-        m = ((CfgFlags)localObject3).countFlags();
-        for (int i1 = 0; i1 < m; i1++) {
-          createCfgFlag(localGWindowDialogClient, f, 14.0F, 2.0F, 12.0F, ((CfgFlags)localObject3).name(), i1 + k, true);
-          f += 1.5F;
+        public CheckCfgFlag(com.maddox.gwindow.GWindowDialogClient gwindowdialogclient, float f, float f1, com.maddox.rts.CfgFlags cfgflags, int i, boolean flag)
+        {
+            super(gwindowdialogclient, f, f1, null);
+            cfg = cfgflags;
+            iFlag = i;
+            bUpdate = flag;
+            bChanged = false;
+            setChecked(cfgflags.get(i), false);
+            setEnable(cfgflags.isEnabledFlag(i));
+            gwindowdialogclient.addControl(this);
         }
-      }
     }
 
-    framed.resized();
-    framed.close(false);
-    return (GWindowFramed)(GWindowFramed)framed;
-  }
-
-  private static SliderCfgInt createSlider(GWindowDialogClient paramGWindowDialogClient, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, String paramString, boolean paramBoolean)
-  {
-    String str1 = paramString;
-    String str2 = paramString + " toolTip ???";
-    paramGWindowDialogClient.addLabel(new GWindowLabel(paramGWindowDialogClient, paramFloat2, paramFloat1, paramFloat3, paramGWindowDialogClient.lookAndFeel().getHSliderIntHmetric(), str1, str2));
-
-    CfgInt localCfgInt = (CfgInt)CfgTools.get(paramString);
-    SliderCfgInt localSliderCfgInt = new SliderCfgInt(paramGWindowDialogClient, localCfgInt.firstState(), localCfgInt.countStates(), 0, paramFloat4, paramFloat1, paramFloat5, localCfgInt, paramBoolean);
-
-    localSliderCfgInt.setToolTip(str2);
-    paramGWindowDialogClient.addControl(localSliderCfgInt);
-    return localSliderCfgInt;
-  }
-
-  private static ComboCfgInt createCfgInt(GWindowDialogClient paramGWindowDialogClient, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, String paramString, boolean paramBoolean)
-  {
-    String str1 = paramString;
-    String str2 = paramString + " toolTip ???";
-    paramGWindowDialogClient.addLabel(new GWindowLabel(paramGWindowDialogClient, paramFloat2, paramFloat1, paramFloat3, paramGWindowDialogClient.lookAndFeel().getComboHmetric(), str1, str2));
-
-    CfgInt localCfgInt = (CfgInt)CfgTools.get(paramString);
-    ComboCfgInt localComboCfgInt = new ComboCfgInt(paramGWindowDialogClient, paramFloat4, paramFloat1, paramFloat5, localCfgInt, paramBoolean);
-    localComboCfgInt.setToolTip(str2);
-    paramGWindowDialogClient.addControl(localComboCfgInt);
-    return localComboCfgInt;
-  }
-
-  private static CheckCfgFlag createCfgFlag(GWindowDialogClient paramGWindowDialogClient, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, String paramString, int paramInt, boolean paramBoolean)
-  {
-    CfgFlags localCfgFlags = (CfgFlags)CfgTools.get(paramString);
-
-    String str1 = localCfgFlags.nameFlag(paramInt);
-    String str2 = str1 + " toolTip ???";
-    CheckCfgFlag localCheckCfgFlag = new CheckCfgFlag(paramGWindowDialogClient, paramFloat2, paramFloat1, localCfgFlags, paramInt, paramBoolean);
-    localCheckCfgFlag.setToolTip(str2);
-    paramGWindowDialogClient.addControl(new LabelFlag(paramGWindowDialogClient, paramFloat3, paramFloat1, paramFloat4, str1, str2, localCheckCfgFlag));
-    return localCheckCfgFlag;
-  }
-
-  static class CheckCfgFlag extends GWindowCheckBox
-  {
-    public CfgFlags cfg;
-    public int iFlag;
-    public boolean bUpdate;
-    public boolean bChanged;
-
-    public CheckCfgFlag(GWindowDialogClient paramGWindowDialogClient, float paramFloat1, float paramFloat2, CfgFlags paramCfgFlags, int paramInt, boolean paramBoolean)
+    static class LabelFlag extends com.maddox.gwindow.GWindowLabel
     {
-      super(paramFloat1, paramFloat2, null);
-      this.cfg = paramCfgFlags;
-      this.iFlag = paramInt;
-      this.bUpdate = paramBoolean;
-      this.bChanged = false;
-      setChecked(paramCfgFlags.get(paramInt), false);
-      setEnable(paramCfgFlags.isEnabledFlag(paramInt));
-      paramGWindowDialogClient.addControl(this);
-    }
-    public void resolutionChanged() {
-      super.resolutionChanged();
-      this.cfg.reset();
-      setChecked(this.cfg.get(this.iFlag), false);
-      setEnable(this.cfg.isEnabledFlag(this.iFlag));
-    }
-    public boolean notify(int paramInt1, int paramInt2) {
-      if (paramInt1 == 2) {
-        this.bChecked = (!this.bChecked);
-        if (this.bUpdate) {
-          this.cfg.set(this.iFlag, isChecked());
-          int i = this.cfg.apply(this.iFlag);
-          this.cfg.reset();
-          this.cfg.applyExtends(i);
-          boolean bool = this.cfg.get(this.iFlag);
-          if (bool != isChecked())
-            setChecked(bool, false);
-        } else {
-          this.bChanged = true;
+
+        public boolean notify(int i, int j)
+        {
+            if(i == 2)
+                checkCfg.notify(2, 0);
+            return super.notify(i, j);
         }
-        return true;
-      }
-      return super.notify(paramInt1, paramInt2);
-    }
-  }
 
-  static class LabelFlag extends GWindowLabel
-  {
-    WindowPreferences.CheckCfgFlag checkCfg;
+        com.maddox.il2.gui.CheckCfgFlag checkCfg;
 
-    public LabelFlag(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3, String paramString1, String paramString2, WindowPreferences.CheckCfgFlag paramCheckCfgFlag)
-    {
-      super(paramFloat1, paramFloat2 - 0.1F, paramFloat3, 1.2F, paramString1, paramString2);
-      this.checkCfg = paramCheckCfgFlag;
-      setEnable(paramCheckCfgFlag.isEnable());
-    }
-    public boolean notify(int paramInt1, int paramInt2) {
-      if (paramInt1 == 2) {
-        this.checkCfg.notify(2, 0);
-      }
-      return super.notify(paramInt1, paramInt2);
-    }
-  }
-
-  static class ComboCfgInt extends GWindowComboControl
-  {
-    public CfgInt cfg;
-    public boolean bUpdate;
-    public boolean bChanged;
-
-    public ComboCfgInt(GWindow paramGWindow, float paramFloat1, float paramFloat2, float paramFloat3, CfgInt paramCfgInt, boolean paramBoolean)
-    {
-      super(paramFloat1, paramFloat2, paramFloat3);
-
-      setEditable(false);
-      this.bUpdate = paramBoolean;
-      this.bChanged = false;
-      this.cfg = paramCfgInt;
-      refresh(true);
-      int i = paramCfgInt.firstState();
-      setSelected(paramCfgInt.get() - i, true, false);
-      setEnable(paramCfgInt.isEnabled());
-    }
-    public void refresh(boolean paramBoolean) {
-      int i = this.cfg.countStates();
-      int j = this.cfg.firstState();
-      if (this.posEnable == null)
-        this.posEnable = new boolean[i];
-      for (int k = 0; k < i; k++) {
-        if (paramBoolean)
-          add(this.cfg.nameState(k + j));
-        this.posEnable[k] = this.cfg.isEnabledState(k + j);
-      }
-      this.cfg.reset();
-    }
-    public void resolutionChanged() {
-      super.resolutionChanged();
-      refresh(false);
-    }
-    public boolean notify(int paramInt1, int paramInt2) {
-      if (paramInt1 == 2) {
-        int i = this.cfg.get() - this.cfg.firstState();
-        if (i != getSelected()) {
-          if (this.bUpdate) {
-            this.cfg.set(getSelected() + this.cfg.firstState());
-            int j = this.cfg.apply();
-            this.cfg.reset();
-            this.cfg.applyExtends(j);
-            int k = this.cfg.get() - this.cfg.firstState();
-            if (k != getSelected())
-              setSelected(k, true, false);
-          } else {
-            this.bChanged = true;
-          }
+        public LabelFlag(com.maddox.gwindow.GWindow gwindow, float f, float f1, float f2, java.lang.String s, java.lang.String s1, com.maddox.il2.gui.CheckCfgFlag checkcfgflag)
+        {
+            super(gwindow, f, f1 - 0.1F, f2, 1.2F, s, s1);
+            checkCfg = checkcfgflag;
+            setEnable(checkcfgflag.isEnable());
         }
-        return true;
-      }
-      return super.notify(paramInt1, paramInt2);
     }
-  }
 
-  static class SliderCfgInt extends GWindowHSliderInt
-  {
-    public CfgInt cfg;
-    public boolean bUpdate;
-    public boolean bChanged;
-
-    public SliderCfgInt(GWindow paramGWindow, int paramInt1, int paramInt2, int paramInt3, float paramFloat1, float paramFloat2, float paramFloat3, CfgInt paramCfgInt, boolean paramBoolean)
+    static class ComboCfgInt extends com.maddox.gwindow.GWindowComboControl
     {
-      super(paramInt1, paramInt2, paramInt3, paramFloat1, paramFloat2, paramFloat3);
 
-      this.bUpdate = paramBoolean;
-      this.bChanged = false;
-      this.cfg = paramCfgInt;
-      int i = paramCfgInt.countStates();
-      int j = paramCfgInt.firstState();
-      this.posEnable = new boolean[i];
-      for (int k = 0; k < i; k++) {
-        this.posEnable[k] = paramCfgInt.isEnabledState(k + j);
-      }
-      paramCfgInt.reset();
-      setPos(paramCfgInt.get(), false);
-      setEnable(paramCfgInt.isEnabled());
-    }
-    public boolean notify(int paramInt1, int paramInt2) {
-      if (paramInt1 == 2) {
-        int i = this.cfg.get() - this.cfg.firstState();
-        if (i != pos()) {
-          if (this.bUpdate) {
-            this.cfg.set(pos());
-            int j = this.cfg.apply();
-            this.cfg.reset();
-            this.cfg.applyExtends(j);
-            int k = this.cfg.get();
-            if (k != pos())
-              setPos(k, false);
-          } else {
-            this.bChanged = true;
-          }
+        public void refresh(boolean flag)
+        {
+            int i = cfg.countStates();
+            int j = cfg.firstState();
+            if(posEnable == null)
+                posEnable = new boolean[i];
+            for(int k = 0; k < i; k++)
+            {
+                if(flag)
+                    add(cfg.nameState(k + j));
+                posEnable[k] = cfg.isEnabledState(k + j);
+            }
+
+            cfg.reset();
         }
-        return true;
-      }
-      return super.notify(paramInt1, paramInt2);
+
+        public void resolutionChanged()
+        {
+            super.resolutionChanged();
+            refresh(false);
+        }
+
+        public boolean notify(int i, int j)
+        {
+            if(i == 2)
+            {
+                int k = cfg.get() - cfg.firstState();
+                if(k != getSelected())
+                    if(bUpdate)
+                    {
+                        cfg.set(getSelected() + cfg.firstState());
+                        int l = cfg.apply();
+                        cfg.reset();
+                        cfg.applyExtends(l);
+                        int i1 = cfg.get() - cfg.firstState();
+                        if(i1 != getSelected())
+                            setSelected(i1, true, false);
+                    } else
+                    {
+                        bChanged = true;
+                    }
+                return true;
+            } else
+            {
+                return super.notify(i, j);
+            }
+        }
+
+        public com.maddox.rts.CfgInt cfg;
+        public boolean bUpdate;
+        public boolean bChanged;
+
+        public ComboCfgInt(com.maddox.gwindow.GWindow gwindow, float f, float f1, float f2, com.maddox.rts.CfgInt cfgint, boolean flag)
+        {
+            super(gwindow, f, f1, f2);
+            setEditable(false);
+            bUpdate = flag;
+            bChanged = false;
+            cfg = cfgint;
+            refresh(true);
+            int i = cfgint.firstState();
+            setSelected(cfgint.get() - i, true, false);
+            setEnable(cfgint.isEnabled());
+        }
     }
-  }
+
+    static class SliderCfgInt extends com.maddox.gwindow.GWindowHSliderInt
+    {
+
+        public boolean notify(int i, int j)
+        {
+            if(i == 2)
+            {
+                int k = cfg.get() - cfg.firstState();
+                if(k != pos())
+                    if(bUpdate)
+                    {
+                        cfg.set(pos());
+                        int l = cfg.apply();
+                        cfg.reset();
+                        cfg.applyExtends(l);
+                        int i1 = cfg.get();
+                        if(i1 != pos())
+                            setPos(i1, false);
+                    } else
+                    {
+                        bChanged = true;
+                    }
+                return true;
+            } else
+            {
+                return super.notify(i, j);
+            }
+        }
+
+        public com.maddox.rts.CfgInt cfg;
+        public boolean bUpdate;
+        public boolean bChanged;
+
+        public SliderCfgInt(com.maddox.gwindow.GWindow gwindow, int i, int j, int k, float f, float f1, float f2, 
+                com.maddox.rts.CfgInt cfgint, boolean flag)
+        {
+            super(gwindow, i, j, k, f, f1, f2);
+            bUpdate = flag;
+            bChanged = false;
+            cfg = cfgint;
+            int l = cfgint.countStates();
+            int i1 = cfgint.firstState();
+            posEnable = new boolean[l];
+            for(int j1 = 0; j1 < l; j1++)
+                posEnable[j1] = cfgint.isEnabledState(j1 + i1);
+
+            cfgint.reset();
+            setPos(cfgint.get(), false);
+            setEnable(cfgint.isEnabled());
+        }
+    }
+
+
+    public WindowPreferences()
+    {
+    }
+
+    public static int _findVideoMode(com.maddox.rts.ScreenMode screenmode)
+    {
+        for(int i = 0; i < screenModes.size(); i++)
+        {
+            com.maddox.rts.ScreenMode screenmode1 = (com.maddox.rts.ScreenMode)screenModes.get(i);
+            if(screenmode1.width() == screenmode.width() && screenmode1.height() == screenmode.height() && screenmode1.colourBits() == screenmode.colourBits())
+                return i;
+        }
+
+        return 0;
+    }
+
+    public static com.maddox.gwindow.GWindowFramed create(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        framed = (com.maddox.gwindow.GWindowFramed)gwindowroot.create(1.666667F, 8.333333F, 33.33333F, 25F, true, new GWindowFramed());
+        framed.title = "Preferences";
+        com.maddox.gwindow.GWindowTabDialogClient gwindowtabdialogclient = (com.maddox.gwindow.GWindowTabDialogClient)framed.create(new GWindowTabDialogClient());
+        framed.clientWindow = gwindowtabdialogclient;
+        com.maddox.rts.ScreenMode ascreenmode[] = com.maddox.rts.ScreenMode.all();
+        for(int i = 0; i < ascreenmode.length; i++)
+        {
+            com.maddox.rts.ScreenMode screenmode = ascreenmode[i];
+            if(screenmode.colourBits() >= 15 && (float)screenmode.height() >= 240F)
+                screenModes.add(screenmode);
+        }
+
+        if(screenModes.size() > 0)
+        {
+            com.maddox.gwindow.GWindowScrollingDialogClient gwindowscrollingdialogclient = (com.maddox.gwindow.GWindowScrollingDialogClient)gwindowtabdialogclient.create(new GWindowScrollingDialogClient());
+            gwindowtabdialogclient.addTab("Video", gwindowscrollingdialogclient);
+            com.maddox.gwindow.GWindowDialogClient gwindowdialogclient = (com.maddox.gwindow.GWindowDialogClient)gwindowscrollingdialogclient.create(new com.maddox.gwindow.GWindowDialogClient() {
+
+                public void created()
+                {
+                    super.created();
+                    setMetricSize(24F, 14F);
+                }
+
+                public com.maddox.gwindow.GSize getMinSize(com.maddox.gwindow.GSize gsize)
+                {
+                    gsize.dx = lookAndFeel().metric(24F);
+                    gsize.dy = lookAndFeel().metric(14F);
+                    return gsize;
+                }
+
+                public void render()
+                {
+                }
+
+            }
+);
+            gwindowscrollingdialogclient.fixed = gwindowdialogclient;
+            gwindowdialogclient.addLabel(new GWindowLabel(gwindowdialogclient, 2.0F, 2.0F, 8F, gwindowdialogclient.lookAndFeel().getComboHmetric(), "Resolution", null));
+            gwindowdialogclient.addControl(comboResolution = new com.maddox.gwindow.GWindowComboControl(gwindowdialogclient, 10F, 2.0F, 12F) {
+
+                public boolean notify(int i2, int j2)
+                {
+                    if(i2 == 2)
+                    {
+                        new com.maddox.rts.MsgAction(64, 0.20000000000000001D, "") {
+
+                            public void doAction(java.lang.Object obj2)
+                            {
+                                int k2 = getSelected();
+                                com.maddox.rts.ScreenMode screenmode2 = (com.maddox.rts.ScreenMode)com.maddox.il2.gui.WindowPreferences.screenModes.get(k2);
+                                com.maddox.rts.CmdEnv.top().exec("window " + screenmode2.width() + " " + screenmode2.height() + " " + screenmode2.colourBits() + " " + screenmode2.colourBits() + " FULL");
+                                setSelected(com.maddox.il2.gui.WindowPreferences._findVideoMode(com.maddox.rts.ScreenMode.current()), true, false);
+                            }
+
+                        }
+;
+                        return true;
+                    } else
+                    {
+                        return super.notify(i2, j2);
+                    }
+                }
+
+            }
+);
+            comboResolution.setEditable(false);
+            for(int j = 0; j < screenModes.size(); j++)
+            {
+                com.maddox.rts.ScreenMode screenmode1 = (com.maddox.rts.ScreenMode)screenModes.get(j);
+                comboResolution.add(screenmode1.width() + "x" + screenmode1.height() + "x" + screenmode1.colourBits());
+            }
+
+            comboResolution.setSelected(com.maddox.il2.gui.WindowPreferences._findVideoMode(com.maddox.rts.ScreenMode.current()), true, false);
+            comboResolution.resized();
+        }
+        com.maddox.gwindow.GWindowScrollingDialogClient gwindowscrollingdialogclient1 = (com.maddox.gwindow.GWindowScrollingDialogClient)gwindowtabdialogclient.create(new GWindowScrollingDialogClient());
+        gwindowtabdialogclient.addTab("Render", gwindowscrollingdialogclient1);
+        com.maddox.gwindow.GWindowDialogClient gwindowdialogclient1 = (com.maddox.gwindow.GWindowDialogClient)gwindowscrollingdialogclient1.create(new com.maddox.gwindow.GWindowDialogClient() {
+
+            public void created()
+            {
+                super.created();
+                setMetricSize(24F, 53F);
+            }
+
+            public com.maddox.gwindow.GSize getMinSize(com.maddox.gwindow.GSize gsize)
+            {
+                gsize.dx = lookAndFeel().metric(24F);
+                gsize.dy = lookAndFeel().metric(14F);
+                return gsize;
+            }
+
+            public void render()
+            {
+            }
+
+        }
+);
+        gwindowscrollingdialogclient1.fixed = gwindowdialogclient1;
+        com.maddox.il2.gui.WindowPreferences.createCfgInt(gwindowdialogclient1, 2.0F, 2.0F, 8F, 10F, 8F, "TexQual", true);
+        com.maddox.il2.gui.WindowPreferences.createCfgInt(gwindowdialogclient1, 4F, 2.0F, 8F, 10F, 8F, "TexMipFilter", true);
+        com.maddox.il2.gui.WindowPreferences.createCfgInt(gwindowdialogclient1, 6F, 2.0F, 8F, 10F, 8F, "LandDetails", true);
+        com.maddox.il2.gui.WindowPreferences.createCfgInt(gwindowdialogclient1, 8F, 2.0F, 8F, 10F, 8F, "LandShading", true);
+        com.maddox.il2.gui.WindowPreferences.createCfgInt(gwindowdialogclient1, 10F, 2.0F, 8F, 10F, 8F, "Forest", true);
+        com.maddox.il2.gui.WindowPreferences.createCfgInt(gwindowdialogclient1, 12F, 2.0F, 8F, 10F, 8F, "Sky", true);
+        com.maddox.il2.gui.WindowPreferences.createCfgInt(gwindowdialogclient1, 15F, 2.0F, 8F, 10F, 8F, "DynamicalLights", true);
+        com.maddox.il2.gui.WindowPreferences.createCfgInt(gwindowdialogclient1, 17F, 2.0F, 8F, 10F, 8F, "DiffuseLight", true);
+        com.maddox.il2.gui.WindowPreferences.createCfgInt(gwindowdialogclient1, 19F, 2.0F, 8F, 10F, 8F, "SpecularLight", true);
+        com.maddox.il2.gui.WindowPreferences.createCfgInt(gwindowdialogclient1, 21F, 2.0F, 8F, 10F, 8F, "Specular", true);
+        com.maddox.il2.gui.WindowPreferences.createCfgInt(gwindowdialogclient1, 23F, 2.0F, 8F, 10F, 8F, "Shadows", true);
+        com.maddox.il2.gui.WindowPreferences.createCfgFlag(gwindowdialogclient1, 25F, 10F, 2.0F, 8F, "ShadowsFlags", 0, true);
+        com.maddox.rts.CfgFlags cfgflags = (com.maddox.rts.CfgFlags)com.maddox.rts.CfgTools.get("TexFlags");
+        int k = cfgflags.firstFlag();
+        int i1 = cfgflags.countFlags();
+        for(int k1 = 0; k1 < i1; k1++)
+            com.maddox.il2.gui.WindowPreferences.createCfgFlag(gwindowdialogclient1, 28F + (float)k1 * 1.5F, 14F, 2.0F, 12F, "TexFlags", k1 + k, true);
+
+        com.maddox.gwindow.GWindowScrollingDialogClient gwindowscrollingdialogclient2 = (com.maddox.gwindow.GWindowScrollingDialogClient)gwindowtabdialogclient.create(new GWindowScrollingDialogClient());
+        gwindowtabdialogclient.addTab("Sound", gwindowscrollingdialogclient2);
+        com.maddox.gwindow.GWindowDialogClient gwindowdialogclient2 = (com.maddox.gwindow.GWindowDialogClient)gwindowscrollingdialogclient2.create(new com.maddox.gwindow.GWindowDialogClient() {
+
+            public void created()
+            {
+                super.created();
+                setMetricSize(24F, 28F);
+            }
+
+            public com.maddox.gwindow.GSize getMinSize(com.maddox.gwindow.GSize gsize)
+            {
+                gsize.dx = lookAndFeel().metric(24F);
+                gsize.dy = lookAndFeel().metric(14F);
+                return gsize;
+            }
+
+            public void render()
+            {
+            }
+
+        }
+);
+        gwindowscrollingdialogclient2.fixed = gwindowdialogclient2;
+        float f = 2.0F;
+        java.util.Collection collection = com.maddox.rts.CfgTools.all();
+        java.util.Iterator iterator = collection.iterator();
+        do
+        {
+            if(!iterator.hasNext())
+                break;
+            java.lang.Object obj = iterator.next();
+            if((obj instanceof com.maddox.rts.CfgInt) && !(obj instanceof com.maddox.il2.engine.CfgGObj))
+            {
+                com.maddox.rts.CfgInt cfgint = (com.maddox.rts.CfgInt)obj;
+                if(cfgint.countStates() > 8)
+                    com.maddox.il2.gui.WindowPreferences.createSlider(gwindowdialogclient2, f, 2.0F, 8F, 10F, 8F, cfgint.name(), true);
+                else
+                    com.maddox.il2.gui.WindowPreferences.createCfgInt(gwindowdialogclient2, f, 2.0F, 8F, 10F, 8F, cfgint.name(), true);
+                f += 2.0F;
+            }
+        } while(true);
+        f += 3F;
+        collection = com.maddox.rts.CfgTools.all();
+        iterator = collection.iterator();
+        do
+        {
+            if(!iterator.hasNext())
+                break;
+            java.lang.Object obj1 = iterator.next();
+            if((obj1 instanceof com.maddox.rts.CfgFlags) && !(obj1 instanceof com.maddox.il2.engine.CfgGObj))
+            {
+                com.maddox.rts.CfgFlags cfgflags1 = (com.maddox.rts.CfgFlags)obj1;
+                int l = cfgflags1.firstFlag();
+                int j1 = cfgflags1.countFlags();
+                int l1 = 0;
+                while(l1 < j1) 
+                {
+                    com.maddox.il2.gui.WindowPreferences.createCfgFlag(gwindowdialogclient2, f, 14F, 2.0F, 12F, cfgflags1.name(), l1 + l, true);
+                    f += 1.5F;
+                    l1++;
+                }
+            }
+        } while(true);
+        framed.resized();
+        framed.close(false);
+        return framed;
+    }
+
+    private static com.maddox.il2.gui.SliderCfgInt createSlider(com.maddox.gwindow.GWindowDialogClient gwindowdialogclient, float f, float f1, float f2, float f3, float f4, java.lang.String s, boolean flag)
+    {
+        java.lang.String s1 = s;
+        java.lang.String s2 = s + " toolTip ???";
+        gwindowdialogclient.addLabel(new GWindowLabel(gwindowdialogclient, f1, f, f2, gwindowdialogclient.lookAndFeel().getHSliderIntHmetric(), s1, s2));
+        com.maddox.rts.CfgInt cfgint = (com.maddox.rts.CfgInt)com.maddox.rts.CfgTools.get(s);
+        com.maddox.il2.gui.SliderCfgInt slidercfgint = new SliderCfgInt(gwindowdialogclient, cfgint.firstState(), cfgint.countStates(), 0, f3, f, f4, cfgint, flag);
+        slidercfgint.setToolTip(s2);
+        gwindowdialogclient.addControl(slidercfgint);
+        return slidercfgint;
+    }
+
+    private static com.maddox.il2.gui.ComboCfgInt createCfgInt(com.maddox.gwindow.GWindowDialogClient gwindowdialogclient, float f, float f1, float f2, float f3, float f4, java.lang.String s, boolean flag)
+    {
+        java.lang.String s1 = s;
+        java.lang.String s2 = s + " toolTip ???";
+        gwindowdialogclient.addLabel(new GWindowLabel(gwindowdialogclient, f1, f, f2, gwindowdialogclient.lookAndFeel().getComboHmetric(), s1, s2));
+        com.maddox.rts.CfgInt cfgint = (com.maddox.rts.CfgInt)com.maddox.rts.CfgTools.get(s);
+        com.maddox.il2.gui.ComboCfgInt combocfgint = new ComboCfgInt(gwindowdialogclient, f3, f, f4, cfgint, flag);
+        combocfgint.setToolTip(s2);
+        gwindowdialogclient.addControl(combocfgint);
+        return combocfgint;
+    }
+
+    private static com.maddox.il2.gui.CheckCfgFlag createCfgFlag(com.maddox.gwindow.GWindowDialogClient gwindowdialogclient, float f, float f1, float f2, float f3, java.lang.String s, int i, boolean flag)
+    {
+        com.maddox.rts.CfgFlags cfgflags = (com.maddox.rts.CfgFlags)com.maddox.rts.CfgTools.get(s);
+        java.lang.String s1 = cfgflags.nameFlag(i);
+        java.lang.String s2 = s1 + " toolTip ???";
+        com.maddox.il2.gui.CheckCfgFlag checkcfgflag = new CheckCfgFlag(gwindowdialogclient, f1, f, cfgflags, i, flag);
+        checkcfgflag.setToolTip(s2);
+        gwindowdialogclient.addControl(new LabelFlag(gwindowdialogclient, f2, f, f3, s1, s2, checkcfgflag));
+        return checkcfgflag;
+    }
+
+    public static com.maddox.gwindow.GWindowFramed framed;
+    public static com.maddox.gwindow.GWindowComboControl comboResolution;
+    public static java.util.ArrayList screenModes = new ArrayList();
+
 }

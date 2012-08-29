@@ -1,129 +1,150 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CfgIntEngine.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.rts.CfgInt;
 import com.maddox.rts.CfgTools;
 import com.maddox.rts.IniFile;
 
-class CfgIntEngine extends CfgGObj
-  implements CfgInt
+// Referenced classes of package com.maddox.il2.engine:
+//            CfgGObj
+
+class CfgIntEngine extends com.maddox.il2.engine.CfgGObj
+    implements com.maddox.rts.CfgInt
 {
-  private int state;
 
-  public String name()
-  {
-    return Name(this.cppObj);
-  }
+    public java.lang.String name()
+    {
+        return com.maddox.il2.engine.CfgIntEngine.Name(cppObj);
+    }
 
-  public boolean isPermanent()
-  {
-    return IsPermanent(this.cppObj);
-  }
+    public boolean isPermanent()
+    {
+        return com.maddox.il2.engine.CfgIntEngine.IsPermanent(cppObj);
+    }
 
-  public boolean isEnabled()
-  {
-    return true;
-  }
+    public boolean isEnabled()
+    {
+        return true;
+    }
 
-  public void load(IniFile paramIniFile, String paramString)
-  {
-    CfgTools.load(this, paramIniFile, paramString);
-    this.iniFile = paramIniFile;
-    this.iniSect = paramString;
-  }
+    public void load(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        com.maddox.rts.CfgTools.load(this, inifile, s);
+        iniFile = inifile;
+        iniSect = s;
+    }
 
-  public void save()
-  {
-    save(this.iniFile, this.iniSect);
-  }
+    public void save()
+    {
+        save(iniFile, iniSect);
+    }
 
-  public void save(IniFile paramIniFile, String paramString)
-  {
-    CfgTools.save(true, this, paramIniFile, paramString);
-  }
+    public void save(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        com.maddox.rts.CfgTools.save(true, this, inifile, s);
+    }
 
-  public int apply()
-  {
-    if (!isEnabledState(this.state))
-      return 0;
-    int i = applyStatus();
-    SetState(this.cppObj, this.state);
-    return i;
-  }
+    public int apply()
+    {
+        if(!isEnabledState(state))
+        {
+            return 0;
+        } else
+        {
+            int i = applyStatus();
+            com.maddox.il2.engine.CfgIntEngine.SetState(cppObj, state);
+            return i;
+        }
+    }
 
-  public int applyStatus()
-  {
-    int i = GetState(this.cppObj);
-    if (this.state == i) return 0;
-    if (!isEnabledState(this.state))
-      return 0;
-    int j = GetStateStatus(this.cppObj, this.state) | GetStateStatus(this.cppObj, i);
-    return j;
-  }
+    public int applyStatus()
+    {
+        int i = com.maddox.il2.engine.CfgIntEngine.GetState(cppObj);
+        if(state == i)
+            return 0;
+        if(!isEnabledState(state))
+        {
+            return 0;
+        } else
+        {
+            int j = com.maddox.il2.engine.CfgIntEngine.GetStateStatus(cppObj, state) | com.maddox.il2.engine.CfgIntEngine.GetStateStatus(cppObj, i);
+            return j;
+        }
+    }
 
-  public void reset()
-  {
-    this.state = GetState(this.cppObj);
-  }
+    public void reset()
+    {
+        state = com.maddox.il2.engine.CfgIntEngine.GetState(cppObj);
+    }
 
-  public int firstState()
-  {
-    return FirstState(this.cppObj);
-  }
+    public int firstState()
+    {
+        return com.maddox.il2.engine.CfgIntEngine.FirstState(cppObj);
+    }
 
-  public int countStates()
-  {
-    return CountStates(this.cppObj);
-  }
+    public int countStates()
+    {
+        return com.maddox.il2.engine.CfgIntEngine.CountStates(cppObj);
+    }
 
-  public int defaultState()
-  {
-    return DefaultState(this.cppObj);
-  }
+    public int defaultState()
+    {
+        return com.maddox.il2.engine.CfgIntEngine.DefaultState(cppObj);
+    }
 
-  public String nameState(int paramInt)
-  {
-    if (paramInt != clamp(paramInt, firstState(), countStates()))
-      return "Unknown";
-    return NameState(this.cppObj, paramInt);
-  }
+    public java.lang.String nameState(int i)
+    {
+        if(i != clamp(i, firstState(), countStates()))
+            return "Unknown";
+        else
+            return com.maddox.il2.engine.CfgIntEngine.NameState(cppObj, i);
+    }
 
-  public boolean isEnabledState(int paramInt)
-  {
-    if (paramInt != clamp(paramInt, firstState(), countStates()))
-      return false;
-    return (GetStateStatus(this.cppObj, paramInt) & 0x2) != 0;
-  }
+    public boolean isEnabledState(int i)
+    {
+        if(i != clamp(i, firstState(), countStates()))
+            return false;
+        else
+            return (com.maddox.il2.engine.CfgIntEngine.GetStateStatus(cppObj, i) & 2) != 0;
+    }
 
-  public int get()
-  {
-    return this.state;
-  }
+    public int get()
+    {
+        return state;
+    }
 
-  public void set(int paramInt)
-  {
-    this.state = clamp(paramInt, firstState(), countStates());
-  }
+    public void set(int i)
+    {
+        state = clamp(i, firstState(), countStates());
+    }
 
-  public CfgIntEngine(int paramInt) {
-    super(paramInt);
-    this.state = defaultState();
-  }
+    public CfgIntEngine(int i)
+    {
+        super(i);
+        state = defaultState();
+    }
 
-  private static native String Name(int paramInt);
+    private static native java.lang.String Name(int i);
 
-  private static native boolean IsPermanent(int paramInt);
+    private static native boolean IsPermanent(int i);
 
-  private static native int FirstState(int paramInt);
+    private static native int FirstState(int i);
 
-  private static native int CountStates(int paramInt);
+    private static native int CountStates(int i);
 
-  private static native int DefaultState(int paramInt);
+    private static native int DefaultState(int i);
 
-  private static native String NameState(int paramInt1, int paramInt2);
+    private static native java.lang.String NameState(int i, int j);
 
-  private static native int GetStateStatus(int paramInt1, int paramInt2);
+    private static native int GetStateStatus(int i, int j);
 
-  private static native int GetState(int paramInt);
+    private static native int GetState(int i);
 
-  private static native int SetState(int paramInt1, int paramInt2);
+    private static native int SetState(int i, int j);
+
+    private int state;
 }

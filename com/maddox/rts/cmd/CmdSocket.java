@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdSocket.java
+
 package com.maddox.rts.cmd;
 
 import com.maddox.rts.Cmd;
@@ -15,362 +20,400 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CmdSocket extends Cmd
+public class CmdSocket extends com.maddox.rts.Cmd
 {
-  public static final String CREATE = "CREATE";
-  public static final String DESTROY = "DESTROY";
-  public static final String MAXCHANNELS = "CHANNELS";
-  public static final String MAXSPEED = "SPEED";
-  public static final String LOCALHOST = "LOCALHOST";
-  public static final String LOCALPORT = "LOCALPORT";
-  public static final String HOST = "HOST";
-  public static final String PORT = "PORT";
-  public static final String LISTENER = "LISTENER";
-  public static final String JOIN = "JOIN";
-  public static final String BREAK = "BREAK";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    if (nargs(paramMap, "_$$") != 1)
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
     {
-      if (exist(paramMap, "LISTENER")) {
-        if (NetEnv.cur().connect == null) {
-          ERR_HARD("Listener object not available");
-          return null;
+        if(com.maddox.rts.cmd.CmdSocket.nargs(map, "_$$") != 1)
+        {
+            if(com.maddox.rts.cmd.CmdSocket.exist(map, "LISTENER"))
+            {
+                if(com.maddox.rts.NetEnv.cur().connect == null)
+                {
+                    ERR_HARD("Listener object not available");
+                    return null;
+                }
+                if(com.maddox.rts.cmd.CmdSocket.nargs(map, "LISTENER") == 0)
+                    INFO_HARD(" Listener is " + (com.maddox.rts.NetEnv.cur().connect.isBindEnable() ? "enable" : "disable"));
+                else
+                    com.maddox.rts.NetEnv.cur().connect.bindEnable(com.maddox.rts.cmd.CmdSocket.arg(map, "LISTENER", 0, 0) != 0);
+                return com.maddox.rts.NetEnv.cur().connect;
+            }
+            if(com.maddox.rts.cmd.CmdSocket.exist(map, "JOIN") && cmdenv.levelAccess() == 0)
+            {
+                if(com.maddox.rts.NetEnv.cur().connect == null)
+                {
+                    ERR_HARD("Join object not available");
+                    return null;
+                }
+                if(com.maddox.rts.cmd.CmdSocket.exist(map, "BREAK"))
+                    com.maddox.rts.NetEnv.cur().connect.joinBreak();
+                else
+                    INFO_HARD(" join " + (com.maddox.rts.NetEnv.cur().connect.isJoinProcess() ? "is processed" : "not active"));
+                return com.maddox.rts.NetEnv.cur().connect;
+            }
+            java.util.ArrayList arraylist = new ArrayList();
+            if(com.maddox.rts.Property.vars(arraylist, "netProtocol"))
+            {
+                INFO_HARD("The availablis protocols:");
+                int i = arraylist.size();
+                for(int j = 0; j < i; j++)
+                {
+                    java.lang.String s1 = (java.lang.String)arraylist.get(j);
+                    java.lang.Class class3 = getProtocolClass(s1);
+                    int k = com.maddox.rts.Property.intValue(class3, "maxChannels", 64);
+                    double d = com.maddox.rts.Property.doubleValue(class3, "maxSpeed", 10D);
+                    INFO_HARD("  " + s1 + " maxChannels: " + k + " maxSpeed: " + (int)(d * 1000D) + " bytes/sec");
+                }
+
+                return arraylist;
+            } else
+            {
+                INFO_HARD("There are no availablis protocols");
+                return null;
+            }
         }
-        if (nargs(paramMap, "LISTENER") == 0)
-          INFO_HARD(" Listener is " + (NetEnv.cur().connect.isBindEnable() ? "enable" : "disable"));
-        else {
-          NetEnv.cur().connect.bindEnable(arg(paramMap, "LISTENER", 0, 0) != 0);
+        java.lang.String s = com.maddox.rts.cmd.CmdSocket.arg(map, "_$$", 0);
+        if(s == null)
+        {
+            ERR_HARD("Unknown name of the protocol");
+            return null;
         }
-        return NetEnv.cur().connect;
-      }
-
-      if ((exist(paramMap, "JOIN")) && (paramCmdEnv.levelAccess() == 0)) {
-        if (NetEnv.cur().connect == null) {
-          ERR_HARD("Join object not available");
-          return null;
+        java.lang.Class class1 = getProtocolClass(s);
+        if(class1 == null)
+            return null;
+        com.maddox.rts.NetSocket netsocket = null;
+        try
+        {
+            netsocket = (com.maddox.rts.NetSocket)class1.newInstance();
         }
-        if (exist(paramMap, "BREAK"))
-          NetEnv.cur().connect.joinBreak();
-        else {
-          INFO_HARD(" join " + (NetEnv.cur().connect.isJoinProcess() ? "is processed" : "not active"));
+        catch(java.lang.Exception exception)
+        {
+            ERR_HARD("The class of the protocol is not 'NetSocket': " + class1.getName());
+            return null;
         }
-        return NetEnv.cur().connect;
-      }
+        java.lang.Class class2 = netsocket.addressClass();
+        com.maddox.rts.NetAddress netaddress = null;
+        if(com.maddox.rts.cmd.CmdSocket.nargs(map, "LOCALHOST") > 0)
+            try
+            {
+                netaddress = (com.maddox.rts.NetAddress)class2.newInstance();
+                netaddress.create(com.maddox.rts.cmd.CmdSocket.arg(map, "LOCALHOST", 0));
+            }
+            catch(java.lang.Exception exception1)
+            {
+                ERR_HARD("Bad LOCALHOST: " + com.maddox.rts.cmd.CmdSocket.arg(map, "LOCALHOST", 0));
+                return null;
+            }
+        else
+            try
+            {
+                netaddress = (com.maddox.rts.NetAddress)class2.newInstance();
+                netaddress = netaddress.getLocalHost();
+            }
+            catch(java.lang.Exception exception2)
+            {
+                ERR_HARD("Bad LocalHost address");
+                return null;
+            }
+        com.maddox.rts.NetAddress netaddress1 = null;
+        if(com.maddox.rts.cmd.CmdSocket.nargs(map, "HOST") > 0)
+            try
+            {
+                netaddress1 = (com.maddox.rts.NetAddress)class2.newInstance();
+                netaddress1.create(com.maddox.rts.cmd.CmdSocket.arg(map, "HOST", 0));
+            }
+            catch(java.lang.Exception exception3)
+            {
+                ERR_HARD("Bad HOST: " + com.maddox.rts.cmd.CmdSocket.arg(map, "HOST", 0));
+                return null;
+            }
+        int l = com.maddox.rts.cmd.CmdSocket.arg(map, "LOCALPORT", 0, -1);
+        int i1 = com.maddox.rts.cmd.CmdSocket.arg(map, "PORT", 0, -1);
+        int j1 = com.maddox.rts.cmd.CmdSocket.arg(map, "CHANNELS", 0, com.maddox.rts.Property.intValue(class1, "maxChannels", 64));
+        double d1 = com.maddox.rts.Property.doubleValue(class1, "maxSpeed", 10D);
+        if(com.maddox.rts.cmd.CmdSocket.exist(map, "SPEED"))
+            d1 = com.maddox.rts.cmd.CmdSocket.arg(map, "SPEED", 0, d1 * 1000D) / 1000D;
+        if(com.maddox.rts.cmd.CmdSocket.exist(map, "CREATE"))
+        {
+            com.maddox.rts.NetAddress netaddress2 = netaddress;
+            if(netaddress2 == null)
+                netaddress2 = netaddress1;
+            int k1 = l;
+            if(k1 == -1)
+                k1 = i1;
+            com.maddox.rts.NetSocket netsocket3 = findSocket(netaddress2, k1);
+            if(netsocket3 != null)
+            {
+                if(netsocket3.maxChannels == 0 || com.maddox.rts.cmd.CmdSocket.exist(map, "CHANNELS"))
+                    netsocket3.maxChannels = j1;
+                if(com.maddox.rts.cmd.CmdSocket.exist(map, "SPEED"))
+                    netsocket3.setMaxSpeed(d1);
+                INFO_SOFT("Socket alredy exist");
+                return netsocket3;
+            }
+            try
+            {
+                if(k1 == -1)
+                    netsocket.open(0, netaddress2);
+                else
+                    netsocket.open(k1, netaddress2);
+            }
+            catch(java.lang.Exception exception5)
+            {
+                ERR_HARD(exception5.toString());
+                return null;
+            }
+            netsocket.maxChannels = j1;
+            netsocket.setMaxSpeed(d1);
+            com.maddox.rts.NetEnv.addSocket(netsocket);
+            return netsocket;
+        }
+        if(com.maddox.rts.cmd.CmdSocket.exist(map, "DESTROY"))
+        {
+            com.maddox.rts.NetSocket netsocket1 = findSocket(netaddress, l);
+            if(netsocket1 == null)
+            {
+                ERR_HARD("Socket not found");
+                return null;
+            }
+            if(com.maddox.rts.cmd.CmdSocket.exist(map, "HOST"))
+            {
+                java.util.List list1 = com.maddox.rts.NetEnv.channels();
+                int j2 = list1.size();
+                for(int j3 = 0; j3 < j2; j3++)
+                {
+                    com.maddox.rts.NetChannel netchannel = (com.maddox.rts.NetChannel)list1.get(j3);
+                    if(netsocket1.equals(netchannel.socket()) && netchannel.remoteAddress().equals(netaddress1) && netchannel.remotePort() == i1)
+                        netchannel.destroy();
+                }
 
-      localObject1 = new ArrayList();
-      if (Property.vars((List)localObject1, "netProtocol")) {
-        INFO_HARD("The availablis protocols:");
-        int i = ((ArrayList)localObject1).size();
-        for (int j = 0; j < i; j++) {
-          String str = (String)((ArrayList)localObject1).get(j);
-          localObject3 = getProtocolClass(str);
-          int k = Property.intValue((Class)localObject3, "maxChannels", 64);
-          double d1 = Property.doubleValue((Class)localObject3, "maxSpeed", 10.0D);
-          INFO_HARD("  " + str + " maxChannels: " + k + " maxSpeed: " + (int)(d1 * 1000.0D) + " bytes/sec");
+            } else
+            {
+                netsocket1.maxChannels = 0;
+                java.util.List list2 = com.maddox.rts.NetEnv.channels();
+                int k2 = list2.size();
+                for(int k3 = 0; k3 < k2; k3++)
+                {
+                    com.maddox.rts.NetChannel netchannel1 = (com.maddox.rts.NetChannel)list2.get(k3);
+                    if(netsocket1.equals(netchannel1.socket()))
+                        netchannel1.destroy();
+                }
+
+            }
+            return netsocket1;
+        }
+        if(com.maddox.rts.cmd.CmdSocket.exist(map, "JOIN") && cmdenv.levelAccess() == 0)
+        {
+            if(com.maddox.rts.NetEnv.cur().connect == null)
+            {
+                ERR_HARD("Join object not available");
+                return null;
+            }
+            if(com.maddox.rts.NetEnv.cur().control != null && (com.maddox.rts.NetEnv.cur().control instanceof com.maddox.rts.NetControlLock))
+            {
+                ERR_HARD("Previous join not ended");
+                return null;
+            }
+            if(com.maddox.rts.NetEnv.cur().connect.isJoinProcess())
+            {
+                ERR_HARD("Previous join not ended");
+                return null;
+            }
+            if(i1 == -1)
+                i1 = l;
+            if(i1 == -1)
+            {
+                ERR_HARD("PORT not defined");
+                return null;
+            }
+            if(com.maddox.rts.cmd.CmdSocket.nargs(map, "HOST") != 1)
+            {
+                ERR_HARD("HOST not defined");
+                return null;
+            }
+            com.maddox.rts.NetSocket netsocket2 = findSocket(netaddress, l);
+            if(netsocket2 != null)
+            {
+                netsocket = netsocket2;
+                if(com.maddox.rts.cmd.CmdSocket.exist(map, "CHANNELS"))
+                    netsocket2.maxChannels = j1;
+                if(com.maddox.rts.cmd.CmdSocket.exist(map, "SPEED"))
+                    netsocket2.setMaxSpeed(d1);
+            } else
+            {
+                try
+                {
+                    netsocket.open(l != -1 ? l : 0, netaddress);
+                }
+                catch(java.lang.Exception exception4)
+                {
+                    ERR_HARD(exception4.toString());
+                    return null;
+                }
+                netsocket.maxChannels = j1;
+                netsocket.setMaxSpeed(d1);
+                com.maddox.rts.NetEnv.addSocket(netsocket);
+            }
+            com.maddox.rts.NetEnv.cur().connect.join(netsocket, netaddress1, i1);
+            return netsocket;
+        }
+        if(com.maddox.rts.cmd.CmdSocket.exist(map, "CHANNELS") || com.maddox.rts.cmd.CmdSocket.exist(map, "SPEED"))
+        {
+            com.maddox.rts.NetAddress netaddress3 = netaddress;
+            if(netaddress3 == null)
+                netaddress3 = netaddress1;
+            int l1 = l;
+            if(l1 == -1)
+                l1 = i1;
+            com.maddox.rts.NetSocket netsocket4 = findSocket(netaddress3, l1);
+            if(netsocket4 == null)
+            {
+                if(com.maddox.rts.cmd.CmdSocket.exist(map, "CHANNELS"))
+                    com.maddox.rts.Property.set(class1, "maxChannels", j1);
+                if(com.maddox.rts.cmd.CmdSocket.exist(map, "SPEED"))
+                    com.maddox.rts.Property.set(class1, "maxSpeed", d1);
+                return null;
+            }
+            if(com.maddox.rts.cmd.CmdSocket.exist(map, "CHANNELS"))
+                netsocket4.maxChannels = j1;
+            if(com.maddox.rts.cmd.CmdSocket.exist(map, "SPEED"))
+                netsocket4.setMaxSpeed(d1);
+            return netsocket4;
+        }
+        java.util.List list = com.maddox.rts.NetEnv.socketsBlock();
+        int i2 = list.size();
+        for(int l2 = 0; l2 < i2; l2++)
+        {
+            com.maddox.rts.NetSocket netsocket5 = (com.maddox.rts.NetSocket)list.get(l2);
+            INFO_HARD(" " + netsocket5.getLocalAddress() + ":" + netsocket5.getLocalPort() + " " + netsocket5.countChannels + "(" + netsocket5.maxChannels + ") " + (int)(netsocket5.getMaxSpeed() * 1000D) + " bytes/sec");
+            java.util.List list3 = com.maddox.rts.NetEnv.channels();
+            int l3 = list3.size();
+            for(int j4 = 0; j4 < l3; j4++)
+            {
+                com.maddox.rts.NetChannel netchannel2 = (com.maddox.rts.NetChannel)list3.get(j4);
+                if(netsocket5.equals(netchannel2.socket()))
+                    INFO_HARD("  " + netchannel2.id() + ":" + (netchannel2.isInitRemote() ? " <- " : " -> ") + netchannel2.remoteAddress() + ":" + netchannel2.remotePort() + " " + (int)(netchannel2.getMaxSpeed() * 1000D) + " bytes/sec");
+            }
+
         }
 
-        return localObject1;
-      }
-      INFO_HARD("There are no availablis protocols");
-      return null;
-    }
+        list = com.maddox.rts.NetEnv.socketsNoBlock();
+        i2 = list.size();
+        for(int i3 = 0; i3 < i2; i3++)
+        {
+            com.maddox.rts.NetSocket netsocket6 = (com.maddox.rts.NetSocket)list.get(i3);
+            INFO_HARD(" " + netsocket6.getLocalAddress() + ":" + netsocket6.getLocalPort() + " " + netsocket6.countChannels + "(" + netsocket6.maxChannels + ") " + (int)(netsocket6.getMaxSpeed() * 1000D) + " bytes/sec");
+            java.util.List list4 = com.maddox.rts.NetEnv.channels();
+            int i4 = list4.size();
+            for(int k4 = 0; k4 < i4; k4++)
+            {
+                com.maddox.rts.NetChannel netchannel3 = (com.maddox.rts.NetChannel)list4.get(k4);
+                if(netsocket6.equals(netchannel3.socket()))
+                    INFO_HARD("  " + netchannel3.id() + ":" + (netchannel3.isInitRemote() ? " <- " : " -> ") + netchannel3.remoteAddress() + ":" + netchannel3.remotePort() + " " + (int)(netchannel3.getMaxSpeed() * 1000D) + " bytes/sec");
+            }
 
-    Object localObject1 = arg(paramMap, "_$$", 0);
-    if (localObject1 == null) {
-      ERR_HARD("Unknown name of the protocol");
-      return null;
-    }
-
-    Class localClass1 = getProtocolClass((String)localObject1);
-    if (localClass1 == null) {
-      return null;
-    }
-    Object localObject2 = null;
-    try {
-      localObject2 = (NetSocket)localClass1.newInstance();
-    } catch (Exception localException1) {
-      ERR_HARD("The class of the protocol is not 'NetSocket': " + localClass1.getName());
-      return null;
-    }
-
-    Class localClass2 = ((NetSocket)localObject2).addressClass();
-
-    Object localObject3 = null;
-    if (nargs(paramMap, "LOCALHOST") > 0)
-      try {
-        localObject3 = (NetAddress)localClass2.newInstance();
-
-        ((NetAddress)localObject3).create(arg(paramMap, "LOCALHOST", 0));
-      }
-      catch (Exception localException2)
-      {
-        ERR_HARD("Bad LOCALHOST: " + arg(paramMap, "LOCALHOST", 0));
-        return null;
-      }
-    else {
-      try {
-        localObject3 = (NetAddress)localClass2.newInstance();
-        localObject3 = ((NetAddress)localObject3).getLocalHost();
-      } catch (Exception localException3) {
-        ERR_HARD("Bad LocalHost address");
-        return null;
-      }
-    }
-
-    NetAddress localNetAddress = null;
-    if (nargs(paramMap, "HOST") > 0) {
-      try {
-        localNetAddress = (NetAddress)localClass2.newInstance();
-        localNetAddress.create(arg(paramMap, "HOST", 0));
-      } catch (Exception localException4) {
-        ERR_HARD("Bad HOST: " + arg(paramMap, "HOST", 0));
-        return null;
-      }
-    }
-
-    Exception localException5 = arg(paramMap, "LOCALPORT", 0, -1);
-    Exception localException6 = arg(paramMap, "PORT", 0, -1);
-    int m = arg(paramMap, "CHANNELS", 0, Property.intValue(localClass1, "maxChannels", 64));
-    double d2 = Property.doubleValue(localClass1, "maxSpeed", 10.0D);
-    if (exist(paramMap, "SPEED")) {
-      d2 = arg(paramMap, "SPEED", 0, d2 * 1000.0D) / 1000.0D;
-    }
-    if (exist(paramMap, "CREATE")) {
-      localObject4 = localObject3;
-      if (localObject4 == null) localObject4 = localNetAddress;
-      int n = localException5;
-      if (n == -1) n = localException6;
-      NetSocket localNetSocket1 = findSocket((NetAddress)localObject4, n);
-      if (localNetSocket1 != null) {
-        if ((localNetSocket1.maxChannels == 0) || (exist(paramMap, "CHANNELS")))
-          localNetSocket1.maxChannels = m;
-        if (exist(paramMap, "SPEED"))
-          localNetSocket1.setMaxSpeed(d2);
-        INFO_SOFT("Socket alredy exist");
-        return localNetSocket1;
-      }
-      try {
-        if (n == -1) ((NetSocket)localObject2).open(0, (NetAddress)localObject4); else
-          ((NetSocket)localObject2).open(n, (NetAddress)localObject4);
-      } catch (Exception localException8) {
-        ERR_HARD(localException8.toString());
-        return null;
-      }
-      ((NetSocket)localObject2).maxChannels = m;
-      ((NetSocket)localObject2).setMaxSpeed(d2);
-      NetEnv.addSocket((NetSocket)localObject2);
-      return localObject2;
-    }
-    Object localObject5;
-    if (exist(paramMap, "DESTROY")) {
-      localObject4 = findSocket((NetAddress)localObject3, localException5);
-      if (localObject4 == null) {
-        ERR_HARD("Socket not found");
-        return null;
-      }
-      List localList;
-      int i2;
-      int i4;
-      if (exist(paramMap, "HOST")) {
-        localList = NetEnv.channels();
-        i2 = localList.size();
-        for (i4 = 0; i4 < i2; i4++) {
-          localObject5 = (NetChannel)localList.get(i4);
-          if ((!localObject4.equals(((NetChannel)localObject5).socket())) || (!((NetChannel)localObject5).remoteAddress().equals(localNetAddress)) || (((NetChannel)localObject5).remotePort() != localException6)) {
-            continue;
-          }
-          ((NetChannel)localObject5).destroy();
         }
-      }
-      else {
-        ((NetSocket)localObject4).maxChannels = 0;
-        localList = NetEnv.channels();
-        i2 = localList.size();
-        for (i4 = 0; i4 < i2; i4++) {
-          localObject5 = (NetChannel)localList.get(i4);
-          if (localObject4.equals(((NetChannel)localObject5).socket()))
-            ((NetChannel)localObject5).destroy();
+
+        return com.maddox.rts.CmdEnv.RETURN_OK;
+    }
+
+    private com.maddox.rts.NetSocket findSocket(com.maddox.rts.NetAddress netaddress, int i)
+    {
+        java.util.List list = com.maddox.rts.NetEnv.socketsBlock();
+        int j = list.size();
+        if(netaddress == null)
+        {
+            for(int k = 0; k < j; k++)
+            {
+                com.maddox.rts.NetSocket netsocket = (com.maddox.rts.NetSocket)list.get(k);
+                if(i == netsocket.getLocalPort())
+                    return netsocket;
+            }
+
+        } else
+        {
+            for(int l = 0; l < j; l++)
+            {
+                com.maddox.rts.NetSocket netsocket1 = (com.maddox.rts.NetSocket)list.get(l);
+                if(netaddress.equals(netsocket1.getLocalAddress()) && i == netsocket1.getLocalPort())
+                    return netsocket1;
+            }
+
         }
-      }
-      return localObject4;
-    }
-    if ((exist(paramMap, "JOIN")) && (paramCmdEnv.levelAccess() == 0)) {
-      if (NetEnv.cur().connect == null) {
-        ERR_HARD("Join object not available");
-        return null;
-      }
-      if ((NetEnv.cur().control != null) && ((NetEnv.cur().control instanceof NetControlLock)))
-      {
-        ERR_HARD("Previous join not ended");
-        return null;
-      }
-      if (NetEnv.cur().connect.isJoinProcess()) {
-        ERR_HARD("Previous join not ended");
-        return null;
-      }
+        list = com.maddox.rts.NetEnv.socketsNoBlock();
+        j = list.size();
+        if(netaddress == null)
+        {
+            for(int i1 = 0; i1 < j; i1++)
+            {
+                com.maddox.rts.NetSocket netsocket2 = (com.maddox.rts.NetSocket)list.get(i1);
+                if(i == netsocket2.getLocalPort())
+                    return netsocket2;
+            }
 
-      if (localException6 == -1) localException6 = localException5;
-      if (localException6 == -1) {
-        ERR_HARD("PORT not defined");
-        return null;
-      }
+        } else
+        {
+            for(int j1 = 0; j1 < j; j1++)
+            {
+                com.maddox.rts.NetSocket netsocket3 = (com.maddox.rts.NetSocket)list.get(j1);
+                if(netaddress.equals(netsocket3.getLocalAddress()) && i == netsocket3.getLocalPort())
+                    return netsocket3;
+            }
 
-      if (nargs(paramMap, "HOST") != 1) {
-        ERR_HARD("HOST not defined");
-        return null;
-      }
-
-      localObject4 = findSocket((NetAddress)localObject3, localException5);
-      if (localObject4 != null) {
-        localObject2 = localObject4;
-        if (exist(paramMap, "CHANNELS"))
-          ((NetSocket)localObject4).maxChannels = m;
-        if (exist(paramMap, "SPEED"))
-          ((NetSocket)localObject4).setMaxSpeed(d2);
-      } else {
-        try {
-          ((NetSocket)localObject2).open(localException5 == -1 ? 0 : localException5, (NetAddress)localObject3);
-        } catch (Exception localException7) {
-          ERR_HARD(localException7.toString());
-          return null;
         }
-        ((NetSocket)localObject2).maxChannels = m;
-        ((NetSocket)localObject2).setMaxSpeed(d2);
-        NetEnv.addSocket((NetSocket)localObject2);
-      }
-      NetEnv.cur().connect.join((NetSocket)localObject2, localNetAddress, localException6);
-      return localObject2;
-    }
-    if ((exist(paramMap, "CHANNELS")) || (exist(paramMap, "SPEED"))) {
-      localObject4 = localObject3;
-      if (localObject4 == null) localObject4 = localNetAddress;
-      localException7 = localException5;
-      if (localException7 == -1) localException7 = localException6;
-      NetSocket localNetSocket2 = findSocket((NetAddress)localObject4, localException7);
-      if (localNetSocket2 == null) {
-        if (exist(paramMap, "CHANNELS"))
-          Property.set(localClass1, "maxChannels", m);
-        if (exist(paramMap, "SPEED"))
-          Property.set(localClass1, "maxSpeed", d2);
         return null;
-      }
-      if (exist(paramMap, "CHANNELS"))
-        localNetSocket2.maxChannels = m;
-      if (exist(paramMap, "SPEED"))
-        localNetSocket2.setMaxSpeed(d2);
-      return localNetSocket2;
     }
 
-    Object localObject4 = NetEnv.socketsBlock();
-    int i1 = ((List)localObject4).size();
-    NetSocket localNetSocket3;
-    int i5;
-    int i6;
-    NetChannel localNetChannel;
-    for (int i3 = 0; i3 < i1; i3++) {
-      localNetSocket3 = (NetSocket)((List)localObject4).get(i3);
-      INFO_HARD(" " + localNetSocket3.getLocalAddress() + ":" + localNetSocket3.getLocalPort() + " " + localNetSocket3.countChannels + "(" + localNetSocket3.maxChannels + ") " + (int)(localNetSocket3.getMaxSpeed() * 1000.0D) + " bytes/sec");
-
-      localObject5 = NetEnv.channels();
-      i5 = ((List)localObject5).size();
-      for (i6 = 0; i6 < i5; i6++) {
-        localNetChannel = (NetChannel)((List)localObject5).get(i6);
-        if (localNetSocket3.equals(localNetChannel.socket())) {
-          INFO_HARD("  " + localNetChannel.id() + ":" + (localNetChannel.isInitRemote() ? " <- " : " -> ") + localNetChannel.remoteAddress() + ":" + localNetChannel.remotePort() + " " + (int)(localNetChannel.getMaxSpeed() * 1000.0D) + " bytes/sec");
+    private java.lang.Class getProtocolClass(java.lang.String s)
+    {
+        java.lang.String s1 = com.maddox.rts.Property.stringValue(s, "className", null);
+        if(s1 == null)
+        {
+            ERR_HARD("The class of the protocol is not found");
+            return null;
         }
-      }
-    }
-    localObject4 = NetEnv.socketsNoBlock();
-    i1 = ((List)localObject4).size();
-    for (i3 = 0; i3 < i1; i3++) {
-      localNetSocket3 = (NetSocket)((List)localObject4).get(i3);
-      INFO_HARD(" " + localNetSocket3.getLocalAddress() + ":" + localNetSocket3.getLocalPort() + " " + localNetSocket3.countChannels + "(" + localNetSocket3.maxChannels + ") " + (int)(localNetSocket3.getMaxSpeed() * 1000.0D) + " bytes/sec");
-
-      localObject5 = NetEnv.channels();
-      i5 = ((List)localObject5).size();
-      for (i6 = 0; i6 < i5; i6++) {
-        localNetChannel = (NetChannel)((List)localObject5).get(i6);
-        if (localNetSocket3.equals(localNetChannel.socket())) {
-          INFO_HARD("  " + localNetChannel.id() + ":" + (localNetChannel.isInitRemote() ? " <- " : " -> ") + localNetChannel.remoteAddress() + ":" + localNetChannel.remotePort() + " " + (int)(localNetChannel.getMaxSpeed() * 1000.0D) + " bytes/sec");
+        s1 = "com.maddox.rts.net." + s1;
+        java.lang.Class class1 = null;
+        try
+        {
+            class1 = java.lang.Class.forName(s1);
         }
-      }
-
-    }
-
-    return CmdEnv.RETURN_OK;
-  }
-
-  private NetSocket findSocket(NetAddress paramNetAddress, int paramInt) {
-    List localList = NetEnv.socketsBlock();
-    int i = localList.size();
-    int j;
-    NetSocket localNetSocket;
-    if (paramNetAddress == null)
-      for (j = 0; j < i; j++) {
-        localNetSocket = (NetSocket)localList.get(j);
-        if (paramInt == localNetSocket.getLocalPort())
-          return localNetSocket;
-      }
-    else {
-      for (j = 0; j < i; j++) {
-        localNetSocket = (NetSocket)localList.get(j);
-        if ((paramNetAddress.equals(localNetSocket.getLocalAddress())) && (paramInt == localNetSocket.getLocalPort()))
-          return localNetSocket;
-      }
-    }
-    localList = NetEnv.socketsNoBlock();
-    i = localList.size();
-    if (paramNetAddress == null)
-      for (j = 0; j < i; j++) {
-        localNetSocket = (NetSocket)localList.get(j);
-        if (paramInt == localNetSocket.getLocalPort())
-          return localNetSocket;
-      }
-    else {
-      for (j = 0; j < i; j++) {
-        localNetSocket = (NetSocket)localList.get(j);
-        if ((paramNetAddress.equals(localNetSocket.getLocalAddress())) && (paramInt == localNetSocket.getLocalPort())) {
-          return localNetSocket;
+        catch(java.lang.Exception exception)
+        {
+            ERR_HARD("The class of the protocol is not found: " + s1);
+            return null;
         }
-      }
-    }
-    return null;
-  }
-
-  private Class getProtocolClass(String paramString) {
-    String str = Property.stringValue(paramString, "className", null);
-    if (str == null) {
-      ERR_HARD("The class of the protocol is not found");
-      return null;
+        return class1;
     }
 
-    str = "com.maddox.rts.net." + str;
-    Class localClass = null;
-    try {
-      localClass = Class.forName(str);
-    } catch (Exception localException) {
-      ERR_HARD("The class of the protocol is not found: " + str);
-      return null;
+    public CmdSocket()
+    {
+        param.put("CREATE", null);
+        param.put("CHANNELS", null);
+        param.put("SPEED", null);
+        param.put("DESTROY", null);
+        param.put("LOCALHOST", null);
+        param.put("LOCALPORT", null);
+        param.put("HOST", null);
+        param.put("PORT", null);
+        param.put("LISTENER", null);
+        param.put("JOIN", null);
+        param.put("BREAK", null);
+        _properties.put("NAME", "socket");
+        _levelAccess = 1;
     }
-    return localClass;
-  }
 
-  public CmdSocket()
-  {
-    this.param.put("CREATE", null);
-    this.param.put("CHANNELS", null);
-    this.param.put("SPEED", null);
-    this.param.put("DESTROY", null);
-    this.param.put("LOCALHOST", null);
-    this.param.put("LOCALPORT", null);
-    this.param.put("HOST", null);
-    this.param.put("PORT", null);
-    this.param.put("LISTENER", null);
-    this.param.put("JOIN", null);
-    this.param.put("BREAK", null);
-    this._properties.put("NAME", "socket");
-    this._levelAccess = 1;
-  }
+    public static final java.lang.String CREATE = "CREATE";
+    public static final java.lang.String DESTROY = "DESTROY";
+    public static final java.lang.String MAXCHANNELS = "CHANNELS";
+    public static final java.lang.String MAXSPEED = "SPEED";
+    public static final java.lang.String LOCALHOST = "LOCALHOST";
+    public static final java.lang.String LOCALPORT = "LOCALPORT";
+    public static final java.lang.String HOST = "HOST";
+    public static final java.lang.String PORT = "PORT";
+    public static final java.lang.String LISTENER = "LISTENER";
+    public static final java.lang.String JOIN = "JOIN";
+    public static final java.lang.String BREAK = "BREAK";
 }

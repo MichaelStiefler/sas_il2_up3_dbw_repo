@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetMaxLag.java
+
 package com.maddox.il2.net;
 
 import com.maddox.JGP.Point3d;
@@ -13,89 +18,115 @@ import com.maddox.rts.NetEnv;
 import com.maddox.rts.Time;
 import java.util.List;
 
+// Referenced classes of package com.maddox.il2.net:
+//            NetUser, NetServerParams, Chat
+
 public class NetMaxLag
 {
-  private static final double far = 2000.0D;
-  private static final double near = 100.0D;
-  private static final double far2 = 4000000.0D;
-  private static final double near2 = 10000.0D;
-  private int warningCounter = 0;
-  private double lastWarningTime = -1.0D;
 
-  private void checkLag(Aircraft paramAircraft, boolean paramBoolean) {
-    double d1 = Time.real() / 1000.0D;
-    NetServerParams localNetServerParams = Main.cur().netServerParams;
-    double d2 = localNetServerParams.cheaterWarningDelay();
-    if (!paramBoolean)
-      d2 += 3.0D;
-    if ((this.lastWarningTime > 0.0D) && 
-      (d1 - this.lastWarningTime < d2)) {
-      return;
+    public NetMaxLag()
+    {
+        warningCounter = 0;
+        lastWarningTime = -1D;
     }
-    int i = paramAircraft.getArmy();
-    Point3d localPoint3d = paramAircraft.pos.getAbsPoint();
-    long l1 = -1L;
-    List localList = Engine.targets();
-    int j = localList.size();
-    for (int k = 0; k < j; k++) {
-      Actor localActor = (Actor)localList.get(k);
-      if ((localActor == paramAircraft) || 
-        (!(localActor instanceof Aircraft)) || 
-        (!Actor.isAlive(localActor)) || 
-        (localActor.getArmy() == i) || 
-        (!((Aircraft)localActor).isNetPlayer())) continue;
-      double d3 = localPoint3d.distanceSquared(localActor.pos.getAbsPoint());
-      long l2;
-      if (d3 > 4000000.0D) {
-        if (paramBoolean) l2 = paramAircraft.net.masterChannel().getMaxTimeout() / 2; else
-          l2 = localNetServerParams.masterChannel().getMaxTimeout() / 2;
-      } else {
-        double d4 = localNetServerParams.nearMaxLagTime();
-        if (d3 > 10000.0D) {
-          double d5 = Math.sqrt(d3);
-          d4 += (d5 - 100.0D) / 1900.0D * (localNetServerParams.farMaxLagTime() - localNetServerParams.nearMaxLagTime());
+
+    private void checkLag(com.maddox.il2.objects.air.Aircraft aircraft, boolean flag)
+    {
+        double d = (double)com.maddox.rts.Time.real() / 1000D;
+        com.maddox.il2.net.NetServerParams netserverparams = com.maddox.il2.game.Main.cur().netServerParams;
+        double d1 = netserverparams.cheaterWarningDelay();
+        if(!flag)
+            d1 += 3D;
+        if(lastWarningTime > 0.0D && d - lastWarningTime < d1)
+            return;
+        int i = aircraft.getArmy();
+        com.maddox.JGP.Point3d point3d = aircraft.pos.getAbsPoint();
+        long l = -1L;
+        java.util.List list = com.maddox.il2.engine.Engine.targets();
+        int j = list.size();
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(k);
+            if(actor == aircraft || !(actor instanceof com.maddox.il2.objects.air.Aircraft) || !com.maddox.il2.engine.Actor.isAlive(actor) || actor.getArmy() == i || !((com.maddox.il2.objects.air.Aircraft)actor).isNetPlayer())
+                continue;
+            double d2 = point3d.distanceSquared(actor.pos.getAbsPoint());
+            long l1;
+            if(d2 > 4000000D)
+            {
+                if(flag)
+                    l1 = aircraft.net.masterChannel().getMaxTimeout() / 2;
+                else
+                    l1 = netserverparams.masterChannel().getMaxTimeout() / 2;
+            } else
+            {
+                double d3 = netserverparams.nearMaxLagTime();
+                if(d2 > 10000D)
+                {
+                    double d4 = java.lang.Math.sqrt(d2);
+                    d3 += ((d4 - 100D) / 1900D) * (double)(netserverparams.farMaxLagTime() - netserverparams.nearMaxLagTime());
+                }
+                l1 = (long)(d3 * 1000D);
+            }
+            if(l < 0L || l > l1)
+                l = l1;
         }
-        l2 = ()(d4 * 1000.0D);
-      }
-      if ((l1 < 0L) || (l1 > l2))
-        l1 = l2;
-    }
-    if (l1 < 0L)
-      return;
-    NetChannel localNetChannel;
-    if (paramBoolean) localNetChannel = paramAircraft.net.masterChannel(); else
-      localNetChannel = localNetServerParams.masterChannel();
-    if (localNetChannel == null)
-      return;
-    if (l1 > localNetChannel.getCurTimeoutOk()) {
-      return;
-    }
-    this.lastWarningTime = d1;
-    this.warningCounter += 1;
-    int m = 0;
-    if (localNetServerParams.cheaterWarningNum() >= 0) {
-      m = this.warningCounter > localNetServerParams.cheaterWarningNum() ? 1 : 0;
-    }
-    if (m != 0) {
-      if (paramBoolean) {
-        Chat.sendLog(0, "user_cheatkick1", paramAircraft, null);
-        ((NetUser)NetEnv.host()).kick(paramAircraft.netUser());
-      } else {
-        Chat.sendLog(0, "user_cheatkick2", (NetUser)NetEnv.host(), null);
-        localNetChannel.destroy("You have been kicked from the server .");
-      }
-    } else if (paramBoolean) {
-      String str = "user_cheating" + (this.warningCounter % 3 + 1);
-      Chat.sendLog(0, str, paramAircraft, null);
-    }
-  }
 
-  public void doServerCheck(Aircraft paramAircraft) {
-    checkLag(paramAircraft, true);
-  }
+        if(l < 0L)
+            return;
+        com.maddox.rts.NetChannel netchannel;
+        if(flag)
+            netchannel = aircraft.net.masterChannel();
+        else
+            netchannel = netserverparams.masterChannel();
+        if(netchannel == null)
+            return;
+        if(l > (long)netchannel.getCurTimeoutOk())
+            return;
+        lastWarningTime = d;
+        warningCounter++;
+        boolean flag1 = false;
+        if(netserverparams.cheaterWarningNum() >= 0)
+            flag1 = warningCounter > netserverparams.cheaterWarningNum();
+        if(flag1)
+        {
+            if(flag)
+            {
+                com.maddox.il2.net.Chat.sendLog(0, "user_cheatkick1", aircraft, null);
+                ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).kick(aircraft.netUser());
+            } else
+            {
+                com.maddox.il2.net.Chat.sendLog(0, "user_cheatkick2", (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host(), null);
+                netchannel.destroy("You have been kicked from the server .");
+            }
+        } else
+        if(flag)
+        {
+            java.lang.String s = "user_cheating" + (warningCounter % 3 + 1);
+            com.maddox.il2.net.Chat.sendLog(0, s, aircraft, null);
+        }
+    }
 
-  public void doClientCheck() {
-    if (!Actor.isAlive(World.getPlayerAircraft())) return;
-    checkLag(World.getPlayerAircraft(), false);
-  }
+    public void doServerCheck(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        checkLag(aircraft, true);
+    }
+
+    public void doClientCheck()
+    {
+        if(!com.maddox.il2.engine.Actor.isAlive(com.maddox.il2.ai.World.getPlayerAircraft()))
+        {
+            return;
+        } else
+        {
+            checkLag(com.maddox.il2.ai.World.getPlayerAircraft(), false);
+            return;
+        }
+    }
+
+    private static final double far = 2000D;
+    private static final double near = 100D;
+    private static final double far2 = 4000000D;
+    private static final double near2 = 10000D;
+    private int warningCounter;
+    private double lastWarningTime;
 }

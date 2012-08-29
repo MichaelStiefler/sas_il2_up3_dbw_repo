@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   InterpolateAdapter.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
@@ -11,302 +16,340 @@ import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.List;
 
+// Referenced classes of package com.maddox.il2.engine:
+//            Actor, Engine, ActorPos, DreamEnv, 
+//            GObj, EngineProfile, CollideEnv, ActorFilter, 
+//            Accumulator
+
 public final class InterpolateAdapter
-  implements MsgTimeOutListener
+    implements com.maddox.rts.MsgTimeOutListener
 {
-  public static final int TICK_POS = -1000;
-  private Actor currentListener;
-  private ArrayList stackListeners = new ArrayList();
-  private ArrayList curListListeners;
-  private int iCur = 0;
-  private MsgTimeOut ticker;
-  private MsgTimeOut realTicker;
-  private ArrayList listeners;
-  private ArrayList realListeners;
-  private boolean bProcess;
-  private boolean bActive;
-  private int stepStamp = 0;
 
-  public static void getSphere(AbstractCollection paramAbstractCollection, Point3d paramPoint3d, double paramDouble)
-  {
-    adapter()._getSphere(paramAbstractCollection, paramPoint3d, paramDouble);
-  }
-
-  public static void getFiltered(AbstractCollection paramAbstractCollection, Point3d paramPoint3d, double paramDouble, ActorFilter paramActorFilter)
-  {
-    adapter()._getFiltered(paramAbstractCollection, paramPoint3d, paramDouble, paramActorFilter);
-  }
-
-  public static void getNearestEnemies(Point3d paramPoint3d, double paramDouble, int paramInt, Accumulator paramAccumulator)
-  {
-    adapter()._getNearestEnemies(paramPoint3d, paramDouble, paramInt, paramAccumulator);
-  }
-
-  public static void getNearestEnemiesCyl(Point3d paramPoint3d, double paramDouble1, double paramDouble2, double paramDouble3, int paramInt, Accumulator paramAccumulator)
-  {
-    adapter()._getNearestEnemiesCyl(paramPoint3d, paramDouble1, paramDouble2, paramDouble3, paramInt, paramAccumulator);
-  }
-
-  public static InterpolateAdapter adapter()
-  {
-    return Engine.cur.interpolateAdapter;
-  }
-  public static int step() {
-    return Engine.cur.interpolateAdapter.stepStamp;
-  }
-
-  public static boolean isActive()
-  {
-    return Engine.cur.interpolateAdapter.bActive;
-  }
-
-  public static void active(boolean paramBoolean)
-  {
-    Engine.cur.interpolateAdapter.bActive = paramBoolean;
-  }
-
-  public static boolean isProcess()
-  {
-    return Engine.cur.interpolateAdapter.bProcess;
-  }
-  public static boolean containsListener(Actor paramActor) {
-    return Engine.cur.interpolateAdapter.listeners.contains(paramActor);
-  }
-
-  public static void forceInterpolate(Actor paramActor)
-  {
-    Engine.cur.interpolateAdapter._forceInterpolate(paramActor);
-  }
-  private void _forceInterpolate(Actor paramActor) {
-    if (!this.bProcess) return;
-    if ((this.currentListener == paramActor) || (this.stackListeners.contains(paramActor)))
+    public static void getSphere(java.util.AbstractCollection abstractcollection, com.maddox.JGP.Point3d point3d, double d)
     {
-      System.err.println("ERROR: Cycle reference interpolate position");
-      int i = 0;
-      if (this.currentListener != paramActor)
-        i = this.stackListeners.indexOf(paramActor) + 1;
-      int j = this.stackListeners.size();
-      System.err.println("  " + paramActor);
-      for (; i < j; i++)
-        System.err.println("  " + this.stackListeners.get(i));
-      return;
+        com.maddox.il2.engine.InterpolateAdapter.adapter()._getSphere(abstractcollection, point3d, d);
     }
-    if (this.curListListeners.contains(paramActor)) {
-      this.stackListeners.add(paramActor);
-      paramActor.interpolateTick();
-      this.stackListeners.remove(this.stackListeners.size() - 1);
+
+    public static void getFiltered(java.util.AbstractCollection abstractcollection, com.maddox.JGP.Point3d point3d, double d, com.maddox.il2.engine.ActorFilter actorfilter)
+    {
+        com.maddox.il2.engine.InterpolateAdapter.adapter()._getFiltered(abstractcollection, point3d, d, actorfilter);
     }
-  }
 
-  private void updatePos()
-  {
-    ArrayList localArrayList = Engine.cur.posChanged;
-    int i = localArrayList.size();
-    for (int j = 0; j < i; j++) {
-      Actor localActor = (Actor)localArrayList.get(j);
-      if (Actor.isValid(localActor))
-        localActor.pos.updateCurrent();
+    public static void getNearestEnemies(com.maddox.JGP.Point3d point3d, double d, int i, com.maddox.il2.engine.Accumulator accumulator)
+    {
+        com.maddox.il2.engine.InterpolateAdapter.adapter()._getNearestEnemies(point3d, d, i, accumulator);
     }
-    localArrayList.clear();
-    Engine.cur.dreamEnv.doChanges();
-  }
 
-  public void msgTimeOut(Object paramObject)
-  {
-    boolean bool = Message.current().isRealTime();
-    if (bool) this.realTicker.post(); else {
-      this.ticker.post();
+    public static void getNearestEnemiesCyl(com.maddox.JGP.Point3d point3d, double d, double d1, double d2, int i, 
+            com.maddox.il2.engine.Accumulator accumulator)
+    {
+        com.maddox.il2.engine.InterpolateAdapter.adapter()._getNearestEnemiesCyl(point3d, d, d1, d2, i, accumulator);
     }
-    this.curListListeners = (bool ? this.realListeners : this.listeners);
-    Engine.processPostDestroyActors();
-    GObj.DeleteCppObjects();
-    if (this.bActive) {
-      this.bProcess = true;
 
-      if (!bool) {
-        War.cur().interpolateTick();
-      }
-
-      if (!bool) {
-        updatePos();
-      } else {
-        if (Time.isRealOnly())
-          updatePos();
-        Engine.cur.profile.endFrame();
-      }
-
-      this.iCur = 0;
-
-      while (this.iCur < this.curListListeners.size())
-      {
-        this.currentListener = ((Actor)this.curListListeners.get(this.iCur));
-        this.currentListener.interpolateTick();
-        this.iCur += 1;
-      }
-      this.currentListener = null;
-      this.bProcess = false;
-
-      if (!bool) {
-        Engine.cur.collideEnv.doCollision(Engine.cur.posChanged);
-        Engine.cur.collideEnv.doBulletMoveAndCollision();
-      }
-
-      Engine.processPostDestroyActors();
-      this.stepStamp += 1;
+    public static com.maddox.il2.engine.InterpolateAdapter adapter()
+    {
+        return com.maddox.il2.engine.Engine.cur.interpolateAdapter;
     }
-  }
 
-  public void addListener(Actor paramActor) {
-    ArrayList localArrayList = paramActor.isRealTime() ? this.realListeners : this.listeners;
-    if (!localArrayList.contains(paramActor)) {
-      if (!Actor.isValid(paramActor))
-        return;
-      localArrayList.add(paramActor);
+    public static int step()
+    {
+        return com.maddox.il2.engine.Engine.cur.interpolateAdapter.stepStamp;
     }
-  }
 
-  public void removeListener(Actor paramActor) {
-    ArrayList localArrayList = paramActor.isRealTime() ? this.realListeners : this.listeners;
-    int i = localArrayList.indexOf(paramActor);
-    if (i >= 0) {
-      localArrayList.remove(i);
-      if ((this.bProcess) && 
-        (i <= this.iCur)) this.iCur -= 1;
+    public static boolean isActive()
+    {
+        return com.maddox.il2.engine.Engine.cur.interpolateAdapter.bActive;
     }
-  }
 
-  public static void forceListener(Actor paramActor)
-  {
-    Engine.cur.interpolateAdapter._forceListener(paramActor);
-  }
-
-  private void _forceListener(Actor paramActor) {
-    ArrayList localArrayList = paramActor.isRealTime() ? this.realListeners : this.listeners;
-    int i = localArrayList.indexOf(paramActor);
-    if (i >= 0) {
-      localArrayList.remove(i);
-      localArrayList.add(0, paramActor);
+    public static void active(boolean flag)
+    {
+        com.maddox.il2.engine.Engine.cur.interpolateAdapter.bActive = flag;
     }
-  }
 
-  public List listeners() {
-    return this.listeners; } 
-  public List realListeners() { return this.realListeners; }
-
-  private void clearDestroyedListeners(List paramList) {
-    int i = paramList.size();
-    for (int j = 0; j < paramList.size(); j++) {
-      Actor localActor = (Actor)paramList.get(j);
-      if (!Actor.isValid(localActor))
-        paramList.remove(j);
+    public static boolean isProcess()
+    {
+        return com.maddox.il2.engine.Engine.cur.interpolateAdapter.bProcess;
     }
-  }
 
-  protected void resetGameClear() {
-    ArrayList localArrayList = new ArrayList(this.realListeners);
-    Engine.destroyListGameActors(localArrayList);
-    localArrayList.addAll(this.listeners);
-    Engine.destroyListGameActors(localArrayList);
-
-    clearDestroyedListeners(this.listeners);
-    clearDestroyedListeners(this.realListeners);
-  }
-
-  protected void resetGameCreate() {
-    this.ticker.post();
-  }
-
-  protected InterpolateAdapter() {
-    this.ticker = new MsgTimeOut(null);
-    this.ticker.setTickPos(-1000);
-    this.ticker.setNotCleanAfterSend();
-    this.ticker.setFlags(8);
-    this.ticker.setListener(this);
-    this.ticker.post();
-    this.realTicker = new MsgTimeOut(null);
-    this.realTicker.setTickPos(-1000);
-    this.realTicker.setNotCleanAfterSend();
-    this.realTicker.setFlags(72);
-    this.realTicker.setListener(this);
-    this.realTicker.post();
-    this.listeners = new ArrayList();
-    this.realListeners = new ArrayList();
-    this.bProcess = false;
-    this.bActive = true;
-  }
-
-  private void _getSphere(AbstractCollection paramAbstractCollection, Point3d paramPoint3d, double paramDouble)
-  {
-    double d1 = paramDouble * paramDouble;
-    int i = this.listeners.size();
-    for (int j = 0; j < i; j++) {
-      Actor localActor = (Actor)this.listeners.get(j);
-      if (localActor.pos != null) {
-        Point3d localPoint3d = localActor.pos.getAbsPoint();
-        double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y) + (paramPoint3d.z - localPoint3d.z) * (paramPoint3d.z - localPoint3d.z);
-
-        if (d2 <= d1)
-          paramAbstractCollection.add(localActor);
-      }
+    public static boolean containsListener(com.maddox.il2.engine.Actor actor)
+    {
+        return com.maddox.il2.engine.Engine.cur.interpolateAdapter.listeners.contains(actor);
     }
-  }
 
-  private void _getFiltered(AbstractCollection paramAbstractCollection, Point3d paramPoint3d, double paramDouble, ActorFilter paramActorFilter)
-  {
-    double d1 = paramDouble * paramDouble;
-    int i = this.listeners.size();
-    for (int j = 0; j < i; j++) {
-      Actor localActor = (Actor)this.listeners.get(j);
-      if (localActor.pos != null) {
-        Point3d localPoint3d = localActor.pos.getAbsPoint();
-        double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y) + (paramPoint3d.z - localPoint3d.z) * (paramPoint3d.z - localPoint3d.z);
-
-        if ((d2 > d1) || 
-          (!paramActorFilter.isUse(localActor, d2)) || 
-          (paramAbstractCollection == null)) continue;
-        paramAbstractCollection.add(localActor);
-      }
+    public static void forceInterpolate(com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.il2.engine.Engine.cur.interpolateAdapter._forceInterpolate(actor);
     }
-  }
 
-  private void _getNearestEnemies(Point3d paramPoint3d, double paramDouble, int paramInt, Accumulator paramAccumulator)
-  {
-    double d1 = paramDouble * paramDouble;
-    int i = this.listeners.size();
-    for (int j = 0; j < i; j++) {
-      Actor localActor = (Actor)this.listeners.get(j);
-      if (localActor.pos != null) {
-        int k = localActor.getArmy();
-        if ((k != 0) && (k != paramInt)) {
-          Point3d localPoint3d = localActor.pos.getAbsPoint();
-          double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y) + (paramPoint3d.z - localPoint3d.z) * (paramPoint3d.z - localPoint3d.z);
+    private void _forceInterpolate(com.maddox.il2.engine.Actor actor)
+    {
+        if(!bProcess)
+            return;
+        if(currentListener == actor || stackListeners.contains(actor))
+        {
+            java.lang.System.err.println("ERROR: Cycle reference interpolate position");
+            int i = 0;
+            if(currentListener != actor)
+                i = stackListeners.indexOf(actor) + 1;
+            int j = stackListeners.size();
+            java.lang.System.err.println("  " + actor);
+            for(; i < j; i++)
+                java.lang.System.err.println("  " + stackListeners.get(i));
 
-          if (d2 <= d1)
-            paramAccumulator.add(localActor, d2);
+            return;
         }
-      }
-    }
-  }
-
-  private void _getNearestEnemiesCyl(Point3d paramPoint3d, double paramDouble1, double paramDouble2, double paramDouble3, int paramInt, Accumulator paramAccumulator)
-  {
-    double d1 = paramDouble1 * paramDouble1;
-    int i = this.listeners.size();
-    for (int j = 0; j < i; j++) {
-      Actor localActor = (Actor)this.listeners.get(j);
-      if (localActor.pos != null) {
-        int k = localActor.getArmy();
-        if ((k != 0) && (k != paramInt)) {
-          Point3d localPoint3d = localActor.pos.getAbsPoint();
-          double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y);
-
-          if (d2 <= d1) {
-            double d3 = localPoint3d.z - paramPoint3d.z;
-            if ((d3 <= paramDouble3) && (d3 >= paramDouble2))
-              paramAccumulator.add(localActor, d2 + d3 * d3);
-          }
+        if(curListListeners.contains(actor))
+        {
+            stackListeners.add(actor);
+            actor.interpolateTick();
+            stackListeners.remove(stackListeners.size() - 1);
         }
-      }
     }
-  }
+
+    private void updatePos()
+    {
+        java.util.ArrayList arraylist = com.maddox.il2.engine.Engine.cur.posChanged;
+        int i = arraylist.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)arraylist.get(j);
+            if(com.maddox.il2.engine.Actor.isValid(actor))
+                actor.pos.updateCurrent();
+        }
+
+        arraylist.clear();
+        com.maddox.il2.engine.Engine.cur.dreamEnv.doChanges();
+    }
+
+    public void msgTimeOut(java.lang.Object obj)
+    {
+        boolean flag = com.maddox.rts.Message.current().isRealTime();
+        if(flag)
+            realTicker.post();
+        else
+            ticker.post();
+        curListListeners = flag ? realListeners : listeners;
+        com.maddox.il2.engine.Engine.processPostDestroyActors();
+        com.maddox.il2.engine.GObj.DeleteCppObjects();
+        if(bActive)
+        {
+            bProcess = true;
+            if(!flag)
+                com.maddox.il2.ai.War.cur().interpolateTick();
+            if(!flag)
+            {
+                updatePos();
+            } else
+            {
+                if(com.maddox.rts.Time.isRealOnly())
+                    updatePos();
+                com.maddox.il2.engine.Engine.cur.profile.endFrame();
+            }
+            for(iCur = 0; iCur < curListListeners.size(); iCur++)
+            {
+                currentListener = (com.maddox.il2.engine.Actor)curListListeners.get(iCur);
+                currentListener.interpolateTick();
+            }
+
+            currentListener = null;
+            bProcess = false;
+            if(!flag)
+            {
+                com.maddox.il2.engine.Engine.cur.collideEnv.doCollision(com.maddox.il2.engine.Engine.cur.posChanged);
+                com.maddox.il2.engine.Engine.cur.collideEnv.doBulletMoveAndCollision();
+            }
+            com.maddox.il2.engine.Engine.processPostDestroyActors();
+            stepStamp++;
+        }
+    }
+
+    public void addListener(com.maddox.il2.engine.Actor actor)
+    {
+        java.util.ArrayList arraylist = actor.isRealTime() ? realListeners : listeners;
+        if(!arraylist.contains(actor))
+        {
+            if(!com.maddox.il2.engine.Actor.isValid(actor))
+                return;
+            arraylist.add(actor);
+        }
+    }
+
+    public void removeListener(com.maddox.il2.engine.Actor actor)
+    {
+        java.util.ArrayList arraylist = actor.isRealTime() ? realListeners : listeners;
+        int i = arraylist.indexOf(actor);
+        if(i >= 0)
+        {
+            arraylist.remove(i);
+            if(bProcess && i <= iCur)
+                iCur--;
+        }
+    }
+
+    public static void forceListener(com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.il2.engine.Engine.cur.interpolateAdapter._forceListener(actor);
+    }
+
+    private void _forceListener(com.maddox.il2.engine.Actor actor)
+    {
+        java.util.ArrayList arraylist = actor.isRealTime() ? realListeners : listeners;
+        int i = arraylist.indexOf(actor);
+        if(i >= 0)
+        {
+            arraylist.remove(i);
+            arraylist.add(0, actor);
+        }
+    }
+
+    public java.util.List listeners()
+    {
+        return listeners;
+    }
+
+    public java.util.List realListeners()
+    {
+        return realListeners;
+    }
+
+    private void clearDestroyedListeners(java.util.List list)
+    {
+        int i = list.size();
+        for(int j = 0; j < list.size(); j++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(j);
+            if(!com.maddox.il2.engine.Actor.isValid(actor))
+                list.remove(j);
+        }
+
+    }
+
+    protected void resetGameClear()
+    {
+        java.util.ArrayList arraylist = new ArrayList(realListeners);
+        com.maddox.il2.engine.Engine.destroyListGameActors(arraylist);
+        arraylist.addAll(listeners);
+        com.maddox.il2.engine.Engine.destroyListGameActors(arraylist);
+        clearDestroyedListeners(listeners);
+        clearDestroyedListeners(realListeners);
+    }
+
+    protected void resetGameCreate()
+    {
+        ticker.post();
+    }
+
+    protected InterpolateAdapter()
+    {
+        stackListeners = new ArrayList();
+        iCur = 0;
+        stepStamp = 0;
+        ticker = new MsgTimeOut(null);
+        ticker.setTickPos(-1000);
+        ticker.setNotCleanAfterSend();
+        ticker.setFlags(8);
+        ticker.setListener(this);
+        ticker.post();
+        realTicker = new MsgTimeOut(null);
+        realTicker.setTickPos(-1000);
+        realTicker.setNotCleanAfterSend();
+        realTicker.setFlags(72);
+        realTicker.setListener(this);
+        realTicker.post();
+        listeners = new ArrayList();
+        realListeners = new ArrayList();
+        bProcess = false;
+        bActive = true;
+    }
+
+    private void _getSphere(java.util.AbstractCollection abstractcollection, com.maddox.JGP.Point3d point3d, double d)
+    {
+        double d1 = d * d;
+        int i = listeners.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)listeners.get(j);
+            if(actor.pos == null)
+                continue;
+            com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+            double d2 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z);
+            if(d2 <= d1)
+                abstractcollection.add(actor);
+        }
+
+    }
+
+    private void _getFiltered(java.util.AbstractCollection abstractcollection, com.maddox.JGP.Point3d point3d, double d, com.maddox.il2.engine.ActorFilter actorfilter)
+    {
+        double d1 = d * d;
+        int i = listeners.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)listeners.get(j);
+            if(actor.pos == null)
+                continue;
+            com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+            double d2 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z);
+            if(d2 <= d1 && actorfilter.isUse(actor, d2) && abstractcollection != null)
+                abstractcollection.add(actor);
+        }
+
+    }
+
+    private void _getNearestEnemies(com.maddox.JGP.Point3d point3d, double d, int i, com.maddox.il2.engine.Accumulator accumulator)
+    {
+        double d1 = d * d;
+        int j = listeners.size();
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)listeners.get(k);
+            if(actor.pos == null)
+                continue;
+            int l = actor.getArmy();
+            if(l == 0 || l == i)
+                continue;
+            com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+            double d2 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z);
+            if(d2 <= d1)
+                accumulator.add(actor, d2);
+        }
+
+    }
+
+    private void _getNearestEnemiesCyl(com.maddox.JGP.Point3d point3d, double d, double d1, double d2, 
+            int i, com.maddox.il2.engine.Accumulator accumulator)
+    {
+        double d3 = d * d;
+        int j = listeners.size();
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)listeners.get(k);
+            if(actor.pos == null)
+                continue;
+            int l = actor.getArmy();
+            if(l == 0 || l == i)
+                continue;
+            com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+            double d4 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y);
+            if(d4 > d3)
+                continue;
+            double d5 = point3d1.z - point3d.z;
+            if(d5 <= d2 && d5 >= d1)
+                accumulator.add(actor, d4 + d5 * d5);
+        }
+
+    }
+
+    public static final int TICK_POS = -1000;
+    private com.maddox.il2.engine.Actor currentListener;
+    private java.util.ArrayList stackListeners;
+    private java.util.ArrayList curListListeners;
+    private int iCur;
+    private com.maddox.rts.MsgTimeOut ticker;
+    private com.maddox.rts.MsgTimeOut realTicker;
+    private java.util.ArrayList listeners;
+    private java.util.ArrayList realListeners;
+    private boolean bProcess;
+    private boolean bActive;
+    private int stepStamp;
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   MachineGunOerlikon20x2.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Vector3d;
@@ -6,52 +11,48 @@ import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.GunProperties;
 import com.maddox.il2.engine.Loc;
 
-public class MachineGunOerlikon20x2 extends MGunAntiAirGeneric
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            MGunAntiAirGeneric, BulletAntiAirSmallUSSR, Bullet
+
+public class MachineGunOerlikon20x2 extends com.maddox.il2.objects.weapons.MGunAntiAirGeneric
 {
-  protected float Specify(GunProperties paramGunProperties)
-  {
-    paramGunProperties.aimMaxDist = 4389.0F;
-    paramGunProperties.shotFreq = 15.0F;
-    paramGunProperties.bulletsCluster = 4;
 
-    paramGunProperties.sound = "weapon.zenitka_20";
+    public MachineGunOerlikon20x2()
+    {
+    }
 
-    BulletProperties localBulletProperties = paramGunProperties.bullet[0];
+    protected float Specify(com.maddox.il2.engine.GunProperties gunproperties)
+    {
+        gunproperties.aimMaxDist = 4389F;
+        gunproperties.shotFreq = 15F;
+        gunproperties.bulletsCluster = 4;
+        gunproperties.sound = "weapon.zenitka_20";
+        com.maddox.il2.engine.BulletProperties bulletproperties = gunproperties.bullet[0];
+        bulletproperties.timeLife = 3.6F;
+        bulletproperties.addExplTime = 1.5F;
+        bulletproperties.power = 0.011F;
+        bulletproperties.powerType = 1;
+        bulletproperties.powerRadius = 30F;
+        bulletproperties.kalibr = 0.02F;
+        bulletproperties.massa = 0.123F;
+        bulletproperties.speed = 844F;
+        bulletproperties.traceMesh = "3do/effects/tracers/20mmBlue/mono.sim";
+        bulletproperties.traceTrail = null;
+        bulletproperties.traceColor = 0xb3ff0000;
+        bulletproperties = gunproperties.bullet[1];
+        bulletproperties.timeLife = 5.2F;
+        bulletproperties.power = 0.0F;
+        bulletproperties.kalibr = 0.02F;
+        bulletproperties.massa = 0.122F;
+        bulletproperties.speed = 844F;
+        bulletproperties.traceMesh = "3do/effects/tracers/20mmBlue/mono.sim";
+        bulletproperties.traceTrail = null;
+        bulletproperties.traceColor = 0xb3ff0000;
+        return 70F;
+    }
 
-    localBulletProperties.timeLife = 3.6F;
-    localBulletProperties.addExplTime = 1.5F;
-
-    localBulletProperties.power = 0.011F;
-    localBulletProperties.powerType = 1;
-    localBulletProperties.powerRadius = 30.0F;
-
-    localBulletProperties.kalibr = 0.02F;
-    localBulletProperties.massa = 0.123F;
-    localBulletProperties.speed = 844.0F;
-
-    localBulletProperties.traceMesh = "3do/effects/tracers/20mmBlue/mono.sim";
-    localBulletProperties.traceTrail = null;
-    localBulletProperties.traceColor = -1275133952;
-
-    localBulletProperties = paramGunProperties.bullet[1];
-
-    localBulletProperties.timeLife = 5.2F;
-
-    localBulletProperties.power = 0.0F;
-
-    localBulletProperties.kalibr = 0.02F;
-    localBulletProperties.massa = 0.122F;
-    localBulletProperties.speed = 844.0F;
-
-    localBulletProperties.traceMesh = "3do/effects/tracers/20mmBlue/mono.sim";
-    localBulletProperties.traceTrail = null;
-    localBulletProperties.traceColor = -1275133952;
-
-    return 70.0F;
-  }
-
-  public Bullet createNextBullet(Vector3d paramVector3d1, int paramInt, GunGeneric paramGunGeneric, Loc paramLoc, Vector3d paramVector3d2, long paramLong)
-  {
-    return new BulletAntiAirSmallUSSR(paramVector3d1, paramInt, paramGunGeneric, paramLoc, paramVector3d2, paramLong, this.explAddTimeT);
-  }
+    public com.maddox.il2.objects.weapons.Bullet createNextBullet(com.maddox.JGP.Vector3d vector3d, int i, com.maddox.il2.engine.GunGeneric gungeneric, com.maddox.il2.engine.Loc loc, com.maddox.JGP.Vector3d vector3d1, long l)
+    {
+        return new BulletAntiAirSmallUSSR(vector3d, i, gungeneric, loc, vector3d1, l, explAddTimeT);
+    }
 }

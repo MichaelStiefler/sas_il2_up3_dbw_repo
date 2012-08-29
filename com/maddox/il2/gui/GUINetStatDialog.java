@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUINetStatDialog.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GCanvas;
@@ -9,133 +14,165 @@ import com.maddox.gwindow.GWindowFramed;
 import com.maddox.gwindow.GWindowLookAndFeel;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowTable;
-import com.maddox.gwindow.GWindowTable.Column;
+import com.maddox.gwindow.GWindowVScrollBar;
 import com.maddox.il2.game.Main;
-import com.maddox.il2.net.Chat;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.net.NetUserStat;
 import com.maddox.rts.NetEnv;
 import java.util.List;
 
-public class GUINetStatDialog extends GWindowFramed
+// Referenced classes of package com.maddox.il2.gui:
+//            GUI, GUIChatDialog
+
+public class GUINetStatDialog extends com.maddox.gwindow.GWindowFramed
 {
-  public WClient wClient;
-  public Table wTable;
-
-  public void doRender(boolean paramBoolean)
-  {
-    boolean bool = GUI.chatDlg.isTransparent();
-    int i = this.root.C.alpha;
-    if (bool) this.root.C.alpha = 0;
-    super.doRender(paramBoolean);
-    if (bool) this.root.C.alpha = i; 
-  }
-
-  public void preRender()
-  {
-    Chat localChat = Main.cur().chat;
-    if (localChat == null)
-      hideWindow(); 
-  }
-
-  public void afterCreated() {
-    this.wClient = ((WClient)create(new WClient()));
-    this.clientWindow = this.wClient;
-    this.wTable = new Table(this.wClient);
-    super.afterCreated();
-    this.closeBox.hideWindow();
-    this.closeBox = null;
-  }
-
-  public GUINetStatDialog(GWindow paramGWindow) {
-    this.bAlwaysOnTop = true;
-    this.title = "";
-    paramGWindow.create(this);
-    set1024PosSize(300.0F, 32.0F, 500.0F, 100.0F);
-  }
-
-  public class WClient extends GWindowDialogClient
-  {
-    public WClient()
+    public class WClient extends com.maddox.gwindow.GWindowDialogClient
     {
+
+        public void resized()
+        {
+            wTable.setPosSize(0.0F, 0.0F, win.dx, win.dy);
+            super.resized();
+        }
+
+        public WClient()
+        {
+        }
     }
 
-    public void resized()
+    public class Table extends com.maddox.gwindow.GWindowTable
     {
-      GUINetStatDialog.this.wTable.setPosSize(0.0F, 0.0F, this.win.dx, this.win.dy);
-      super.resized();
-    }
-  }
 
-  public class Table extends GWindowTable
-  {
-    public int countRows()
+        public int countRows()
+        {
+            return com.maddox.rts.NetEnv.hosts().size() + 1;
+        }
+
+        public void renderCell(int i, int j, boolean flag, float f, float f1)
+        {
+            if(com.maddox.il2.gui.GUI.chatDlg.isTransparent())
+                root.C.alpha = 255;
+            setCanvasFont(0);
+            if(flag)
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, lookAndFeel().regionWhite);
+            }
+            java.lang.String s = null;
+            int k = 1;
+            com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+            if(i > 0)
+                netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.hosts().get(i - 1);
+            switch(j)
+            {
+            case 0: // '\0'
+                s = netuser.uniqueName();
+                break;
+
+            case 1: // '\001'
+                s = "" + netuser.ping;
+                break;
+
+            case 2: // '\002'
+                s = "" + (int)netuser.stat().score;
+                break;
+            }
+            if(flag)
+            {
+                setCanvasColorWHITE();
+                draw(0.0F, 0.0F, f, f1, k, s);
+            } else
+            {
+                setCanvasColorBLACK();
+                draw(0.0F, 0.0F, f, f1, k, s);
+            }
+            if(com.maddox.il2.gui.GUI.chatDlg.isTransparent())
+                root.C.alpha = 0;
+        }
+
+        public void setSelect(int i, int j)
+        {
+            super.setSelect(i, j);
+        }
+
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i == 11 && j == 27)
+            {
+                com.maddox.il2.gui.GUI.chatUnactivate();
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
+        }
+
+        public void afterCreated()
+        {
+            super.afterCreated();
+            bColumnsSizable = true;
+            bSelecting = false;
+            addColumn("Name", null);
+            addColumn("Ping", null);
+            addColumn("Score", null);
+            vSB.scroll = rowHeight(0);
+            getColumn(0).setRelativeDx(4F);
+            getColumn(1).setRelativeDx(2.0F);
+            getColumn(2).setRelativeDx(2.0F);
+            alignColumns();
+            wClient.bNotify = true;
+            resized();
+        }
+
+        public void resolutionChanged()
+        {
+            vSB.scroll = rowHeight(0);
+            super.resolutionChanged();
+        }
+
+        public Table(com.maddox.gwindow.GWindow gwindow)
+        {
+            super(gwindow);
+        }
+    }
+
+
+    public void doRender(boolean flag)
     {
-      return NetEnv.hosts().size() + 1;
-    }
-    public void renderCell(int paramInt1, int paramInt2, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-      if (GUI.chatDlg.isTransparent())
-        this.root.C.alpha = 255;
-      setCanvasFont(0);
-      if (paramBoolean) {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, lookAndFeel().regionWhite);
-      }
-      String str = null;
-      int i = 1;
-      NetUser localNetUser = (NetUser)NetEnv.host();
-      if (paramInt1 > 0)
-        localNetUser = (NetUser)NetEnv.hosts().get(paramInt1 - 1);
-      switch (paramInt2) { case 0:
-        str = localNetUser.uniqueName(); break;
-      case 1:
-        str = "" + localNetUser.ping; break;
-      case 2:
-        str = "" + (int)localNetUser.stat().score;
-      }
-      if (paramBoolean) {
-        setCanvasColorWHITE();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, i, str);
-      } else {
-        setCanvasColorBLACK();
-        draw(0.0F, 0.0F, paramFloat1, paramFloat2, i, str);
-      }
-      if (GUI.chatDlg.isTransparent())
-        this.root.C.alpha = 0; 
+        boolean flag1 = com.maddox.il2.gui.GUI.chatDlg.isTransparent();
+        int i = root.C.alpha;
+        if(flag1)
+            root.C.alpha = 0;
+        super.doRender(flag);
+        if(flag1)
+            root.C.alpha = i;
     }
 
-    public void setSelect(int paramInt1, int paramInt2) {
-      super.setSelect(paramInt1, paramInt2);
+    public void preRender()
+    {
+        com.maddox.il2.net.Chat chat = com.maddox.il2.game.Main.cur().chat;
+        if(chat == null)
+            hideWindow();
     }
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2) {
-      if ((paramInt1 == 11) && (paramInt2 == 27)) {
-        GUI.chatUnactivate();
-        return true;
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
-    }
-    public void afterCreated() {
-      super.afterCreated();
-      this.bColumnsSizable = true;
-      this.bSelecting = false;
-      addColumn("Name", null);
-      addColumn("Ping", null);
-      addColumn("Score", null);
-      this.vSB.scroll = rowHeight(0);
-      getColumn(0).setRelativeDx(4.0F);
-      getColumn(1).setRelativeDx(2.0F);
-      getColumn(2).setRelativeDx(2.0F);
-      alignColumns();
 
-      this.wClient.bNotify = true;
-      resized();
+    public void afterCreated()
+    {
+        wClient = (com.maddox.il2.gui.WClient)create(new WClient());
+        clientWindow = wClient;
+        wTable = new Table(wClient);
+        super.afterCreated();
+        closeBox.hideWindow();
+        closeBox = null;
     }
-    public void resolutionChanged() {
-      this.vSB.scroll = rowHeight(0);
-      super.resolutionChanged();
+
+    public GUINetStatDialog(com.maddox.gwindow.GWindow gwindow)
+    {
+        bAlwaysOnTop = true;
+        title = "";
+        gwindow.create(this);
+        set1024PosSize(300F, 32F, 500F, 100F);
     }
-    public Table(GWindow arg2) {
-      super();
-    }
-  }
+
+    public com.maddox.il2.gui.WClient wClient;
+    public com.maddox.il2.gui.Table wTable;
 }

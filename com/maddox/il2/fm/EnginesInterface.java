@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   EnginesInterface.java
+
 package com.maddox.il2.fm;
 
 import com.maddox.JGP.Point3d;
@@ -12,590 +17,720 @@ import com.maddox.il2.engine.Loc;
 import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.rts.SectFile;
 
-public class EnginesInterface extends FMMath
+// Referenced classes of package com.maddox.il2.fm:
+//            FMMath, Motor, FlightModel
+
+public class EnginesInterface extends com.maddox.il2.fm.FMMath
 {
-  public Motor[] engines;
-  public boolean[] bCurControl;
-  private int num = 0;
-  public Vector3d producedF = new Vector3d();
-  public Vector3d producedM = new Vector3d();
 
-  private FlightModel reference = null;
-
-  private static Vector3d tmpV3d = new Vector3d();
-  private static int tmpI;
-
-  public void load(FlightModel paramFlightModel, SectFile paramSectFile)
-  {
-    this.reference = paramFlightModel;
-    String str = "Engine";
-
-    this.num = 0;
-
-    while (paramSectFile.get(str, "Engine" + this.num + "Family") != null)
+    public EnginesInterface()
     {
-      this.num += 1;
+        num = 0;
+        producedF = new Vector3d();
+        producedM = new Vector3d();
+        reference = null;
     }
 
-    this.engines = new Motor[this.num]; for (tmpI = 0; tmpI < this.num; tmpI += 1) this.engines[tmpI] = new Motor();
-    this.bCurControl = new boolean[this.num];
-    Aircraft.debugprintln(this.reference.actor, "Loading " + this.num + " engine(s) from '" + paramSectFile.toString() + "....");
-    Object localObject1;
-    Object localObject2;
-    for (tmpI = 0; tmpI < this.num; tmpI += 1)
+    public void load(com.maddox.il2.fm.FlightModel flightmodel, com.maddox.rts.SectFile sectfile)
     {
-      localObject1 = paramSectFile.get(str, "Engine" + tmpI + "Family");
-      localObject2 = paramSectFile.get(str, "Engine" + tmpI + "SubModel");
-      Aircraft.debugprintln(this.reference.actor, "Loading engine model from '" + (String)localObject1 + ".emd', submodel '" + (String)localObject2 + "'....");
-      this.engines[tmpI].load(paramFlightModel, "FlightModels/" + (String)localObject1 + ".emd", (String)localObject2, tmpI);
+        reference = flightmodel;
+        java.lang.String s = "Engine";
+        for(num = 0; sectfile.get(s, "Engine" + num + "Family") != null; num++);
+        engines = new com.maddox.il2.fm.Motor[num];
+        for(tmpI = 0; tmpI < num; tmpI++)
+            engines[tmpI] = new Motor();
+
+        bCurControl = new boolean[num];
+        com.maddox.il2.objects.air.Aircraft.debugprintln(reference.actor, "Loading " + num + " engine(s) from '" + sectfile.toString() + "....");
+        for(tmpI = 0; tmpI < num; tmpI++)
+        {
+            java.lang.String s1 = sectfile.get(s, "Engine" + tmpI + "Family");
+            java.lang.String s2 = sectfile.get(s, "Engine" + tmpI + "SubModel");
+            com.maddox.il2.objects.air.Aircraft.debugprintln(reference.actor, "Loading engine model from '" + s1 + ".emd', submodel '" + s2 + "'....");
+            engines[tmpI].load(flightmodel, "FlightModels/" + s1 + ".emd", s2, tmpI);
+        }
+
+        if(sectfile.get(s, "Position0x", -99999F) != -99999F)
+        {
+            com.maddox.JGP.Point3d point3d = new Point3d();
+            com.maddox.JGP.Vector3f vector3f = new Vector3f();
+            for(tmpI = 0; tmpI < num; tmpI++)
+            {
+                point3d.x = sectfile.get(s, "Position" + tmpI + "x", 0.0F);
+                point3d.y = sectfile.get(s, "Position" + tmpI + "y", 0.0F);
+                point3d.z = sectfile.get(s, "Position" + tmpI + "z", 0.0F);
+                engines[tmpI].setPos(point3d);
+                vector3f.x = sectfile.get(s, "Vector" + tmpI + "x", 0.0F);
+                vector3f.y = sectfile.get(s, "Vector" + tmpI + "y", 0.0F);
+                vector3f.z = sectfile.get(s, "Vector" + tmpI + "z", 0.0F);
+                engines[tmpI].setVector(vector3f);
+                point3d.x = sectfile.get(s, "PropPosition" + tmpI + "x", 0.0F);
+                point3d.y = sectfile.get(s, "PropPosition" + tmpI + "y", 0.0F);
+                point3d.z = sectfile.get(s, "PropPosition" + tmpI + "z", 0.0F);
+                engines[tmpI].setPropPos(point3d);
+            }
+
+        }
+        setCurControlAll(true);
     }
 
-    if (paramSectFile.get(str, "Position0x", -99999.0F) != -99999.0F) {
-      localObject1 = new Point3d();
-      localObject2 = new Vector3f();
-      for (tmpI = 0; tmpI < this.num; tmpI += 1) {
-        ((Point3d)localObject1).x = paramSectFile.get(str, "Position" + tmpI + "x", 0.0F);
-        ((Point3d)localObject1).y = paramSectFile.get(str, "Position" + tmpI + "y", 0.0F);
-        ((Point3d)localObject1).z = paramSectFile.get(str, "Position" + tmpI + "z", 0.0F);
-        this.engines[tmpI].setPos((Point3d)localObject1);
-        ((Vector3f)localObject2).x = paramSectFile.get(str, "Vector" + tmpI + "x", 0.0F);
-        ((Vector3f)localObject2).y = paramSectFile.get(str, "Vector" + tmpI + "y", 0.0F);
-        ((Vector3f)localObject2).z = paramSectFile.get(str, "Vector" + tmpI + "z", 0.0F);
-        this.engines[tmpI].setVector((Vector3f)localObject2);
-        ((Point3d)localObject1).x = paramSectFile.get(str, "PropPosition" + tmpI + "x", 0.0F);
-        ((Point3d)localObject1).y = paramSectFile.get(str, "PropPosition" + tmpI + "y", 0.0F);
-        ((Point3d)localObject1).z = paramSectFile.get(str, "PropPosition" + tmpI + "z", 0.0F);
-        this.engines[tmpI].setPropPos((Point3d)localObject1);
-      }
-    }
-    setCurControlAll(true);
-  }
+    public void setNotMirror(boolean flag)
+    {
+        for(int i = 0; i < getNum(); i++)
+            engines[i].setMaster(flag);
 
-  public void setNotMirror(boolean paramBoolean) {
-    for (int i = 0; i < getNum(); i++)
-      this.engines[i].setMaster(paramBoolean);
-  }
-
-  public void set(Actor paramActor)
-  {
-    Point3d localPoint3d = new Point3d(0.0D, 0.0D, 0.0D);
-    Loc localLoc = new Loc();
-    if ((this.num == 0) || (this.engines[0].getPropPos().distanceSquared(new Point3f(0.0F, 0.0F, 0.0F)) > 0.0F)) {
-      return;
     }
 
-    Vector3f localVector3f = new Vector3f(1.0F, 0.0F, 0.0F);
-    float[][] arrayOfFloat1 = new float[4][3];
-    float[][] arrayOfFloat2 = new float[this.num][3];
-    Hook localHook;
-    for (tmpI = 0; tmpI < 4; tmpI += 1) {
-      localHook = paramActor.findHook("_Clip0" + tmpI);
-      localLoc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-      localHook.computePos(paramActor, paramActor.pos.getAbs(), localLoc);
-      localLoc.get(localPoint3d);
-      paramActor.pos.getAbs().transformInv(localPoint3d);
-      arrayOfFloat1[tmpI][0] = (float)localPoint3d.x;
-      arrayOfFloat1[tmpI][1] = (float)localPoint3d.y;
-      arrayOfFloat1[tmpI][2] = (float)localPoint3d.z;
-    }
-    for (tmpI = 0; tmpI < this.num; tmpI += 1) {
-      localHook = paramActor.findHook("_Engine" + (tmpI + 1) + "Smoke");
-      localLoc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
-      localHook.computePos(paramActor, paramActor.pos.getAbs(), localLoc);
-      localLoc.get(localPoint3d);
-      paramActor.pos.getAbs().transformInv(localPoint3d);
-      arrayOfFloat2[tmpI][0] = (float)localPoint3d.x;
-      arrayOfFloat2[tmpI][1] = (float)localPoint3d.y;
-      arrayOfFloat2[tmpI][2] = ((float)localPoint3d.z - 0.7F);
-    }
-    switch (this.reference.Scheme) {
-    case 0:
-      localPoint3d.set(0.0D, 0.0D, 0.0D);
-      this.engines[0].setPos(localPoint3d);
-      this.engines[0].setPropPos(localPoint3d);
-      this.engines[0].setVector(localVector3f);
-      break;
-    case 1:
-      localPoint3d.x = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
-      localPoint3d.y = 0.0D;
-      localPoint3d.z = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
-      this.engines[0].setPropPos(localPoint3d);
-      localPoint3d.x = arrayOfFloat2[0][0];
-      localPoint3d.y = 0.0D;
-      localPoint3d.z = arrayOfFloat2[0][2];
-      this.engines[0].setPos(localPoint3d);
-      this.engines[0].setVector(localVector3f);
-      break;
-    case 2:
-    case 3:
-      localPoint3d.x = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
-      localPoint3d.y = (0.5F * (arrayOfFloat1[0][1] + arrayOfFloat1[1][1]));
-      localPoint3d.z = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
-      this.engines[0].setPropPos(localPoint3d);
-      localPoint3d.y = (0.5F * (arrayOfFloat1[2][1] + arrayOfFloat1[3][1]));
-      this.engines[1].setPropPos(localPoint3d);
-      localPoint3d.x = (0.5F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0]));
-      localPoint3d.y = arrayOfFloat2[0][1];
-      localPoint3d.z = (0.5F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2]));
-      this.engines[0].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[1][1];
-      this.engines[1].setPos(localPoint3d);
-      this.engines[0].setVector(localVector3f);
-      this.engines[1].setVector(localVector3f);
-      break;
-    case 4:
-      localPoint3d.x = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
-      localPoint3d.y = arrayOfFloat1[0][1];
-      localPoint3d.z = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
-      this.engines[0].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[1][1];
-      this.engines[1].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[2][1];
-      this.engines[2].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[3][1];
-      this.engines[3].setPropPos(localPoint3d);
-      localPoint3d.x = (0.25F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0] + arrayOfFloat2[2][0] + arrayOfFloat2[3][0]));
-      localPoint3d.y = arrayOfFloat2[0][1];
-      localPoint3d.z = (0.25F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2] + arrayOfFloat2[2][2] + arrayOfFloat2[3][2]));
-      this.engines[0].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[1][1];
-      this.engines[1].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[2][1];
-      this.engines[2].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[3][1];
-      this.engines[3].setPos(localPoint3d);
-      this.engines[0].setVector(localVector3f);
-      this.engines[1].setVector(localVector3f);
-      this.engines[2].setVector(localVector3f);
-      this.engines[3].setVector(localVector3f);
-      break;
-    case 5:
-      localPoint3d.x = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
-      localPoint3d.y = arrayOfFloat1[0][1];
-      localPoint3d.z = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
-      this.engines[0].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[1][1];
-      this.engines[1].setPropPos(localPoint3d);
-      localPoint3d.y = 0.0D;
-      this.engines[2].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[2][1];
-      this.engines[3].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[3][1];
-      this.engines[4].setPropPos(localPoint3d);
-      localPoint3d.x = (0.2F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0] + arrayOfFloat2[2][0] + arrayOfFloat2[3][0] + arrayOfFloat2[4][0]));
-      localPoint3d.y = arrayOfFloat2[0][1];
-      localPoint3d.z = (0.2F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2] + arrayOfFloat2[2][2] + arrayOfFloat2[3][2] + arrayOfFloat2[4][2]));
-      this.engines[0].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[1][1];
-      this.engines[1].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[2][1];
-      this.engines[2].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[3][1];
-      this.engines[3].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[4][1];
-      this.engines[4].setPos(localPoint3d);
-      this.engines[0].setVector(localVector3f);
-      this.engines[1].setVector(localVector3f);
-      this.engines[2].setVector(localVector3f);
-      this.engines[3].setVector(localVector3f);
-      this.engines[4].setVector(localVector3f);
-      break;
-    case 6:
-      localPoint3d.x = (0.3333333F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0]));
-      localPoint3d.y = arrayOfFloat1[0][1];
-      localPoint3d.z = (0.3333333F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2]));
-      this.engines[0].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[1][1];
-      this.engines[1].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[2][1];
-      this.engines[2].setPropPos(localPoint3d);
-      localPoint3d.x = (0.3333333F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0] + arrayOfFloat2[2][0]));
-      localPoint3d.y = arrayOfFloat2[0][1];
-      localPoint3d.z = (0.3333333F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2] + arrayOfFloat2[2][2]));
-      this.engines[0].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[1][1];
-      this.engines[1].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[2][1];
-      this.engines[2].setPos(localPoint3d);
-      this.engines[0].setVector(localVector3f);
-      this.engines[1].setVector(localVector3f);
-      this.engines[2].setVector(localVector3f);
-      break;
-    case 7:
-      localPoint3d.x = (0.25F * (arrayOfFloat1[0][0] + arrayOfFloat1[1][0] + arrayOfFloat1[2][0] + arrayOfFloat1[3][0]));
-      localPoint3d.y = arrayOfFloat1[0][1];
-      localPoint3d.z = (0.25F * (arrayOfFloat1[0][2] + arrayOfFloat1[1][2] + arrayOfFloat1[2][2] + arrayOfFloat1[3][2]));
-      this.engines[0].setPropPos(localPoint3d);
-      localPoint3d.y = 0.0D;
-      this.engines[1].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[1][1];
-      this.engines[2].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[2][1];
-      this.engines[3].setPropPos(localPoint3d);
-      localPoint3d.y = 0.0D;
-      this.engines[4].setPropPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat1[3][1];
-      this.engines[5].setPropPos(localPoint3d);
-      localPoint3d.x = (0.1666667F * (arrayOfFloat2[0][0] + arrayOfFloat2[1][0] + arrayOfFloat2[2][0] + arrayOfFloat2[3][0] + arrayOfFloat2[4][0] + arrayOfFloat2[5][0]));
-      localPoint3d.y = arrayOfFloat2[0][1];
-      localPoint3d.z = (0.1666667F * (arrayOfFloat2[0][2] + arrayOfFloat2[1][2] + arrayOfFloat2[2][2] + arrayOfFloat2[3][2] + arrayOfFloat2[4][2] + arrayOfFloat2[5][2]));
-      this.engines[0].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[1][1];
-      this.engines[1].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[2][1];
-      this.engines[2].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[3][1];
-      this.engines[3].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[4][1];
-      this.engines[4].setPos(localPoint3d);
-      localPoint3d.y = arrayOfFloat2[5][1];
-      this.engines[5].setPos(localPoint3d);
-      this.engines[0].setVector(localVector3f);
-      this.engines[1].setVector(localVector3f);
-      this.engines[2].setVector(localVector3f);
-      this.engines[3].setVector(localVector3f);
-      this.engines[4].setVector(localVector3f);
-      this.engines[5].setVector(localVector3f);
-      break;
-    default:
-      throw new RuntimeException("UNIDENTIFIED ENGINE DISTRIBUTION.");
-    }
-  }
+    public void set(com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.JGP.Point3d point3d = new Point3d(0.0D, 0.0D, 0.0D);
+        com.maddox.il2.engine.Loc loc = new Loc();
+        if(num == 0 || engines[0].getPropPos().distanceSquared(new Point3f(0.0F, 0.0F, 0.0F)) > 0.0F)
+            return;
+        com.maddox.JGP.Vector3f vector3f = new Vector3f(1.0F, 0.0F, 0.0F);
+        float af[][] = new float[4][3];
+        float af1[][] = new float[num][3];
+        for(tmpI = 0; tmpI < 4; tmpI++)
+        {
+            com.maddox.il2.engine.Hook hook = actor.findHook("_Clip0" + tmpI);
+            loc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+            hook.computePos(actor, actor.pos.getAbs(), loc);
+            loc.get(point3d);
+            actor.pos.getAbs().transformInv(point3d);
+            af[tmpI][0] = (float)point3d.x;
+            af[tmpI][1] = (float)point3d.y;
+            af[tmpI][2] = (float)point3d.z;
+        }
 
-  public void update(float paramFloat)
-  {
-    this.producedF.set(0.0D, 0.0D, 0.0D);
-    this.producedM.set(0.0D, 0.0D, 0.0D);
-    for (int i = 0; i < this.num; i++) {
-      this.engines[i].update(paramFloat);
+        for(tmpI = 0; tmpI < num; tmpI++)
+        {
+            com.maddox.il2.engine.Hook hook1 = actor.findHook("_Engine" + (tmpI + 1) + "Smoke");
+            loc.set(0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F);
+            hook1.computePos(actor, actor.pos.getAbs(), loc);
+            loc.get(point3d);
+            actor.pos.getAbs().transformInv(point3d);
+            af1[tmpI][0] = (float)point3d.x;
+            af1[tmpI][1] = (float)point3d.y;
+            af1[tmpI][2] = (float)point3d.z - 0.7F;
+        }
 
-      this.producedF.x += this.engines[i].getEngineForce().x;
-      this.producedF.y += this.engines[i].getEngineForce().y;
-      this.producedF.z += this.engines[i].getEngineForce().z;
-      this.producedM.x += this.engines[i].getEngineTorque().x;
-      this.producedM.y += this.engines[i].getEngineTorque().y;
-      this.producedM.z += this.engines[i].getEngineTorque().z;
-    }
-  }
+        switch(reference.Scheme)
+        {
+        case 0: // '\0'
+            point3d.set(0.0D, 0.0D, 0.0D);
+            engines[0].setPos(point3d);
+            engines[0].setPropPos(point3d);
+            engines[0].setVector(vector3f);
+            break;
 
-  public void netupdate(float paramFloat, boolean paramBoolean) {
-    for (int i = 0; i < this.num; i++)
-      this.engines[i].netupdate(paramFloat, paramBoolean);
-  }
+        case 1: // '\001'
+            point3d.x = 0.25F * (af[0][0] + af[1][0] + af[2][0] + af[3][0]);
+            point3d.y = 0.0D;
+            point3d.z = 0.25F * (af[0][2] + af[1][2] + af[2][2] + af[3][2]);
+            engines[0].setPropPos(point3d);
+            point3d.x = af1[0][0];
+            point3d.y = 0.0D;
+            point3d.z = af1[0][2];
+            engines[0].setPos(point3d);
+            engines[0].setVector(vector3f);
+            break;
 
-  public int getNum()
-  {
-    return this.num;
-  }
-  public void setNum(int paramInt) {
-    this.num = paramInt;
-  }
+        case 2: // '\002'
+        case 3: // '\003'
+            point3d.x = 0.25F * (af[0][0] + af[1][0] + af[2][0] + af[3][0]);
+            point3d.y = 0.5F * (af[0][1] + af[1][1]);
+            point3d.z = 0.25F * (af[0][2] + af[1][2] + af[2][2] + af[3][2]);
+            engines[0].setPropPos(point3d);
+            point3d.y = 0.5F * (af[2][1] + af[3][1]);
+            engines[1].setPropPos(point3d);
+            point3d.x = 0.5F * (af1[0][0] + af1[1][0]);
+            point3d.y = af1[0][1];
+            point3d.z = 0.5F * (af1[0][2] + af1[1][2]);
+            engines[0].setPos(point3d);
+            point3d.y = af1[1][1];
+            engines[1].setPos(point3d);
+            engines[0].setVector(vector3f);
+            engines[1].setVector(vector3f);
+            break;
 
-  public void toggle()
-  {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].toggle();
-    }
-  }
+        case 4: // '\004'
+            point3d.x = 0.25F * (af[0][0] + af[1][0] + af[2][0] + af[3][0]);
+            point3d.y = af[0][1];
+            point3d.z = 0.25F * (af[0][2] + af[1][2] + af[2][2] + af[3][2]);
+            engines[0].setPropPos(point3d);
+            point3d.y = af[1][1];
+            engines[1].setPropPos(point3d);
+            point3d.y = af[2][1];
+            engines[2].setPropPos(point3d);
+            point3d.y = af[3][1];
+            engines[3].setPropPos(point3d);
+            point3d.x = 0.25F * (af1[0][0] + af1[1][0] + af1[2][0] + af1[3][0]);
+            point3d.y = af1[0][1];
+            point3d.z = 0.25F * (af1[0][2] + af1[1][2] + af1[2][2] + af1[3][2]);
+            engines[0].setPos(point3d);
+            point3d.y = af1[1][1];
+            engines[1].setPos(point3d);
+            point3d.y = af1[2][1];
+            engines[2].setPos(point3d);
+            point3d.y = af1[3][1];
+            engines[3].setPos(point3d);
+            engines[0].setVector(vector3f);
+            engines[1].setVector(vector3f);
+            engines[2].setVector(vector3f);
+            engines[3].setVector(vector3f);
+            break;
 
-  public void setCurControl(int paramInt, boolean paramBoolean)
-  {
-    this.bCurControl[paramInt] = paramBoolean;
-  }
-  public void setCurControlAll(boolean paramBoolean) {
-    for (tmpI = 0; tmpI < this.num; tmpI += 1)
-      this.bCurControl[tmpI] = paramBoolean; 
-  }
+        case 5: // '\005'
+            point3d.x = 0.25F * (af[0][0] + af[1][0] + af[2][0] + af[3][0]);
+            point3d.y = af[0][1];
+            point3d.z = 0.25F * (af[0][2] + af[1][2] + af[2][2] + af[3][2]);
+            engines[0].setPropPos(point3d);
+            point3d.y = af[1][1];
+            engines[1].setPropPos(point3d);
+            point3d.y = 0.0D;
+            engines[2].setPropPos(point3d);
+            point3d.y = af[2][1];
+            engines[3].setPropPos(point3d);
+            point3d.y = af[3][1];
+            engines[4].setPropPos(point3d);
+            point3d.x = 0.2F * (af1[0][0] + af1[1][0] + af1[2][0] + af1[3][0] + af1[4][0]);
+            point3d.y = af1[0][1];
+            point3d.z = 0.2F * (af1[0][2] + af1[1][2] + af1[2][2] + af1[3][2] + af1[4][2]);
+            engines[0].setPos(point3d);
+            point3d.y = af1[1][1];
+            engines[1].setPos(point3d);
+            point3d.y = af1[2][1];
+            engines[2].setPos(point3d);
+            point3d.y = af1[3][1];
+            engines[3].setPos(point3d);
+            point3d.y = af1[4][1];
+            engines[4].setPos(point3d);
+            engines[0].setVector(vector3f);
+            engines[1].setVector(vector3f);
+            engines[2].setVector(vector3f);
+            engines[3].setVector(vector3f);
+            engines[4].setVector(vector3f);
+            break;
 
-  public boolean getCurControl(int paramInt) {
-    return this.bCurControl[paramInt];
-  }
+        case 6: // '\006'
+            point3d.x = 0.3333333F * (af[0][0] + af[1][0] + af[2][0]);
+            point3d.y = af[0][1];
+            point3d.z = 0.3333333F * (af[0][2] + af[1][2] + af[2][2]);
+            engines[0].setPropPos(point3d);
+            point3d.y = af[1][1];
+            engines[1].setPropPos(point3d);
+            point3d.y = af[2][1];
+            engines[2].setPropPos(point3d);
+            point3d.x = 0.3333333F * (af1[0][0] + af1[1][0] + af1[2][0]);
+            point3d.y = af1[0][1];
+            point3d.z = 0.3333333F * (af1[0][2] + af1[1][2] + af1[2][2]);
+            engines[0].setPos(point3d);
+            point3d.y = af1[1][1];
+            engines[1].setPos(point3d);
+            point3d.y = af1[2][1];
+            engines[2].setPos(point3d);
+            engines[0].setVector(vector3f);
+            engines[1].setVector(vector3f);
+            engines[2].setVector(vector3f);
+            break;
 
-  public Motor getFirstSelected() {
-    for (int i = 0; i < this.num; i++) {
-      if (this.bCurControl[i] != 0) return this.engines[i];
-    }
-    return null;
-  }
-  public int getNumSelected() {
-    int i = 0;
-    for (int j = 0; j < this.num; j++) {
-      if (this.bCurControl[j] == 0) continue; i++;
-    }
-    return i;
-  }
+        case 7: // '\007'
+            point3d.x = 0.25F * (af[0][0] + af[1][0] + af[2][0] + af[3][0]);
+            point3d.y = af[0][1];
+            point3d.z = 0.25F * (af[0][2] + af[1][2] + af[2][2] + af[3][2]);
+            engines[0].setPropPos(point3d);
+            point3d.y = 0.0D;
+            engines[1].setPropPos(point3d);
+            point3d.y = af[1][1];
+            engines[2].setPropPos(point3d);
+            point3d.y = af[2][1];
+            engines[3].setPropPos(point3d);
+            point3d.y = 0.0D;
+            engines[4].setPropPos(point3d);
+            point3d.y = af[3][1];
+            engines[5].setPropPos(point3d);
+            point3d.x = 0.1666667F * (af1[0][0] + af1[1][0] + af1[2][0] + af1[3][0] + af1[4][0] + af1[5][0]);
+            point3d.y = af1[0][1];
+            point3d.z = 0.1666667F * (af1[0][2] + af1[1][2] + af1[2][2] + af1[3][2] + af1[4][2] + af1[5][2]);
+            engines[0].setPos(point3d);
+            point3d.y = af1[1][1];
+            engines[1].setPos(point3d);
+            point3d.y = af1[2][1];
+            engines[2].setPos(point3d);
+            point3d.y = af1[3][1];
+            engines[3].setPos(point3d);
+            point3d.y = af1[4][1];
+            engines[4].setPos(point3d);
+            point3d.y = af1[5][1];
+            engines[5].setPos(point3d);
+            engines[0].setVector(vector3f);
+            engines[1].setVector(vector3f);
+            engines[2].setVector(vector3f);
+            engines[3].setVector(vector3f);
+            engines[4].setVector(vector3f);
+            engines[5].setVector(vector3f);
+            break;
 
-  public float getPropDirSign()
-  {
-    float f = 0.0F;
-    for (int i = 0; i < getNum(); i++) {
-      if (this.engines[i].getPropDir() == 0) f += 1.0F; else
-        f -= 1.0F;
-    }
-    return f / getNum();
-  }
-
-  public float getRadiatorPos() {
-    float f = 0.0F;
-    for (int i = 0; i < getNum(); i++) {
-      f += this.engines[i].getControlRadiator();
-    }
-    return f / getNum();
-  }
-
-  public int[] getSublist(int paramInt1, int paramInt2)
-  {
-    int[] arrayOfInt = null;
-    if (paramInt2 == 1) {
-      switch (paramInt1) {
-      case 2:
-      case 3:
-        arrayOfInt = new int[] { 0 };
-        break;
-      case 6:
-        arrayOfInt = new int[] { 0 };
-        break;
-      case 4:
-        arrayOfInt = new int[] { 0, 1 };
-        break;
-      case 5:
-        arrayOfInt = new int[] { 0, 1 };
-        break;
-      case 7:
-        arrayOfInt = new int[] { 0, 1, 2 };
-      }
-    }
-    else if (paramInt2 == 2) {
-      switch (paramInt1) {
-      case 2:
-      case 3:
-        arrayOfInt = new int[] { 1 };
-        break;
-      case 6:
-        arrayOfInt = new int[] { 2 };
-        break;
-      case 4:
-        arrayOfInt = new int[] { 2, 3 };
-        break;
-      case 5:
-        arrayOfInt = new int[] { 3, 4 };
-        break;
-      case 7:
-        arrayOfInt = new int[] { 3, 4, 5 };
-      }
+        default:
+            throw new RuntimeException("UNIDENTIFIED ENGINE DISTRIBUTION.");
+        }
     }
 
-    return arrayOfInt;
-  }
+    public void update(float f)
+    {
+        producedF.set(0.0D, 0.0D, 0.0D);
+        producedM.set(0.0D, 0.0D, 0.0D);
+        for(int i = 0; i < num; i++)
+        {
+            engines[i].update(f);
+            producedF.x += engines[i].getEngineForce().x;
+            producedF.y += engines[i].getEngineForce().y;
+            producedF.z += engines[i].getEngineForce().z;
+            producedM.x += engines[i].getEngineTorque().x;
+            producedM.y += engines[i].getEngineTorque().y;
+            producedM.z += engines[i].getEngineTorque().z;
+        }
 
-  public boolean isSelectionHasControlThrottle()
-  {
-    boolean bool = false;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; bool |= this.engines[tmpI].isHasControlThrottle();
     }
-    return bool;
-  }
-  public boolean isSelectionHasControlProp() {
-    boolean bool = false;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; bool |= this.engines[tmpI].isHasControlProp();
-    }
-    return bool;
-  }
-  public boolean isSelectionAllowsAutoProp() {
-    World.cur(); if (this.reference != World.getPlayerFM()) return true;
-    boolean bool = false;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; bool |= this.engines[tmpI].isAllowsAutoProp();
-    }
-    return bool;
-  }
-  public boolean isSelectionHasControlMix() {
-    boolean bool = false;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; bool |= this.engines[tmpI].isHasControlMix();
-    }
-    return bool;
-  }
-  public boolean isSelectionHasControlMagnetos() {
-    boolean bool = false;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; bool |= this.engines[tmpI].isHasControlMagnetos();
-    }
-    return bool;
-  }
-  public boolean isSelectionHasControlCompressor() {
-    boolean bool = false;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; bool |= this.engines[tmpI].isHasControlCompressor();
-    }
-    return bool;
-  }
-  public boolean isSelectionHasControlFeather() {
-    boolean bool = false;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; bool |= this.engines[tmpI].isHasControlFeather();
-    }
-    return bool;
-  }
-  public boolean isSelectionHasControlExtinguisher() {
-    int i = 0;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; i |= (this.engines[tmpI].getExtinguishers() > 0 ? 1 : 0);
-    }
-    return i;
-  }
-  public boolean isSelectionHasControlAfterburner() {
-    boolean bool = false;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; bool |= this.engines[tmpI].isHasControlAfterburner();
-    }
-    return bool;
-  }
-  public boolean isSelectionAllowsAutoRadiator() {
-    World.cur(); if (this.reference != World.getPlayerFM()) return true;
-    boolean bool = false;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; bool |= this.engines[tmpI].isAllowsAutoRadiator();
-    }
-    return bool;
-  }
-  public boolean isSelectionHasControlRadiator() {
-    boolean bool = false;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; bool |= this.engines[tmpI].isHasControlRadiator();
-    }
-    return bool;
-  }
 
-  public float getPowerOutput()
-  {
-    float f = 0.0F;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      f += this.engines[tmpI].getPowerOutput();
+    public void netupdate(float f, boolean flag)
+    {
+        for(int i = 0; i < num; i++)
+            engines[i].netupdate(f, flag);
+
     }
-    return f / getNum();
-  }
 
-  public float getThrustOutput() {
-    float f = 0.0F;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      f += this.engines[tmpI].getThrustOutput();
+    public int getNum()
+    {
+        return num;
     }
-    return f / getNum();
-  }
 
-  public float getReadyness() {
-    float f = 0.0F;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      f += this.engines[tmpI].getReadyness();
+    public void setNum(int i)
+    {
+        num = i;
     }
-    return f / getNum();
-  }
 
-  public float getBoostFactor() {
-    float f = 0.0F;
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      f += this.engines[tmpI].getBoostFactor();
+    public void toggle()
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].toggle();
+
     }
-    return f / getNum();
-  }
 
-  public Vector3d getGyro()
-  {
-    tmpV3d.set(0.0D, 0.0D, 0.0D);
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      tmpV3d.add(this.engines[tmpI].getEngineGyro());
+    public void setCurControl(int i, boolean flag)
+    {
+        bCurControl[i] = flag;
     }
-    return tmpV3d;
-  }
 
-  public void setThrottle(float paramFloat)
-  {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setControlThrottle(paramFloat);
+    public void setCurControlAll(boolean flag)
+    {
+        for(tmpI = 0; tmpI < num; tmpI++)
+            bCurControl[tmpI] = flag;
+
     }
-  }
 
-  public void setAfterburnerControl(boolean paramBoolean) {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setControlAfterburner(paramBoolean);
+    public boolean getCurControl(int i)
+    {
+        return bCurControl[i];
     }
-  }
 
-  public void setProp(float paramFloat) {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setControlProp(paramFloat);
+    public com.maddox.il2.fm.Motor getFirstSelected()
+    {
+        for(int i = 0; i < num; i++)
+            if(bCurControl[i])
+                return engines[i];
+
+        return null;
     }
-  }
 
-  public void setPropDelta(int paramInt)
-  {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1)
-      if (this.bCurControl[tmpI] != 0)
-        this.engines[tmpI].setControlPropDelta(paramInt);
-  }
+    public int getNumSelected()
+    {
+        int i = 0;
+        for(int j = 0; j < num; j++)
+            if(bCurControl[j])
+                i++;
 
-  public void setPropAuto(boolean paramBoolean) {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setControlPropAuto(paramBoolean);
+        return i;
     }
-  }
 
-  public void setFeather(int paramInt) {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setControlFeather(paramInt);
+    public float getPropDirSign()
+    {
+        float f = 0.0F;
+        for(int i = 0; i < getNum(); i++)
+            if(engines[i].getPropDir() == 0)
+                f++;
+            else
+                f--;
+
+        return f / (float)getNum();
     }
-  }
 
-  public void setMix(float paramFloat) {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setControlMix(paramFloat);
+    public float getRadiatorPos()
+    {
+        float f = 0.0F;
+        for(int i = 0; i < getNum(); i++)
+            f += engines[i].getControlRadiator();
+
+        return f / (float)getNum();
     }
-  }
 
-  public void setMagnetos(int paramInt) {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setControlMagneto(paramInt);
+    public int[] getSublist(int i, int j)
+    {
+        int ai[] = null;
+        if(j == 1)
+            switch(i)
+            {
+            case 2: // '\002'
+            case 3: // '\003'
+                ai = (new int[] {
+                    0
+                });
+                break;
+
+            case 6: // '\006'
+                ai = (new int[] {
+                    0
+                });
+                break;
+
+            case 4: // '\004'
+                ai = (new int[] {
+                    0, 1
+                });
+                break;
+
+            case 5: // '\005'
+                ai = (new int[] {
+                    0, 1
+                });
+                break;
+
+            case 7: // '\007'
+                ai = (new int[] {
+                    0, 1, 2
+                });
+                break;
+            }
+        else
+        if(j == 2)
+            switch(i)
+            {
+            case 2: // '\002'
+            case 3: // '\003'
+                ai = (new int[] {
+                    1
+                });
+                break;
+
+            case 6: // '\006'
+                ai = (new int[] {
+                    2
+                });
+                break;
+
+            case 4: // '\004'
+                ai = (new int[] {
+                    2, 3
+                });
+                break;
+
+            case 5: // '\005'
+                ai = (new int[] {
+                    3, 4
+                });
+                break;
+
+            case 7: // '\007'
+                ai = (new int[] {
+                    3, 4, 5
+                });
+                break;
+            }
+        return ai;
     }
-  }
 
-  public void setCompressorStep(int paramInt) {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setControlCompressor(paramInt);
+    public boolean isSelectionHasControlThrottle()
+    {
+        boolean flag = false;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                flag |= engines[tmpI].isHasControlThrottle();
+
+        return flag;
     }
-  }
 
-  public void setRadiator(float paramFloat) {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setControlRadiator(paramFloat);
+    public boolean isSelectionHasControlProp()
+    {
+        boolean flag = false;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                flag |= engines[tmpI].isHasControlProp();
+
+        return flag;
     }
-  }
 
-  public void updateRadiator(float paramFloat) {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1)
-      this.engines[tmpI].updateRadiator(paramFloat);
-  }
+    public boolean isSelectionAllowsAutoProp()
+    {
+        com.maddox.il2.ai.World.cur();
+        if(reference != com.maddox.il2.ai.World.getPlayerFM())
+            return true;
+        boolean flag = false;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                flag |= engines[tmpI].isAllowsAutoProp();
 
-  public void setEngineStops()
-  {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setEngineStops(this.reference.actor);
+        return flag;
     }
-  }
 
-  public void setEngineRunning() {
-    for (tmpI = 0; tmpI < getNum(); tmpI += 1) {
-      if (this.bCurControl[tmpI] == 0) continue; this.engines[tmpI].setEngineRunning(this.reference.actor);
+    public boolean isSelectionHasControlMix()
+    {
+        boolean flag = false;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                flag |= engines[tmpI].isHasControlMix();
+
+        return flag;
     }
-  }
 
-  public float forcePropAOA(float paramFloat1, float paramFloat2, float paramFloat3, boolean paramBoolean)
-  {
-    float f = 0.0F;
-    for (int i = 0; i < getNum(); i++) f += this.engines[i].forcePropAOA(paramFloat1, paramFloat2, paramFloat3, paramBoolean);
-    Aircraft.debugprintln(this.reference.actor, "Computed thrust at " + paramFloat1 + " m/s and " + paramFloat2 + " m is " + f + " N..");
-    return f;
-  }
+    public boolean isSelectionHasControlMagnetos()
+    {
+        boolean flag = false;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                flag |= engines[tmpI].isHasControlMagnetos();
+
+        return flag;
+    }
+
+    public boolean isSelectionHasControlCompressor()
+    {
+        boolean flag = false;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                flag |= engines[tmpI].isHasControlCompressor();
+
+        return flag;
+    }
+
+    public boolean isSelectionHasControlFeather()
+    {
+        boolean flag = false;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                flag |= engines[tmpI].isHasControlFeather();
+
+        return flag;
+    }
+
+    public boolean isSelectionHasControlExtinguisher()
+    {
+        boolean flag = false;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                flag |= engines[tmpI].getExtinguishers() > 0;
+
+        return flag;
+    }
+
+    public boolean isSelectionHasControlAfterburner()
+    {
+        boolean flag = false;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                flag |= engines[tmpI].isHasControlAfterburner();
+
+        return flag;
+    }
+
+    public boolean isSelectionAllowsAutoRadiator()
+    {
+        com.maddox.il2.ai.World.cur();
+        if(reference != com.maddox.il2.ai.World.getPlayerFM())
+            return true;
+        boolean flag = false;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                flag |= engines[tmpI].isAllowsAutoRadiator();
+
+        return flag;
+    }
+
+    public boolean isSelectionHasControlRadiator()
+    {
+        boolean flag = false;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                flag |= engines[tmpI].isHasControlRadiator();
+
+        return flag;
+    }
+
+    public float getPowerOutput()
+    {
+        float f = 0.0F;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            f += engines[tmpI].getPowerOutput();
+
+        return f / (float)getNum();
+    }
+
+    public float getThrustOutput()
+    {
+        float f = 0.0F;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            f += engines[tmpI].getThrustOutput();
+
+        return f / (float)getNum();
+    }
+
+    public float getReadyness()
+    {
+        float f = 0.0F;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            f += engines[tmpI].getReadyness();
+
+        return f / (float)getNum();
+    }
+
+    public float getBoostFactor()
+    {
+        float f = 0.0F;
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            f += engines[tmpI].getBoostFactor();
+
+        return f / (float)getNum();
+    }
+
+    public com.maddox.JGP.Vector3d getGyro()
+    {
+        tmpV3d.set(0.0D, 0.0D, 0.0D);
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            tmpV3d.add(engines[tmpI].getEngineGyro());
+
+        return tmpV3d;
+    }
+
+    public void setThrottle(float f)
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].setControlThrottle(f);
+
+    }
+
+    public void setAfterburnerControl(boolean flag)
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].setControlAfterburner(flag);
+
+    }
+
+    public void setProp(float f)
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].setControlProp(f);
+
+    }
+
+    public void setPropDelta(int i)
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].setControlPropDelta(i);
+
+    }
+
+    public void setPropAuto(boolean flag)
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].setControlPropAuto(flag);
+
+    }
+
+    public void setFeather(int i)
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].setControlFeather(i);
+
+    }
+
+    public void setMix(float f)
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].setControlMix(f);
+
+    }
+
+    public void setMagnetos(int i)
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].setControlMagneto(i);
+
+    }
+
+    public void setCompressorStep(int i)
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].setControlCompressor(i);
+
+    }
+
+    public void setRadiator(float f)
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].setControlRadiator(f);
+
+    }
+
+    public void updateRadiator(float f)
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            engines[tmpI].updateRadiator(f);
+
+    }
+
+    public void setEngineStops()
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].setEngineStops(reference.actor);
+
+    }
+
+    public void setEngineRunning()
+    {
+        for(tmpI = 0; tmpI < getNum(); tmpI++)
+            if(bCurControl[tmpI])
+                engines[tmpI].setEngineRunning(reference.actor);
+
+    }
+
+    public float forcePropAOA(float f, float f1, float f2, boolean flag)
+    {
+        float f3 = 0.0F;
+        for(int i = 0; i < getNum(); i++)
+            f3 += engines[i].forcePropAOA(f, f1, f2, flag);
+
+        com.maddox.il2.objects.air.Aircraft.debugprintln(reference.actor, "Computed thrust at " + f + " m/s and " + f1 + " m is " + f3 + " N..");
+        return f3;
+    }
+
+    public com.maddox.il2.fm.Motor engines[];
+    public boolean bCurControl[];
+    private int num;
+    public com.maddox.JGP.Vector3d producedF;
+    public com.maddox.JGP.Vector3d producedM;
+    private com.maddox.il2.fm.FlightModel reference;
+    private static com.maddox.JGP.Vector3d tmpV3d = new Vector3d();
+    private static int tmpI;
+
 }

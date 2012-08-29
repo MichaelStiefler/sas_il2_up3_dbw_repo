@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Maneuver.java
+
 package com.maddox.il2.ai.air;
 
 import com.maddox.JGP.Point2f;
@@ -83,6032 +88,7007 @@ import com.maddox.rts.Property;
 import com.maddox.rts.Time;
 import java.io.PrintStream;
 
-public class Maneuver extends AIFlightModel
+// Referenced classes of package com.maddox.il2.ai.air:
+//            AutopilotAI, Pilot, Point_Null, AirGroup, 
+//            Airdrome, ManString, AirGroupList, Point_Any
+
+public class Maneuver extends com.maddox.il2.fm.AIFlightModel
 {
-  private int task;
-  private int maneuver = 26;
-  private int curman;
-  protected float mn_time;
-  private int[] program = new int[8];
-  private boolean bBusy = true;
-  public boolean wasBusy = true;
-  public boolean dontSwitch = false;
-  public boolean aggressiveWingman = false;
-  public boolean kamikaze = false;
-  public boolean silence = true;
-  public boolean bombsOut;
-  private int bombsOutCounter = 0;
-  public float direction;
-  public Loc rwLoc;
-  private boolean first = true;
-  private int rocketsDelay = 0;
-  private int bulletDelay = 0;
-  private int submanDelay = 0;
-  private static final int volleyL = 120;
-  private float maxG;
-  private float maxAOA;
-  private float LandHQ;
-  public float Alt = 0.0F;
-  private float oldAOA;
-  private float corrCoeff = 0.0F;
-  private float corrElev = 0.0F;
-  private float corrAile = 0.0F;
 
-  private boolean checkGround = false;
-  private boolean checkStrike = false;
-  private boolean frequentControl = false;
-  private boolean stallable = false;
-
-  public FlightModel airClient = null;
-
-  public FlightModel target = null;
-
-  public FlightModel danger = null;
-
-  private float dangerAggressiveness = 0.0F;
-  private float oldDanCoeff = 0.0F;
-  private int shotAtFriend = 0;
-  private float distToFriend = 0.0F;
-
-  public Actor target_ground = null;
-  public AirGroup Group;
-  protected boolean TaxiMode = false;
-  protected boolean finished = false;
-  protected boolean canTakeoff = false;
-  public Point_Any wayCurPos;
-  protected Point_Any wayPrevPos;
-  protected Point_Any[] airdromeWay;
-  protected int curAirdromePoi = 0;
-
-  public long actionTimerStart = 0L;
-  public long actionTimerStop = 0L;
-  protected int gattackCounter = 0;
-  private int beNearOffsPhase = 0;
-
-  public int submaneuver = 0;
-  private boolean dont_change_subm = false;
-  private int tmpi = 0;
-  private int sub_Man_Count = 0;
-  private float dA;
-  private float dist = 0.0F;
-
-  private float man1Dist = 50.0F;
-  private float bullTime = 0.0015F;
-  protected static final int STAY_ON_THE_TAIL = 1;
-  protected static final int NOT_TOO_FAST = 2;
-  protected static final int FROM_WAYPOINT = 3;
-  protected static final int CONST_SPEED = 4;
-  protected static final int MIN_SPEED = 5;
-  protected static final int MAX_SPEED = 6;
-  protected static final int CONST_POWER = 7;
-  protected static final int ZERO_POWER = 8;
-  protected static final int BOOST_ON = 9;
-  protected static final int FOLLOW_WITHOUT_FLAPS = 10;
-  protected int speedMode = 3;
-  protected float smConstSpeed = 90.0F;
-  protected float smConstPower = 0.7F;
-  protected FlightModel tailForStaying = null;
-  public Vector3d tailOffset = new Vector3d();
-  protected int Speak5minutes;
-  protected int Speak1minute;
-  protected int SpeakBeginGattack;
-  protected boolean WeWereInGAttack = false;
-  protected boolean WeWereInAttack = false;
-  protected boolean SpeakMissionAccomplished = false;
-  public static final int ROOKIE = 0;
-  public static final int NORMAL = 1;
-  public static final int VETERAN = 2;
-  public static final int ACE = 3;
-  public static final int NO_TASK = 0;
-  public static final int WAIT = 1;
-  public static final int STAY_FORMATION = 2;
-  public static final int FLY_WAYPOINT = 3;
-  public static final int DEFENCE = 4;
-  public static final int DEFENDING = 5;
-  public static final int ATTACK_AIR = 6;
-  public static final int ATTACK_GROUND = 7;
-  public static final int NONE = 0;
-  public static final int HOLD = 1;
-  public static final int PULL_UP = 2;
-  public static final int LEVEL_PLANE = 3;
-  public static final int ROLL = 4;
-  public static final int ROLL_90 = 5;
-  public static final int ROLL_180 = 6;
-  public static final int SPIRAL_BRAKE = 7;
-  public static final int SPIRAL_UP = 8;
-  public static final int SPIRAL_DOWN = 9;
-  public static final int CLIMB = 10;
-  public static final int DIVING_0_RPM = 11;
-  public static final int DIVING_30_DEG = 12;
-  public static final int DIVING_45_DEG = 13;
-  public static final int TURN = 14;
-  public static final int MIL_TURN = 15;
-  public static final int LOOP = 16;
-  public static final int LOOP_DOWN = 17;
-  public static final int HALF_LOOP_UP = 18;
-  public static final int HALF_LOOP_DOWN = 19;
-  public static final int STALL = 20;
-  public static final int WAYPOINT = 21;
-  public static final int SPEEDUP = 22;
-  public static final int BELL = 23;
-  public static final int FOLLOW = 24;
-  public static final int LANDING = 25;
-  public static final int TAKEOFF = 26;
-  public static final int ATTACK = 27;
-  public static final int WAVEOUT = 28;
-  public static final int SINUS = 29;
-  public static final int ZIGZAG_UP = 30;
-  public static final int ZIGZAG_DOWN = 31;
-  public static final int ZIGZAG_SPIT = 32;
-  public static final int HALF_LOOP_DOWN_135 = 33;
-  public static final int HARTMANN_REDOUT = 34;
-  public static final int ROLL_360 = 35;
-  public static final int STALL_POKRYSHKIN = 36;
-  public static final int BARREL_POKRYSHKIN = 37;
-  public static final int SLIDE_LEVEL = 38;
-  public static final int SLIDE_DESCENT = 39;
-  public static final int RANVERSMAN = 40;
-  public static final int CUBAN = 41;
-  public static final int CUBAN_INVERT = 42;
-  public static final int GATTACK = 43;
-  public static final int PILOT_DEAD = 44;
-  public static final int HANG_ON = 45;
-  public static final int DELAY = 48;
-  public static final int EMERGENCY_LANDING = 49;
-  public static final int GATTACK_DIVE = 50;
-  public static final int GATTACK_TORPEDO = 51;
-  public static final int GATTACK_CASSETTE = 52;
-  public static final int GATTACK_KAMIKAZE = 46;
-  public static final int GATTACK_TINYTIM = 47;
-  public static final int GATTACK_HS293 = 79;
-  public static final int GATTACK_FRITZX = 80;
-  public static final int GATTACK_TORPEDO_TOKG = 81;
-  public static final int FAR_FOLLOW = 53;
-  public static final int SPIRAL_DOWN_SLOW = 54;
-  public static final int FOLLOW_SPIRAL_UP = 55;
-  public static final int SINUS_SHALLOW = 56;
-  public static final int GAIN = 57;
-  public static final int SEPARATE = 58;
-  public static final int BE_NEAR = 59;
-  public static final int EVADE_UP = 60;
-  public static final int EVADE_DN = 61;
-  public static final int ENERGY_ATTACK = 62;
-  public static final int ATTACK_BOMBER = 63;
-  public static final int PARKED_STARTUP = 64;
-  public static final int COVER = 65;
-  public static final int TAXI = 66;
-  public static final int RUN_AWAY = 67;
-  public static final int FAR_COVER = 68;
-  public static final int TAKEOFF_VTOL_A = 69;
-  public static final int LANDING_VTOL_A = 70;
-  private static final int SUB_MAN0 = 0;
-  private static final int SUB_MAN1 = 1;
-  private static final int SUB_MAN2 = 2;
-  private static final int SUB_MAN3 = 3;
-  private static final int SUB_MAN4 = 4;
-  public static final int LIVE = 0;
-  public static final int RETURN = 1;
-  public static final int TASK = 2;
-  public static final int PROTECT_LEADER = 3;
-  public static final int PROTECT_WINGMAN = 4;
-  public static final int PROTECT_FRIENDS = 5;
-  public static final int DESTROY_ENEMIES = 6;
-  public static final int KEEP_ORDER = 7;
-  public float[] takeIntoAccount = new float[8];
-  public float[] AccountCoeff = new float[8];
-  public static final int FVSB_BOOM_ZOOM = 0;
-  public static final int FVSB_BOOM_ZOOM_TO_ENGINE = 1;
-  public static final int FVSB_SHALLOW_DIVE_TO_ENGINE = 2;
-  public static final int FVSB_FROM_AHEAD = 3;
-  public static final int FVSB_FROM_BELOW = 4;
-  public static final int FVSB_AS_IT_IS = 5;
-  public static final int FVSB_FROM_SIDE = 6;
-  public static final int FVSB_FROM_TAIL_TO_ENGINE = 7;
-  public static final int FVSB_FROM_TAIL = 8;
-  public static final int FVSB_SHALLOW_DIVE = 9;
-  public static final int FVSB_FROM_BOTTOM = 10;
-  private static final int demultiplier = 4;
-  private Vector3d ApproachV = new Vector3d();
-  private Vector3d TargV = new Vector3d();
-  private Vector3d TargDevV = new Vector3d(0.0D, 0.0D, 0.0D);
-  private Vector3d TargDevVnew = new Vector3d(0.0D, 0.0D, 0.0D);
-  private Vector3d scaledApproachV = new Vector3d();
-  private float ApproachR;
-  private float TargY;
-  private float TargZ;
-  private float TargYS;
-  private float TargZS;
-  private float RandomVal;
-  public Vector3d followOffset = new Vector3d();
-  private Vector3d followTargShift = new Vector3d(0.0D, 0.0D, 0.0D);
-  private Vector3d followCurShift = new Vector3d(0.0D, 0.0D, 0.0D);
-  private float raAilShift = 0.0F;
-  private float raElevShift = 0.0F;
-  private float raRudShift = 0.0F;
-  private float sinKren = 0.0F;
-
-  private boolean strikeEmer = false;
-  private FlightModel strikeTarg = null;
-  private Vector3d strikeV = new Vector3d();
-
-  private boolean direc = false;
-
-  float Kmax = 10.0F;
-  float rmin;
-  float rmax;
-  double phase = 0.0D;
-  double radius = 50.0D;
-  int pointQuality = -1;
-  int curPointQuality = 50;
-
-  private static Vector3d tmpV3d = new Vector3d();
-  private static Vector3d tmpV3f = new Vector3d();
-  public static Orient tmpOr = new Orient();
-  public Orient saveOr = new Orient();
-  private static Point3d Po = new Point3d();
-  private static Point3d Pc = new Point3d();
-  private static Point3d Pd = new Point3d();
-  private static Vector3d Ve = new Vector3d();
-  private Vector3d oldVe = new Vector3d();
-  private Vector3d Vtarg = new Vector3d();
-  private Vector3d constVtarg = new Vector3d();
-  private Vector3d constVtarg1 = new Vector3d();
-  private static Vector3d Vf = new Vector3d();
-  private Vector3d Vxy = new Vector3d();
-  private static Vector3d Vpl = new Vector3d();
-  private AnglesFork AFo = new AnglesFork();
-  private static Vector3f LandingOffset = new Vector3f(220.0F, 4.0F, 0.0F);
-  private float[] headPos = new float[3];
-  private float[] headOr = new float[3];
-
-  private static Point3d P = new Point3d();
-  private static Point2f Pcur = new Point2f();
-  private static Vector2d Vcur = new Vector2d();
-  private static Vector2f V_to = new Vector2f();
-  private static Vector2d Vdiff = new Vector2d();
-  private static Loc elLoc = new Loc();
-  public static boolean showFM;
-  private float pilotHeadT = 0.0F; private float pilotHeadY = 0.0F;
-
-  Vector3d windV = new Vector3d();
-
-  public void set_task(int paramInt)
-  {
-    this.task = paramInt;
-  }
-  public int get_task() {
-    return this.task;
-  }
-  public int get_maneuver() { return this.maneuver;
-  }
-
-  public void set_maneuver(int paramInt)
-  {
-    if (this.maneuver == 44) return;
-
-    if ((paramInt != 44) && ((this.maneuver == 26) || (this.maneuver == 69) || (this.maneuver == 66) || (this.maneuver == 46))) {
-      return;
-    }
-    int i = this.maneuver;
-    this.maneuver = paramInt;
-    if (i != this.maneuver)
-      set_flags();
-  }
-
-  public void pop()
-  {
-    if (this.maneuver == 44) return;
-
-    if ((this.program[0] != 44) && ((this.maneuver == 26) || (this.maneuver == 69) || (this.maneuver == 66) || (this.maneuver == 46))) {
-      return;
-    }
-    int i = this.maneuver;
-    this.maneuver = this.program[0];
-    for (int j = 0; j < this.program.length - 1; j++) this.program[j] = this.program[(j + 1)];
-    this.program[(this.program.length - 1)] = 0;
-    if (i != this.maneuver)
-      set_flags();
-  }
-
-  public void unblock()
-  {
-    this.maneuver = 0;
-  }
-
-  public void safe_set_maneuver(int paramInt) {
-    this.dont_change_subm = true;
-    set_maneuver(paramInt);
-    this.dont_change_subm = true;
-  }
-
-  public void safe_pop() {
-    this.dont_change_subm = true;
-    pop();
-    this.dont_change_subm = true;
-  }
-
-  public void clear_stack() {
-    for (int i = 0; i < this.program.length; i++) this.program[i] = 0;
-  }
-
-  public void push(int paramInt)
-  {
-    for (int i = this.program.length - 2; i >= 0; i--) this.program[(i + 1)] = this.program[i];
-    this.program[0] = paramInt;
-  }
-
-  public void push() {
-    push(this.maneuver);
-  }
-  public void accurate_set_task_maneuver(int paramInt1, int paramInt2) {
-    if ((this.maneuver == 44) || (this.maneuver == 26) || (this.maneuver == 69) || (this.maneuver == 64))
+    public void set_task(int i)
     {
-      return;
+        task = i;
     }
-    set_task(paramInt1);
-    if (this.maneuver != paramInt2) {
-      clear_stack();
-      set_maneuver(paramInt2);
-    }
-  }
 
-  public void accurate_set_FOLLOW() {
-    if ((this.maneuver == 44) || (this.maneuver == 26) || (this.maneuver == 69) || (this.maneuver == 64))
+    public int get_task()
     {
-      return;
+        return task;
     }
-    set_task(2);
-    if ((this.maneuver != 24) && (this.maneuver != 53)) {
-      clear_stack();
-      set_maneuver(24);
-    }
-  }
 
-  public void setBusy(boolean paramBoolean) {
-    this.bBusy = paramBoolean; } 
-  public boolean isBusy() { return this.bBusy; } 
-  public void setSpeedMode(int paramInt) { this.speedMode = paramInt; }
-
-  private boolean isStallable()
-  {
-    if ((this.actor instanceof TypeStormovik)) return false;
-    return !(this.actor instanceof TypeTransport);
-  }
-
-  private void resetControls()
-  {
-    this.CT.AileronControl = (this.CT.BrakeControl = this.CT.ElevatorControl = this.CT.FlapsControl = this.CT.RudderControl = 0.0F);
-
-    this.CT.AirBrakeControl = 0.0F;
-  }
-
-  private void set_flags() {
-    if (World.cur().isDebugFM()) printDebugFM();
-    this.AP.setStabAll(false);
-    this.mn_time = 0.0F;
-    this.minElevCoeff = 4.0F;
-
-    if (!this.dont_change_subm) {
-      setSpeedMode(3);
-      this.first = true;
-      this.submaneuver = 0;
-      this.sub_Man_Count = 0;
-    }
-    this.dont_change_subm = false;
-
-    if ((this.maneuver != 48) && (this.maneuver != 0) && (this.maneuver != 26) && (this.maneuver != 64) && (this.maneuver != 44))
+    public int get_maneuver()
     {
-      resetControls();
+        return maneuver;
     }
-    if ((this.maneuver == 20) || (this.maneuver == 25) || (this.maneuver == 66) || (this.maneuver == 1) || (this.maneuver == 26) || (this.maneuver == 69) || (this.maneuver == 44) || (this.maneuver == 49) || (this.maneuver == 43) || (this.maneuver == 50) || (this.maneuver == 51) || (this.maneuver == 81) || (this.maneuver == 46) || (this.maneuver == 2) || (this.maneuver == 10) || (this.maneuver == 57) || (this.maneuver == 64))
+
+    public void set_maneuver(int i)
     {
-      setCheckGround(false);
+        if(maneuver == 44)
+            return;
+        if(i != 44 && (maneuver == 26 || maneuver == 69 || maneuver == 66 || maneuver == 46))
+            return;
+        int j = maneuver;
+        maneuver = i;
+        if(j != maneuver)
+            set_flags();
     }
-    else setCheckGround(true);
 
-    if ((this.maneuver == 24) || (this.maneuver == 53) || (this.maneuver == 68) || (this.maneuver == 59) || (this.maneuver == 8) || (this.maneuver == 55) || (this.maneuver == 27) || (this.maneuver == 62) || (this.maneuver == 63) || (this.maneuver == 25) || (this.maneuver == 66) || (this.maneuver == 43) || (this.maneuver == 50) || (this.maneuver == 65) || (this.maneuver == 44) || (this.maneuver == 21) || (this.maneuver == 64) || (this.maneuver == 69))
+    public void pop()
     {
-      this.frequentControl = true;
-    }
-    else this.frequentControl = false;
+        if(maneuver == 44)
+            return;
+        if(program[0] != 44 && (maneuver == 26 || maneuver == 69 || maneuver == 66 || maneuver == 46))
+            return;
+        int i = maneuver;
+        maneuver = program[0];
+        for(int j = 0; j < program.length - 1; j++)
+            program[j] = program[j + 1];
 
-    if ((this.maneuver == 25) || (this.maneuver == 26) || (this.maneuver == 69) || (this.maneuver == 70))
+        program[program.length - 1] = 0;
+        if(i != maneuver)
+            set_flags();
+    }
+
+    public void unblock()
     {
-      turnOnChristmasTree(true);
+        maneuver = 0;
     }
-    else turnOnChristmasTree(false);
 
-    if (this.maneuver == 25)
+    public void safe_set_maneuver(int i)
     {
-      turnOnCloudShine(true);
+        dont_change_subm = true;
+        set_maneuver(i);
+        dont_change_subm = true;
     }
-    else turnOnCloudShine(false);
 
-    if ((this.maneuver == 60) || (this.maneuver == 61) || (this.maneuver == 66) || (this.maneuver == 1) || (this.maneuver == 24) || (this.maneuver == 26) || (this.maneuver == 69) || (this.maneuver == 64) || (this.maneuver == 44))
+    public void safe_pop()
     {
-      this.checkStrike = false;
-    }
-    else this.checkStrike = true;
-
-    if ((this.maneuver == 44) || (this.maneuver == 1) || (this.maneuver == 48) || (this.maneuver == 0) || (this.maneuver == 26) || (this.maneuver == 69) || (this.maneuver == 64) || (this.maneuver == 43) || (this.maneuver == 50) || (this.maneuver == 51) || (this.maneuver == 52) || (this.maneuver == 47) || (this.maneuver == 79) || (this.maneuver == 80))
-    {
-      this.stallable = false;
-    }
-    else this.stallable = true;
-
-    if ((this.maneuver == 44) || (this.maneuver == 1) || (this.maneuver == 26) || (this.maneuver == 69) || (this.maneuver == 64) || (this.maneuver == 2) || (this.maneuver == 57) || (this.maneuver == 60) || (this.maneuver == 61) || (this.maneuver == 43) || (this.maneuver == 50) || (this.maneuver == 51) || (this.maneuver == 52) || (this.maneuver == 47) || (this.maneuver == 29) || (this.maneuver == 79) || (this.maneuver == 80))
-    {
-      setBusy(true);
-    }
-  }
-
-  public void setCheckStrike(boolean paramBoolean) {
-    this.checkStrike = paramBoolean;
-  }
-
-  private void setCheckGround(boolean paramBoolean) {
-    this.checkGround = paramBoolean;
-  }
-
-  public Maneuver(String paramString)
-  {
-    super(paramString);
-    this.AP = new AutopilotAI(this);
-  }
-
-  public void decDangerAggressiveness() {
-    this.dangerAggressiveness -= 0.01F;
-    if (this.dangerAggressiveness < 0.0F) this.dangerAggressiveness = 0.0F;
-    this.oldDanCoeff -= 0.005F;
-    if (this.oldDanCoeff < 0.0F) this.oldDanCoeff = 0.0F;
-  }
-
-  public void incDangerAggressiveness(int paramInt, float paramFloat1, float paramFloat2, FlightModel paramFlightModel)
-  {
-    paramFloat1 -= 0.7F;
-    if (paramFloat1 < 0.0F) paramFloat1 = 0.0F;
-    paramFloat2 = 1000.0F - paramFloat2;
-    if (paramFloat2 < 0.0F) paramFloat2 = 0.0F;
-    double d1 = (paramFlightModel.Energy - this.Energy) * 0.1019D;
-    double d2 = 1.0D + d1 * 0.00125D;
-    if (d2 > 1.2D) d2 = 1.2D;
-    if (d2 < 0.8D) d2 = 0.8D;
-
-    float f = (float)d2 * (7.E-005F * paramFloat1 * paramFloat2);
-    if ((this.danger == null) || (f > this.oldDanCoeff)) {
-      this.danger = paramFlightModel;
-    }
-    this.oldDanCoeff = f;
-    this.dangerAggressiveness += f * paramInt;
-    if (this.dangerAggressiveness > 1.0F) this.dangerAggressiveness = 1.0F; 
-  }
-
-  public float getDangerAggressiveness()
-  {
-    return this.dangerAggressiveness;
-  }
-
-  public float getMaxHeightSpeed(float paramFloat) {
-    if (paramFloat < this.HofVmax) {
-      return this.Vmax + (this.VmaxH - this.Vmax) * (paramFloat / this.HofVmax);
-    }
-    float f = (paramFloat - this.HofVmax) / this.HofVmax;
-    f = 1.0F - 1.5F * f;
-    if (f < 0.0F) f = 0.0F;
-    return this.VmaxH * f;
-  }
-
-  public float getMinHeightTurn(float paramFloat)
-  {
-    return this.Wing.T_turn;
-  }
-
-  public void setShotAtFriend(float paramFloat) {
-    this.distToFriend = paramFloat;
-    this.shotAtFriend = 30;
-  }
-
-  public boolean hasCourseWeaponBullets() {
-    if ((this.actor instanceof KI_46_OTSUHEI)) {
-      return (this.CT.Weapons[1] != null) && (this.CT.Weapons[1][0] != null) && (this.CT.Weapons[1][0].countBullets() != 0);
-    }
-    if ((this.actor instanceof AR_234)) {
-      return false;
-    }
-    return ((this.CT.Weapons[0] != null) && (this.CT.Weapons[0][0] != null) && (this.CT.Weapons[0][0].countBullets() != 0)) || ((this.CT.Weapons[1] != null) && (this.CT.Weapons[1][0] != null) && (this.CT.Weapons[1][0].countBullets() != 0));
-  }
-
-  public boolean hasBombs()
-  {
-    if (this.CT.Weapons[3] != null) {
-      for (int i = 0; i < this.CT.Weapons[3].length; i++) {
-        if ((this.CT.Weapons[3][i] != null) && (this.CT.Weapons[3][i].countBullets() != 0)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  public boolean hasRockets() {
-    if (this.CT.Weapons[2] != null) {
-      for (int i = 0; i < this.CT.Weapons[2].length; i++) {
-        if ((this.CT.Weapons[2][i] != null) && (this.CT.Weapons[2][i].countBullets() != 0)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  public boolean canAttack() {
-    return ((!this.Group.isWingman(this.Group.numInGroup((Aircraft)this.actor))) || (this.aggressiveWingman)) && (isOk()) && (hasCourseWeaponBullets());
-  }
-
-  public void update(float paramFloat)
-  {
-    if (Config.isUSE_RENDER()) headTurn(paramFloat);
-    if (showFM) OutCT(20);
-
-    super.update(paramFloat);
-    this.callSuperUpdate = true;
-    decDangerAggressiveness();
-    if (this.Loc.z < -20.0D) ((Aircraft)this.actor).postEndAction(0.0D, this.actor, 4, null);
-
-    this.LandHQ = (float)Engine.land().HQ_Air(this.Loc.x, this.Loc.y);
-    Po.set(this.Vwld);
-    Po.scale(3.0D);
-    Po.add(this.Loc);
-    this.LandHQ = (float)Math.max(this.LandHQ, Engine.land().HQ_Air(Po.x, Po.y));
-    this.Alt = ((float)this.Loc.z - this.LandHQ);
-    this.indSpeed = (getSpeed() * (float)Math.sqrt(this.Density / 1.225F));
-    if ((!this.Gears.onGround()) && (isOk()) && (this.Alt > 8.0F)) {
-      if (this.AOA > this.AOA_Crit - 2.0F) this.Or.increment(0.0F, 0.05F * (this.AOA_Crit - 2.0F - this.AOA), 0.0F);
-      if (this.AOA < -5.0F) this.Or.increment(0.0F, 0.05F * (-5.0F - this.AOA), 0.0F);
-    }
-    if ((!this.frequentControl) && ((Time.tickCounter() + this.actor.hashCode()) % 4 != 0)) return;
-
-    turnOffTheWeapon();
-    this.maxG = (3.5F + this.Skill * 0.5F);
-    this.Or.wrap();
-
-    if ((this.mn_time > 10.0F) && (this.AOA > this.AOA_Crit + 5.0F) && (isStallable()) && (this.stallable)) safe_set_maneuver(20);
-    float f1;
-    float f2;
-    float f3;
-    Object localObject;
-    Maneuver localManeuver;
-    float f4;
-    float f5;
-    float f10;
-    float f13;
-    double d5;
-    float f12;
-    float f7;
-    float f9;
-    switch (this.maneuver)
-    {
-    case 0:
-      this.target_ground = null;
-      break;
-    case 1:
-      this.dryFriction = 8.0F;
-      this.CT.FlapsControl = 0.0F;
-      this.CT.BrakeControl = 1.0F;
-      break;
-    case 48:
-      if (this.mn_time >= 1.0F) pop(); break;
-    case 44:
-      if ((this.Gears.onGround()) && (this.Vwld.length() < 0.300000011920929D) && (World.Rnd().nextInt(0, 99) < 4)) {
-        if (this.Group != null) this.Group.delAircraft((Aircraft)this.actor);
-        if (((this.actor instanceof TypeGlider)) || ((this.actor instanceof TypeSailPlane))) break label23415; World.cur(); if (this.actor != World.getPlayerAircraft()) {
-          if (Airport.distToNearestAirport(this.Loc) > 900.0D)
-            ((Aircraft)this.actor).postEndAction(60.0D, this.actor, 3, null);
-          else
-            MsgDestroy.Post(Time.current() + 30000L, this.actor);
-        }
-      }
-      if (this.first) {
-        this.AP.setStabAll(false);
-        this.CT.ElevatorControl = World.Rnd().nextFloat(-0.07F, 0.4F);
-        this.CT.AileronControl = World.Rnd().nextFloat(-0.15F, 0.15F); } break;
-    case 7:
-      wingman(false);
-      setSpeedMode(9);
-      if (getW().x <= 0.0D) {
-        this.CT.AileronControl = -1.0F;
-        this.CT.RudderControl = 1.0F;
-      }
-      else {
-        this.CT.AileronControl = 1.0F;
-        this.CT.RudderControl = -1.0F;
-      }
-      f1 = this.Or.getKren();
-
-      if ((f1 > -90.0F) && (f1 < 90.0F)) {
-        f2 = 0.01111F * (90.0F - Math.abs(f1));
-        this.CT.ElevatorControl = (-0.08F * f2 * (this.Or.getTangage() - 3.0F));
-      }
-      else {
-        f2 = 0.01111F * (Math.abs(f1) - 90.0F);
-        this.CT.ElevatorControl = (0.08F * f2 * (this.Or.getTangage() - 3.0F));
-      }
-
-      if (getSpeed() < 1.7F * this.Vmin)
+        dont_change_subm = true;
         pop();
-      if (this.mn_time > 2.2F)
-        pop();
-      if ((this.danger != null) && ((this.danger instanceof Pilot)) && (((Maneuver)this.danger).target == this) && (this.Loc.distance(this.danger.Loc) > 400.0D))
-      {
-        pop(); } break;
-    case 8:
-      if ((this.first) && 
-        (!isCapableOfACM())) {
-        if (this.Skill > 0) pop();
-        if (this.Skill > 1) setReadyToReturn(true);
-      }
+        dont_change_subm = true;
+    }
 
-      setSpeedMode(6);
-      tmpOr.setYPR(this.Or.getYaw(), 0.0F, 0.0F);
-      if (this.Or.getKren() > 0.0F) Ve.set(100.0D, -6.0D, 10.0D); else
-        Ve.set(100.0D, 6.0D, 10.0D);
-      tmpOr.transform(Ve);
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      farTurnToDirection();
-      if (((this.Alt > 250.0F) && (this.mn_time > 8.0F)) || (this.mn_time > 120.0F)) pop(); break;
-    case 55:
-      if ((this.first) && 
-        (!isCapableOfACM())) {
-        if (this.Skill > 0) pop();
-        if (this.Skill > 1) setReadyToReturn(true);
-      }
+    public void clear_stack()
+    {
+        for(int i = 0; i < program.length; i++)
+            program[i] = 0;
 
-      setSpeedMode(6);
-      tmpOr.setYPR(this.Or.getYaw(), 0.0F, 0.0F);
-      if ((this.Leader != null) && (Actor.isAlive(this.Leader.actor)) && (this.mn_time < 2.5F)) {
-        if (this.Leader.Or.getKren() > 0.0F) Ve.set(100.0D, -6.0D, 10.0D); else
-          Ve.set(100.0D, 6.0D, 10.0D);
-      }
-      else if (this.Or.getKren() > 0.0F) Ve.set(100.0D, -6.0D, 10.0D); else {
-        Ve.set(100.0D, 6.0D, 10.0D);
-      }
-      tmpOr.transform(Ve);
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      farTurnToDirection();
-      if (((this.Alt > 250.0F) && (this.mn_time > 8.0F)) || (this.mn_time > 120.0F)) pop(); break;
-    case 45:
-      setSpeedMode(7);
-      this.smConstPower = 0.8F;
-      this.dA = this.Or.getKren();
-      if (this.dA > 0.0F) this.dA -= 25.0F; else this.dA -= 335.0F;
-      if (this.dA < -180.0F) this.dA += 360.0F;
-      this.dA = (-0.01F * this.dA);
-      this.CT.AileronControl = this.dA;
-      this.CT.ElevatorControl = (-0.04F * (this.Or.getTangage() - 1.0F) + 0.002F * (this.AP.way.curr().z() - (float)this.Loc.z + 250.0F));
-      if (this.mn_time > 60.0F) {
-        this.mn_time = 0.0F;
-        pop(); } break;
-    case 54:
-      if (this.Vwld.length() <= this.VminFLAPS * 2.0F) break; this.Vwld.scale(0.9950000047683716D);
-    case 9:
-      if ((this.first) && 
-        (!isCapableOfACM())) {
-        if (this.Skill > 0) pop();
-        if (this.Skill > 1) setReadyToReturn(true);
-      }
+    }
 
-      setSpeedMode(4);
-      this.smConstSpeed = 100.0F;
-      this.dA = this.Or.getKren();
-      if (this.dA > 0.0F) this.dA -= 50.0F; else this.dA -= 310.0F;
-      if (this.dA < -180.0F) this.dA += 360.0F;
-      this.dA = (-0.01F * this.dA);
-      this.CT.AileronControl = this.dA;
+    public void push(int i)
+    {
+        for(int j = program.length - 2; j >= 0; j--)
+            program[j + 1] = program[j];
 
-      this.dA = ((-10.0F - this.Or.getTangage()) * 0.05F);
-      this.CT.ElevatorControl = this.dA;
-      if (getOverload() < 1.0D / Math.abs(Math.cos(this.dA)))
-        this.CT.ElevatorControl += 1.0F * paramFloat;
-      else {
-        this.CT.ElevatorControl -= 1.0F * paramFloat;
-      }
+        program[0] = i;
+    }
 
-      if (this.Alt < 100.0F) {
-        push(3);
-        pop();
-      }
-      if (this.mn_time > 5.0F) pop(); break;
-    case 14:
-      setSpeedMode(6);
-      if (this.first) this.AP.setStabAltitude(true);
-      this.dA = this.Or.getKren();
-      if (getOverload() < 1.0D / Math.abs(Math.cos(this.dA)))
-        this.CT.ElevatorControl += 1.0F * paramFloat;
-      else {
-        this.CT.ElevatorControl -= 1.0F * paramFloat;
-      }
-      if (this.dA > 0.0F) this.dA -= 50.0F; else this.dA -= 310.0F;
-      if (this.dA < -180.0F) this.dA += 360.0F;
-      this.dA = (-0.01F * this.dA);
-      this.CT.AileronControl = this.dA;
-      if (this.mn_time > 5.0F) pop(); break;
-    case 4:
-      this.CT.AileronControl = (getW().x <= 0.0D ? -1.0F : 1.0F);
-      this.CT.ElevatorControl = (0.1F * (float)Math.cos(DEG2RAD(this.Or.getKren())));
-      this.CT.RudderControl = 0.0F;
-      if (getSpeedKMH() < 220.0F) {
-        push(3);
-        pop();
-      }
-      if (this.mn_time > 7.0F) pop(); break;
-    case 2:
-      this.minElevCoeff = 20.0F;
-      if (this.first) {
-        wingman(false);
-        this.AP.setStabAll(false);
-        this.CT.RudderControl = 0.0F;
-        if ((World.Rnd().nextInt(0, 99) < 10) && (this.Alt < 80.0F)) Voice.speakPullUp((Aircraft)this.actor);
-      }
-      setSpeedMode(9);
-      this.CT.BayDoorControl = 0.0F;
-      this.CT.AirBrakeControl = 0.0F;
-      this.CT.AileronControl = (-0.04F * (this.dA = this.Or.getKren()));
-      this.CT.ElevatorControl = (1.0F + 0.3F * (float)getW().y);
+    public void push()
+    {
+        push(maneuver);
+    }
 
-      if (this.CT.ElevatorControl < 0.0F) this.CT.ElevatorControl = 0.0F;
-      if (this.AOA > 15.0F) this.Or.increment(0.0F, (15.0F - this.AOA) * 0.5F * paramFloat, 0.0F);
-      if ((this.Alt < 10.0F) && (this.Vwld.z < 0.0D)) this.Vwld.z *= 0.8999999761581421D;
-      if (this.Vwld.z > 1.0D) {
-        if ((this.actor instanceof TypeGlider)) push(49); else
-          push(57);
-        pop();
-      }
-      if (this.mn_time > 25.0F) {
-        push(49);
-        pop(); } break;
-    case 60:
-      setSpeedMode(9);
-      this.CT.RudderControl = 0.0F;
-      this.CT.ElevatorControl = 1.0F;
-      if (this.mn_time > 0.15F) pop(); break;
-    case 61:
-      this.CT.RudderControl = 0.0F;
-      this.CT.ElevatorControl = -0.4F;
-      if (this.mn_time > 0.2F) pop(); break;
-    case 3:
-      if ((this.first) && 
-        (this.program[0] == 49)) pop();
-
-      setSpeedMode(6);
-      this.CT.AileronControl = (-0.04F * this.Or.getKren());
-      this.dA = ((getSpeedKMH() - 180.0F - this.Or.getTangage() * 10.0F - getVertSpeed() * 5.0F) * 0.004F);
-      this.CT.ElevatorControl = this.dA;
-      if ((getSpeed() > this.Vmin * 1.2F) && (getVertSpeed() > 0.0F)) {
-        setSpeedMode(7);
-        this.smConstPower = 0.7F;
-        pop(); } break;
-    case 10:
-      this.AP.setStabAll(false);
-      setSpeedMode(6);
-      this.CT.AileronControl = (-0.04F * this.Or.getKren());
-      this.dA = this.CT.ElevatorControl;
-      if (this.Or.getTangage() > 15.0F) this.dA -= (this.Or.getTangage() - 15.0F) * 0.1F * paramFloat;
-      else
-        this.dA = (((float)this.Vwld.length() / this.VminFLAPS * 140.0F - 50.0F - this.Or.getTangage() * 20.0F) * 0.004F);
-      this.dA = (float)(this.dA + 0.5D * getW().y);
-      this.CT.ElevatorControl = this.dA;
-      if (((this.Alt > 250.0F) && (this.mn_time > 6.0F)) || (this.mn_time > 20.0F)) pop(); break;
-    case 57:
-      this.AP.setStabAll(false);
-      setSpeedMode(9);
-      this.CT.AileronControl = (-0.04F * this.Or.getKren());
-      this.dA = this.CT.ElevatorControl;
-      if (this.Or.getTangage() > 25.0F) this.dA -= (this.Or.getTangage() - 25.0F) * 0.1F * paramFloat; else
-        this.dA = (((float)this.Vwld.length() / this.VminFLAPS * 140.0F - 50.0F - this.Or.getTangage() * 20.0F) * 0.004F);
-      this.dA = (float)(this.dA + 0.5D * getW().y);
-      this.CT.ElevatorControl = this.dA;
-      if ((this.Alt > 150.0F) || ((this.Alt > 100.0F) && (this.mn_time > 2.0F)) || (this.mn_time > 3.0F)) pop(); break;
-    case 11:
-      setSpeedMode(8);
-      if (Math.abs(this.Or.getKren()) < 90.0F) {
-        this.CT.AileronControl = (-0.04F * this.Or.getKren());
-        if ((this.Vwld.z > 0.0D) || (getSpeedKMH() < 270.0F)) this.dA = -0.04F; else
-          this.dA = 0.04F;
-        this.CT.ElevatorControl = (this.CT.ElevatorControl * 0.9F + this.dA * 0.1F);
-      } else {
-        this.CT.AileronControl = (0.04F * (180.0F - Math.abs(this.Or.getKren())));
-        if (this.Or.getTangage() > -25.0F) this.dA = 0.33F;
-        else if ((this.Vwld.z > 0.0D) || (getSpeedKMH() < 270.0F)) this.dA = 0.04F; else
-          this.dA = -0.04F;
-        this.CT.ElevatorControl = (this.CT.ElevatorControl * 0.9F + this.dA * 0.1F);
-      }
-      if ((this.Alt < 120.0F) || (this.mn_time > 4.0F)) pop(); break;
-    case 12:
-      setSpeedMode(4);
-      this.smConstSpeed = 80.0F;
-      this.CT.AileronControl = (-0.04F * this.Or.getKren());
-      if (this.Vwld.length() > this.VminFLAPS * 2.0F) this.Vwld.scale(0.9950000047683716D);
-      this.dA = (-((float)this.Vwld.z / (Math.abs(getSpeed()) + 1.0F) + 0.5F));
-      if (this.dA < -0.1F) this.dA = -0.1F;
-      this.CT.ElevatorControl = (this.CT.ElevatorControl * 0.9F + this.dA * 0.1F + 0.3F * (float)getW().y);
-      if ((this.mn_time > 5.0F) || (this.Alt < 200.0F)) pop(); break;
-    case 13:
-      if (this.first) {
-        this.AP.setStabAll(false);
-        this.submaneuver = ((this.actor instanceof TypeFighter) ? 0 : 2);
-      }
-      switch (this.submaneuver) {
-      case 0:
-        this.dA = (this.Or.getKren() - 180.0F);
-        if (this.dA < -180.0F) this.dA += 360.0F;
-        this.dA = (-0.04F * this.dA);
-        this.CT.AileronControl = this.dA;
-        if ((this.mn_time <= 3.0F) && (Math.abs(this.Or.getKren()) <= 175.0F - 5.0F * this.Skill)) break; this.submaneuver += 1; break;
-      case 1:
-        this.dA = (this.Or.getKren() - 180.0F);
-        if (this.dA < -180.0F) this.dA += 360.0F;
-        this.dA = (-0.04F * this.dA);
-        this.CT.AileronControl = this.dA;
-        this.CT.RudderControl = (-0.1F * getAOS());
-        setSpeedMode(8);
-
-        if ((this.Or.getTangage() > -45.0F) && (getOverload() < this.maxG))
-          this.CT.ElevatorControl += 1.5F * paramFloat;
-        else {
-          this.CT.ElevatorControl -= 0.5F * paramFloat;
-        }
-        if (this.Or.getTangage() < -44.0F) this.submaneuver += 1;
-        if ((this.Alt >= -5.0D * this.Vwld.z) && (this.mn_time <= 5.0F)) break; pop(); break;
-      case 2:
-        setSpeedMode(8);
-        this.CT.AileronControl = (-0.04F * this.Or.getKren());
-        this.dA = (-((float)this.Vwld.z / (Math.abs(getSpeed()) + 1.0F) + 0.707F));
-        if (this.dA < -0.75F) this.dA = -0.75F;
-        this.CT.ElevatorControl = (this.CT.ElevatorControl * 0.9F + this.dA * 0.1F + 0.5F * (float)getW().y);
-        if ((this.Alt >= -5.0D * this.Vwld.z) && (this.mn_time <= 5.0F)) break; pop();
-      }
-
-      if (this.Alt < 200.0F) pop(); break;
-    case 5:
-      this.dA = this.Or.getKren();
-      if (this.dA < 0.0F) this.dA -= 270.0F; else this.dA -= 90.0F;
-      if (this.dA < -180.0F) this.dA += 360.0F;
-      this.dA = (-0.02F * this.dA);
-      this.CT.AileronControl = this.dA;
-      if ((this.mn_time > 5.0F) || (Math.abs(Math.abs(this.Or.getKren()) - 90.0F) < 1.0F)) pop(); break;
-    case 6:
-      this.dA = (this.Or.getKren() - 180.0F);
-      if (this.dA < -180.0F) this.dA += 360.0F;
-      this.CT.AileronControl = (float)(-0.04F * this.dA - 0.5D * getW().x);
-      if ((this.mn_time > 4.0F) || (Math.abs(this.Or.getKren()) > 178.0F)) {
-        this.W.x = 0.0D;
-        pop(); } break;
-    case 35:
-      if (this.first) {
-        this.AP.setStabAll(false);
-        this.direction = this.Or.getKren();
-        this.submaneuver = (this.Or.getKren() > 0.0F ? 1 : -1);
-        this.tmpi = 0;
-        setSpeedMode(9);
-      }
-      this.CT.AileronControl = (1.0F * this.submaneuver);
-      this.CT.RudderControl = (0.0F * this.submaneuver);
-      f1 = this.Or.getKren();
-      if ((f1 > -90.0F) && (f1 < 90.0F)) {
-        f2 = 0.01111F * (90.0F - Math.abs(f1));
-        this.CT.ElevatorControl = (-0.08F * f2 * (this.Or.getTangage() - 3.0F));
-      }
-      else {
-        f2 = 0.01111F * (90.0F - Math.abs(f1));
-        this.CT.ElevatorControl = (0.08F * f2 * (this.Or.getTangage() - 3.0F));
-      }
-      if (this.Or.getKren() * this.direction < 0.0F)
-        this.tmpi = 1;
-      if ((this.tmpi != 1) || (this.submaneuver > 0 ? this.Or.getKren() <= this.direction : this.Or.getKren() >= this.direction)) { if (this.mn_time <= 17.5F);
-      } else
-        pop(); break;
-    case 22:
-      setSpeedMode(9);
-      this.CT.AileronControl = (-0.04F * this.Or.getKren());
-      this.CT.ElevatorControl = (-0.04F * (this.Or.getTangage() + 5.0F));
-      this.CT.RudderControl = 0.0F;
-      if ((getSpeed() > this.Vmax) || (this.mn_time > 30.0F)) pop(); break;
-    case 67:
-      this.minElevCoeff = 18.0F;
-      if (this.first) {
-        this.sub_Man_Count = 0;
-        setSpeedMode(9);
-        this.CT.setPowerControl(1.1F);
-      }
-      if (this.danger != null) {
-        f3 = 700.0F - (float)this.danger.Loc.distance(this.Loc);
-        if (f3 < 0.0F) f3 = 0.0F;
-        f3 *= 0.00143F;
-
-        f1 = this.Or.getKren();
-        if ((this.sub_Man_Count == 0) || (this.first)) {
-          if (this.raAilShift < 0.0F)
-            this.raAilShift = (f3 * World.Rnd().nextFloat(0.6F, 1.0F));
-          else {
-            this.raAilShift = (f3 * World.Rnd().nextFloat(-1.0F, -0.6F));
-          }
-          this.raRudShift = (f3 * World.Rnd().nextFloat(-0.5F, 0.5F));
-          this.raElevShift = (f3 * World.Rnd().nextFloat(-0.8F, 0.8F));
-        }
-
-        this.CT.AileronControl = (0.9F * this.CT.AileronControl + 0.1F * this.raAilShift);
-        this.CT.RudderControl = (0.95F * this.CT.RudderControl + 0.05F * this.raRudShift);
-        if ((f1 > -90.0F) && (f1 < 90.0F))
-          this.CT.ElevatorControl = (-0.04F * (this.Or.getTangage() + 5.0F));
-        else {
-          this.CT.ElevatorControl = (0.05F * (this.Or.getTangage() + 5.0F));
-        }
-        this.CT.ElevatorControl += 0.1F * this.raElevShift;
-
-        this.sub_Man_Count += 1;
-        if ((this.sub_Man_Count >= 80.0F * (1.5F - f3)) && (f1 > -70.0F) && (f1 < 70.0F))
-          this.sub_Man_Count = 0;
-        if (this.mn_time > 30.0F)
-          pop();
-      } else {
-        pop();
-      }
-      break;
-    case 16:
-      if (this.first) {
-        if (!isCapableOfACM()) pop();
-        this.AP.setStabAll(false);
-        setSpeedMode(6);
-        if (getSpeed() < 0.75F * this.Vmax) {
-          push();
-          push(22);
-          pop();
-        }
-        else {
-          this.submaneuver = 0;
-        }
-      } else {
-        this.maxAOA = (this.Vwld.z > 0.0D ? 7.0F : 12.0F);
-        switch (this.submaneuver) {
-        case 0:
-          this.CT.ElevatorControl = 0.05F;
-          this.CT.AileronControl = (-0.04F * this.Or.getKren());
-          this.CT.RudderControl = (-0.1F * getAOS());
-          if (Math.abs(this.Or.getKren()) >= 2.0F) break; this.submaneuver += 1; break;
-        case 1:
-          this.CT.AileronControl = (-0.04F * this.Or.getKren());
-          this.CT.RudderControl = (-0.1F * getAOS());
-          this.dA = 0.5F;
-          if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-            this.CT.ElevatorControl -= 0.4F * paramFloat;
-          else {
-            this.CT.ElevatorControl += 0.4F * paramFloat;
-          }
-          if (this.Or.getTangage() > 80.0F) this.submaneuver += 1;
-          if (getSpeed() >= this.Vmin * 1.5F) break;
-          pop(); break;
-        case 2:
-          this.CT.RudderControl = (-0.1F * getAOS() * (getSpeed() > 300.0F ? 1.0F : 0.0F));
-          this.dA = 1.0F;
-          if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-            this.CT.ElevatorControl -= 0.4F * paramFloat;
-          else {
-            this.CT.ElevatorControl += 0.4F * paramFloat;
-          }
-          if (this.Or.getTangage() >= 0.0F) break; this.submaneuver += 1; break;
-        case 3:
-          this.CT.RudderControl = (-0.1F * getAOS() * (getSpeed() > 300.0F ? 1.0F : 0.0F));
-          this.dA = 1.0F;
-          if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-            this.CT.ElevatorControl -= 0.2F * paramFloat;
-          else {
-            this.CT.ElevatorControl += 0.2F * paramFloat;
-          }
-          if (this.Or.getTangage() >= -60.0F) break; this.submaneuver += 1; break;
-        case 4:
-          if (this.Or.getTangage() > -45.0F) {
-            this.CT.AileronControl = (-0.04F * this.Or.getKren());
-            this.maxAOA = 3.5F;
-          }
-          this.CT.RudderControl = (-0.1F * getAOS());
-          this.dA = 0.5F;
-          if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-            this.CT.ElevatorControl -= 1.0F * paramFloat;
-          else {
-            this.CT.ElevatorControl += 0.4F * paramFloat;
-          }
-          if ((this.Or.getTangage() <= 3.0F) && (this.Vwld.z <= 0.0D)) break; pop();
-        }
-      }
-      break;
-    case 17:
-      if (this.first) {
-        if (this.Alt < 1000.0F) {
-          pop();
-        }
-        else if (getSpeed() < this.Vmin * 1.2F) {
-          push();
-          push(22);
-          pop();
-        }
-        else {
-          push(18);
-          push(19);
-          pop();
-        }
-      }
-      else pop();
-      break;
-    case 19:
-      if (this.first) {
-        if (this.Alt < 1000.0F) {
-          pop();
-        }
-        else {
-          this.AP.setStabAll(false);
-          this.submaneuver = 0;
-        }
-      } else {
-        this.maxAOA = (this.Vwld.z > 0.0D ? 7.0F : 12.0F);
-        switch (this.submaneuver) {
-        case 0:
-          this.CT.ElevatorControl = 0.05F;
-          this.CT.AileronControl = (0.04F * (this.Or.getKren() > 0.0F ? 180.0F - this.Or.getKren() : -180.0F + this.Or.getKren()));
-          this.CT.RudderControl = (-0.1F * getAOS());
-          if (Math.abs(this.Or.getKren()) <= 178.0F) break; this.submaneuver += 1; break;
-        case 1:
-          setSpeedMode(7);
-          this.smConstPower = 0.5F;
-          this.CT.AileronControl = 0.0F;
-          this.CT.RudderControl = (-0.1F * getAOS());
-          this.dA = 1.0F;
-          if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-            this.CT.ElevatorControl -= 0.2F * paramFloat;
-          else {
-            this.CT.ElevatorControl += 1.2F * paramFloat;
-          }
-          if (this.Or.getTangage() >= -60.0F) break; this.submaneuver += 1; break;
-        case 2:
-          if (this.Or.getTangage() > -45.0F) {
-            this.CT.AileronControl = (-0.04F * this.Or.getKren());
-            setSpeedMode(9);
-            this.maxAOA = 7.0F;
-          }
-          this.CT.RudderControl = (-0.1F * getAOS());
-          this.dA = 0.5F;
-          if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-            this.CT.ElevatorControl -= 0.8F * paramFloat;
-          else {
-            this.CT.ElevatorControl += 0.4F * paramFloat;
-          }
-          if ((this.Or.getTangage() <= this.AOA - 1.0F) && (this.Vwld.z <= 0.0D)) break; pop();
-        }
-      }
-      break;
-    case 18:
-      if (this.first) {
-        if (!isCapableOfACM()) pop();
-        if (getSpeed() < this.Vmax * 0.75F) {
-          push();
-          push(22);
-          pop();
-        }
-        else {
-          this.AP.setStabAll(false);
-          this.submaneuver = 0;
-          setSpeedMode(6);
-        }
-      } else {
-        this.maxAOA = (this.Vwld.z > 0.0D ? 7.0F : 12.0F);
-        switch (this.submaneuver)
+    public void accurate_set_task_maneuver(int i, int j)
+    {
+        if(maneuver == 44 || maneuver == 26 || maneuver == 69 || maneuver == 64)
+            return;
+        set_task(i);
+        if(maneuver != j)
         {
-        case 0:
-          this.CT.AileronControl = (-0.04F * this.Or.getKren());
-          this.CT.RudderControl = (-0.1F * getAOS());
-          if (Math.abs(this.Or.getKren()) >= 2.0F) break; this.submaneuver += 1; break;
-        case 1:
-          this.CT.AileronControl = (-0.04F * this.Or.getKren());
-          this.CT.RudderControl = (-0.1F * getAOS());
-          this.dA = 1.0F;
-          if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-            this.CT.ElevatorControl -= 0.4F * paramFloat;
-          else {
-            this.CT.ElevatorControl += 0.8F * paramFloat;
-          }
-          if (this.Or.getTangage() > 80.0F) this.submaneuver += 1;
-          if (getSpeed() >= this.Vmin * 1.5F) break;
-          pop(); break;
-        case 2:
-          this.CT.RudderControl = (-0.1F * getAOS() * (getSpeed() > 300.0F ? 1.0F : 0.0F));
-          this.dA = 1.0F;
-          if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-            this.CT.ElevatorControl -= 0.4F * paramFloat;
-          else {
-            this.CT.ElevatorControl += 0.4F * paramFloat;
-          }
-          if (this.Or.getTangage() >= 12.0F) break; this.submaneuver += 1; break;
-        case 3:
-          if (Math.abs(this.Or.getKren()) < 60.0F) this.CT.ElevatorControl = 0.05F;
-          this.CT.AileronControl = (-0.04F * this.Or.getKren());
-          this.CT.RudderControl = (-0.1F * getAOS());
-          if (Math.abs(this.Or.getKren()) >= 30.0F) break; this.submaneuver += 1; break;
-        case 4:
-          pop();
-        }
-      }
-      break;
-    case 15:
-      if ((this.first) && (getSpeed() < 0.35F * (this.Vmin + this.Vmax))) { pop(); } else {
-        push(8); pop();
-        this.CT.RudderControl = (-0.1F * getAOS());
-        if (this.Or.getKren() < 0.0F)
-          this.CT.AileronControl = (-0.04F * (this.Or.getKren() + 30.0F));
-        else {
-          this.CT.AileronControl = (-0.04F * (this.Or.getKren() - 30.0F));
-        }
-
-        if (this.mn_time > 7.5F) pop(); 
-      }break;
-    case 20:
-      if (this.first) {
-        wingman(false);
-        setSpeedMode(6);
-      }
-      if (!isCapableOfBMP()) {
-        setReadyToDie(true);
-        pop();
-      }
-      if (getW().z > 0.0D)
-        this.CT.RudderControl = 1.0F;
-      else {
-        this.CT.RudderControl = -1.0F;
-      }
-      if (this.AOA > this.AOA_Crit - 4.0F) this.Or.increment(0.0F, 0.01F * (this.AOA_Crit - 4.0F - this.AOA), 0.0F);
-      if (this.AOA < -5.0F) this.Or.increment(0.0F, 0.01F * (-5.0F - this.AOA), 0.0F);
-
-      if (this.AOA < this.AOA_Crit - 1.0F) pop();
-      if ((this.mn_time > 14.0F - this.Skill * 4.0F) || (this.Alt < 50.0F)) pop(); break;
-    case 21:
-      this.AP.setWayPoint(true);
-      if (this.mn_time > 300.0F) pop();
-
-      if ((isTick(256, 0)) && (!this.actor.isTaskComplete()) && (((this.AP.way.isLast()) && (this.AP.getWayPointDistance() < 1500.0F)) || (this.AP.way.isLanding())))
-      {
-        World.onTaskComplete(this.actor);
-      }
-      if ((((Aircraft)this.actor).aircIndex() == 0) && (!isReadyToReturn())) { World.cur(); if (World.getPlayerAircraft() != null) { World.cur(); if (((Aircraft)this.actor).getRegiment() == World.getPlayerAircraft().getRegiment())
-          {
-            f3 = 1.0E+012F;
-            int i;
-            if (this.AP.way.curr().Action == 3) {
-              f3 = this.AP.getWayPointDistance();
-            } else {
-              i = this.AP.way.Cur();
-              this.AP.way.next();
-              if (this.AP.way.curr().Action == 3)
-                f3 = this.AP.getWayPointDistance();
-              this.AP.way.setCur(i);
-            }
-            if ((this.Speak5minutes == 0) && (22000.0F < f3) && (f3 < 30000.0F)) {
-              Voice.speak5minutes((Aircraft)this.actor);
-              this.Speak5minutes = 1;
-            }
-            if ((this.Speak1minute == 0) && (f3 < 10000.0F)) {
-              Voice.speak1minute((Aircraft)this.actor);
-              this.Speak1minute = 1; this.Speak5minutes = 1;
-            }
-
-            if (((this.WeWereInGAttack) || (this.WeWereInAttack)) && (this.mn_time > 5.0F)) {
-              if (!this.SpeakMissionAccomplished) {
-                i = 0;
-                int j = this.AP.way.Cur();
-                if ((this.AP.way.curr().Action == 3) || (this.AP.way.curr().getTarget() != null)) break label23415; while (this.AP.way.Cur() < this.AP.way.size() - 1) {
-                  this.AP.way.next();
-                  if ((this.AP.way.curr().Action == 3) || (this.AP.way.curr().getTarget() != null))
-                    i = 1;
-                }
-                this.AP.way.setCur(j);
-                if (i == 0) {
-                  Voice.speakMissionAccomplished((Aircraft)this.actor);
-                  this.SpeakMissionAccomplished = true;
-                }
-              }
-              if (!this.SpeakMissionAccomplished) {
-                this.Speak5minutes = 0; this.Speak1minute = 0; this.SpeakBeginGattack = 0;
-              }
-              this.WeWereInGAttack = false;
-              this.WeWereInAttack = false;
-            }
-          } }
-      }
-      if ((((this.actor instanceof TypeBomber)) || ((this.actor instanceof TypeTransport))) && (this.AP.way.curr() != null) && (this.AP.way.curr().Action == 3) && ((this.AP.way.curr().getTarget() == null) || ((this.actor instanceof Scheme4))))
-      {
-        double d1 = this.Loc.z - World.land().HQ(this.Loc.x, this.Loc.y);
-        if (d1 < 0.0D) d1 = 0.0D;
-        if ((this.AP.getWayPointDistance() < getSpeed() * Math.sqrt(d1 * 0.2038699984550476D)) && 
-          (!this.bombsOut)) {
-          if ((this.CT.Weapons[3] != null) && (this.CT.Weapons[3][0] != null) && (this.CT.Weapons[3][0].countBullets() != 0) && (!(this.CT.Weapons[3][0] instanceof BombGunPara)))
-          {
-            Voice.airSpeaks((Aircraft)this.actor, 85, 1);
-          }
-          this.bombsOut = true;
-          this.AP.way.curr().Action = 0;
-          if (this.Group != null) this.Group.dropBombs();
-        }
-      }
-
-      setSpeedMode(3);
-
-      if ((this.AP.way.isLandingOnShip()) && 
-        (this.AP.way.isLanding())) {
-        this.AP.way.landingAirport.rebuildLandWay(this);
-        if (this.CT.bHasCockpitDoorControl) this.AS.setCockpitDoor(this.actor, 1); 
-      }break;
-    case 23:
-      if (this.first) {
-        wingman(false);
-        if (getSpeedKMH() < this.Vmin * 1.25F) {
-          push();
-          push(22);
-          pop();
-          break label23415;
-        }
-      }
-      setSpeedMode(6);
-      this.CT.AileronControl = (-0.04F * this.Or.getKren());
-      this.CT.RudderControl = (-0.1F * getAOS());
-      if ((this.Or.getTangage() < 70.0F) && (getOverload() < this.maxG) && (this.AOA < 14.0F)) this.CT.ElevatorControl += 0.5F * paramFloat; else
-        this.CT.ElevatorControl -= 0.5F * paramFloat;
-      if (this.Vwld.z < 1.0D) pop(); break;
-    case 24:
-      if ((this.Leader == null) || (!Actor.isAlive(this.Leader.actor)) || (!((Maneuver)this.Leader).isOk()) || ((((Maneuver)this.Leader).isBusy()) && ((!(this.Leader instanceof RealFlightModel)) || (!((RealFlightModel)this.Leader).isRealMode()))))
-      {
-        set_maneuver(0);
-      }
-      else {
-        if ((this.actor instanceof TypeGlider)) {
-          if ((this.Leader.AP.way.curr().Action != 0) && (this.Leader.AP.way.curr().Action != 1))
-            set_maneuver(49);
-        }
-        else if ((this.Leader.getSpeed() < 30.0F) || (this.Leader.Loc.z - Engine.land().HQ_Air(this.Leader.Loc.x, this.Leader.Loc.y) < 50.0D)) {
-          this.airClient = this.Leader;
-          push();
-          push(59);
-          pop();
-          break label23415;
-        }
-        if (!this.Leader.AP.way.isLanding()) {
-          this.AP.way.setCur(this.Leader.AP.way.Cur());
-          if (this.Leader.Wingman != this) {
-            if ((!this.bombsOut) && (((Maneuver)this.Leader).bombsOut)) {
-              this.bombsOut = true;
-              localObject = this;
-              while (((Maneuver)localObject).Wingman != null) {
-                localObject = (Maneuver)((Maneuver)localObject).Wingman;
-                ((Maneuver)localObject).bombsOut = true;
-              }
-            }
-            if (this.CT.BayDoorControl != this.Leader.CT.BayDoorControl) {
-              this.CT.BayDoorControl = this.Leader.CT.BayDoorControl;
-              localObject = (Pilot)this;
-              while (((Pilot)localObject).Wingman != null) {
-                localObject = (Pilot)((Pilot)localObject).Wingman;
-                ((Pilot)localObject).CT.BayDoorControl = this.CT.BayDoorControl;
-              }
-            }
-          }
-        }
-        else {
-          if (this.Leader.Wingman != this) {
-            push(8);
-            push(8);
-            push(World.Rnd().nextBoolean() ? 8 : 48);
-            push(World.Rnd().nextBoolean() ? 8 : 48);
-            pop();
-          }
-          this.Leader = null; pop(); break label23415;
-        }
-
-        this.airClient = this.Leader;
-        tmpOr.setAT0(this.airClient.Vwld);
-        tmpOr.increment(0.0F, this.airClient.getAOA(), 0.0F);
-
-        Ve.set(this.followOffset);
-        Ve.x -= 300.0D;
-
-        tmpV3f.sub(this.followTargShift, this.followCurShift);
-        if (tmpV3f.lengthSquared() < 0.5D) {
-          this.followTargShift.set(World.cur().rnd.nextFloat(-0.0F, 10.0F), World.cur().rnd.nextFloat(-5.0F, 5.0F), World.cur().rnd.nextFloat(-3.5F, 3.5F));
-        }
-
-        tmpV3f.normalize();
-        tmpV3f.scale(2.0F * paramFloat);
-        this.followCurShift.add(tmpV3f);
-        Ve.add(this.followCurShift);
-
-        tmpOr.transform(Ve, Po);
-        Po.scale(-1.0D);
-        Po.add(this.airClient.Loc);
-        Ve.sub(Po, this.Loc);
-        this.Or.transformInv(Ve);
-        this.dist = (float)Ve.length();
-        if (this.followOffset.x > 600.0D) {
-          Ve.set(this.followOffset);
-          Ve.x -= 0.5D * this.followOffset.x;
-          tmpOr.transform(Ve, Po);
-          Po.scale(-1.0D);
-          Po.add(this.airClient.Loc);
-          Ve.sub(Po, this.Loc);
-          this.Or.transformInv(Ve);
-        }
-
-        Ve.normalize();
-        if (this.dist > 600.0D + Ve.x * 400.0D) {
-          push();
-          push(53);
-          pop();
-        }
-        else
-        {
-          if (((this.actor instanceof TypeTransport)) && (this.Vmax < 70.0D))
-            farTurnToDirection(6.2F);
-          else {
-            attackTurnToDirection(this.dist, paramFloat, 10.0F);
-          }
-
-          setSpeedMode(10);
-
-          this.tailForStaying = this.Leader;
-          this.tailOffset.set(this.followOffset);
-          this.tailOffset.scale(-1.0D);
-        }
-      }
-      break;
-    case 65:
-      if ((!(this instanceof RealFlightModel)) || (!((RealFlightModel)this).isRealMode())) {
-        this.bombsOut = true;
-        this.CT.dropFuelTanks();
-      }
-      if ((this.airClient == null) || (!Actor.isAlive(this.airClient.actor)) || (!isOk())) {
-        set_maneuver(0);
-      }
-      else {
-        localObject = (Maneuver)this.airClient;
-        localManeuver = (Maneuver)((Maneuver)this.airClient).danger;
-        if ((((Maneuver)localObject).getDangerAggressiveness() >= 1.0F - this.Skill * 0.2F) && (localManeuver != null) && (hasCourseWeaponBullets())) {
-          Voice.speakCheckYour6((Aircraft)((Maneuver)localObject).actor, (Aircraft)localManeuver.actor);
-          Voice.speakHelpFromAir((Aircraft)this.actor, 1);
-          set_task(6);
-          this.target = localManeuver;
-          set_maneuver(27);
-        }
-
-        Ve.sub(this.airClient.Loc, this.Loc);
-        this.Or.transformInv(Ve);
-        this.dist = (float)Ve.length();
-        Ve.normalize();
-        attackTurnToDirection(this.dist, paramFloat, 10.0F + this.Skill * 8.0F);
-        if (this.Alt > 50.0F) setSpeedMode(1); else
-          setSpeedMode(6);
-        this.tailForStaying = this.airClient;
-        this.tailOffset.set(this.followOffset);
-        this.tailOffset.scale(-1.0D);
-
-        if ((this.dist > 600.0D + Ve.x * 400.0D) && (get_maneuver() != 27)) {
-          push();
-          push(53);
-          pop();
-        }
-      }break;
-    case 53:
-      if ((this.airClient == null) || (!Actor.isAlive(this.airClient.actor)) || (!isOk())) {
-        this.airClient = null;
-        set_maneuver(0);
-      }
-      else {
-        this.maxAOA = 5.0F;
-
-        Ve.set(this.followOffset);
-        Ve.x -= 300.0D;
-        tmpOr.setAT0(this.airClient.Vwld);
-        tmpOr.increment(0.0F, 4.0F, 0.0F);
-        tmpOr.transform(Ve, Po);
-        Po.scale(-1.0D);
-        Po.add(this.airClient.Loc);
-        Ve.sub(Po, this.Loc);
-        this.Or.transformInv(Ve);
-        this.dist = (float)Ve.length();
-        Ve.normalize();
-        if (this.Vmax < 83.0F) farTurnToDirection(8.5F); else {
-          farTurnToDirection(7.0F);
-        }
-        f4 = (this.Energy - this.airClient.Energy) * 0.1019F;
-        if (f4 < -50.0D + this.followOffset.z) setSpeedMode(9); else
-          setSpeedMode(10);
-        this.tailForStaying = this.airClient;
-        this.tailOffset.set(this.followOffset);
-        this.tailOffset.scale(-1.0D);
-
-        if (this.dist < 500.0D + Ve.x * 200.0D) {
-          pop();
-        }
-        else {
-          if ((this.AOA > 12.0F) && (this.Alt > 15.0F)) this.Or.increment(0.0F, 12.0F - this.AOA, 0.0F);
-          if ((this.mn_time > 30.0F) && ((Ve.x < 0.0D) || (this.dist > 10000.0F))) pop(); 
-        }
-      }break;
-    case 68:
-      if ((this.airClient == null) || (!Actor.isAlive(this.airClient.actor)) || (!isOk())) {
-        set_maneuver(0);
-      }
-      else {
-        localObject = (Maneuver)this.airClient;
-        localManeuver = (Maneuver)((Maneuver)this.airClient).danger;
-        if ((((Maneuver)localObject).getDangerAggressiveness() >= 1.0F - this.Skill * 0.3F) && (localManeuver != null) && (hasCourseWeaponBullets())) {
-          tmpV3d.sub(((Maneuver)localObject).Vwld, localManeuver.Vwld);
-          if (tmpV3d.length() < 170.0D) {
-            set_task(6);
-            this.target = localManeuver;
-            set_maneuver(27);
-          }
-        }
-        this.maxAOA = 5.0F;
-
-        Ve.set(this.followOffset);
-        Ve.x -= 300.0D;
-        tmpOr.setAT0(this.airClient.Vwld);
-        tmpOr.increment(0.0F, 4.0F, 0.0F);
-        tmpOr.transform(Ve, Po);
-        Po.scale(-1.0D);
-        Po.add(this.airClient.Loc);
-        Ve.sub(Po, this.Loc);
-        this.Or.transformInv(Ve);
-        this.dist = (float)Ve.length();
-        Ve.normalize();
-        if (this.Vmax < 83.0F) farTurnToDirection(8.5F); else {
-          farTurnToDirection(7.0F);
-        }
-
-        setSpeedMode(10);
-
-        this.tailForStaying = this.airClient;
-        this.tailOffset.set(this.followOffset);
-        this.tailOffset.scale(-1.0D);
-
-        if (this.dist < 500.0D + Ve.x * 200.0D) {
-          pop();
-        }
-        else {
-          if ((this.AOA > 12.0F) && (this.Alt > 15.0F)) this.Or.increment(0.0F, 12.0F - this.AOA, 0.0F);
-          if ((this.mn_time > 30.0F) && ((Ve.x < 0.0D) || (this.dist > 10000.0F))) pop(); 
-        }
-      }break;
-    case 59:
-      if ((this.airClient == null) || (!Actor.isValid(this.airClient.actor)) || (!isOk())) {
-        this.airClient = null;
-        set_maneuver(0);
-      }
-      else {
-        this.maxAOA = 5.0F;
-        if (this.first) {
-          this.followOffset.set(1000.0F * (float)Math.sin(this.beNearOffsPhase * 0.7854F), 1000.0F * (float)Math.cos(this.beNearOffsPhase * 0.7854F), -400.0D);
-        }
-
-        Ve.set(this.followOffset);
-        Ve.x -= 300.0D;
-        tmpOr.setAT0(this.airClient.Vwld);
-        tmpOr.increment(0.0F, 4.0F, 0.0F);
-        tmpOr.transform(Ve, Po);
-        Po.scale(-1.0D);
-        Po.add(this.airClient.Loc);
-        Ve.sub(Po, this.Loc);
-        this.Or.transformInv(Ve);
-        this.dist = (float)Ve.length();
-        Ve.normalize();
-        farTurnToDirection();
-
-        setSpeedMode(2);
-        this.tailForStaying = this.airClient;
-        this.tailOffset.set(this.followOffset);
-        this.tailOffset.scale(-1.0D);
-
-        if (this.dist < 300.0F) {
-          this.beNearOffsPhase += 1; if (this.beNearOffsPhase > 3) this.beNearOffsPhase = 0;
-          f5 = (float)Math.sqrt(this.followOffset.x * this.followOffset.x + this.followOffset.y * this.followOffset.y);
-          this.followOffset.set(f5 * (float)Math.sin(this.beNearOffsPhase * 1.5708F), f5 * (float)Math.cos(this.beNearOffsPhase * 1.5708F), this.followOffset.z);
-        }
-
-        if ((this.AOA > 12.0F) && (this.Alt > 15.0F)) this.Or.increment(0.0F, 12.0F - this.AOA, 0.0F);
-        if ((this.mn_time > 15.0F) && ((Ve.x < 0.0D) || (this.dist > 3000.0F))) pop();
-        if (this.mn_time > 30.0F) pop(); 
-      }break;
-    case 63:
-      if ((!(this instanceof RealFlightModel)) || (!((RealFlightModel)this).isRealMode())) {
-        this.bombsOut = true;
-        this.CT.dropFuelTanks();
-      }
-      if ((this.target == null) || (!Actor.isValid(this.target.actor)) || (this.target.isTakenMortalDamage()) || (!hasCourseWeaponBullets()))
-      {
-        this.target = null;
-        clear_stack();
-        set_maneuver(3);
-      }
-      else if ((this.target.getSpeedKMH() < 45.0F) && (this.target.Loc.z - Engine.land().HQ_Air(this.target.Loc.x, this.target.Loc.y) < 50.0D) && (this.target.actor.getArmy() != this.actor.getArmy()))
-      {
-        this.target_ground = this.target.actor;
-        set_task(7);
-        clear_stack();
-        set_maneuver(43);
-      }
-      else {
-        if (((this.actor instanceof HE_LERCHE3)) && 
-          (((HE_LERCHE3)this.actor).bToFire)) {
-          this.CT.WeaponControl[2] = true;
-          ((HE_LERCHE3)this.actor).bToFire = false;
-        }
-
-        if (((this.actor instanceof TA_183)) && 
-          (((TA_183)this.actor).bToFire)) {
-          this.CT.WeaponControl[2] = true;
-          ((TA_183)this.actor).bToFire = false;
-        }
-
-        if (((this.actor instanceof TA_152C)) && 
-          (((TA_152C)this.actor).bToFire)) {
-          this.CT.WeaponControl[2] = true;
-          ((TA_152C)this.actor).bToFire = false;
-        }
-
-        if (this.TargV.z == -400.0D) fighterUnderBomber(paramFloat); else
-          fighterVsBomber(paramFloat);
-        if ((this.AOA > this.AOA_Crit - 2.0F) && (this.Alt > 15.0F)) this.Or.increment(0.0F, 0.01F * (this.AOA_Crit - 2.0F - this.AOA), 0.0F); 
-      }break;
-    case 27:
-      if ((!(this instanceof RealFlightModel)) || (!((RealFlightModel)this).isRealMode())) {
-        this.bombsOut = true;
-        this.CT.dropFuelTanks();
-      }
-      if ((this.target == null) || (!Actor.isValid(this.target.actor)) || (this.target.isTakenMortalDamage()) || (this.target.actor.getArmy() == this.actor.getArmy()) || (!hasCourseWeaponBullets()))
-      {
-        this.target = null;
-        clear_stack();
-        set_maneuver(0);
-      }
-      else if ((this.target.getSpeedKMH() < 45.0F) && (this.target.Loc.z - Engine.land().HQ_Air(this.target.Loc.x, this.target.Loc.y) < 50.0D) && (this.target.actor.getArmy() != this.actor.getArmy()))
-      {
-        this.target_ground = this.target.actor;
-        set_task(7);
-        clear_stack();
-        set_maneuver(43);
-      }
-      else {
-        if ((this.first) && 
-          ((this.actor instanceof TypeAcePlane))) {
-          if ((this.target != null) && (this.target.actor != null) && (this.target.actor.getArmy() != this.actor.getArmy()))
-          {
-            this.target.Skill = 0;
-          }
-          if ((this.danger != null) && (this.danger.actor != null) && (this.danger.actor.getArmy() != this.actor.getArmy()))
-          {
-            this.danger.Skill = 0;
-          }
-
-        }
-
-        if (this.target.actor.getArmy() != this.actor.getArmy()) ((Maneuver)this.target).danger = this;
-
-        if (isTick(64, 0))
-        {
-          f4 = (this.target.Energy - this.Energy) * 0.1019F;
-          Ve.sub(this.target.Loc, this.Loc);
-          this.Or.transformInv(Ve);
-          Ve.normalize();
-          f5 = 470.0F + (float)Ve.x * 120.0F - f4;
-          if (f5 < 0.0F) {
             clear_stack();
-            set_maneuver(62);
-          }
+            set_maneuver(j);
         }
+    }
 
-        fighterVsFighter(paramFloat);
-        setSpeedMode(9);
+    public void accurate_set_FOLLOW()
+    {
+        if(maneuver == 44 || maneuver == 26 || maneuver == 69 || maneuver == 64)
+            return;
+        set_task(2);
+        if(maneuver != 24 && maneuver != 53)
+        {
+            clear_stack();
+            set_maneuver(24);
+        }
+    }
 
-        if ((this.AOA > this.AOA_Crit - 1.0F) && (this.Alt > 15.0F)) this.Or.increment(0.0F, 0.01F * (this.AOA_Crit - 1.0F - this.AOA), 0.0F);
-        if (this.mn_time > 100.0F) {
-          this.target = null;
-          pop(); } 
-      }break;
-    case 62:
-      if ((this.target == null) || (!Actor.isValid(this.target.actor)) || (this.target.isTakenMortalDamage()) || (this.target.actor.getArmy() == this.actor.getArmy()) || (!hasCourseWeaponBullets()))
-      {
-        this.target = null;
-        clear_stack();
-        set_maneuver(0);
-      }
-      else if ((this.target.getSpeedKMH() < 45.0F) && (this.target.Loc.z - Engine.land().HQ_Air(this.target.Loc.x, this.target.Loc.y) < 50.0D) && (this.target.actor.getArmy() != this.actor.getArmy()))
-      {
-        this.target_ground = this.target.actor;
-        set_task(7);
-        clear_stack();
-        set_maneuver(43);
-      }
-      else {
-        if ((this.first) && 
-          ((this.actor instanceof TypeAcePlane))) {
-          if ((this.target != null) && (this.target.actor != null) && (this.target.actor.getArmy() != this.actor.getArmy()))
-          {
-            this.target.Skill = 0;
-          }
-          if ((this.danger != null) && (this.danger.actor != null) && (this.danger.actor.getArmy() != this.actor.getArmy()))
-          {
-            this.danger.Skill = 0;
-          }
+    public void setBusy(boolean flag)
+    {
+        bBusy = flag;
+    }
+
+    public boolean isBusy()
+    {
+        return bBusy;
+    }
+
+    public void setSpeedMode(int i)
+    {
+        speedMode = i;
+    }
+
+    private boolean isStallable()
+    {
+        if(actor instanceof com.maddox.il2.objects.air.TypeStormovik)
+            return false;
+        return !(actor instanceof com.maddox.il2.objects.air.TypeTransport);
+    }
+
+    private void resetControls()
+    {
+        CT.AileronControl = CT.BrakeControl = CT.ElevatorControl = CT.FlapsControl = CT.RudderControl = 0.0F;
+        CT.AirBrakeControl = 0.0F;
+    }
+
+    private void set_flags()
+    {
+        if(com.maddox.il2.ai.World.cur().isDebugFM())
+            printDebugFM();
+        AP.setStabAll(false);
+        mn_time = 0.0F;
+        minElevCoeff = 4F;
+        if(!dont_change_subm)
+        {
+            setSpeedMode(3);
+            first = true;
+            submaneuver = 0;
+            sub_Man_Count = 0;
+        }
+        dont_change_subm = false;
+        if(maneuver != 48 && maneuver != 0 && maneuver != 26 && maneuver != 64 && maneuver != 44)
+            resetControls();
+        if(maneuver == 20 || maneuver == 25 || maneuver == 66 || maneuver == 1 || maneuver == 26 || maneuver == 69 || maneuver == 44 || maneuver == 49 || maneuver == 43 || maneuver == 50 || maneuver == 51 || maneuver == 81 || maneuver == 46 || maneuver == 2 || maneuver == 10 || maneuver == 57 || maneuver == 64)
+            setCheckGround(false);
+        else
+            setCheckGround(true);
+        if(maneuver == 24 || maneuver == 53 || maneuver == 68 || maneuver == 59 || maneuver == 8 || maneuver == 55 || maneuver == 27 || maneuver == 62 || maneuver == 63 || maneuver == 25 || maneuver == 66 || maneuver == 43 || maneuver == 50 || maneuver == 65 || maneuver == 44 || maneuver == 21 || maneuver == 64 || maneuver == 69)
+            frequentControl = true;
+        else
+            frequentControl = false;
+        if(maneuver == 25 || maneuver == 26 || maneuver == 69 || maneuver == 70)
+            turnOnChristmasTree(true);
+        else
+            turnOnChristmasTree(false);
+        if(maneuver == 25)
+            turnOnCloudShine(true);
+        else
+            turnOnCloudShine(false);
+        if(maneuver == 60 || maneuver == 61 || maneuver == 66 || maneuver == 1 || maneuver == 24 || maneuver == 26 || maneuver == 69 || maneuver == 64 || maneuver == 44)
+            checkStrike = false;
+        else
+            checkStrike = true;
+        if(maneuver == 44 || maneuver == 1 || maneuver == 48 || maneuver == 0 || maneuver == 26 || maneuver == 69 || maneuver == 64 || maneuver == 43 || maneuver == 50 || maneuver == 51 || maneuver == 52 || maneuver == 47 || maneuver == 79 || maneuver == 80)
+            stallable = false;
+        else
+            stallable = true;
+        if(maneuver == 44 || maneuver == 1 || maneuver == 26 || maneuver == 69 || maneuver == 64 || maneuver == 2 || maneuver == 57 || maneuver == 60 || maneuver == 61 || maneuver == 43 || maneuver == 50 || maneuver == 51 || maneuver == 52 || maneuver == 47 || maneuver == 29 || maneuver == 79 || maneuver == 80)
+            setBusy(true);
+    }
+
+    public void setCheckStrike(boolean flag)
+    {
+        checkStrike = flag;
+    }
+
+    private void setCheckGround(boolean flag)
+    {
+        checkGround = flag;
+    }
+
+    public Maneuver(java.lang.String s)
+    {
+        super(s);
+        maneuver = 26;
+        program = new int[8];
+        bBusy = true;
+        wasBusy = true;
+        dontSwitch = false;
+        aggressiveWingman = false;
+        kamikaze = false;
+        silence = true;
+        bombsOutCounter = 0;
+        first = true;
+        rocketsDelay = 0;
+        bulletDelay = 0;
+        submanDelay = 0;
+        Alt = 0.0F;
+        corrCoeff = 0.0F;
+        corrElev = 0.0F;
+        corrAile = 0.0F;
+        checkGround = false;
+        checkStrike = false;
+        frequentControl = false;
+        stallable = false;
+        airClient = null;
+        target = null;
+        danger = null;
+        dangerAggressiveness = 0.0F;
+        oldDanCoeff = 0.0F;
+        shotAtFriend = 0;
+        distToFriend = 0.0F;
+        target_ground = null;
+        TaxiMode = false;
+        finished = false;
+        canTakeoff = false;
+        curAirdromePoi = 0;
+        actionTimerStart = 0L;
+        actionTimerStop = 0L;
+        gattackCounter = 0;
+        beNearOffsPhase = 0;
+        submaneuver = 0;
+        dont_change_subm = false;
+        tmpi = 0;
+        sub_Man_Count = 0;
+        dist = 0.0F;
+        man1Dist = 50F;
+        bullTime = 0.0015F;
+        speedMode = 3;
+        smConstSpeed = 90F;
+        smConstPower = 0.7F;
+        tailForStaying = null;
+        tailOffset = new Vector3d();
+        WeWereInGAttack = false;
+        WeWereInAttack = false;
+        SpeakMissionAccomplished = false;
+        takeIntoAccount = new float[8];
+        AccountCoeff = new float[8];
+        ApproachV = new Vector3d();
+        TargV = new Vector3d();
+        TargDevV = new Vector3d(0.0D, 0.0D, 0.0D);
+        TargDevVnew = new Vector3d(0.0D, 0.0D, 0.0D);
+        scaledApproachV = new Vector3d();
+        followOffset = new Vector3d();
+        followTargShift = new Vector3d(0.0D, 0.0D, 0.0D);
+        followCurShift = new Vector3d(0.0D, 0.0D, 0.0D);
+        raAilShift = 0.0F;
+        raElevShift = 0.0F;
+        raRudShift = 0.0F;
+        sinKren = 0.0F;
+        strikeEmer = false;
+        strikeTarg = null;
+        strikeV = new Vector3d();
+        direc = false;
+        Kmax = 10F;
+        phase = 0.0D;
+        radius = 50D;
+        pointQuality = -1;
+        curPointQuality = 50;
+        saveOr = new Orient();
+        oldVe = new Vector3d();
+        Vtarg = new Vector3d();
+        constVtarg = new Vector3d();
+        constVtarg1 = new Vector3d();
+        Vxy = new Vector3d();
+        AFo = new AnglesFork();
+        headPos = new float[3];
+        headOr = new float[3];
+        pilotHeadT = 0.0F;
+        pilotHeadY = 0.0F;
+        windV = new Vector3d();
+        AP = new AutopilotAI(this);
+    }
+
+    public void decDangerAggressiveness()
+    {
+        dangerAggressiveness -= 0.01F;
+        if(dangerAggressiveness < 0.0F)
+            dangerAggressiveness = 0.0F;
+        oldDanCoeff -= 0.005F;
+        if(oldDanCoeff < 0.0F)
+            oldDanCoeff = 0.0F;
+    }
+
+    public void incDangerAggressiveness(int i, float f, float f1, com.maddox.il2.fm.FlightModel flightmodel)
+    {
+        f -= 0.7F;
+        if(f < 0.0F)
+            f = 0.0F;
+        f1 = 1000F - f1;
+        if(f1 < 0.0F)
+            f1 = 0.0F;
+        double d = (double)(flightmodel.Energy - Energy) * 0.1019D;
+        double d1 = 1.0D + d * 0.00125D;
+        if(d1 > 1.2D)
+            d1 = 1.2D;
+        if(d1 < 0.80000000000000004D)
+            d1 = 0.80000000000000004D;
+        float f2 = (float)d1 * (7E-005F * f * f1);
+        if(danger == null || f2 > oldDanCoeff)
+            danger = flightmodel;
+        oldDanCoeff = f2;
+        dangerAggressiveness += f2 * (float)i;
+        if(dangerAggressiveness > 1.0F)
+            dangerAggressiveness = 1.0F;
+    }
+
+    public float getDangerAggressiveness()
+    {
+        return dangerAggressiveness;
+    }
+
+    public float getMaxHeightSpeed(float f)
+    {
+        if(f < HofVmax)
+            return Vmax + (VmaxH - Vmax) * (f / HofVmax);
+        float f1 = (f - HofVmax) / HofVmax;
+        f1 = 1.0F - 1.5F * f1;
+        if(f1 < 0.0F)
+            f1 = 0.0F;
+        return VmaxH * f1;
+    }
+
+    public float getMinHeightTurn(float f)
+    {
+        return Wing.T_turn;
+    }
+
+    public void setShotAtFriend(float f)
+    {
+        distToFriend = f;
+        shotAtFriend = 30;
+    }
+
+    public boolean hasCourseWeaponBullets()
+    {
+        if(actor instanceof com.maddox.il2.objects.air.KI_46_OTSUHEI)
+            return CT.Weapons[1] != null && CT.Weapons[1][0] != null && CT.Weapons[1][0].countBullets() != 0;
+        if(actor instanceof com.maddox.il2.objects.air.AR_234)
+            return false;
+        else
+            return CT.Weapons[0] != null && CT.Weapons[0][0] != null && CT.Weapons[0][0].countBullets() != 0 || CT.Weapons[1] != null && CT.Weapons[1][0] != null && CT.Weapons[1][0].countBullets() != 0;
+    }
+
+    public boolean hasBombs()
+    {
+        if(CT.Weapons[3] != null)
+        {
+            for(int i = 0; i < CT.Weapons[3].length; i++)
+                if(CT.Weapons[3][i] != null && CT.Weapons[3][i].countBullets() != 0)
+                    return true;
 
         }
+        return false;
+    }
 
-        if (this.target.actor.getArmy() != this.actor.getArmy()) ((Maneuver)this.target).danger = this;
-        goodFighterVsFighter(paramFloat);
-      }break;
-    case 70:
-      this.checkGround = false;
-      this.checkStrike = false;
-      this.frequentControl = true;
-      this.stallable = false;
-      if ((this.actor instanceof HE_LERCHE3))
-        switch (this.submaneuver) {
-        case 0:
-          this.AP.setStabAll(false);
-          this.submaneuver += 1;
-          this.sub_Man_Count = 0;
-        case 1:
-          if (this.sub_Man_Count == 0) {
-            this.CT.AileronControl = World.cur().rnd.nextFloat(-0.15F, 0.15F);
-          }
-          this.CT.AirBrakeControl = 1.0F;
-          this.CT.setPowerControl(1.0F);
-          this.CT.ElevatorControl = Aircraft.cvt(this.Or.getTangage(), 0.0F, 60.0F, 1.0F, 0.0F);
-          if (this.Or.getTangage() > 30.0F) {
-            this.submaneuver += 1;
-            this.sub_Man_Count = 0;
-          }
-          this.sub_Man_Count += 1;
-          break;
-        case 2:
-          this.CT.AileronControl = 0.0F;
-          this.CT.ElevatorControl = 0.0F;
-          this.CT.setPowerControl(0.1F);
-          this.Or.increment(0.0F, (float)(paramFloat * 0.1D * this.sub_Man_Count * (90.0D - this.Or.getTangage())), 0.0F);
-          if (this.Or.getTangage() > 89.0F) {
-            this.saveOr.set(this.Or);
-            this.submaneuver += 1;
-          }
-          this.sub_Man_Count += 1;
-          break;
-        case 3:
-          this.CT.ElevatorControl = 0.0F;
-          if (this.Alt > 10.0F)
-            this.CT.setPowerControl(0.33F);
-          else {
-            this.CT.setPowerControl(0.0F);
-          }
-          if (this.Alt < 20.0F) {
-            if (this.Vwld.z < -4.0D) this.Vwld.z *= 0.95D;
-            if (this.Vwld.lengthSquared() < 1.0D) {
-              this.EI.setEngineStops();
+    public boolean hasRockets()
+    {
+        if(CT.Weapons[2] != null)
+        {
+            for(int i = 0; i < CT.Weapons[2].length; i++)
+                if(CT.Weapons[2][i] != null && CT.Weapons[2][i].countBullets() != 0)
+                    return true;
+
+        }
+        return false;
+    }
+
+    public boolean canAttack()
+    {
+        return (!Group.isWingman(Group.numInGroup((com.maddox.il2.objects.air.Aircraft)actor)) || aggressiveWingman) && isOk() && hasCourseWeaponBullets();
+    }
+
+    public void update(float f)
+    {
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+            headTurn(f);
+        if(showFM)
+            OutCT(20);
+        super.update(f);
+        callSuperUpdate = true;
+        decDangerAggressiveness();
+        if(Loc.z < -20D)
+            ((com.maddox.il2.objects.air.Aircraft)actor).postEndAction(0.0D, actor, 4, null);
+        LandHQ = (float)com.maddox.il2.engine.Engine.land().HQ_Air(Loc.x, Loc.y);
+        Po.set(Vwld);
+        Po.scale(3D);
+        Po.add(Loc);
+        LandHQ = (float)java.lang.Math.max(LandHQ, com.maddox.il2.engine.Engine.land().HQ_Air(Po.x, Po.y));
+        Alt = (float)Loc.z - LandHQ;
+        indSpeed = getSpeed() * (float)java.lang.Math.sqrt(Density / 1.225F);
+        if(!Gears.onGround() && isOk() && Alt > 8F)
+        {
+            if(AOA > AOA_Crit - 2.0F)
+                Or.increment(0.0F, 0.05F * (AOA_Crit - 2.0F - AOA), 0.0F);
+            if(AOA < -5F)
+                Or.increment(0.0F, 0.05F * (-5F - AOA), 0.0F);
+        }
+        if(!frequentControl && (com.maddox.rts.Time.tickCounter() + actor.hashCode()) % 4 != 0)
+            return;
+        turnOffTheWeapon();
+        maxG = 3.5F + (float)Skill * 0.5F;
+        Or.wrap();
+        if(mn_time > 10F && AOA > AOA_Crit + 5F && isStallable() && stallable)
+            safe_set_maneuver(20);
+        switch(maneuver)
+        {
+        case 58: // ':'
+        case 71: // 'G'
+        case 72: // 'H'
+        case 73: // 'I'
+        case 74: // 'J'
+        case 75: // 'K'
+        case 76: // 'L'
+        case 77: // 'M'
+        case 78: // 'N'
+        default:
+            break;
+
+        case 0: // '\0'
+            target_ground = null;
+            break;
+
+        case 1: // '\001'
+            dryFriction = 8F;
+            CT.FlapsControl = 0.0F;
+            CT.BrakeControl = 1.0F;
+            break;
+
+        case 48: // '0'
+            if(mn_time >= 1.0F)
+                pop();
+            break;
+
+        case 44: // ','
+            if(Gears.onGround() && Vwld.length() < 0.30000001192092896D && com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 4)
+            {
+                if(Group != null)
+                    Group.delAircraft((com.maddox.il2.objects.air.Aircraft)actor);
+                if((actor instanceof com.maddox.il2.objects.air.TypeGlider) || (actor instanceof com.maddox.il2.objects.air.TypeSailPlane))
+                    break;
+                com.maddox.il2.ai.World.cur();
+                if(actor != com.maddox.il2.ai.World.getPlayerAircraft())
+                    if(com.maddox.il2.ai.Airport.distToNearestAirport(Loc) > 900D)
+                        ((com.maddox.il2.objects.air.Aircraft)actor).postEndAction(60D, actor, 3, null);
+                    else
+                        com.maddox.rts.MsgDestroy.Post(com.maddox.rts.Time.current() + 30000L, actor);
             }
-          }
-          this.Or.set(this.saveOr);
-          if (this.mn_time <= 100.0F) break;
-          this.Vwld.set(0.0D, 0.0D, 0.0D);
-          MsgDestroy.Post(Time.current() + 12000L, this.actor);
-        }
-      break;
-    case 25:
-      wingman(false);
-      if (this.AP.way.isLanding()) {
-        if (this.AP.way.isLandingOnShip()) {
-          this.AP.way.landingAirport.rebuildLandWay(this);
-          if ((this.CT.GearControl == 1.0F) && (this.CT.arrestorControl < 1.0F) && (!this.Gears.onGround())) this.AS.setArrestor(this.actor, 1);
-        }
-        if (this.first) {
-          this.AP.setWayPoint(true);
-          doDumpBombsPassively();
-          this.submaneuver = 0;
-        }
-        if (((this.actor instanceof HE_LERCHE3)) && 
-          (this.Alt < 50.0F)) {
-          this.maneuver = 70;
-        }
+            if(first)
+            {
+                AP.setStabAll(false);
+                CT.ElevatorControl = com.maddox.il2.ai.World.Rnd().nextFloat(-0.07F, 0.4F);
+                CT.AileronControl = com.maddox.il2.ai.World.Rnd().nextFloat(-0.15F, 0.15F);
+            }
+            break;
 
-        this.AP.way.curr().getP(Po);
+        case 7: // '\007'
+            wingman(false);
+            setSpeedMode(9);
+            if(getW().x <= 0.0D)
+            {
+                CT.AileronControl = -1F;
+                CT.RudderControl = 1.0F;
+            } else
+            {
+                CT.AileronControl = 1.0F;
+                CT.RudderControl = -1F;
+            }
+            float f1 = Or.getKren();
+            if(f1 > -90F && f1 < 90F)
+            {
+                float f4 = 0.01111F * (90F - java.lang.Math.abs(f1));
+                CT.ElevatorControl = -0.08F * f4 * (Or.getTangage() - 3F);
+            } else
+            {
+                float f5 = 0.01111F * (java.lang.Math.abs(f1) - 90F);
+                CT.ElevatorControl = 0.08F * f5 * (Or.getTangage() - 3F);
+            }
+            if(getSpeed() < 1.7F * Vmin)
+                pop();
+            if(mn_time > 2.2F)
+                pop();
+            if(danger != null && (danger instanceof com.maddox.il2.ai.air.Pilot) && ((com.maddox.il2.ai.air.Maneuver)danger).target == this && Loc.distance(danger.Loc) > 400D)
+                pop();
+            break;
 
-        int k = this.AP.way.Cur();
-        float f8 = (float)this.Loc.z - this.AP.way.last().z();
-        this.AP.way.setCur(k);
-        this.Alt = Math.min(this.Alt, f8);
+        case 8: // '\b'
+            if(first && !isCapableOfACM())
+            {
+                if(Skill > 0)
+                    pop();
+                if(Skill > 1)
+                    setReadyToReturn(true);
+            }
+            setSpeedMode(6);
+            tmpOr.setYPR(Or.getYaw(), 0.0F, 0.0F);
+            if(Or.getKren() > 0.0F)
+                Ve.set(100D, -6D, 10D);
+            else
+                Ve.set(100D, 6D, 10D);
+            tmpOr.transform(Ve);
+            Or.transformInv(Ve);
+            Ve.normalize();
+            farTurnToDirection();
+            if(Alt > 250F && mn_time > 8F || mn_time > 120F)
+                pop();
+            break;
 
-        Po.add(0.0D, 0.0D, -3.0D);
-        Ve.sub(Po, this.Loc);
-        f10 = (float)Ve.length();
-        int i1 = (this.Alt > 4.5F + this.Gears.H) && (this.AP.way.Cur() < 8) ? 1 : 0;
-        if (this.AP.way.isLandingOnShip()) i1 = (this.Alt > 4.5F + this.Gears.H) && (this.AP.way.Cur() < 8) ? 1 : 0;
-        if (i1 != 0) {
-          this.AP.way.prev();
-          this.AP.way.curr().getP(Pc);
-          this.AP.way.next();
-          tmpV3f.sub(Po, Pc);
-          tmpV3f.normalize();
+        case 55: // '7'
+            if(first && !isCapableOfACM())
+            {
+                if(Skill > 0)
+                    pop();
+                if(Skill > 1)
+                    setReadyToReturn(true);
+            }
+            setSpeedMode(6);
+            tmpOr.setYPR(Or.getYaw(), 0.0F, 0.0F);
+            if(Leader != null && com.maddox.il2.engine.Actor.isAlive(Leader.actor) && mn_time < 2.5F)
+            {
+                if(Leader.Or.getKren() > 0.0F)
+                    Ve.set(100D, -6D, 10D);
+                else
+                    Ve.set(100D, 6D, 10D);
+            } else
+            if(Or.getKren() > 0.0F)
+                Ve.set(100D, -6D, 10D);
+            else
+                Ve.set(100D, 6D, 10D);
+            tmpOr.transform(Ve);
+            Or.transformInv(Ve);
+            Ve.normalize();
+            farTurnToDirection();
+            if(Alt > 250F && mn_time > 8F || mn_time > 120F)
+                pop();
+            break;
 
-          if ((tmpV3f.dot(Ve) < 0.0D) && (f10 > 1000.0F) && (!this.TaxiMode)) {
-            this.AP.way.first();
+        case 45: // '-'
+            setSpeedMode(7);
+            smConstPower = 0.8F;
+            dA = Or.getKren();
+            if(dA > 0.0F)
+                dA -= 25F;
+            else
+                dA -= 335F;
+            if(dA < -180F)
+                dA += 360F;
+            dA = -0.01F * dA;
+            CT.AileronControl = dA;
+            CT.ElevatorControl = -0.04F * (Or.getTangage() - 1.0F) + 0.002F * ((AP.way.curr().z() - (float)Loc.z) + 250F);
+            if(mn_time > 60F)
+            {
+                mn_time = 0.0F;
+                pop();
+            }
+            break;
+
+        case 54: // '6'
+            if(Vwld.length() > (double)(VminFLAPS * 2.0F))
+                Vwld.scale(0.99500000476837158D);
+            // fall through
+
+        case 9: // '\t'
+            if(first && !isCapableOfACM())
+            {
+                if(Skill > 0)
+                    pop();
+                if(Skill > 1)
+                    setReadyToReturn(true);
+            }
+            setSpeedMode(4);
+            smConstSpeed = 100F;
+            dA = Or.getKren();
+            if(dA > 0.0F)
+                dA -= 50F;
+            else
+                dA -= 310F;
+            if(dA < -180F)
+                dA += 360F;
+            dA = -0.01F * dA;
+            CT.AileronControl = dA;
+            dA = (-10F - Or.getTangage()) * 0.05F;
+            CT.ElevatorControl = dA;
+            if((double)getOverload() < 1.0D / java.lang.Math.abs(java.lang.Math.cos(dA)))
+                CT.ElevatorControl += 1.0F * f;
+            else
+                CT.ElevatorControl -= 1.0F * f;
+            if(Alt < 100F)
+            {
+                push(3);
+                pop();
+            }
+            if(mn_time > 5F)
+                pop();
+            break;
+
+        case 14: // '\016'
+            setSpeedMode(6);
+            if(first)
+                AP.setStabAltitude(true);
+            dA = Or.getKren();
+            if((double)getOverload() < 1.0D / java.lang.Math.abs(java.lang.Math.cos(dA)))
+                CT.ElevatorControl += 1.0F * f;
+            else
+                CT.ElevatorControl -= 1.0F * f;
+            if(dA > 0.0F)
+                dA -= 50F;
+            else
+                dA -= 310F;
+            if(dA < -180F)
+                dA += 360F;
+            dA = -0.01F * dA;
+            CT.AileronControl = dA;
+            if(mn_time > 5F)
+                pop();
+            break;
+
+        case 4: // '\004'
+            CT.AileronControl = getW().x > 0.0D ? 1.0F : -1F;
+            CT.ElevatorControl = 0.1F * (float)java.lang.Math.cos(com.maddox.il2.ai.air.Maneuver.DEG2RAD(Or.getKren()));
+            CT.RudderControl = 0.0F;
+            if(getSpeedKMH() < 220F)
+            {
+                push(3);
+                pop();
+            }
+            if(mn_time > 7F)
+                pop();
+            break;
+
+        case 2: // '\002'
+            minElevCoeff = 20F;
+            if(first)
+            {
+                wingman(false);
+                AP.setStabAll(false);
+                CT.RudderControl = 0.0F;
+                if(com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 10 && Alt < 80F)
+                    com.maddox.il2.objects.sounds.Voice.speakPullUp((com.maddox.il2.objects.air.Aircraft)actor);
+            }
+            setSpeedMode(9);
+            CT.BayDoorControl = 0.0F;
+            CT.AirBrakeControl = 0.0F;
+            CT.AileronControl = -0.04F * (dA = Or.getKren());
+            CT.ElevatorControl = 1.0F + 0.3F * (float)getW().y;
+            if(CT.ElevatorControl < 0.0F)
+                CT.ElevatorControl = 0.0F;
+            if(AOA > 15F)
+                Or.increment(0.0F, (15F - AOA) * 0.5F * f, 0.0F);
+            if(Alt < 10F && Vwld.z < 0.0D)
+                Vwld.z *= 0.89999997615814209D;
+            if(Vwld.z > 1.0D)
+            {
+                if(actor instanceof com.maddox.il2.objects.air.TypeGlider)
+                    push(49);
+                else
+                    push(57);
+                pop();
+            }
+            if(mn_time > 25F)
+            {
+                push(49);
+                pop();
+            }
+            break;
+
+        case 60: // '<'
+            setSpeedMode(9);
+            CT.RudderControl = 0.0F;
+            CT.ElevatorControl = 1.0F;
+            if(mn_time > 0.15F)
+                pop();
+            break;
+
+        case 61: // '='
+            CT.RudderControl = 0.0F;
+            CT.ElevatorControl = -0.4F;
+            if(mn_time > 0.2F)
+                pop();
+            break;
+
+        case 3: // '\003'
+            if(first && program[0] == 49)
+                pop();
+            setSpeedMode(6);
+            CT.AileronControl = -0.04F * Or.getKren();
+            dA = (getSpeedKMH() - 180F - Or.getTangage() * 10F - getVertSpeed() * 5F) * 0.004F;
+            CT.ElevatorControl = dA;
+            if(getSpeed() > Vmin * 1.2F && getVertSpeed() > 0.0F)
+            {
+                setSpeedMode(7);
+                smConstPower = 0.7F;
+                pop();
+            }
+            break;
+
+        case 10: // '\n'
+            AP.setStabAll(false);
+            setSpeedMode(6);
+            CT.AileronControl = -0.04F * Or.getKren();
+            dA = CT.ElevatorControl;
+            if(Or.getTangage() > 15F)
+                dA -= (Or.getTangage() - 15F) * 0.1F * f;
+            else
+                dA = (((float)Vwld.length() / VminFLAPS) * 140F - 50F - Or.getTangage() * 20F) * 0.004F;
+            dA += 0.5D * getW().y;
+            CT.ElevatorControl = dA;
+            if(Alt > 250F && mn_time > 6F || mn_time > 20F)
+                pop();
+            break;
+
+        case 57: // '9'
+            AP.setStabAll(false);
+            setSpeedMode(9);
+            CT.AileronControl = -0.04F * Or.getKren();
+            dA = CT.ElevatorControl;
+            if(Or.getTangage() > 25F)
+                dA -= (Or.getTangage() - 25F) * 0.1F * f;
+            else
+                dA = (((float)Vwld.length() / VminFLAPS) * 140F - 50F - Or.getTangage() * 20F) * 0.004F;
+            dA += 0.5D * getW().y;
+            CT.ElevatorControl = dA;
+            if(Alt > 150F || Alt > 100F && mn_time > 2.0F || mn_time > 3F)
+                pop();
+            break;
+
+        case 11: // '\013'
+            setSpeedMode(8);
+            if(java.lang.Math.abs(Or.getKren()) < 90F)
+            {
+                CT.AileronControl = -0.04F * Or.getKren();
+                if(Vwld.z > 0.0D || getSpeedKMH() < 270F)
+                    dA = -0.04F;
+                else
+                    dA = 0.04F;
+                CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F;
+            } else
+            {
+                CT.AileronControl = 0.04F * (180F - java.lang.Math.abs(Or.getKren()));
+                if(Or.getTangage() > -25F)
+                    dA = 0.33F;
+                else
+                if(Vwld.z > 0.0D || getSpeedKMH() < 270F)
+                    dA = 0.04F;
+                else
+                    dA = -0.04F;
+                CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F;
+            }
+            if(Alt < 120F || mn_time > 4F)
+                pop();
+            break;
+
+        case 12: // '\f'
+            setSpeedMode(4);
+            smConstSpeed = 80F;
+            CT.AileronControl = -0.04F * Or.getKren();
+            if(Vwld.length() > (double)(VminFLAPS * 2.0F))
+                Vwld.scale(0.99500000476837158D);
+            dA = -((float)Vwld.z / (java.lang.Math.abs(getSpeed()) + 1.0F) + 0.5F);
+            if(dA < -0.1F)
+                dA = -0.1F;
+            CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F + 0.3F * (float)getW().y;
+            if(mn_time > 5F || Alt < 200F)
+                pop();
+            break;
+
+        case 13: // '\r'
+            if(first)
+            {
+                AP.setStabAll(false);
+                submaneuver = (actor instanceof com.maddox.il2.objects.air.TypeFighter) ? 0 : 2;
+            }
+            switch(submaneuver)
+            {
+            case 0: // '\0'
+                dA = Or.getKren() - 180F;
+                if(dA < -180F)
+                    dA += 360F;
+                dA = -0.04F * dA;
+                CT.AileronControl = dA;
+                if(mn_time > 3F || java.lang.Math.abs(Or.getKren()) > 175F - 5F * (float)Skill)
+                    submaneuver++;
+                break;
+
+            case 1: // '\001'
+                dA = Or.getKren() - 180F;
+                if(dA < -180F)
+                    dA += 360F;
+                dA = -0.04F * dA;
+                CT.AileronControl = dA;
+                CT.RudderControl = -0.1F * getAOS();
+                setSpeedMode(8);
+                if(Or.getTangage() > -45F && getOverload() < maxG)
+                    CT.ElevatorControl += 1.5F * f;
+                else
+                    CT.ElevatorControl -= 0.5F * f;
+                if(Or.getTangage() < -44F)
+                    submaneuver++;
+                if((double)Alt < -5D * Vwld.z || mn_time > 5F)
+                    pop();
+                break;
+
+            case 2: // '\002'
+                setSpeedMode(8);
+                CT.AileronControl = -0.04F * Or.getKren();
+                dA = -((float)Vwld.z / (java.lang.Math.abs(getSpeed()) + 1.0F) + 0.707F);
+                if(dA < -0.75F)
+                    dA = -0.75F;
+                CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F + 0.5F * (float)getW().y;
+                if((double)Alt < -5D * Vwld.z || mn_time > 5F)
+                    pop();
+                break;
+            }
+            if(Alt < 200F)
+                pop();
+            break;
+
+        case 5: // '\005'
+            dA = Or.getKren();
+            if(dA < 0.0F)
+                dA -= 270F;
+            else
+                dA -= 90F;
+            if(dA < -180F)
+                dA += 360F;
+            dA = -0.02F * dA;
+            CT.AileronControl = dA;
+            if(mn_time > 5F || java.lang.Math.abs(java.lang.Math.abs(Or.getKren()) - 90F) < 1.0F)
+                pop();
+            break;
+
+        case 6: // '\006'
+            dA = Or.getKren() - 180F;
+            if(dA < -180F)
+                dA += 360F;
+            CT.AileronControl = (float)((double)(-0.04F * dA) - 0.5D * getW().x);
+            if(mn_time > 4F || java.lang.Math.abs(Or.getKren()) > 178F)
+            {
+                W.x = 0.0D;
+                pop();
+            }
+            break;
+
+        case 35: // '#'
+            if(first)
+            {
+                AP.setStabAll(false);
+                direction = Or.getKren();
+                submaneuver = Or.getKren() <= 0.0F ? -1 : 1;
+                tmpi = 0;
+                setSpeedMode(9);
+            }
+            CT.AileronControl = 1.0F * (float)submaneuver;
+            CT.RudderControl = 0.0F * (float)submaneuver;
+            float f2 = Or.getKren();
+            if(f2 > -90F && f2 < 90F)
+            {
+                float f6 = 0.01111F * (90F - java.lang.Math.abs(f2));
+                CT.ElevatorControl = -0.08F * f6 * (Or.getTangage() - 3F);
+            } else
+            {
+                float f7 = 0.01111F * (90F - java.lang.Math.abs(f2));
+                CT.ElevatorControl = 0.08F * f7 * (Or.getTangage() - 3F);
+            }
+            if(Or.getKren() * direction < 0.0F)
+                tmpi = 1;
+            if(tmpi == 1 && (submaneuver <= 0 ? Or.getKren() < direction : Or.getKren() > direction) || mn_time > 17.5F)
+                pop();
+            break;
+
+        case 22: // '\026'
+            setSpeedMode(9);
+            CT.AileronControl = -0.04F * Or.getKren();
+            CT.ElevatorControl = -0.04F * (Or.getTangage() + 5F);
+            CT.RudderControl = 0.0F;
+            if(getSpeed() > Vmax || mn_time > 30F)
+                pop();
+            break;
+
+        case 67: // 'C'
+            minElevCoeff = 18F;
+            if(first)
+            {
+                sub_Man_Count = 0;
+                setSpeedMode(9);
+                CT.setPowerControl(1.1F);
+            }
+            if(danger != null)
+            {
+                float f8 = 700F - (float)danger.Loc.distance(Loc);
+                if(f8 < 0.0F)
+                    f8 = 0.0F;
+                f8 *= 0.00143F;
+                float f3 = Or.getKren();
+                if(sub_Man_Count == 0 || first)
+                {
+                    if(raAilShift < 0.0F)
+                        raAilShift = f8 * com.maddox.il2.ai.World.Rnd().nextFloat(0.6F, 1.0F);
+                    else
+                        raAilShift = f8 * com.maddox.il2.ai.World.Rnd().nextFloat(-1F, -0.6F);
+                    raRudShift = f8 * com.maddox.il2.ai.World.Rnd().nextFloat(-0.5F, 0.5F);
+                    raElevShift = f8 * com.maddox.il2.ai.World.Rnd().nextFloat(-0.8F, 0.8F);
+                }
+                CT.AileronControl = 0.9F * CT.AileronControl + 0.1F * raAilShift;
+                CT.RudderControl = 0.95F * CT.RudderControl + 0.05F * raRudShift;
+                if(f3 > -90F && f3 < 90F)
+                    CT.ElevatorControl = -0.04F * (Or.getTangage() + 5F);
+                else
+                    CT.ElevatorControl = 0.05F * (Or.getTangage() + 5F);
+                CT.ElevatorControl += 0.1F * raElevShift;
+                sub_Man_Count++;
+                if((float)sub_Man_Count >= 80F * (1.5F - f8) && f3 > -70F && f3 < 70F)
+                    sub_Man_Count = 0;
+                if(mn_time > 30F)
+                    pop();
+            } else
+            {
+                pop();
+            }
+            break;
+
+        case 16: // '\020'
+            if(first)
+            {
+                if(!isCapableOfACM())
+                    pop();
+                AP.setStabAll(false);
+                setSpeedMode(6);
+                if(getSpeed() < 0.75F * Vmax)
+                {
+                    push();
+                    push(22);
+                    pop();
+                    break;
+                }
+                submaneuver = 0;
+            }
+            maxAOA = Vwld.z <= 0.0D ? 12F : 7F;
+            switch(submaneuver)
+            {
+            case 0: // '\0'
+                CT.ElevatorControl = 0.05F;
+                CT.AileronControl = -0.04F * Or.getKren();
+                CT.RudderControl = -0.1F * getAOS();
+                if(java.lang.Math.abs(Or.getKren()) < 2.0F)
+                    submaneuver++;
+                break;
+
+            case 1: // '\001'
+                CT.AileronControl = -0.04F * Or.getKren();
+                CT.RudderControl = -0.1F * getAOS();
+                dA = 0.5F;
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.4F * f;
+                else
+                    CT.ElevatorControl += 0.4F * f;
+                if(Or.getTangage() > 80F)
+                    submaneuver++;
+                if(getSpeed() < Vmin * 1.5F)
+                    pop();
+                break;
+
+            case 2: // '\002'
+                CT.RudderControl = -0.1F * getAOS() * (getSpeed() <= 300F ? 0.0F : 1.0F);
+                dA = 1.0F;
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.4F * f;
+                else
+                    CT.ElevatorControl += 0.4F * f;
+                if(Or.getTangage() < 0.0F)
+                    submaneuver++;
+                break;
+
+            case 3: // '\003'
+                CT.RudderControl = -0.1F * getAOS() * (getSpeed() <= 300F ? 0.0F : 1.0F);
+                dA = 1.0F;
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.2F * f;
+                else
+                    CT.ElevatorControl += 0.2F * f;
+                if(Or.getTangage() < -60F)
+                    submaneuver++;
+                break;
+
+            case 4: // '\004'
+                if(Or.getTangage() > -45F)
+                {
+                    CT.AileronControl = -0.04F * Or.getKren();
+                    maxAOA = 3.5F;
+                }
+                CT.RudderControl = -0.1F * getAOS();
+                dA = 0.5F;
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 1.0F * f;
+                else
+                    CT.ElevatorControl += 0.4F * f;
+                if(Or.getTangage() > 3F || Vwld.z > 0.0D)
+                    pop();
+                break;
+            }
+            break;
+
+        case 17: // '\021'
+            if(first)
+            {
+                if(Alt < 1000F)
+                    pop();
+                else
+                if(getSpeed() < Vmin * 1.2F)
+                {
+                    push();
+                    push(22);
+                    pop();
+                } else
+                {
+                    push(18);
+                    push(19);
+                    pop();
+                }
+            } else
+            {
+                pop();
+            }
+            break;
+
+        case 19: // '\023'
+            if(first)
+            {
+                if(Alt < 1000F)
+                {
+                    pop();
+                    break;
+                }
+                AP.setStabAll(false);
+                submaneuver = 0;
+            }
+            maxAOA = Vwld.z <= 0.0D ? 12F : 7F;
+            switch(submaneuver)
+            {
+            case 0: // '\0'
+                CT.ElevatorControl = 0.05F;
+                CT.AileronControl = 0.04F * (Or.getKren() <= 0.0F ? -180F + Or.getKren() : 180F - Or.getKren());
+                CT.RudderControl = -0.1F * getAOS();
+                if(java.lang.Math.abs(Or.getKren()) > 178F)
+                    submaneuver++;
+                break;
+
+            case 1: // '\001'
+                setSpeedMode(7);
+                smConstPower = 0.5F;
+                CT.AileronControl = 0.0F;
+                CT.RudderControl = -0.1F * getAOS();
+                dA = 1.0F;
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.2F * f;
+                else
+                    CT.ElevatorControl += 1.2F * f;
+                if(Or.getTangage() < -60F)
+                    submaneuver++;
+                break;
+
+            case 2: // '\002'
+                if(Or.getTangage() > -45F)
+                {
+                    CT.AileronControl = -0.04F * Or.getKren();
+                    setSpeedMode(9);
+                    maxAOA = 7F;
+                }
+                CT.RudderControl = -0.1F * getAOS();
+                dA = 0.5F;
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.8F * f;
+                else
+                    CT.ElevatorControl += 0.4F * f;
+                if(Or.getTangage() > AOA - 1.0F || Vwld.z > 0.0D)
+                    pop();
+                break;
+            }
+            break;
+
+        case 18: // '\022'
+            if(first)
+            {
+                if(!isCapableOfACM())
+                    pop();
+                if(getSpeed() < Vmax * 0.75F)
+                {
+                    push();
+                    push(22);
+                    pop();
+                    break;
+                }
+                AP.setStabAll(false);
+                submaneuver = 0;
+                setSpeedMode(6);
+            }
+            maxAOA = Vwld.z <= 0.0D ? 12F : 7F;
+            switch(submaneuver)
+            {
+            case 0: // '\0'
+                CT.AileronControl = -0.04F * Or.getKren();
+                CT.RudderControl = -0.1F * getAOS();
+                if(java.lang.Math.abs(Or.getKren()) < 2.0F)
+                    submaneuver++;
+                break;
+
+            case 1: // '\001'
+                CT.AileronControl = -0.04F * Or.getKren();
+                CT.RudderControl = -0.1F * getAOS();
+                dA = 1.0F;
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.4F * f;
+                else
+                    CT.ElevatorControl += 0.8F * f;
+                if(Or.getTangage() > 80F)
+                    submaneuver++;
+                if(getSpeed() < Vmin * 1.5F)
+                    pop();
+                break;
+
+            case 2: // '\002'
+                CT.RudderControl = -0.1F * getAOS() * (getSpeed() <= 300F ? 0.0F : 1.0F);
+                dA = 1.0F;
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.4F * f;
+                else
+                    CT.ElevatorControl += 0.4F * f;
+                if(Or.getTangage() < 12F)
+                    submaneuver++;
+                break;
+
+            case 3: // '\003'
+                if(java.lang.Math.abs(Or.getKren()) < 60F)
+                    CT.ElevatorControl = 0.05F;
+                CT.AileronControl = -0.04F * Or.getKren();
+                CT.RudderControl = -0.1F * getAOS();
+                if(java.lang.Math.abs(Or.getKren()) < 30F)
+                    submaneuver++;
+                break;
+
+            case 4: // '\004'
+                pop();
+                break;
+            }
+            break;
+
+        case 15: // '\017'
+            if(first && getSpeed() < 0.35F * (Vmin + Vmax))
+            {
+                pop();
+            } else
+            {
+                push(8);
+                pop();
+                CT.RudderControl = -0.1F * getAOS();
+                if(Or.getKren() < 0.0F)
+                    CT.AileronControl = -0.04F * (Or.getKren() + 30F);
+                else
+                    CT.AileronControl = -0.04F * (Or.getKren() - 30F);
+                if(mn_time > 7.5F)
+                    pop();
+            }
+            break;
+
+        case 20: // '\024'
+            if(first)
+            {
+                wingman(false);
+                setSpeedMode(6);
+            }
+            if(!isCapableOfBMP())
+            {
+                setReadyToDie(true);
+                pop();
+            }
+            if(getW().z > 0.0D)
+                CT.RudderControl = 1.0F;
+            else
+                CT.RudderControl = -1F;
+            if(AOA > AOA_Crit - 4F)
+                Or.increment(0.0F, 0.01F * (AOA_Crit - 4F - AOA), 0.0F);
+            if(AOA < -5F)
+                Or.increment(0.0F, 0.01F * (-5F - AOA), 0.0F);
+            if(AOA < AOA_Crit - 1.0F)
+                pop();
+            if(mn_time > 14F - (float)Skill * 4F || Alt < 50F)
+                pop();
+            break;
+
+        case 21: // '\025'
+            AP.setWayPoint(true);
+            if(mn_time > 300F)
+                pop();
+            if(isTick(256, 0) && !actor.isTaskComplete() && (AP.way.isLast() && AP.getWayPointDistance() < 1500F || AP.way.isLanding()))
+                com.maddox.il2.ai.World.onTaskComplete(actor);
+            if(((com.maddox.il2.objects.air.Aircraft)actor).aircIndex() == 0 && !isReadyToReturn())
+            {
+                com.maddox.il2.ai.World.cur();
+                if(com.maddox.il2.ai.World.getPlayerAircraft() != null)
+                {
+                    com.maddox.il2.ai.World.cur();
+                    if(((com.maddox.il2.objects.air.Aircraft)actor).getRegiment() == com.maddox.il2.ai.World.getPlayerAircraft().getRegiment())
+                    {
+                        float f9 = 1E+012F;
+                        if(AP.way.curr().Action == 3)
+                        {
+                            f9 = AP.getWayPointDistance();
+                        } else
+                        {
+                            int i = AP.way.Cur();
+                            AP.way.next();
+                            if(AP.way.curr().Action == 3)
+                                f9 = AP.getWayPointDistance();
+                            AP.way.setCur(i);
+                        }
+                        if(Speak5minutes == 0 && 22000F < f9 && f9 < 30000F)
+                        {
+                            com.maddox.il2.objects.sounds.Voice.speak5minutes((com.maddox.il2.objects.air.Aircraft)actor);
+                            Speak5minutes = 1;
+                        }
+                        if(Speak1minute == 0 && f9 < 10000F)
+                        {
+                            com.maddox.il2.objects.sounds.Voice.speak1minute((com.maddox.il2.objects.air.Aircraft)actor);
+                            Speak1minute = 1;
+                            Speak5minutes = 1;
+                        }
+                        if((WeWereInGAttack || WeWereInAttack) && mn_time > 5F)
+                        {
+                            if(!SpeakMissionAccomplished)
+                            {
+                                boolean flag = false;
+                                int j = AP.way.Cur();
+                                if(AP.way.curr().Action == 3 || AP.way.curr().getTarget() != null)
+                                    break;
+                                do
+                                {
+                                    if(AP.way.Cur() >= AP.way.size() - 1)
+                                        break;
+                                    AP.way.next();
+                                    if(AP.way.curr().Action == 3 || AP.way.curr().getTarget() != null)
+                                        flag = true;
+                                } while(true);
+                                AP.way.setCur(j);
+                                if(!flag)
+                                {
+                                    com.maddox.il2.objects.sounds.Voice.speakMissionAccomplished((com.maddox.il2.objects.air.Aircraft)actor);
+                                    SpeakMissionAccomplished = true;
+                                }
+                            }
+                            if(!SpeakMissionAccomplished)
+                            {
+                                Speak5minutes = 0;
+                                Speak1minute = 0;
+                                SpeakBeginGattack = 0;
+                            }
+                            WeWereInGAttack = false;
+                            WeWereInAttack = false;
+                        }
+                    }
+                }
+            }
+            if(((actor instanceof com.maddox.il2.objects.air.TypeBomber) || (actor instanceof com.maddox.il2.objects.air.TypeTransport)) && AP.way.curr() != null && AP.way.curr().Action == 3 && (AP.way.curr().getTarget() == null || (actor instanceof com.maddox.il2.objects.air.Scheme4)))
+            {
+                double d = Loc.z - com.maddox.il2.ai.World.land().HQ(Loc.x, Loc.y);
+                if(d < 0.0D)
+                    d = 0.0D;
+                if((double)AP.getWayPointDistance() < (double)getSpeed() * java.lang.Math.sqrt(d * 0.20386999845504761D) && !bombsOut)
+                {
+                    if(CT.Weapons[3] != null && CT.Weapons[3][0] != null && CT.Weapons[3][0].countBullets() != 0 && !(CT.Weapons[3][0] instanceof com.maddox.il2.objects.weapons.BombGunPara))
+                        com.maddox.il2.objects.sounds.Voice.airSpeaks((com.maddox.il2.objects.air.Aircraft)actor, 85, 1);
+                    bombsOut = true;
+                    AP.way.curr().Action = 0;
+                    if(Group != null)
+                        Group.dropBombs();
+                }
+            }
+            setSpeedMode(3);
+            if(AP.way.isLandingOnShip() && AP.way.isLanding())
+            {
+                AP.way.landingAirport.rebuildLandWay(this);
+                if(CT.bHasCockpitDoorControl)
+                    AS.setCockpitDoor(actor, 1);
+            }
+            break;
+
+        case 23: // '\027'
+            if(first)
+            {
+                wingman(false);
+                if(getSpeedKMH() < Vmin * 1.25F)
+                {
+                    push();
+                    push(22);
+                    pop();
+                    break;
+                }
+            }
+            setSpeedMode(6);
+            CT.AileronControl = -0.04F * Or.getKren();
+            CT.RudderControl = -0.1F * getAOS();
+            if(Or.getTangage() < 70F && getOverload() < maxG && AOA < 14F)
+                CT.ElevatorControl += 0.5F * f;
+            else
+                CT.ElevatorControl -= 0.5F * f;
+            if(Vwld.z < 1.0D)
+                pop();
+            break;
+
+        case 24: // '\030'
+            if(Leader == null || !com.maddox.il2.engine.Actor.isAlive(Leader.actor) || !((com.maddox.il2.ai.air.Maneuver)Leader).isOk() || ((com.maddox.il2.ai.air.Maneuver)Leader).isBusy() && (!(Leader instanceof com.maddox.il2.fm.RealFlightModel) || !((com.maddox.il2.fm.RealFlightModel)Leader).isRealMode()))
+            {
+                set_maneuver(0);
+                break;
+            }
+            if(actor instanceof com.maddox.il2.objects.air.TypeGlider)
+            {
+                if(Leader.AP.way.curr().Action != 0 && Leader.AP.way.curr().Action != 1)
+                    set_maneuver(49);
+            } else
+            if(Leader.getSpeed() < 30F || Leader.Loc.z - com.maddox.il2.engine.Engine.land().HQ_Air(Leader.Loc.x, Leader.Loc.y) < 50D)
+            {
+                airClient = Leader;
+                push();
+                push(59);
+                pop();
+                break;
+            }
+            if(!Leader.AP.way.isLanding())
+            {
+                AP.way.setCur(Leader.AP.way.Cur());
+                if(Leader.Wingman != this)
+                {
+                    if(!bombsOut && ((com.maddox.il2.ai.air.Maneuver)Leader).bombsOut)
+                    {
+                        bombsOut = true;
+                        for(com.maddox.il2.ai.air.Maneuver maneuver1 = this; maneuver1.Wingman != null;)
+                        {
+                            maneuver1 = (com.maddox.il2.ai.air.Maneuver)maneuver1.Wingman;
+                            maneuver1.bombsOut = true;
+                        }
+
+                    }
+                    if(CT.BayDoorControl != Leader.CT.BayDoorControl)
+                    {
+                        CT.BayDoorControl = Leader.CT.BayDoorControl;
+                        for(com.maddox.il2.ai.air.Pilot pilot = (com.maddox.il2.ai.air.Pilot)this; pilot.Wingman != null;)
+                        {
+                            pilot = (com.maddox.il2.ai.air.Pilot)pilot.Wingman;
+                            pilot.CT.BayDoorControl = CT.BayDoorControl;
+                        }
+
+                    }
+                }
+            } else
+            {
+                if(Leader.Wingman != this)
+                {
+                    push(8);
+                    push(8);
+                    push(com.maddox.il2.ai.World.Rnd().nextBoolean() ? 8 : 48);
+                    push(com.maddox.il2.ai.World.Rnd().nextBoolean() ? 8 : 48);
+                    pop();
+                }
+                Leader = null;
+                pop();
+                break;
+            }
+            airClient = Leader;
+            tmpOr.setAT0(airClient.Vwld);
+            tmpOr.increment(0.0F, airClient.getAOA(), 0.0F);
+            Ve.set(followOffset);
+            Ve.x -= 300D;
+            tmpV3f.sub(followTargShift, followCurShift);
+            if(tmpV3f.lengthSquared() < 0.5D)
+                followTargShift.set(com.maddox.il2.ai.World.cur().rnd.nextFloat(-0F, 10F), com.maddox.il2.ai.World.cur().rnd.nextFloat(-5F, 5F), com.maddox.il2.ai.World.cur().rnd.nextFloat(-3.5F, 3.5F));
+            tmpV3f.normalize();
+            tmpV3f.scale(2.0F * f);
+            followCurShift.add(tmpV3f);
+            Ve.add(followCurShift);
+            tmpOr.transform(Ve, Po);
+            Po.scale(-1D);
+            Po.add(airClient.Loc);
+            Ve.sub(Po, Loc);
+            Or.transformInv(Ve);
+            dist = (float)Ve.length();
+            if(followOffset.x > 600D)
+            {
+                Ve.set(followOffset);
+                Ve.x -= 0.5D * followOffset.x;
+                tmpOr.transform(Ve, Po);
+                Po.scale(-1D);
+                Po.add(airClient.Loc);
+                Ve.sub(Po, Loc);
+                Or.transformInv(Ve);
+            }
+            Ve.normalize();
+            if((double)dist > 600D + Ve.x * 400D)
+            {
+                push();
+                push(53);
+                pop();
+            } else
+            {
+                if((actor instanceof com.maddox.il2.objects.air.TypeTransport) && (double)Vmax < 70D)
+                    farTurnToDirection(6.2F);
+                else
+                    attackTurnToDirection(dist, f, 10F);
+                setSpeedMode(10);
+                tailForStaying = Leader;
+                tailOffset.set(followOffset);
+                tailOffset.scale(-1D);
+            }
+            break;
+
+        case 65: // 'A'
+            if(!(this instanceof com.maddox.il2.fm.RealFlightModel) || !((com.maddox.il2.fm.RealFlightModel)this).isRealMode())
+            {
+                bombsOut = true;
+                CT.dropFuelTanks();
+            }
+            if(airClient == null || !com.maddox.il2.engine.Actor.isAlive(airClient.actor) || !isOk())
+            {
+                set_maneuver(0);
+            } else
+            {
+                com.maddox.il2.ai.air.Maneuver maneuver2 = (com.maddox.il2.ai.air.Maneuver)airClient;
+                com.maddox.il2.ai.air.Maneuver maneuver4 = (com.maddox.il2.ai.air.Maneuver)((com.maddox.il2.ai.air.Maneuver)airClient).danger;
+                if(maneuver2.getDangerAggressiveness() >= 1.0F - (float)Skill * 0.2F && maneuver4 != null && hasCourseWeaponBullets())
+                {
+                    com.maddox.il2.objects.sounds.Voice.speakCheckYour6((com.maddox.il2.objects.air.Aircraft)maneuver2.actor, (com.maddox.il2.objects.air.Aircraft)maneuver4.actor);
+                    com.maddox.il2.objects.sounds.Voice.speakHelpFromAir((com.maddox.il2.objects.air.Aircraft)actor, 1);
+                    set_task(6);
+                    target = maneuver4;
+                    set_maneuver(27);
+                }
+                Ve.sub(airClient.Loc, Loc);
+                Or.transformInv(Ve);
+                dist = (float)Ve.length();
+                Ve.normalize();
+                attackTurnToDirection(dist, f, 10F + (float)Skill * 8F);
+                if(Alt > 50F)
+                    setSpeedMode(1);
+                else
+                    setSpeedMode(6);
+                tailForStaying = airClient;
+                tailOffset.set(followOffset);
+                tailOffset.scale(-1D);
+                if((double)dist > 600D + Ve.x * 400D && get_maneuver() != 27)
+                {
+                    push();
+                    push(53);
+                    pop();
+                }
+            }
+            break;
+
+        case 53: // '5'
+            if(airClient == null || !com.maddox.il2.engine.Actor.isAlive(airClient.actor) || !isOk())
+            {
+                airClient = null;
+                set_maneuver(0);
+            } else
+            {
+                maxAOA = 5F;
+                Ve.set(followOffset);
+                Ve.x -= 300D;
+                tmpOr.setAT0(airClient.Vwld);
+                tmpOr.increment(0.0F, 4F, 0.0F);
+                tmpOr.transform(Ve, Po);
+                Po.scale(-1D);
+                Po.add(airClient.Loc);
+                Ve.sub(Po, Loc);
+                Or.transformInv(Ve);
+                dist = (float)Ve.length();
+                Ve.normalize();
+                if(Vmax < 83F)
+                    farTurnToDirection(8.5F);
+                else
+                    farTurnToDirection(7F);
+                float f10 = (Energy - airClient.Energy) * 0.1019F;
+                if((double)f10 < -50D + followOffset.z)
+                    setSpeedMode(9);
+                else
+                    setSpeedMode(10);
+                tailForStaying = airClient;
+                tailOffset.set(followOffset);
+                tailOffset.scale(-1D);
+                if((double)dist < 500D + Ve.x * 200D)
+                {
+                    pop();
+                } else
+                {
+                    if(AOA > 12F && Alt > 15F)
+                        Or.increment(0.0F, 12F - AOA, 0.0F);
+                    if(mn_time > 30F && (Ve.x < 0.0D || dist > 10000F))
+                        pop();
+                }
+            }
+            break;
+
+        case 68: // 'D'
+            if(airClient == null || !com.maddox.il2.engine.Actor.isAlive(airClient.actor) || !isOk())
+            {
+                set_maneuver(0);
+            } else
+            {
+                com.maddox.il2.ai.air.Maneuver maneuver3 = (com.maddox.il2.ai.air.Maneuver)airClient;
+                com.maddox.il2.ai.air.Maneuver maneuver5 = (com.maddox.il2.ai.air.Maneuver)((com.maddox.il2.ai.air.Maneuver)airClient).danger;
+                if(maneuver3.getDangerAggressiveness() >= 1.0F - (float)Skill * 0.3F && maneuver5 != null && hasCourseWeaponBullets())
+                {
+                    tmpV3d.sub(maneuver3.Vwld, maneuver5.Vwld);
+                    if(tmpV3d.length() < 170D)
+                    {
+                        set_task(6);
+                        target = maneuver5;
+                        set_maneuver(27);
+                    }
+                }
+                maxAOA = 5F;
+                Ve.set(followOffset);
+                Ve.x -= 300D;
+                tmpOr.setAT0(airClient.Vwld);
+                tmpOr.increment(0.0F, 4F, 0.0F);
+                tmpOr.transform(Ve, Po);
+                Po.scale(-1D);
+                Po.add(airClient.Loc);
+                Ve.sub(Po, Loc);
+                Or.transformInv(Ve);
+                dist = (float)Ve.length();
+                Ve.normalize();
+                if(Vmax < 83F)
+                    farTurnToDirection(8.5F);
+                else
+                    farTurnToDirection(7F);
+                setSpeedMode(10);
+                tailForStaying = airClient;
+                tailOffset.set(followOffset);
+                tailOffset.scale(-1D);
+                if((double)dist < 500D + Ve.x * 200D)
+                {
+                    pop();
+                } else
+                {
+                    if(AOA > 12F && Alt > 15F)
+                        Or.increment(0.0F, 12F - AOA, 0.0F);
+                    if(mn_time > 30F && (Ve.x < 0.0D || dist > 10000F))
+                        pop();
+                }
+            }
+            break;
+
+        case 59: // ';'
+            if(airClient == null || !com.maddox.il2.engine.Actor.isValid(airClient.actor) || !isOk())
+            {
+                airClient = null;
+                set_maneuver(0);
+            } else
+            {
+                maxAOA = 5F;
+                if(first)
+                    followOffset.set(1000F * (float)java.lang.Math.sin((float)beNearOffsPhase * 0.7854F), 1000F * (float)java.lang.Math.cos((float)beNearOffsPhase * 0.7854F), -400D);
+                Ve.set(followOffset);
+                Ve.x -= 300D;
+                tmpOr.setAT0(airClient.Vwld);
+                tmpOr.increment(0.0F, 4F, 0.0F);
+                tmpOr.transform(Ve, Po);
+                Po.scale(-1D);
+                Po.add(airClient.Loc);
+                Ve.sub(Po, Loc);
+                Or.transformInv(Ve);
+                dist = (float)Ve.length();
+                Ve.normalize();
+                farTurnToDirection();
+                setSpeedMode(2);
+                tailForStaying = airClient;
+                tailOffset.set(followOffset);
+                tailOffset.scale(-1D);
+                if(dist < 300F)
+                {
+                    beNearOffsPhase++;
+                    if(beNearOffsPhase > 3)
+                        beNearOffsPhase = 0;
+                    float f12 = (float)java.lang.Math.sqrt(followOffset.x * followOffset.x + followOffset.y * followOffset.y);
+                    followOffset.set(f12 * (float)java.lang.Math.sin((float)beNearOffsPhase * 1.5708F), f12 * (float)java.lang.Math.cos((float)beNearOffsPhase * 1.5708F), followOffset.z);
+                }
+                if(AOA > 12F && Alt > 15F)
+                    Or.increment(0.0F, 12F - AOA, 0.0F);
+                if(mn_time > 15F && (Ve.x < 0.0D || dist > 3000F))
+                    pop();
+                if(mn_time > 30F)
+                    pop();
+            }
+            break;
+
+        case 63: // '?'
+            if(!(this instanceof com.maddox.il2.fm.RealFlightModel) || !((com.maddox.il2.fm.RealFlightModel)this).isRealMode())
+            {
+                bombsOut = true;
+                CT.dropFuelTanks();
+            }
+            if(target == null || !com.maddox.il2.engine.Actor.isValid(target.actor) || target.isTakenMortalDamage() || !hasCourseWeaponBullets())
+            {
+                target = null;
+                clear_stack();
+                set_maneuver(3);
+            } else
+            if(target.getSpeedKMH() < 45F && target.Loc.z - com.maddox.il2.engine.Engine.land().HQ_Air(target.Loc.x, target.Loc.y) < 50D && target.actor.getArmy() != actor.getArmy())
+            {
+                target_ground = target.actor;
+                set_task(7);
+                clear_stack();
+                set_maneuver(43);
+            } else
+            {
+                if((actor instanceof com.maddox.il2.objects.air.HE_LERCHE3) && ((com.maddox.il2.objects.air.HE_LERCHE3)actor).bToFire)
+                {
+                    CT.WeaponControl[2] = true;
+                    ((com.maddox.il2.objects.air.HE_LERCHE3)actor).bToFire = false;
+                }
+                if((actor instanceof com.maddox.il2.objects.air.TA_183) && ((com.maddox.il2.objects.air.TA_183)actor).bToFire)
+                {
+                    CT.WeaponControl[2] = true;
+                    ((com.maddox.il2.objects.air.TA_183)actor).bToFire = false;
+                }
+                if((actor instanceof com.maddox.il2.objects.air.TA_152C) && ((com.maddox.il2.objects.air.TA_152C)actor).bToFire)
+                {
+                    CT.WeaponControl[2] = true;
+                    ((com.maddox.il2.objects.air.TA_152C)actor).bToFire = false;
+                }
+                if(TargV.z == -400D)
+                    fighterUnderBomber(f);
+                else
+                    fighterVsBomber(f);
+                if(AOA > AOA_Crit - 2.0F && Alt > 15F)
+                    Or.increment(0.0F, 0.01F * (AOA_Crit - 2.0F - AOA), 0.0F);
+            }
+            break;
+
+        case 27: // '\033'
+            if(!(this instanceof com.maddox.il2.fm.RealFlightModel) || !((com.maddox.il2.fm.RealFlightModel)this).isRealMode())
+            {
+                bombsOut = true;
+                CT.dropFuelTanks();
+            }
+            if(target == null || !com.maddox.il2.engine.Actor.isValid(target.actor) || target.isTakenMortalDamage() || target.actor.getArmy() == actor.getArmy() || !hasCourseWeaponBullets())
+            {
+                target = null;
+                clear_stack();
+                set_maneuver(0);
+            } else
+            if(target.getSpeedKMH() < 45F && target.Loc.z - com.maddox.il2.engine.Engine.land().HQ_Air(target.Loc.x, target.Loc.y) < 50D && target.actor.getArmy() != actor.getArmy())
+            {
+                target_ground = target.actor;
+                set_task(7);
+                clear_stack();
+                set_maneuver(43);
+            } else
+            {
+                if(first && (actor instanceof com.maddox.il2.objects.air.TypeAcePlane))
+                {
+                    if(target != null && target.actor != null && target.actor.getArmy() != actor.getArmy())
+                        target.Skill = 0;
+                    if(danger != null && danger.actor != null && danger.actor.getArmy() != actor.getArmy())
+                        danger.Skill = 0;
+                }
+                if(target.actor.getArmy() != actor.getArmy())
+                    ((com.maddox.il2.ai.air.Maneuver)target).danger = this;
+                if(isTick(64, 0))
+                {
+                    float f11 = (target.Energy - Energy) * 0.1019F;
+                    Ve.sub(target.Loc, Loc);
+                    Or.transformInv(Ve);
+                    Ve.normalize();
+                    float f13 = (470F + (float)Ve.x * 120F) - f11;
+                    if(f13 < 0.0F)
+                    {
+                        clear_stack();
+                        set_maneuver(62);
+                    }
+                }
+                fighterVsFighter(f);
+                setSpeedMode(9);
+                if(AOA > AOA_Crit - 1.0F && Alt > 15F)
+                    Or.increment(0.0F, 0.01F * (AOA_Crit - 1.0F - AOA), 0.0F);
+                if(mn_time > 100F)
+                {
+                    target = null;
+                    pop();
+                }
+            }
+            break;
+
+        case 62: // '>'
+            if(target == null || !com.maddox.il2.engine.Actor.isValid(target.actor) || target.isTakenMortalDamage() || target.actor.getArmy() == actor.getArmy() || !hasCourseWeaponBullets())
+            {
+                target = null;
+                clear_stack();
+                set_maneuver(0);
+            } else
+            if(target.getSpeedKMH() < 45F && target.Loc.z - com.maddox.il2.engine.Engine.land().HQ_Air(target.Loc.x, target.Loc.y) < 50D && target.actor.getArmy() != actor.getArmy())
+            {
+                target_ground = target.actor;
+                set_task(7);
+                clear_stack();
+                set_maneuver(43);
+            } else
+            {
+                if(first && (actor instanceof com.maddox.il2.objects.air.TypeAcePlane))
+                {
+                    if(target != null && target.actor != null && target.actor.getArmy() != actor.getArmy())
+                        target.Skill = 0;
+                    if(danger != null && danger.actor != null && danger.actor.getArmy() != actor.getArmy())
+                        danger.Skill = 0;
+                }
+                if(target.actor.getArmy() != actor.getArmy())
+                    ((com.maddox.il2.ai.air.Maneuver)target).danger = this;
+                goodFighterVsFighter(f);
+            }
+            break;
+
+        case 70: // 'F'
+            checkGround = false;
+            checkStrike = false;
+            frequentControl = true;
+            stallable = false;
+            if(actor instanceof com.maddox.il2.objects.air.HE_LERCHE3)
+                switch(submaneuver)
+                {
+                case 0: // '\0'
+                    AP.setStabAll(false);
+                    submaneuver++;
+                    sub_Man_Count = 0;
+                    // fall through
+
+                case 1: // '\001'
+                    if(sub_Man_Count == 0)
+                        CT.AileronControl = com.maddox.il2.ai.World.cur().rnd.nextFloat(-0.15F, 0.15F);
+                    CT.AirBrakeControl = 1.0F;
+                    CT.setPowerControl(1.0F);
+                    CT.ElevatorControl = com.maddox.il2.objects.air.Aircraft.cvt(Or.getTangage(), 0.0F, 60F, 1.0F, 0.0F);
+                    if(Or.getTangage() > 30F)
+                    {
+                        submaneuver++;
+                        sub_Man_Count = 0;
+                    }
+                    sub_Man_Count++;
+                    break;
+
+                case 2: // '\002'
+                    CT.AileronControl = 0.0F;
+                    CT.ElevatorControl = 0.0F;
+                    CT.setPowerControl(0.1F);
+                    Or.increment(0.0F, (float)((double)f * 0.10000000000000001D * (double)sub_Man_Count * (90D - (double)Or.getTangage())), 0.0F);
+                    if(Or.getTangage() > 89F)
+                    {
+                        saveOr.set(Or);
+                        submaneuver++;
+                    }
+                    sub_Man_Count++;
+                    break;
+
+                case 3: // '\003'
+                    CT.ElevatorControl = 0.0F;
+                    if(Alt > 10F)
+                        CT.setPowerControl(0.33F);
+                    else
+                        CT.setPowerControl(0.0F);
+                    if(Alt < 20F)
+                    {
+                        if(Vwld.z < -4D)
+                            Vwld.z *= 0.94999999999999996D;
+                        if(Vwld.lengthSquared() < 1.0D)
+                            EI.setEngineStops();
+                    }
+                    Or.set(saveOr);
+                    if(mn_time > 100F)
+                    {
+                        Vwld.set(0.0D, 0.0D, 0.0D);
+                        com.maddox.rts.MsgDestroy.Post(com.maddox.rts.Time.current() + 12000L, actor);
+                    }
+                    break;
+                }
+            break;
+
+        case 25: // '\031'
+            wingman(false);
+            if(AP.way.isLanding())
+            {
+                if(AP.way.isLandingOnShip())
+                {
+                    AP.way.landingAirport.rebuildLandWay(this);
+                    if(CT.GearControl == 1.0F && CT.arrestorControl < 1.0F && !Gears.onGround())
+                        AS.setArrestor(actor, 1);
+                }
+                if(first)
+                {
+                    AP.setWayPoint(true);
+                    doDumpBombsPassively();
+                    submaneuver = 0;
+                }
+                if((actor instanceof com.maddox.il2.objects.air.HE_LERCHE3) && Alt < 50F)
+                    maneuver = 70;
+                AP.way.curr().getP(Po);
+                int k = AP.way.Cur();
+                float f17 = (float)Loc.z - AP.way.last().z();
+                AP.way.setCur(k);
+                Alt = java.lang.Math.min(Alt, f17);
+                Po.add(0.0D, 0.0D, -3D);
+                Ve.sub(Po, Loc);
+                float f20 = (float)Ve.length();
+                boolean flag3 = Alt > 4.5F + Gears.H && AP.way.Cur() < 8;
+                if(AP.way.isLandingOnShip())
+                    flag3 = Alt > 4.5F + Gears.H && AP.way.Cur() < 8;
+                if(flag3)
+                {
+                    AP.way.prev();
+                    AP.way.curr().getP(Pc);
+                    AP.way.next();
+                    tmpV3f.sub(Po, Pc);
+                    tmpV3f.normalize();
+                    if(tmpV3f.dot(Ve) < 0.0D && f20 > 1000F && !TaxiMode)
+                    {
+                        AP.way.first();
+                        push(10);
+                        pop();
+                        CT.GearControl = 0.0F;
+                    }
+                    float f25 = (float)tmpV3f.dot(Ve);
+                    tmpV3f.scale(-f25);
+                    tmpV3f.add(Po, tmpV3f);
+                    tmpV3f.sub(Loc);
+                    float f29 = 0.0005F * (3000F - f20);
+                    if(f29 > 1.0F)
+                        f29 = 1.0F;
+                    if(f29 < 0.1F)
+                        f29 = 0.1F;
+                    float f31 = (float)tmpV3f.length();
+                    if(f31 > 40F * f29)
+                    {
+                        f31 = 40F * f29;
+                        tmpV3f.normalize();
+                        tmpV3f.scale(f31);
+                    }
+                    float f33 = VminFLAPS;
+                    if(AP.way.Cur() >= 6)
+                    {
+                        if(AP.way.isLandingOnShip())
+                        {
+                            if(com.maddox.il2.engine.Actor.isAlive(AP.way.landingAirport) && (AP.way.landingAirport instanceof com.maddox.il2.ai.AirportCarrier))
+                            {
+                                float f34 = (float)((com.maddox.il2.ai.AirportCarrier)AP.way.landingAirport).speedLen();
+                                if(VminFLAPS < f34 + 10F)
+                                    f33 = f34 + 10F;
+                            }
+                        } else
+                        {
+                            f33 = VminFLAPS * 1.2F;
+                        }
+                        if(f33 < 14F)
+                            f33 = 14F;
+                    } else
+                    {
+                        f33 = VminFLAPS * 2.0F;
+                    }
+                    double d4 = Vwld.length();
+                    double d6 = (double)f33 - d4;
+                    float f35 = 2.0F * f;
+                    if(d6 > (double)f35)
+                        d6 = f35;
+                    if(d6 < (double)(-f35))
+                        d6 = -f35;
+                    Ve.normalize();
+                    Ve.scale(d4);
+                    Ve.add(tmpV3f);
+                    Ve.sub(Vwld);
+                    float f36 = (50F * f29 - f31) * f;
+                    if(Ve.length() > (double)f36)
+                    {
+                        Ve.normalize();
+                        Ve.scale(f36);
+                    }
+                    Vwld.add(Ve);
+                    Vwld.normalize();
+                    Vwld.scale(d4 + d6);
+                    Loc.x += Vwld.x * (double)f;
+                    Loc.y += Vwld.y * (double)f;
+                    Loc.z += Vwld.z * (double)f;
+                    Or.transformInv(tmpV3f);
+                    tmpOr.setAT0(Vwld);
+                    float f37 = 0.0F;
+                    if(AP.way.isLandingOnShip())
+                        f37 = 0.9F * (45F - Alt);
+                    else
+                        f37 = 0.7F * (20F - Alt);
+                    if(f37 < 0.0F)
+                        f37 = 0.0F;
+                    tmpOr.increment(0.0F, 4F + f37, (float)(tmpV3f.y * 0.5D));
+                    Or.interpolate(tmpOr, 0.5F * f);
+                    callSuperUpdate = false;
+                    W.set(0.0D, 0.0D, 0.0D);
+                    CT.ElevatorControl = 0.05F + 0.3F * f37;
+                    CT.RudderControl = (float)(-tmpV3f.y * 0.02D);
+                    direction = Or.getAzimut();
+                } else
+                {
+                    AP.setStabDirection(true);
+                }
+            } else
+            {
+                AP.setStabDirection(true);
+            }
+            dA = CT.ElevatorControl;
+            AP.update(f);
+            setSpeedControl(f);
+            CT.ElevatorControl = dA;
+            if(maneuver != 25)
+                return;
+            if(Alt > 60F)
+            {
+                if(Alt < 160F)
+                    CT.FlapsControl = 0.32F;
+                else
+                    CT.FlapsControl = 0.0F;
+                setSpeedMode(7);
+                smConstPower = 0.2F;
+                dA = java.lang.Math.min(130F + Alt, 270F);
+                if(Vwld.z > 0.0D || getSpeedKMH() < dA)
+                    dA = -1.2F * f;
+                else
+                    dA = 1.2F * f;
+                CT.ElevatorControl = CT.ElevatorControl * 0.9F + dA * 0.1F;
+            } else
+            {
+                minElevCoeff = 15F;
+                if(AP.way.Cur() >= 6 || AP.way.Cur() == 0)
+                {
+                    if(Or.getTangage() < -5F)
+                        Or.increment(0.0F, -Or.getTangage() - 5F, 0.0F);
+                    if(Or.getTangage() > Gears.Pitch + 10F)
+                        Or.increment(0.0F, -(Or.getTangage() - (Gears.Pitch + 10F)), 0.0F);
+                }
+                CT.FlapsControl = 1.0F;
+                if(Vrel.length() < 1.0D)
+                {
+                    CT.FlapsControl = CT.BrakeControl = 0.0F;
+                    if(!TaxiMode)
+                    {
+                        setSpeedMode(8);
+                        if(AP.way.isLandingOnShip())
+                        {
+                            if(CT.getFlap() < 0.001F)
+                                AS.setWingFold(actor, 1);
+                            CT.BrakeControl = 1.0F;
+                            if(CT.arrestorControl == 1.0F && Gears.onGround())
+                                AS.setArrestor(actor, 0);
+                            com.maddox.rts.MsgDestroy.Post(com.maddox.rts.Time.current() + 25000L, actor);
+                        } else
+                        {
+                            EI.setEngineStops();
+                            if(EI.engines[0].getPropw() < 1.0F)
+                            {
+                                com.maddox.il2.ai.World.cur();
+                                if(actor != com.maddox.il2.ai.World.getPlayerAircraft())
+                                    com.maddox.rts.MsgDestroy.Post(com.maddox.rts.Time.current() + 12000L, actor);
+                            }
+                        }
+                    }
+                }
+                if(getSpeed() < VmaxFLAPS * 0.21F)
+                    CT.FlapsControl = 0.0F;
+                if(Vrel.length() < (double)(VmaxFLAPS * 0.25F) && wayCurPos == null && !AP.way.isLandingOnShip())
+                {
+                    TaxiMode = true;
+                    AP.way.setCur(0);
+                    return;
+                }
+                if(getSpeed() > VminFLAPS * 0.6F && Alt < 10F)
+                {
+                    setSpeedMode(8);
+                    if(AP.way.isLandingOnShip() && CT.bHasArrestorControl)
+                    {
+                        if(Vwld.z < -5.5D)
+                            Vwld.z *= 0.94999998807907104D;
+                        if(Vwld.z > 0.0D)
+                            Vwld.z *= 0.9100000262260437D;
+                    } else
+                    {
+                        if(Vwld.z < -0.60000002384185791D)
+                            Vwld.z *= 0.93999999761581421D;
+                        if(Vwld.z < -2.5D)
+                            Vwld.z = -2.5D;
+                        if(Vwld.z > 0.0D)
+                            Vwld.z *= 0.9100000262260437D;
+                    }
+                }
+                float f14 = Gears.Pitch - 2.0F;
+                if(f14 < 5F)
+                    f14 = 5F;
+                if(Alt < 7F && Or.getTangage() < f14 || AP.way.isLandingOnShip())
+                    CT.ElevatorControl += 1.5F * f;
+                CT.ElevatorControl += 0.05000000074505806D * getW().y;
+                if(Gears.onGround())
+                {
+                    if(Gears.Pitch > 5F)
+                    {
+                        if(Or.getTangage() < Gears.Pitch)
+                            CT.ElevatorControl += 1.5F * f;
+                        if(!AP.way.isLandingOnShip())
+                            CT.ElevatorControl += 0.30000001192092896D * getW().y;
+                    } else
+                    {
+                        CT.ElevatorControl = 0.0F;
+                    }
+                    if(!TaxiMode)
+                    {
+                        AFo.setDeg(Or.getAzimut(), direction);
+                        CT.RudderControl = 8F * AFo.getDiffRad() + 0.5F * (float)getW().z;
+                    } else
+                    {
+                        CT.RudderControl = 0.0F;
+                    }
+                }
+            }
+            AP.way.curr().getP(Po);
+            return;
+
+        case 66: // 'B'
+            if(!isCapableOfTaxiing() || EI.getThrustOutput() < 0.01F)
+            {
+                set_task(3);
+                maneuver = 0;
+                set_maneuver(49);
+                AP.setStabAll(false);
+            } else
+            {
+                if(AS.isPilotDead(0))
+                {
+                    set_task(3);
+                    maneuver = 0;
+                    set_maneuver(44);
+                    setSpeedMode(8);
+                    smConstPower = 0.0F;
+                    if(com.maddox.il2.ai.Airport.distToNearestAirport(Loc) > 900D)
+                        ((com.maddox.il2.objects.air.Aircraft)actor).postEndAction(6000D, actor, 3, null);
+                    else
+                        com.maddox.rts.MsgDestroy.Post(com.maddox.rts.Time.current() + 0x493e0L, actor);
+                    return;
+                }
+                P.x = Loc.x;
+                P.y = Loc.y;
+                P.z = Loc.z;
+                Vcur.set(Vwld);
+                if(wayCurPos == null)
+                {
+                    com.maddox.il2.ai.World.cur().airdrome.findTheWay((com.maddox.il2.ai.air.Pilot)this);
+                    wayPrevPos = wayCurPos = getNextAirdromeWayPoint();
+                }
+                if(wayCurPos != null)
+                {
+                    com.maddox.il2.ai.air.Point_Any point_any = wayCurPos;
+                    com.maddox.il2.ai.air.Point_Any point_any1 = wayPrevPos;
+                    Pcur.set((float)P.x, (float)P.y);
+                    float f21 = Pcur.distance(point_any);
+                    float f23 = Pcur.distance(point_any1);
+                    V_to.sub(point_any, Pcur);
+                    V_to.normalize();
+                    float f26 = 5F + 0.1F * f21;
+                    if(f26 > 12F)
+                        f26 = 12F;
+                    if(f26 > 0.9F * VminFLAPS)
+                        f26 = 0.9F * VminFLAPS;
+                    if(curAirdromePoi < airdromeWay.length && f21 < 15F || f21 < 4F)
+                    {
+                        f26 = 0.0F;
+                        com.maddox.il2.ai.air.Point_Any point_any2 = getNextAirdromeWayPoint();
+                        if(point_any2 == null)
+                        {
+                            CT.setPowerControl(0.0F);
+                            Loc.set(P);
+                            Loc.set(Loc);
+                            if(finished)
+                                return;
+                            finished = true;
+                            int l = 1000;
+                            if(wayCurPos != null)
+                                l = 0x249f00;
+                            actor.collide(true);
+                            Vwld.set(0.0D, 0.0D, 0.0D);
+                            CT.setPowerControl(0.0F);
+                            EI.setCurControlAll(true);
+                            EI.setEngineStops();
+                            com.maddox.il2.ai.World.cur();
+                            if(actor != com.maddox.il2.ai.World.getPlayerAircraft())
+                            {
+                                com.maddox.rts.MsgDestroy.Post(com.maddox.rts.Time.current() + (long)l, actor);
+                                setStationedOnGround(true);
+                                maneuver = 0;
+                                set_maneuver(44);
+                            }
+                            return;
+                        }
+                        wayPrevPos = wayCurPos;
+                        wayCurPos = point_any2;
+                    }
+                    V_to.scale(f26);
+                    float f30 = 2.0F * f;
+                    Vdiff.set(V_to);
+                    Vdiff.sub(Vcur);
+                    float f32 = (float)Vdiff.length();
+                    if(f32 > f30)
+                    {
+                        Vdiff.normalize();
+                        Vdiff.scale(f30);
+                    }
+                    Vcur.add(Vdiff);
+                    tmpOr.setYPR(com.maddox.il2.ai.air.Maneuver.RAD2DEG((float)Vcur.direction()), Or.getPitch(), 0.0F);
+                    Or.interpolate(tmpOr, 0.2F);
+                    Vwld.x = Vcur.x;
+                    Vwld.y = Vcur.y;
+                    P.x += Vcur.x * (double)f;
+                    P.y += Vcur.y * (double)f;
+                } else
+                {
+                    wayPrevPos = wayCurPos = new Point_Null((float)Loc.x, (float)Loc.y);
+                    com.maddox.il2.ai.World.cur();
+                    if(actor != com.maddox.il2.ai.World.getPlayerAircraft())
+                    {
+                        com.maddox.rts.MsgDestroy.Post(com.maddox.rts.Time.current() + 30000L, actor);
+                        setStationedOnGround(true);
+                    }
+                }
+                Loc.set(P);
+                Loc.set(Loc);
+                return;
+            }
+            break;
+
+        case 49: // '1'
+            emergencyLanding(f);
+            break;
+
+        case 64: // '@'
+            if(actor instanceof com.maddox.il2.objects.air.TypeGlider)
+            {
+                pop();
+                break;
+            }
+            if(actor instanceof com.maddox.il2.objects.air.HE_LERCHE3)
+            {
+                boolean flag1 = com.maddox.il2.engine.Actor.isAlive(AP.way.takeoffAirport) && (AP.way.takeoffAirport instanceof com.maddox.il2.ai.AirportCarrier);
+                if(!flag1)
+                    callSuperUpdate = false;
+            }
+            CT.BrakeControl = 1.0F;
+            CT.ElevatorControl = 0.5F;
+            CT.setPowerControl(0.0F);
+            EI.setCurControlAll(false);
+            setSpeedMode(0);
+            if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.05F)
+            {
+                EI.setCurControl(submaneuver, true);
+                if(EI.engines[submaneuver].getStage() == 0)
+                {
+                    setSpeedMode(0);
+                    CT.setPowerControl(0.05F);
+                    EI.engines[submaneuver].setControlThrottle(0.2F);
+                    EI.toggle();
+                    if((actor instanceof com.maddox.il2.objects.air.BI_1) || (actor instanceof com.maddox.il2.objects.air.BI_6))
+                    {
+                        pop();
+                        break;
+                    }
+                }
+            }
+            if(EI.engines[submaneuver].getStage() == 6)
+            {
+                setSpeedMode(0);
+                EI.engines[submaneuver].setControlThrottle(0.0F);
+                submaneuver++;
+                CT.setPowerControl(0.0F);
+                if(submaneuver > EI.getNum() - 1)
+                {
+                    EI.setCurControlAll(true);
+                    pop();
+                }
+            }
+            break;
+
+        case 26: // '\032'
+            float f15 = Alt;
+            float f18 = 0.4F;
+            if(com.maddox.il2.engine.Actor.isAlive(AP.way.takeoffAirport) && (AP.way.takeoffAirport instanceof com.maddox.il2.ai.AirportCarrier))
+            {
+                f15 -= ((com.maddox.il2.ai.AirportCarrier)AP.way.takeoffAirport).height();
+                f18 = 0.95F;
+                if(Alt < 9F && Vwld.z < 0.0D)
+                    Vwld.z *= 0.84999999999999998D;
+                if(CT.bHasCockpitDoorControl)
+                    AS.setCockpitDoor(actor, 1);
+            }
+            if(first)
+            {
+                setCheckGround(false);
+                CT.BrakeControl = 1.0F;
+                CT.GearControl = 1.0F;
+                CT.setPowerControl(0.0F);
+                if(CT.bHasArrestorControl)
+                    AS.setArrestor(actor, 0);
+                setSpeedMode(8);
+                if(f15 > 7.21F && AP.way.Cur() == 0)
+                {
+                    EI.setEngineRunning();
+                    com.maddox.il2.objects.air.Aircraft.debugprintln(actor, "in the air - engines running!.");
+                }
+                if(!com.maddox.il2.engine.Actor.isAlive(AP.way.takeoffAirport))
+                    direction = actor.pos.getAbsOrient().getAzimut();
+                if(actor instanceof com.maddox.il2.objects.air.HE_LERCHE3)
+                {
+                    maneuver = 69;
+                    break;
+                }
+            }
+            if(Gears.onGround())
+            {
+                if(EI.engines[0].getStage() == 0)
+                {
+                    CT.setPowerControl(0.0F);
+                    setSpeedMode(8);
+                    if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.05F && mn_time > 1.0F || mn_time > 8F)
+                    {
+                        push();
+                        push(64);
+                        submaneuver = 0;
+                        maneuver = 0;
+                        safe_pop();
+                        break;
+                    }
+                } else
+                {
+                    Po.set(Loc);
+                    Vpl.set(60D, 0.0D, 0.0D);
+                    Or.transform(Vpl);
+                    Po.add(Vpl);
+                    Pd.set(Po);
+                    if(canTakeoff)
+                    {
+                        CT.setPowerControl(1.1F);
+                        setSpeedMode(9);
+                    } else
+                    {
+                        setSpeedMode(8);
+                        CT.BrakeControl = 1.0F;
+                        boolean flag2 = true;
+                        if(mn_time < 8F)
+                            flag2 = false;
+                        if(actor != com.maddox.il2.ai.War.getNearestFriendAtPoint(Pd, (com.maddox.il2.objects.air.Aircraft)actor, 70F))
+                            if(actor instanceof com.maddox.il2.objects.air.G4M2E)
+                            {
+                                if(com.maddox.il2.ai.War.getNearestFriendAtPoint(Pd, (com.maddox.il2.objects.air.Aircraft)actor, 70F) != ((com.maddox.il2.objects.air.G4M2E)actor).typeDockableGetDrone())
+                                    flag2 = false;
+                            } else
+                            {
+                                flag2 = false;
+                            }
+                        if(com.maddox.il2.engine.Actor.isAlive(AP.way.takeoffAirport) && AP.way.takeoffAirport.takeoffRequest > 0)
+                            flag2 = false;
+                        if(flag2)
+                        {
+                            canTakeoff = true;
+                            if(com.maddox.il2.engine.Actor.isAlive(AP.way.takeoffAirport))
+                                AP.way.takeoffAirport.takeoffRequest = 300;
+                        }
+                    }
+                }
+                if(EI.engines[0].getStage() == 6 && CT.bHasWingControl && CT.getWing() > 0.001F)
+                    AS.setWingFold(actor, 0);
+            } else
+            if(canTakeoff)
+            {
+                CT.setPowerControl(1.1F);
+                setSpeedMode(9);
+            }
+            if(CT.FlapsControl == 0.0F && CT.getWing() < 0.001F)
+                CT.FlapsControl = 0.4F;
+            if(EI.engines[0].getStage() == 6 && CT.getPower() > f18)
+            {
+                CT.BrakeControl = 0.0F;
+                brakeShoe = false;
+                float f22 = (Vmin * M.getFullMass()) / M.massEmpty;
+                float f24 = 12F * (getSpeed() / f22 - 0.2F);
+                if(Gears.bIsSail)
+                    f24 *= 2.0F;
+                if(Gears.bFrontWheel)
+                    f24 = Gears.Pitch + 4F;
+                if(f24 < 1.0F)
+                    f24 = 1.0F;
+                if(f24 > 10F)
+                    f24 = 10F;
+                float f27 = 1.5F;
+                if(com.maddox.il2.engine.Actor.isAlive(AP.way.takeoffAirport) && (AP.way.takeoffAirport instanceof com.maddox.il2.ai.AirportCarrier) && !Gears.isUnderDeck())
+                {
+                    CT.GearControl = 0.0F;
+                    if(f15 < 0.0F)
+                    {
+                        f24 = 18F;
+                        f27 = 0.05F;
+                    } else
+                    {
+                        f24 = 14F;
+                        f27 = 0.3F;
+                    }
+                }
+                if(Or.getTangage() < f24)
+                    dA = -0.7F * (Or.getTangage() - f24) + f27 * (float)getW().y + 0.5F * (float)getAW().y;
+                else
+                    dA = -0.1F * (Or.getTangage() - f24) + f27 * (float)getW().y + 0.5F * (float)getAW().y;
+                CT.ElevatorControl += (dA - CT.ElevatorControl) * 3F * f;
+            } else
+            {
+                CT.ElevatorControl = 1.0F;
+            }
+            AFo.setDeg(Or.getAzimut(), direction);
+            double d1 = AFo.getDiffRad();
+            if(EI.engines[0].getStage() == 6)
+            {
+                CT.RudderControl = 8F * (float)d1;
+                if(d1 > -1D && d1 < 1.0D)
+                {
+                    if(com.maddox.il2.engine.Actor.isAlive(AP.way.takeoffAirport) && CT.getPower() > 0.3F)
+                    {
+                        double d2 = AP.way.takeoffAirport.ShiftFromLine(this);
+                        double d3 = 3D - 3D * java.lang.Math.abs(d1);
+                        if(d3 > 1.0D)
+                            d3 = 1.0D;
+                        double d5 = 0.25D * d2 * d3;
+                        if(d5 > 1.5D)
+                            d5 = 1.5D;
+                        if(d5 < -1.5D)
+                            d5 = -1.5D;
+                        CT.RudderControl += (float)d5;
+                    }
+                } else
+                {
+                    CT.BrakeControl = 1.0F;
+                }
+            }
+            CT.AileronControl = -0.05F * Or.getKren() + 0.3F * (float)getW().y;
+            if(f15 > 5F && !Gears.isUnderDeck())
+                CT.GearControl = 0.0F;
+            float f28 = 1.0F;
+            if(hasBombs())
+                f28 *= 1.7F;
+            if(f15 > 120F * f28 || getSpeed() > Vmin * 1.8F * f28 || f15 > 80F * f28 && getSpeed() > Vmin * 1.6F * f28 || f15 > 40F * f28 && getSpeed() > Vmin * 1.3F * f28 && mn_time > 60F + (float)((com.maddox.il2.objects.air.Aircraft)actor).aircIndex() * 3F)
+            {
+                CT.FlapsControl = 0.0F;
+                CT.GearControl = 0.0F;
+                rwLoc = null;
+                if(actor instanceof com.maddox.il2.objects.air.TypeGlider)
+                    push(24);
+                maneuver = 0;
+                brakeShoe = false;
+                turnOffCollisions = false;
+                if(CT.bHasCockpitDoorControl)
+                    AS.setCockpitDoor(actor, 0);
+                pop();
+            }
+            if(actor instanceof com.maddox.il2.objects.air.TypeGlider)
+            {
+                CT.BrakeControl = 0.0F;
+                CT.ElevatorControl = 0.05F;
+                canTakeoff = true;
+            }
+            break;
+
+        case 69: // 'E'
+            float f16 = Alt;
+            float f19 = 0.4F;
+            CT.BrakeControl = 1.0F;
+            W.scale(0.0D);
+            boolean flag4 = com.maddox.il2.engine.Actor.isAlive(AP.way.takeoffAirport) && (AP.way.takeoffAirport instanceof com.maddox.il2.ai.AirportCarrier);
+            if(flag4)
+            {
+                f16 -= ((com.maddox.il2.ai.AirportCarrier)AP.way.takeoffAirport).height();
+                f19 = 0.8F;
+                if(Alt < 9F && Vwld.z < 0.0D)
+                    Vwld.z *= 0.84999999999999998D;
+                if(CT.bHasCockpitDoorControl)
+                    AS.setCockpitDoor(actor, 1);
+            }
+            if(Loc.z != 0.0D && ((com.maddox.il2.objects.air.HE_LERCHE3)actor).suka.getPoint().z == 0.0D)
+                ((com.maddox.il2.objects.air.HE_LERCHE3)actor).suka.set(Loc, Or);
+            if(Loc.z != 0.0D)
+                if(EI.getPowerOutput() < f19 && !flag4)
+                {
+                    callSuperUpdate = false;
+                    Loc.set(((com.maddox.il2.objects.air.HE_LERCHE3)actor).suka.getPoint());
+                    Or.set(((com.maddox.il2.objects.air.HE_LERCHE3)actor).suka.getOrient());
+                } else
+                if(f16 < 100F)
+                    Or.set(((com.maddox.il2.objects.air.HE_LERCHE3)actor).suka.getOrient());
+            if(Gears.onGround() && EI.engines[0].getStage() == 0)
+            {
+                CT.setPowerControl(0.0F);
+                setSpeedMode(8);
+                if(com.maddox.il2.ai.World.Rnd().nextFloat() < 0.05F && mn_time > 1.0F || mn_time > 8F)
+                {
+                    push();
+                    push(64);
+                    submaneuver = 0;
+                    maneuver = 0;
+                    safe_pop();
+                    break;
+                }
+            }
+            if(EI.engines[0].getStage() == 6)
+            {
+                CT.BrakeControl = 0.0F;
+                CT.AirBrakeControl = 1.0F;
+                brakeShoe = false;
+                CT.setPowerControl(1.1F);
+                setSpeedMode(9);
+            }
+            if(f16 > 200F)
+            {
+                CT.GearControl = 0.0F;
+                rwLoc = null;
+                CT.ElevatorControl = -1F;
+                CT.AirBrakeControl = 0.0F;
+                if(Or.getTangage() < 25F)
+                    maneuver = 0;
+                brakeShoe = false;
+                turnOffCollisions = false;
+                if(CT.bHasCockpitDoorControl)
+                    AS.setCockpitDoor(actor, 0);
+                pop();
+            }
+            break;
+
+        case 28: // '\034'
+            if(first)
+            {
+                direction = com.maddox.il2.ai.World.Rnd().nextFloat(-25F, 25F);
+                AP.setStabAll(false);
+                setSpeedMode(6);
+                CT.RudderControl = com.maddox.il2.ai.World.Rnd().nextFloat(-0.22F, 0.22F);
+                submaneuver = 0;
+                if(getSpeed() < Vmin * 1.5F)
+                    pop();
+            }
+            CT.AileronControl = -0.04F * (Or.getKren() - direction);
+            switch(submaneuver)
+            {
+            case 0: // '\0'
+                dA = 1.0F;
+                maxAOA = 12F + 1.0F * (float)Skill;
+                if(AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.6F * f;
+                else
+                    CT.ElevatorControl += 3.3F * f;
+                if(Or.getTangage() > 40F + 5.1F * (float)Skill)
+                    submaneuver++;
+                break;
+
+            case 1: // '\001'
+                direction = com.maddox.il2.ai.World.Rnd().nextFloat(-25F, 25F);
+                CT.RudderControl = com.maddox.il2.ai.World.Rnd().nextFloat(-0.75F, 0.75F);
+                submaneuver++;
+                // fall through
+
+            case 2: // '\002'
+                dA = -1F;
+                maxAOA = 12F + 5F * (float)Skill;
+                if(AOA < -maxAOA || CT.ElevatorControl < dA)
+                    CT.ElevatorControl += 0.6F * f;
+                else
+                    CT.ElevatorControl -= 3.3F * f;
+                if(Or.getTangage() < -45F)
+                    pop();
+                break;
+            }
+            if(mn_time > 3F)
+                pop();
+            break;
+
+        case 29: // '\035'
+            minElevCoeff = 17F;
+            if(first)
+            {
+                AP.setStabAll(false);
+                setSpeedMode(9);
+                sub_Man_Count = 0;
+            }
+            if(danger != null)
+            {
+                if(sub_Man_Count == 0)
+                {
+                    tmpV3d.set(danger.getW());
+                    danger.Or.transform(tmpV3d);
+                    if(tmpV3d.z > 0.0D)
+                        sinKren = -com.maddox.il2.ai.World.Rnd().nextFloat(60F, 90F);
+                    else
+                        sinKren = com.maddox.il2.ai.World.Rnd().nextFloat(60F, 90F);
+                }
+                if(Loc.distanceSquared(danger.Loc) < 5000D)
+                {
+                    setSpeedMode(8);
+                    CT.setPowerControl(0.0F);
+                } else
+                {
+                    setSpeedMode(9);
+                }
+            } else
+            {
+                pop();
+            }
+            CT.FlapsControl = 0.2F;
+            if((double)getSpeed() < 120D)
+                CT.FlapsControl = 0.33F;
+            if((double)getSpeed() < 80D)
+                CT.FlapsControl = 1.0F;
+            CT.AileronControl = -0.08F * (Or.getKren() + sinKren);
+            CT.ElevatorControl = 0.9F;
+            CT.RudderControl = 0.0F;
+            sub_Man_Count++;
+            if(sub_Man_Count > 15)
+                sub_Man_Count = 0;
+            if(mn_time > 10F)
+                pop();
+            break;
+
+        case 56: // '8'
+            if(first)
+            {
+                submaneuver = com.maddox.il2.ai.World.Rnd().nextInt(0, 1);
+                direction = com.maddox.il2.ai.World.Rnd().nextFloat(-20F, -10F);
+            }
+            CT.AileronControl = -0.08F * (Or.getKren() - direction);
+            switch(submaneuver)
+            {
+            case 0: // '\0'
+                dA = 1.0F;
+                maxAOA = 10F + 2.0F * (float)Skill;
+                if((double)getOverload() > 1.0D / java.lang.Math.abs(java.lang.Math.cos(java.lang.Math.toRadians(Or.getKren()))) || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.2F * f;
+                else
+                    CT.ElevatorControl += 0.4F * f;
+                CT.RudderControl = -1F * (float)java.lang.Math.sin(java.lang.Math.toRadians(Or.getKren() + 55F));
+                if(mn_time > 1.5F)
+                    submaneuver++;
+                break;
+
+            case 1: // '\001'
+                direction = com.maddox.il2.ai.World.Rnd().nextFloat(10F, 20F);
+                submaneuver++;
+                // fall through
+
+            case 2: // '\002'
+                dA = 1.0F;
+                maxAOA = 10F + 2.0F * (float)Skill;
+                if((double)getOverload() > 1.0D / java.lang.Math.abs(java.lang.Math.cos(java.lang.Math.toRadians(Or.getKren()))) || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.2F * f;
+                else
+                    CT.ElevatorControl += 0.4F * f;
+                CT.RudderControl = 1.0F * (float)java.lang.Math.sin(java.lang.Math.toRadians(Or.getKren() - 55F));
+                if(mn_time > 4.5F)
+                    submaneuver++;
+                break;
+
+            case 3: // '\003'
+                direction = com.maddox.il2.ai.World.Rnd().nextFloat(-20F, -10F);
+                submaneuver++;
+                // fall through
+
+            case 4: // '\004'
+                dA = 1.0F;
+                maxAOA = 10F + 2.0F * (float)Skill;
+                if((double)getOverload() > 1.0D / java.lang.Math.abs(java.lang.Math.cos(java.lang.Math.toRadians(Or.getKren()))) || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.2F * f;
+                else
+                    CT.ElevatorControl += 0.4F * f;
+                CT.RudderControl = -1F * (float)java.lang.Math.sin(java.lang.Math.toRadians(Or.getKren() + 55F));
+                if(mn_time > 6F)
+                    pop();
+                break;
+            }
+            break;
+
+        case 30: // '\036'
+            push(14);
+            push(18);
+            pop();
+            break;
+
+        case 31: // '\037'
+            push(14);
+            push(19);
+            pop();
+            break;
+
+        case 32: // ' '
+            if(!isCapableOfACM() && com.maddox.il2.ai.World.Rnd().nextInt(-2, 9) < Skill)
+                ((com.maddox.il2.objects.air.Aircraft)actor).hitDaSilk();
+            if(first)
+            {
+                AP.setStabAll(false);
+                setSpeedMode(6);
+                submaneuver = 0;
+                direction = 178F - com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 8F) * (float)Skill;
+            }
+            maxAOA = Vwld.z <= 0.0D ? 24F : 14F;
+            if(danger != null)
+            {
+                Ve.sub(danger.Loc, Loc);
+                dist = (float)Ve.length();
+                Or.transformInv(Ve);
+                Vpl.set(danger.Vwld);
+                Or.transformInv(Vpl);
+                Vpl.normalize();
+            }
+            switch(submaneuver)
+            {
+            case 0: // '\0'
+                dA = Or.getKren() - 180F;
+                if(dA < -180F)
+                    dA += 360F;
+                dA = -0.08F * dA;
+                CT.AileronControl = dA;
+                CT.RudderControl = dA <= 0.0F ? -1F : 1.0F;
+                CT.ElevatorControl = 0.01111111F * java.lang.Math.abs(Or.getKren());
+                if(mn_time > 2.0F || java.lang.Math.abs(Or.getKren()) > direction)
+                {
+                    submaneuver++;
+                    CT.RudderControl = com.maddox.il2.ai.World.Rnd().nextFloat(-0.5F, 0.5F);
+                    direction = com.maddox.il2.ai.World.Rnd().nextFloat(-60F, -30F);
+                    mn_time = 0.5F;
+                }
+                break;
+
+            case 1: // '\001'
+                dA = Or.getKren() - 180F;
+                if(dA < -180F)
+                    dA += 360F;
+                dA = -0.04F * dA;
+                CT.AileronControl = dA;
+                if(Or.getTangage() > direction + 5F && getOverload() < maxG && AOA < maxAOA)
+                {
+                    if(CT.ElevatorControl < 0.0F)
+                        CT.ElevatorControl = 0.0F;
+                    CT.ElevatorControl += 1.0F * f;
+                } else
+                {
+                    if(CT.ElevatorControl > 0.0F)
+                        CT.ElevatorControl = 0.0F;
+                    CT.ElevatorControl -= 1.0F * f;
+                }
+                if(mn_time > 2.0F && Or.getTangage() < direction + 20F)
+                    submaneuver++;
+                if(danger != null)
+                {
+                    if(Skill >= 2 && Or.getTangage() < -30F && Vpl.x > 0.99862951040267944D)
+                        submaneuver++;
+                    if(Skill >= 3 && java.lang.Math.abs(Or.getTangage()) > 145F && java.lang.Math.abs(danger.Or.getTangage()) > 135F && dist < 400F)
+                        submaneuver++;
+                }
+                break;
+
+            case 2: // '\002'
+                direction = com.maddox.il2.ai.World.Rnd().nextFloat(-60F, 60F);
+                setSpeedMode(6);
+                submaneuver++;
+                // fall through
+
+            case 3: // '\003'
+                dA = Or.getKren() - direction;
+                CT.AileronControl = -0.04F * dA;
+                CT.RudderControl = dA <= 0.0F ? -1F : 1.0F;
+                CT.ElevatorControl = 0.5F;
+                if(java.lang.Math.abs(dA) < 4F + 3F * (float)Skill)
+                    submaneuver++;
+                break;
+
+            case 4: // '\004'
+                direction *= com.maddox.il2.ai.World.Rnd().nextFloat(0.5F, 1.0F);
+                setSpeedMode(6);
+                submaneuver++;
+                // fall through
+
+            case 5: // '\005'
+                dA = Or.getKren() - direction;
+                CT.AileronControl = -0.04F * dA;
+                CT.RudderControl = -0.1F * getAOS();
+                dA = 1.0F;
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA || Or.getTangage() > 40F)
+                    CT.ElevatorControl -= 0.8F * f;
+                else
+                    CT.ElevatorControl += 1.6F * f;
+                if(Or.getTangage() > 80F || mn_time > 4F || getSpeed() < Vmin * 1.5F)
+                    pop();
+                if(danger != null && (Ve.z < -1D || dist > 600F || Vpl.x < 0.78801000118255615D))
+                    pop();
+                break;
+            }
+            if((double)Alt < -7D * Vwld.z)
+                pop();
+            break;
+
+        case 33: // '!'
+            if(first)
+            {
+                if(Alt < 1000F)
+                {
+                    pop();
+                    break;
+                }
+                AP.setStabAll(false);
+                submaneuver = 0;
+                direction = (com.maddox.il2.ai.World.Rnd().nextBoolean() ? 1.0F : -1F) * com.maddox.il2.ai.World.Rnd().nextFloat(107F, 160F);
+            }
+            maxAOA = Vwld.z <= 0.0D ? 24F : 14F;
+            switch(submaneuver)
+            {
+            case 0: // '\0'
+                if(java.lang.Math.abs(Or.getKren()) < 45F)
+                    CT.ElevatorControl = 0.005555556F * java.lang.Math.abs(Or.getKren());
+                else
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > 1.0F)
+                    CT.ElevatorControl -= 0.2F * f;
+                else
+                    CT.ElevatorControl += 1.2F * f;
+                dA = Or.getKren() - direction;
+                CT.AileronControl = -0.04F * dA;
+                CT.RudderControl = -0.1F * getAOS();
+                if(java.lang.Math.abs(dA) < 4F + 1.0F * (float)Skill)
+                    submaneuver++;
+                break;
+
+            case 1: // '\001'
+                setSpeedMode(7);
+                smConstPower = 0.5F;
+                CT.AileronControl = 0.0F;
+                CT.RudderControl = -0.1F * getAOS();
+                dA = 1.0F;
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.2F * f;
+                else
+                    CT.ElevatorControl += 1.2F * f;
+                if(Or.getTangage() < -60F)
+                    submaneuver++;
+                break;
+
+            case 2: // '\002'
+                if(Or.getTangage() > -45F)
+                {
+                    CT.AileronControl = -0.04F * Or.getKren();
+                    setSpeedMode(9);
+                    maxAOA = 7F;
+                }
+                CT.RudderControl = -0.1F * getAOS();
+                dA = 1.0F;
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.8F * f;
+                else
+                    CT.ElevatorControl += 0.4F * f;
+                if(Or.getTangage() > AOA - 10F || Vwld.z > -1D)
+                    pop();
+                break;
+            }
+            if((double)Alt < -7D * Vwld.z)
+                pop();
+            break;
+
+        case 34: // '"'
+            if(first)
+            {
+                if(Alt < 500F)
+                {
+                    pop();
+                    break;
+                }
+                direction = Or.getTangage();
+                setSpeedMode(9);
+            }
+            dA = Or.getKren() - (Or.getKren() <= 0.0F ? -35F : 35F);
+            CT.AileronControl = -0.04F * dA;
+            CT.RudderControl = Or.getKren() <= 0.0F ? -1F : 1.0F;
+            CT.ElevatorControl = -1F;
+            if(direction > Or.getTangage() + 45F || Or.getTangage() < -60F || mn_time > 4F)
+                pop();
+            break;
+
+        case 36: // '$'
+        case 37: // '%'
+            if(first)
+            {
+                if(!isCapableOfACM())
+                    pop();
+                if(getSpeed() < Vmax * 0.5F)
+                {
+                    pop();
+                    break;
+                }
+                AP.setStabAll(false);
+                submaneuver = 0;
+                direction = com.maddox.il2.ai.World.Rnd().nextFloat(-30F, 80F);
+                setSpeedMode(9);
+            }
+            maxAOA = Vwld.z <= 0.0D ? 24F : 14F;
+            switch(submaneuver)
+            {
+            case 0: // '\0'
+                CT.AileronControl = -0.04F * Or.getKren();
+                CT.RudderControl = -0.1F * getAOS();
+                if(java.lang.Math.abs(Or.getKren()) < 45F)
+                    submaneuver++;
+                break;
+
+            case 1: // '\001'
+                CT.AileronControl = 0.0F;
+                dA = 1.0F;
+                if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > dA)
+                    CT.ElevatorControl -= 0.4F * f;
+                else
+                    CT.ElevatorControl += 0.8F * f;
+                if(Or.getTangage() > direction)
+                    submaneuver++;
+                if(getSpeed() < Vmin * 1.25F)
+                    pop();
+                break;
+
+            case 2: // '\002'
+                push(maneuver != 36 ? 35 : 7);
+                pop();
+                break;
+            }
+            break;
+
+        case 38: // '&'
+            if(first)
+                CT.RudderControl = Or.getKren() <= 0.0F ? -1F : 1.0F;
+            CT.AileronControl += -0.02F * Or.getKren();
+            if(CT.AileronControl > 0.1F)
+                CT.AileronControl = 0.1F;
+            if(CT.AileronControl < -0.1F)
+                CT.AileronControl = -0.1F;
+            dA = (getSpeedKMH() - 180F - Or.getTangage() * 10F - getVertSpeed() * 5F) * 0.004F;
+            CT.ElevatorControl = dA;
+            if(mn_time > 3.5F)
+                pop();
+            break;
+
+        case 39: // '\''
+            setSpeedMode(6);
+            CT.AileronControl = -0.04F * Or.getKren();
+            CT.ElevatorControl = -0.04F * (Or.getTangage() + 10F);
+            if(CT.RudderControl > 0.1F)
+                CT.RudderControl = 0.8F;
+            else
+            if(CT.RudderControl < -0.1F)
+                CT.RudderControl = -0.8F;
+            else
+                CT.RudderControl = Or.getKren() <= 0.0F ? -1F : 1.0F;
+            if(getSpeed() > Vmax || mn_time > 7F)
+                pop();
+            break;
+
+        case 40: // '('
+            push(39);
+            push(57);
+            pop();
+            break;
+
+        case 41: // ')'
+            push(13);
+            push(18);
+            pop();
+            break;
+
+        case 42: // '*'
+            push(19);
+            push(57);
+            pop();
+            break;
+
+        case 46: // '.'
+            if(target_ground == null || target_ground.pos == null)
+            {
+                if(Group != null)
+                {
+                    dont_change_subm = true;
+                    boolean flag5 = isBusy();
+                    int j1 = Group.grTask;
+                    com.maddox.il2.ai.air.AirGroup _tmp = Group;
+                    Group.grTask = 4;
+                    setBusy(false);
+                    Group.setTaskAndManeuver(Group.numInGroup((com.maddox.il2.objects.air.Aircraft)actor));
+                    setBusy(flag5);
+                    Group.grTask = j1;
+                }
+                if(target_ground == null || target_ground.pos == null)
+                {
+                    AP.way.first();
+                    com.maddox.il2.ai.Airport airport = com.maddox.il2.ai.Airport.nearest(AP.way.curr().getP(), actor.getArmy(), 7);
+                    com.maddox.il2.ai.WayPoint waypoint;
+                    if(airport != null)
+                        waypoint = new WayPoint(airport.pos.getAbsPoint());
+                    else
+                        waypoint = new WayPoint(AP.way.first().getP());
+                    waypoint.set(0.6F * Vmax);
+                    waypoint.Action = 2;
+                    AP.way.add(waypoint);
+                    AP.way.last();
+                    set_task(3);
+                    clear_stack();
+                    maneuver = 21;
+                    set_maneuver(21);
+                    break;
+                }
+            }
+            groundAttackKamikaze(target_ground, f);
+            break;
+
+        case 43: // '+'
+        case 47: // '/'
+        case 50: // '2'
+        case 51: // '3'
+        case 52: // '4'
+        case 79: // 'O'
+        case 80: // 'P'
+        case 81: // 'Q'
+            if(first && !isCapableOfACM())
+            {
+                bombsOut = true;
+                setReadyToReturn(true);
+                if(Group != null)
+                {
+                    Group.waitGroup(Group.numInGroup((com.maddox.il2.objects.air.Aircraft)actor));
+                } else
+                {
+                    AP.way.next();
+                    set_task(3);
+                    clear_stack();
+                    set_maneuver(21);
+                }
+                break;
+            }
+            if(target_ground == null || target_ground.pos == null || !com.maddox.il2.engine.Actor.isAlive(target_ground))
+            {
+                int i1 = maneuver;
+                if(Group != null)
+                {
+                    com.maddox.il2.ai.air.AirGroup _tmp1 = Group;
+                    if(Group.grTask == 4)
+                    {
+                        dont_change_subm = true;
+                        boolean flag6 = isBusy();
+                        setBusy(false);
+                        Group.setTaskAndManeuver(Group.numInGroup((com.maddox.il2.objects.air.Aircraft)actor));
+                        setBusy(flag6);
+                    }
+                }
+                if(target_ground == null || target_ground.pos == null || !com.maddox.il2.engine.Actor.isAlive(target_ground))
+                {
+                    if(i1 == 50)
+                        bombsOut = true;
+                    if(Group != null)
+                    {
+                        Group.waitGroup(Group.numInGroup((com.maddox.il2.objects.air.Aircraft)actor));
+                    } else
+                    {
+                        AP.way.next();
+                        set_task(3);
+                        clear_stack();
+                        set_maneuver(21);
+                    }
+                    push(2);
+                    pop();
+                    break;
+                }
+            }
+            switch(maneuver)
+            {
+            default:
+                break;
+
+            case 43: // '+'
+                groundAttack(target_ground, f);
+                if(mn_time > 120F)
+                    set_maneuver(0);
+                break;
+
+            case 50: // '2'
+                groundAttackDiveBomber(target_ground, f);
+                if(mn_time > 120F)
+                {
+                    setSpeedMode(6);
+                    CT.BayDoorControl = 0.0F;
+                    CT.AirBrakeControl = 0.0F;
+                    CT.FlapsControl = 0.0F;
+                    pop();
+                    sub_Man_Count = 0;
+                }
+                break;
+
+            case 51: // '3'
+                groundAttackTorpedo(target_ground, f);
+                break;
+
+            case 81: // 'Q'
+                groundAttackTorpedoToKG(target_ground, f);
+                break;
+
+            case 52: // '4'
+                groundAttackCassette(target_ground, f);
+                break;
+
+            case 46: // '.'
+                groundAttackKamikaze(target_ground, f);
+                break;
+
+            case 47: // '/'
+                groundAttackTinyTim(target_ground, f);
+                break;
+
+            case 79: // 'O'
+                groundAttackHS293(target_ground, f);
+                break;
+
+            case 80: // 'P'
+                groundAttackFritzX(target_ground, f);
+                break;
+            }
+            break;
+        }
+        if(checkGround)
+            doCheckGround(f);
+        if(checkStrike && strikeEmer)
+            doCheckStrike();
+        strikeEmer = false;
+        setSpeedControl(f);
+        first = false;
+        mn_time += f;
+        if(frequentControl)
+            AP.update(f);
+        else
+            AP.update(f * 4F);
+        if(bBusy)
+            wasBusy = true;
+        else
+            wasBusy = false;
+        if(shotAtFriend > 0)
+            shotAtFriend--;
+    }
+
+    void OutCT(int i)
+    {
+        if(actor != com.maddox.il2.game.Main3D.cur3D().viewActor())
+            return;
+        com.maddox.il2.engine.TextScr.output(i + 5, 45, "Alt(MSL)  " + (int)Loc.z + "    " + (CT.BrakeControl <= 0.0F ? "" : "BRAKE"));
+        com.maddox.il2.engine.TextScr.output(i + 5, 65, "Alt(AGL)  " + (int)(Loc.z - com.maddox.il2.engine.Engine.land().HQ_Air(Loc.x, Loc.y)));
+        int j = 0;
+        com.maddox.il2.engine.TextScr.output(i + 225, 140, "---ENGINES (" + EI.getNum() + ")---" + EI.engines[j].getStage());
+        com.maddox.il2.engine.TextScr.output(i + 245, 120, "THTL " + (int)(100F * EI.engines[j].getControlThrottle()) + "%" + (EI.engines[j].getControlAfterburner() ? " (NITROS)" : ""));
+        com.maddox.il2.engine.TextScr.output(i + 245, 100, "PROP " + (int)(100F * EI.engines[j].getControlProp()) + "%" + (CT.getStepControlAuto() ? " (AUTO)" : ""));
+        com.maddox.il2.engine.TextScr.output(i + 245, 80, "MIX " + (int)(100F * EI.engines[j].getControlMix()) + "%");
+        com.maddox.il2.engine.TextScr.output(i + 245, 60, "RAD " + (int)(100F * EI.engines[j].getControlRadiator()) + "%" + (CT.getRadiatorControlAuto() ? " (AUTO)" : ""));
+        com.maddox.il2.engine.TextScr.output(i + 245, 40, "SUPC " + EI.engines[j].getControlCompressor() + "x");
+        com.maddox.il2.engine.TextScr.output(245, 20, "PropAoA :" + (int)java.lang.Math.toDegrees(EI.engines[j].getPropAoA()));
+        com.maddox.il2.engine.TextScr.output(i + 455, 120, "Cyls/Cams " + EI.engines[j].getCylindersOperable() + "/" + EI.engines[0].getCylinders());
+        com.maddox.il2.engine.TextScr.output(i + 455, 100, "Readyness " + (int)(100F * EI.engines[j].getReadyness()) + "%");
+        com.maddox.il2.engine.TextScr.output(i + 455, 80, "PRM " + (int)((float)(int)(EI.engines[j].getRPM() * 0.02F) * 50F) + " rpm");
+        com.maddox.il2.engine.TextScr.output(i + 455, 60, "Thrust " + (int)EI.engines[j].getEngineForce().x + " N");
+        com.maddox.il2.engine.TextScr.output(i + 455, 40, "Fuel " + (int)((100F * M.fuel) / M.maxFuel) + "% Nitro " + (int)((100F * M.nitro) / M.maxNitro) + "%");
+        com.maddox.il2.engine.TextScr.output(i + 455, 20, "MPrs " + (int)(1000F * EI.engines[j].getManifoldPressure()) + " mBar");
+        com.maddox.il2.engine.TextScr.output(i + 640, 140, "---Controls---");
+        com.maddox.il2.engine.TextScr.output(i + 640, 120, "A/C: " + (CT.bHasAileronControl ? "" : "AIL ") + (CT.bHasElevatorControl ? "" : "ELEV ") + (CT.bHasRudderControl ? "" : "RUD ") + (Gears.bIsHydroOperable ? "" : "GEAR "));
+        com.maddox.il2.engine.TextScr.output(i + 640, 100, "ENG: " + (EI.engines[j].isHasControlThrottle() ? "" : "THTL ") + (EI.engines[j].isHasControlProp() ? "" : "PROP ") + (EI.engines[j].isHasControlMix() ? "" : "MIX ") + (EI.engines[j].isHasControlCompressor() ? "" : "SUPC ") + (EI.engines[j].isPropAngleDeviceOperational() ? "" : "GVRNR "));
+        com.maddox.il2.engine.TextScr.output(i + 640, 80, "PIL: (" + (int)(AS.getPilotHealth(0) * 100F) + "%)");
+        com.maddox.il2.engine.TextScr.output(i + 5, 105, "V   " + (int)getSpeedKMH());
+        com.maddox.il2.engine.TextScr.output(i + 5, 125, "AOA " + (float)(int)(getAOA() * 1000F) / 1000F);
+        com.maddox.il2.engine.TextScr.output(i + 5, 145, "AOS " + (float)(int)(getAOS() * 1000F) / 1000F);
+        com.maddox.il2.engine.TextScr.output(i + 5, 165, "Kr  " + (int)Or.getKren());
+        com.maddox.il2.engine.TextScr.output(i + 5, 185, "Ta  " + (int)Or.getTangage());
+        com.maddox.il2.engine.TextScr.output(i + 250, 185, "way.speed  " + AP.way.curr().getV() * 3.6F + "way.z " + AP.way.curr().z() + "  mn_time = " + mn_time);
+        com.maddox.il2.engine.TextScr.output(i + 5, 205, "<" + actor.name() + ">: " + com.maddox.il2.ai.air.ManString.tname(task) + ":" + com.maddox.il2.ai.air.ManString.name(maneuver) + " , WP=" + AP.way.Cur() + "(" + (AP.way.size() - 1) + ")-" + com.maddox.il2.ai.air.ManString.wpname(AP.way.curr().Action));
+        com.maddox.il2.engine.TextScr.output(i + 7, 225, "======= " + com.maddox.il2.ai.air.ManString.name(program[0]) + "  Sub = " + submaneuver + " follOffs.x = " + followOffset.x + "  " + (((com.maddox.il2.ai.air.AutopilotAI)AP).bWayPoint ? "Stab WPoint " : "") + (((com.maddox.il2.ai.air.AutopilotAI)AP).bStabAltitude ? "Stab ALT " : "") + (((com.maddox.il2.ai.air.AutopilotAI)AP).bStabDirection ? "Stab DIR " : "") + (((com.maddox.il2.ai.air.AutopilotAI)AP).bStabSpeed ? "Stab SPD " : "   ") + (((com.maddox.il2.ai.air.Pilot)((com.maddox.il2.objects.air.Aircraft)actor).FM).isDumb() ? "DUMB " : " ") + (((com.maddox.il2.ai.air.Pilot)((com.maddox.il2.objects.air.Aircraft)actor).FM).Gears.lgear ? "L " : " ") + (((com.maddox.il2.ai.air.Pilot)((com.maddox.il2.objects.air.Aircraft)actor).FM).Gears.rgear ? "R " : " ") + (((com.maddox.il2.ai.air.Pilot)((com.maddox.il2.objects.air.Aircraft)actor).FM).TaxiMode ? "TaxiMode" : ""));
+        com.maddox.il2.engine.TextScr.output(i + 7, 245, " ====== " + com.maddox.il2.ai.air.ManString.name(program[1]));
+        com.maddox.il2.engine.TextScr.output(i + 7, 265, "  ===== " + com.maddox.il2.ai.air.ManString.name(program[2]));
+        com.maddox.il2.engine.TextScr.output(i + 7, 285, "   ==== " + com.maddox.il2.ai.air.ManString.name(program[3]));
+        com.maddox.il2.engine.TextScr.output(i + 7, 305, "    === " + com.maddox.il2.ai.air.ManString.name(program[4]));
+        com.maddox.il2.engine.TextScr.output(i + 7, 325, "     == " + com.maddox.il2.ai.air.ManString.name(program[5]));
+        com.maddox.il2.engine.TextScr.output(i + 7, 345, "      = " + com.maddox.il2.ai.air.ManString.name(program[6]) + "  " + (target != null ? "TARGET  " : "") + (target_ground != null ? "GROUND  " : "") + (danger != null ? "DANGER  " : ""));
+        if(target != null && com.maddox.il2.engine.Actor.isValid(target.actor))
+            com.maddox.il2.engine.TextScr.output(i + 1, 365, " AT: (" + target.actor.name() + ") " + ((target.actor instanceof com.maddox.il2.objects.air.Aircraft) ? "" : target.actor.getClass().getName()));
+        if(target_ground != null && com.maddox.il2.engine.Actor.isValid(target_ground))
+            com.maddox.il2.engine.TextScr.output(i + 1, 385, " GT: (" + target_ground.name() + ") ..." + target_ground.getClass().getName());
+        com.maddox.il2.engine.TextScr.output(400, 500, "+");
+        com.maddox.il2.engine.TextScr.output(400, 400, "|");
+        com.maddox.il2.engine.TextScr.output((int)(400F + 200F * CT.AileronControl), (int)(500F - 200F * CT.ElevatorControl), "+");
+        com.maddox.il2.engine.TextScr.output((int)(400F + 200F * CT.RudderControl), 400, "|");
+        com.maddox.il2.engine.TextScr.output(250, 780, "followOffset  " + followOffset.x + "  " + followOffset.y + "  " + followOffset.z + "  ");
+        if(Group != null && Group.enemies != null)
+            com.maddox.il2.engine.TextScr.output(250, 760, "Enemies   " + com.maddox.il2.ai.air.AirGroupList.length(Group.enemies[0]));
+        com.maddox.il2.engine.TextScr.output(700, 780, "speedMode   " + speedMode);
+        if(Group != null)
+            com.maddox.il2.engine.TextScr.output(700, 760, "Group task  " + Group.grTaskName());
+        if(AP.way.isLandingOnShip())
+            com.maddox.il2.engine.TextScr.output(5, 460, "Landing On Carrier");
+        com.maddox.il2.engine.TextScr.output(700, 740, "gattackCounter  " + gattackCounter);
+        com.maddox.il2.engine.TextScr.output(5, 360, "silence = " + silence);
+    }
+
+    private void groundAttackGuns(com.maddox.il2.engine.Actor actor, float f)
+    {
+        if(submaneuver == 0 && sub_Man_Count == 0 && CT.Weapons[1] != null)
+        {
+            float f1 = ((com.maddox.il2.engine.GunGeneric)CT.Weapons[1][0]).bulletSpeed();
+            if(f1 > 0.01F)
+                bullTime = 1.0F / (f1 + getSpeed());
+        }
+        maxAOA = 15F;
+        minElevCoeff = 20F;
+        switch(submaneuver)
+        {
+        case 0: // '\0'
+            setCheckGround(true);
+            rocketsDelay = 0;
+            if(sub_Man_Count == 0)
+            {
+                Vtarg.set(actor.pos.getAbsPoint());
+                actor.getSpeed(tmpV3d);
+                tmpV3f.x = (float)tmpV3d.x;
+                tmpV3f.y = (float)tmpV3d.y;
+                tmpV3f.z = (float)tmpV3d.z;
+                tmpV3f.z = 0.0D;
+                if(tmpV3f.length() < 9.9999997473787516E-005D)
+                {
+                    tmpV3f.sub(Vtarg, Loc);
+                    tmpV3f.z = 0.0D;
+                }
+                tmpV3f.normalize();
+                Vtarg.x -= tmpV3f.x * 1500D;
+                Vtarg.y -= tmpV3f.y * 1500D;
+                Vtarg.z += 400D;
+                constVtarg.set(Vtarg);
+                Ve.sub(constVtarg, Loc);
+                Ve.normalize();
+                Vxy.cross(Ve, tmpV3f);
+                Ve.sub(tmpV3f);
+                Vtarg.z += 100D;
+                if(Vxy.z > 0.0D)
+                {
+                    Vtarg.x += Ve.y * 1000D;
+                    Vtarg.y -= Ve.x * 1000D;
+                } else
+                {
+                    Vtarg.x -= Ve.y * 1000D;
+                    Vtarg.y += Ve.x * 1000D;
+                }
+                constVtarg1.set(Vtarg);
+            }
+            Ve.set(constVtarg1);
+            Ve.sub(Loc);
+            float f2 = (float)Ve.length();
+            Or.transformInv(Ve);
+            if(Ve.x < 0.0D)
+            {
+                push(0);
+                push(8);
+                pop();
+                dontSwitch = true;
+            } else
+            {
+                Ve.normalize();
+                setSpeedMode(4);
+                smConstSpeed = 100F;
+                farTurnToDirection();
+                sub_Man_Count++;
+                if(f2 < 300F)
+                {
+                    submaneuver++;
+                    gattackCounter++;
+                    sub_Man_Count = 0;
+                }
+            }
+            break;
+
+        case 1: // '\001'
+            Ve.set(constVtarg);
+            Ve.sub(Loc);
+            float f3 = (float)Ve.length();
+            Or.transformInv(Ve);
+            Ve.normalize();
+            setSpeedMode(4);
+            smConstSpeed = 100F;
+            farTurnToDirection();
+            sub_Man_Count++;
+            if(f3 < 300F)
+            {
+                submaneuver++;
+                gattackCounter++;
+                sub_Man_Count = 0;
+            }
+            break;
+
+        case 2: // '\002'
+            if(rocketsDelay > 0)
+                rocketsDelay--;
+            if(sub_Man_Count > 100)
+                setCheckGround(false);
+            P.set(actor.pos.getAbsPoint());
+            P.z += 4D;
+            com.maddox.il2.engine.Engine.land();
+            if(com.maddox.il2.engine.Landscape.rayHitHQ(Loc, P, P))
+            {
+                push(0);
+                push(38);
+                pop();
+                gattackCounter--;
+                if(gattackCounter < 0)
+                    gattackCounter = 0;
+            }
+            Ve.sub(actor.pos.getAbsPoint(), Loc);
+            Vtarg.set(Ve);
+            float f4 = (float)Ve.length();
+            actor.getSpeed(tmpV3d);
+            tmpV3f.x = (float)tmpV3d.x;
+            tmpV3f.y = (float)tmpV3d.y;
+            tmpV3f.z = (float)tmpV3d.z;
+            tmpV3f.sub(Vwld);
+            tmpV3f.scale(f4 * bullTime * 0.3333F * (float)Skill);
+            Ve.add(tmpV3f);
+            float f5 = 0.3F * (f4 - 1000F);
+            if(f5 < 0.0F)
+                f5 = 0.0F;
+            if(f5 > 300F)
+                f5 = 300F;
+            f5 += f4 * getAOA() * 0.005F;
+            Ve.z += f5 + com.maddox.il2.ai.World.cur().rnd.nextFloat(-3F, 3F) * (float)(3 - Skill);
+            Or.transformInv(Ve);
+            if(f4 < 800F && (shotAtFriend <= 0 || distToFriend > f4) && java.lang.Math.abs(Ve.y) < 15D && java.lang.Math.abs(Ve.z) < 10D)
+            {
+                if(f4 < 550F)
+                    CT.WeaponControl[0] = true;
+                if(f4 < 450F)
+                    CT.WeaponControl[1] = true;
+                if(CT.Weapons[2] != null && CT.Weapons[2][0] != null && CT.Weapons[2][CT.Weapons[2].length - 1].countBullets() != 0 && rocketsDelay < 1 && f4 < 500F)
+                {
+                    CT.WeaponControl[2] = true;
+                    com.maddox.il2.objects.sounds.Voice.speakAttackByRockets((com.maddox.il2.objects.air.Aircraft)this.actor);
+                    rocketsDelay += 30;
+                }
+            }
+            if(sub_Man_Count > 200 && Ve.x < 200D || Alt < 40F)
+            {
+                if(Leader == null || !com.maddox.il2.engine.Actor.isAlive(Leader.actor))
+                    com.maddox.il2.objects.sounds.Voice.speakEndGattack((com.maddox.il2.objects.air.Aircraft)this.actor);
+                rocketsDelay = 0;
+                push(0);
+                push(55);
+                push(10);
+                pop();
+                dontSwitch = true;
+                return;
+            }
+            Ve.normalize();
+            attackTurnToDirection(f4, f, 4F + (float)Skill * 2.0F);
+            setSpeedMode(4);
+            smConstSpeed = 100F;
+            break;
+
+        default:
+            submaneuver = 0;
+            sub_Man_Count = 0;
+            break;
+        }
+    }
+
+    private void groundAttack(com.maddox.il2.engine.Actor actor, float f)
+    {
+        setSpeedMode(4);
+        smConstSpeed = 120F;
+        float f3 = Vwld.z <= 0.0D ? 4F : 3F;
+        boolean flag = false;
+        boolean flag1 = false;
+        if(CT.Weapons[3] != null && CT.Weapons[3][0] != null && CT.Weapons[3][0].countBullets() != 0)
+        {
+            flag = true;
+            if(CT.Weapons[3][0] instanceof com.maddox.il2.objects.weapons.ParaTorpedoGun)
+                flag1 = true;
+        } else
+        if(!(this.actor instanceof com.maddox.il2.objects.air.TypeStormovik) && !(this.actor instanceof com.maddox.il2.objects.air.TypeFighter) && !(this.actor instanceof com.maddox.il2.objects.air.TypeDiveBomber))
+        {
+            set_maneuver(0);
+            return;
+        }
+        Ve.set(actor.pos.getAbsPoint());
+        if(flag1)
+            if(CT.Weapons[3][0] instanceof com.maddox.il2.objects.weapons.BombGunTorp45_36AV_A)
+                Ve.z = (Loc.z - 100D) + com.maddox.il2.ai.World.Rnd().nextDouble() * 50D;
+            else
+                Ve.z = (Loc.z - 200D) + com.maddox.il2.ai.World.Rnd().nextDouble() * 50D;
+        float f4 = (float)Loc.z - (float)Ve.z;
+        if(f4 < 0.0F)
+            f4 = 0.0F;
+        float f5 = (float)java.lang.Math.sqrt(2.0F * f4 * 0.1019F) + 0.0017F * f4;
+        actor.getSpeed(tmpV3d);
+        if((actor instanceof com.maddox.il2.objects.air.Aircraft) && tmpV3d.length() > 20D)
+        {
+            target = ((com.maddox.il2.objects.air.Aircraft)actor).FM;
+            set_task(6);
+            clear_stack();
+            set_maneuver(27);
+            dontSwitch = true;
+            return;
+        }
+        float f6 = 0.5F;
+        if(flag)
+            f6 = (f5 + 5F) * 0.33333F;
+        Vtarg.x = (float)tmpV3d.x * f6 * (float)Skill;
+        Vtarg.y = (float)tmpV3d.y * f6 * (float)Skill;
+        Vtarg.z = (float)tmpV3d.z * f6 * (float)Skill;
+        Ve.add(Vtarg);
+        Ve.sub(Loc);
+        if(flag)
+            addWindCorrection();
+        Ve.add(0.0D, 0.0D, -0.5F + com.maddox.il2.ai.World.Rnd().nextFloat(-2F, 0.8F));
+        Vf.set(Ve);
+        float f1 = (float)java.lang.Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
+        if(flag)
+        {
+            float f7 = getSpeed() * f5 + 500F;
+            if(f1 > f7)
+                Ve.z += 200D;
+            else
+                Ve.z = 0.0D;
+        }
+        Vtarg.set(Ve);
+        Vtarg.normalize();
+        Or.transformInv(Ve);
+        if(!flag)
+        {
+            groundAttackGuns(actor, f);
+            return;
+        }
+        if((this.actor instanceof com.maddox.il2.objects.air.TypeFighter) || (this.actor instanceof com.maddox.il2.objects.air.TypeStormovik))
+        {
+            groundAttackShallowDive(actor, f);
+            return;
+        }
+        Ve.normalize();
+        Vpl.set(Vwld);
+        Vpl.normalize();
+        CT.BayDoorControl = 1.0F;
+        if(f1 + 4F * f5 < getSpeed() * f5 && Ve.x > 0.0D && Vpl.dot(Vtarg) > 0.98000001907348633D)
+        {
+            if(!bombsOut)
+            {
+                bombsOut = true;
+                if(CT.Weapons[3] != null && CT.Weapons[3][0] != null && CT.Weapons[3][0].countBullets() != 0 && !(CT.Weapons[3][0] instanceof com.maddox.il2.objects.weapons.BombGunPara))
+                    com.maddox.il2.objects.sounds.Voice.speakAttackByBombs((com.maddox.il2.objects.air.Aircraft)this.actor);
+            }
+            push(0);
+            push(55);
+            push(48);
+            pop();
+            com.maddox.il2.objects.sounds.Voice.speakEndGattack((com.maddox.il2.objects.air.Aircraft)this.actor);
+            CT.BayDoorControl = 0.0F;
+        }
+        if(Ve.x < 0.0D)
+        {
+            push(0);
+            push(55);
             push(10);
             pop();
-            this.CT.GearControl = 0.0F;
-          }
-
-          f13 = (float)tmpV3f.dot(Ve);
-          tmpV3f.scale(-f13);
-          tmpV3f.add(Po, tmpV3f);
-          tmpV3f.sub(this.Loc);
-
-          float f15 = 0.0005F * (3000.0F - f10);
-          if (f15 > 1.0F) f15 = 1.0F;
-          if (f15 < 0.1F) f15 = 0.1F;
-          float f17 = (float)tmpV3f.length();
-          if (f17 > 40.0F * f15) {
-            f17 = 40.0F * f15;
-            tmpV3f.normalize();
-            tmpV3f.scale(f17);
-          }
-
-          float f19 = this.VminFLAPS;
-          if (this.AP.way.Cur() >= 6) {
-            if (this.AP.way.isLandingOnShip()) {
-              if ((Actor.isAlive(this.AP.way.landingAirport)) && 
-                ((this.AP.way.landingAirport instanceof AirportCarrier))) {
-                float f20 = (float)((AirportCarrier)this.AP.way.landingAirport).speedLen();
-                if (this.VminFLAPS < f20 + 10.0F) f19 = f20 + 10.0F;
-              }
-            }
-            else
-              f19 = this.VminFLAPS * 1.2F;
-            if (f19 < 14.0F) f19 = 14.0F; 
-          }
-          else {
-            f19 = this.VminFLAPS * 2.0F;
-          }
-          d5 = this.Vwld.length();
-          double d6 = f19 - d5;
-          float f21 = 2.0F * paramFloat;
-          if (d6 > f21) d6 = f21;
-          if (d6 < -f21) d6 = -f21;
-
-          Ve.normalize();
-          Ve.scale(d5);
-          Ve.add(tmpV3f);
-          Ve.sub(this.Vwld);
-
-          float f22 = (50.0F * f15 - f17) * paramFloat;
-          if (Ve.length() > f22) {
-            Ve.normalize();
-            Ve.scale(f22);
-          }
-          this.Vwld.add(Ve);
-          this.Vwld.normalize();
-          this.Vwld.scale(d5 + d6);
-
-          this.Loc.x += this.Vwld.x * paramFloat;
-          this.Loc.y += this.Vwld.y * paramFloat;
-          this.Loc.z += this.Vwld.z * paramFloat;
-
-          this.Or.transformInv(tmpV3f);
-          tmpOr.setAT0(this.Vwld);
-
-          float f23 = 0.0F;
-          if (this.AP.way.isLandingOnShip()) f23 = 0.9F * (45.0F - this.Alt); else
-            f23 = 0.7F * (20.0F - this.Alt);
-          if (f23 < 0.0F) f23 = 0.0F;
-          tmpOr.increment(0.0F, 4.0F + f23, (float)(tmpV3f.y * 0.5D));
-
-          this.Or.interpolate(tmpOr, 0.5F * paramFloat);
-          this.callSuperUpdate = false;
-          this.W.set(0.0D, 0.0D, 0.0D);
-          this.CT.ElevatorControl = (0.05F + 0.3F * f23);
-          this.CT.RudderControl = (float)(-tmpV3f.y * 0.02D);
-          this.direction = this.Or.getAzimut();
         }
-        else {
-          this.AP.setStabDirection(true);
-        }
-      } else {
-        this.AP.setStabDirection(true);
-      }
-      this.dA = this.CT.ElevatorControl;
-      this.AP.update(paramFloat);
-      setSpeedControl(paramFloat);
-      this.CT.ElevatorControl = this.dA;
-      if (this.maneuver != 25) return;
-
-      if (this.Alt > 60.0F) {
-        if (this.Alt < 160.0F) this.CT.FlapsControl = 0.32F; else
-          this.CT.FlapsControl = 0.0F;
-        setSpeedMode(7);
-        this.smConstPower = 0.2F;
-        this.dA = Math.min(130.0F + this.Alt, 270.0F);
-        if ((this.Vwld.z > 0.0D) || (getSpeedKMH() < this.dA)) this.dA = (-1.2F * paramFloat); else
-          this.dA = (1.2F * paramFloat);
-        this.CT.ElevatorControl = (this.CT.ElevatorControl * 0.9F + this.dA * 0.1F);
-      } else {
-        this.minElevCoeff = 15.0F;
-        if ((this.AP.way.Cur() >= 6) || (this.AP.way.Cur() == 0)) {
-          if (this.Or.getTangage() < -5.0F) this.Or.increment(0.0F, -this.Or.getTangage() - 5.0F, 0.0F);
-          if (this.Or.getTangage() > this.Gears.Pitch + 10.0F)
-            this.Or.increment(0.0F, -(this.Or.getTangage() - (this.Gears.Pitch + 10.0F)), 0.0F);
-        }
-        this.CT.FlapsControl = 1.0F;
-        if (this.Vrel.length() < 1.0D) {
-          this.CT.FlapsControl = (this.CT.BrakeControl = 0.0F);
-          if (!this.TaxiMode) {
-            setSpeedMode(8);
-            if (this.AP.way.isLandingOnShip()) {
-              if (this.CT.getFlap() < 0.001F) this.AS.setWingFold(this.actor, 1);
-              this.CT.BrakeControl = 1.0F;
-              if ((this.CT.arrestorControl == 1.0F) && (this.Gears.onGround())) this.AS.setArrestor(this.actor, 0);
-              MsgDestroy.Post(Time.current() + 25000L, this.actor);
-            } else {
-              this.EI.setEngineStops();
-              if (this.EI.engines[0].getPropw() < 1.0F) { World.cur(); if (this.actor != World.getPlayerAircraft())
-                  MsgDestroy.Post(Time.current() + 12000L, this.actor);
-              }
-            }
-          }
-        }
-        if (getSpeed() < this.VmaxFLAPS * 0.21F) this.CT.FlapsControl = 0.0F;
-        if ((this.Vrel.length() < this.VmaxFLAPS * 0.25F) && 
-          (this.wayCurPos == null) && (!this.AP.way.isLandingOnShip())) {
-          this.TaxiMode = true;
-          this.AP.way.setCur(0);
-          return;
-        }
-
-        if ((getSpeed() > this.VminFLAPS * 0.6F) && (this.Alt < 10.0F)) {
-          setSpeedMode(8);
-          if ((this.AP.way.isLandingOnShip()) && (this.CT.bHasArrestorControl)) {
-            if (this.Vwld.z < -5.5D) this.Vwld.z *= 0.949999988079071D;
-            if (this.Vwld.z > 0.0D) this.Vwld.z *= 0.910000026226044D; 
-          }
-          else {
-            if (this.Vwld.z < -0.6000000238418579D) this.Vwld.z *= 0.9399999976158142D;
-            if (this.Vwld.z < -2.5D) this.Vwld.z = -2.5D;
-            if (this.Vwld.z > 0.0D) this.Vwld.z *= 0.910000026226044D;
-          }
-        }
-        float f6 = this.Gears.Pitch - 2.0F;
-        if (f6 < 5.0F) f6 = 5.0F;
-        if (((this.Alt < 7.0F) && (this.Or.getTangage() < f6)) || (this.AP.way.isLandingOnShip())) this.CT.ElevatorControl += 1.5F * paramFloat;
-        Controls tmp14929_14926 = this.CT; tmp14929_14926.ElevatorControl = (float)(tmp14929_14926.ElevatorControl + 0.0500000007450581D * getW().y);
-        if (this.Gears.onGround()) {
-          if (this.Gears.Pitch > 5.0F) {
-            if (this.Or.getTangage() < this.Gears.Pitch) this.CT.ElevatorControl += 1.5F * paramFloat;
-            if (!this.AP.way.isLandingOnShip())
+        if(java.lang.Math.abs(Ve.y) > 0.10000000149011612D)
+            CT.AileronControl = -(float)java.lang.Math.atan2(Ve.y, Ve.z) - 0.016F * Or.getKren();
+        else
+            CT.AileronControl = -(float)java.lang.Math.atan2(Ve.y, Ve.x) - 0.016F * Or.getKren();
+        if(java.lang.Math.abs(Ve.y) > 0.0010000000474974513D)
+            CT.RudderControl = -98F * (float)java.lang.Math.atan2(Ve.y, Ve.x);
+        else
+            CT.RudderControl = 0.0F;
+        if((double)CT.RudderControl * W.z > 0.0D)
+            W.z = 0.0D;
+        else
+            W.z *= 1.0399999618530273D;
+        float f2 = (float)java.lang.Math.atan2(Ve.z, Ve.x);
+        if(java.lang.Math.abs(Ve.y) < 0.0020000000949949026D && java.lang.Math.abs(Ve.z) < 0.0020000000949949026D)
+            f2 = 0.0F;
+        if(Ve.x < 0.0D)
+        {
+            f2 = 1.0F;
+        } else
+        {
+            if((double)f2 * W.y > 0.0D)
+                W.y = 0.0D;
+            if(f2 < 0.0F)
             {
-              Controls tmp15024_15021 = this.CT; tmp15024_15021.ElevatorControl = (float)(tmp15024_15021.ElevatorControl + 0.300000011920929D * getW().y);
-            }
-          } else {
-            this.CT.ElevatorControl = 0.0F;
-          }
-          if (!this.TaxiMode) {
-            this.AFo.setDeg(this.Or.getAzimut(), this.direction);
-            this.CT.RudderControl = (8.0F * this.AFo.getDiffRad() + 0.5F * (float)getW().z); } else {
-            this.CT.RudderControl = 0.0F;
-          }
+                if(getOverload() < 0.1F)
+                    f2 = 0.0F;
+                if(CT.ElevatorControl > 0.0F)
+                    CT.ElevatorControl = 0.0F;
+            } else
+            if(CT.ElevatorControl < 0.0F)
+                CT.ElevatorControl = 0.0F;
         }
-      }
-      this.AP.way.curr().getP(Po);
+        if(getOverload() > maxG || AOA > f3 || CT.ElevatorControl > f2)
+            CT.ElevatorControl -= 0.2F * f;
+        else
+            CT.ElevatorControl += 0.2F * f;
+    }
 
-      return;
-    case 66:
-      if ((!isCapableOfTaxiing()) || (this.EI.getThrustOutput() < 0.01F)) {
-        set_task(3);
-        this.maneuver = 0;
-        set_maneuver(49);
-        this.AP.setStabAll(false);
-      }
-      else {
-        if (this.AS.isPilotDead(0)) {
-          set_task(3);
-          this.maneuver = 0;
-          set_maneuver(44);
-          setSpeedMode(8);
-          this.smConstPower = 0.0F;
-          if (Airport.distToNearestAirport(this.Loc) > 900.0D)
-            ((Aircraft)this.actor).postEndAction(6000.0D, this.actor, 3, null);
-          else
-            MsgDestroy.Post(Time.current() + 300000L, this.actor);
-          return;
-        }
-
-        P.x = this.Loc.x;
-        P.y = this.Loc.y;
-        P.z = this.Loc.z;
-        Vcur.set(this.Vwld);
-
-        if (this.wayCurPos == null) {
-          World.cur().airdrome.findTheWay((Pilot)this);
-          this.wayPrevPos = (this.wayCurPos = getNextAirdromeWayPoint());
-        }
-        if (this.wayCurPos != null) {
-          Point_Any localPoint_Any1 = this.wayCurPos;
-          Point_Any localPoint_Any2 = this.wayPrevPos;
-          Pcur.set((float)P.x, (float)P.y);
-          f10 = Pcur.distance(localPoint_Any1);
-          f12 = Pcur.distance(localPoint_Any2);
-
-          V_to.sub(localPoint_Any1, Pcur);
-          V_to.normalize();
-
-          f13 = 5.0F + 0.1F * f10;
-          if (f13 > 12.0F) f13 = 12.0F;
-          if (f13 > 0.9F * this.VminFLAPS) f13 = 0.9F * this.VminFLAPS;
-          if (((this.curAirdromePoi < this.airdromeWay.length) && (f10 < 15.0F)) || (f10 < 4.0F))
-          {
-            f13 = 0.0F;
-            Point_Any localPoint_Any3 = getNextAirdromeWayPoint();
-            if (localPoint_Any3 == null) {
-              this.CT.setPowerControl(0.0F);
-              this.Loc.set(P);
-              this.Loc.set(this.Loc);
-              if (this.finished) return;
-              this.finished = true;
-
-              int i3 = 1000;
-              if (this.wayCurPos != null) i3 = 2400000;
-              this.actor.collide(true);
-              this.Vwld.set(0.0D, 0.0D, 0.0D);
-              this.CT.setPowerControl(0.0F);
-              this.EI.setCurControlAll(true);
-              this.EI.setEngineStops();
-              World.cur(); if (this.actor != World.getPlayerAircraft()) {
-                MsgDestroy.Post(Time.current() + i3, this.actor);
-                setStationedOnGround(true);
-                this.maneuver = 0;
-                set_maneuver(44);
-              }
-              return;
-            }
-            this.wayPrevPos = this.wayCurPos;
-            this.wayCurPos = localPoint_Any3;
-          }
-          V_to.scale(f13);
-
-          float f16 = 2.0F * paramFloat;
-          Vdiff.set(V_to);
-          Vdiff.sub(Vcur);
-          float f18 = (float)Vdiff.length();
-          if (f18 > f16) {
-            Vdiff.normalize();
-            Vdiff.scale(f16);
-          }
-          Vcur.add(Vdiff);
-
-          tmpOr.setYPR(RAD2DEG((float)Vcur.direction()), this.Or.getPitch(), 0.0F);
-          this.Or.interpolate(tmpOr, 0.2F);
-          this.Vwld.x = Vcur.x;
-          this.Vwld.y = Vcur.y;
-          P.x += Vcur.x * paramFloat;
-          P.y += Vcur.y * paramFloat;
-        } else {
-          this.wayPrevPos = (this.wayCurPos = new Point_Null((float)this.Loc.x, (float)this.Loc.y));
-          World.cur(); if (this.actor != World.getPlayerAircraft()) {
-            MsgDestroy.Post(Time.current() + 30000L, this.actor);
-            setStationedOnGround(true);
-          }
-        }
-
-        this.Loc.set(P);
-        this.Loc.set(this.Loc);
-        return;
-      }
-
-    case 49:
-      emergencyLanding(paramFloat);
-      break;
-    case 64:
-      if ((this.actor instanceof TypeGlider)) { pop(); } else {
-        if ((this.actor instanceof HE_LERCHE3)) {
-          int m = (Actor.isAlive(this.AP.way.takeoffAirport)) && ((this.AP.way.takeoffAirport instanceof AirportCarrier)) ? 1 : 0;
-          if (m == 0) this.callSuperUpdate = false;
-        }
-        this.CT.BrakeControl = 1.0F;
-        this.CT.ElevatorControl = 0.5F;
-        this.CT.setPowerControl(0.0F);
-        this.EI.setCurControlAll(false);
-        setSpeedMode(0);
-        if (World.Rnd().nextFloat() < 0.05F) {
-          this.EI.setCurControl(this.submaneuver, true);
-          if (this.EI.engines[this.submaneuver].getStage() == 0) {
-            setSpeedMode(0);
-            this.CT.setPowerControl(0.05F);
-            this.EI.engines[this.submaneuver].setControlThrottle(0.2F);
-            this.EI.toggle();
-            if (((this.actor instanceof BI_1)) || ((this.actor instanceof BI_6))) { pop(); break label23415; }
-          }
-        }
-        if (this.EI.engines[this.submaneuver].getStage() == 6) {
-          setSpeedMode(0);
-          this.EI.engines[this.submaneuver].setControlThrottle(0.0F);
-          this.submaneuver += 1;
-          this.CT.setPowerControl(0.0F);
-          if (this.submaneuver > this.EI.getNum() - 1) {
-            this.EI.setCurControlAll(true);
-            pop(); } 
-        }
-      }break;
-    case 26:
-      f7 = this.Alt;
-      f9 = 0.4F;
-      if ((Actor.isAlive(this.AP.way.takeoffAirport)) && 
-        ((this.AP.way.takeoffAirport instanceof AirportCarrier))) {
-        f7 -= ((AirportCarrier)this.AP.way.takeoffAirport).height();
-        f9 = 0.95F;
-        if ((this.Alt < 9.0F) && (this.Vwld.z < 0.0D)) this.Vwld.z *= 0.85D;
-        if (this.CT.bHasCockpitDoorControl) this.AS.setCockpitDoor(this.actor, 1);
-      }
-
-      if (this.first) {
-        setCheckGround(false);
-        this.CT.BrakeControl = 1.0F;
-        this.CT.GearControl = 1.0F;
-        this.CT.setPowerControl(0.0F);
-        if (this.CT.bHasArrestorControl) this.AS.setArrestor(this.actor, 0);
-        setSpeedMode(8);
-        if ((f7 > 7.21F) && (this.AP.way.Cur() == 0)) {
-          this.EI.setEngineRunning();
-          Aircraft.debugprintln(this.actor, "in the air - engines running!.");
-        }
-        if (!Actor.isAlive(this.AP.way.takeoffAirport)) {
-          this.direction = this.actor.pos.getAbsOrient().getAzimut();
-        }
-        if ((this.actor instanceof HE_LERCHE3)) {
-          this.maneuver = 69;
-          break label23415;
-        }
-      }
-
-      if (this.Gears.onGround()) {
-        if (this.EI.engines[0].getStage() == 0) {
-          this.CT.setPowerControl(0.0F);
-          setSpeedMode(8);
-          if (((World.Rnd().nextFloat() < 0.05F) && (this.mn_time > 1.0F)) || (this.mn_time > 8.0F)) {
-            push();
-            push(64);
-            this.submaneuver = 0;
-            this.maneuver = 0;
-            safe_pop();
-            break label23415;
-          }
-        } else {
-          Po.set(this.Loc);
-          Vpl.set(60.0D, 0.0D, 0.0D);
-          this.Or.transform(Vpl);
-          Po.add(Vpl);
-          Pd.set(Po);
-          if (this.canTakeoff) {
-            this.CT.setPowerControl(1.1F);
-            setSpeedMode(9);
-          } else {
-            setSpeedMode(8);
-            this.CT.BrakeControl = 1.0F;
-            int n = 1;
-            if (this.mn_time < 8.0F) n = 0;
-            if (this.actor != War.getNearestFriendAtPoint(Pd, (Aircraft)this.actor, 70.0F)) {
-              if ((this.actor instanceof G4M2E)) {
-                if (War.getNearestFriendAtPoint(Pd, (Aircraft)this.actor, 70.0F) != ((G4M2E)this.actor).typeDockableGetDrone())
-                  n = 0;
-              }
-              else {
-                n = 0;
-              }
-            }
-            if ((Actor.isAlive(this.AP.way.takeoffAirport)) && 
-              (this.AP.way.takeoffAirport.takeoffRequest > 0)) n = 0;
-
-            if (n != 0) {
-              this.canTakeoff = true;
-              if (Actor.isAlive(this.AP.way.takeoffAirport)) {
-                this.AP.way.takeoffAirport.takeoffRequest = 300;
-              }
-            }
-          }
-        }
-
-        if ((this.EI.engines[0].getStage() == 6) && (this.CT.bHasWingControl) && (this.CT.getWing() > 0.001F))
+    private void groundAttackKamikaze(com.maddox.il2.engine.Actor actor, float f)
+    {
+        if(submaneuver == 0 && sub_Man_Count == 0 && CT.Weapons[1] != null)
         {
-          this.AS.setWingFold(this.actor, 0);
+            float f1 = ((com.maddox.il2.engine.GunGeneric)CT.Weapons[1][0]).bulletSpeed();
+            if(f1 > 0.01F)
+                bullTime = 1.0F / f1;
         }
-      }
-      else if (this.canTakeoff) {
-        this.CT.setPowerControl(1.1F);
-        setSpeedMode(9);
-      }
-
-      if ((this.CT.FlapsControl == 0.0F) && (this.CT.getWing() < 0.001F)) this.CT.FlapsControl = 0.4F;
-
-      if ((this.EI.engines[0].getStage() == 6) && (this.CT.getPower() > f9)) {
-        this.CT.BrakeControl = 0.0F;
-        this.brakeShoe = false;
-        float f11 = this.Vmin * this.M.getFullMass() / this.M.massEmpty;
-        f12 = 12.0F * (getSpeed() / f11 - 0.2F);
-        if (this.Gears.bIsSail) f12 *= 2.0F;
-        if (this.Gears.bFrontWheel) {
-          f12 = this.Gears.Pitch + 4.0F;
-        }
-
-        if (f12 < 1.0F) f12 = 1.0F;
-        if (f12 > 10.0F) f12 = 10.0F;
-        f13 = 1.5F;
-        if ((Actor.isAlive(this.AP.way.takeoffAirport)) && 
-          ((this.AP.way.takeoffAirport instanceof AirportCarrier)) && 
-          (!this.Gears.isUnderDeck())) {
-          this.CT.GearControl = 0.0F;
-          if (f7 < 0.0F) {
-            f12 = 18.0F;
-            f13 = 0.05F;
-          } else {
-            f12 = 14.0F;
-            f13 = 0.3F;
-          }
-
-        }
-
-        if (this.Or.getTangage() < f12)
-          this.dA = (-0.7F * (this.Or.getTangage() - f12) + f13 * (float)getW().y + 0.5F * (float)getAW().y);
-        else {
-          this.dA = (-0.1F * (this.Or.getTangage() - f12) + f13 * (float)getW().y + 0.5F * (float)getAW().y);
-        }
-        this.CT.ElevatorControl += (this.dA - this.CT.ElevatorControl) * 3.0F * paramFloat; } else {
-        this.CT.ElevatorControl = 1.0F;
-      }
-      this.AFo.setDeg(this.Or.getAzimut(), this.direction);
-      double d2 = this.AFo.getDiffRad();
-      if (this.EI.engines[0].getStage() == 6) {
-        this.CT.RudderControl = (8.0F * (float)d2);
-        if ((d2 > -1.0D) && (d2 < 1.0D)) {
-          if ((Actor.isAlive(this.AP.way.takeoffAirport)) && (this.CT.getPower() > 0.3F)) {
-            double d3 = this.AP.way.takeoffAirport.ShiftFromLine(this);
-            double d4 = 3.0D - 3.0D * Math.abs(d2);
-            if (d4 > 1.0D) d4 = 1.0D;
-            d5 = 0.25D * d3 * d4;
-            if (d5 > 1.5D) d5 = 1.5D;
-            if (d5 < -1.5D) d5 = -1.5D;
-            this.CT.RudderControl += (float)d5;
-          }
-        }
-        else this.CT.BrakeControl = 1.0F;
-
-      }
-
-      this.CT.AileronControl = (-0.05F * this.Or.getKren() + 0.3F * (float)getW().y);
-
-      if ((f7 > 5.0F) && (!this.Gears.isUnderDeck())) this.CT.GearControl = 0.0F;
-      float f14 = 1.0F;
-      if (hasBombs()) f14 *= 1.7F;
-      if ((f7 > 120.0F * f14) || (getSpeed() > this.Vmin * 1.8F * f14) || ((f7 > 80.0F * f14) && (getSpeed() > this.Vmin * 1.6F * f14)) || ((f7 > 40.0F * f14) && (getSpeed() > this.Vmin * 1.3F * f14) && (this.mn_time > 60.0F + ((Aircraft)this.actor).aircIndex() * 3.0F)))
-      {
-        this.CT.FlapsControl = 0.0F;
-        this.CT.GearControl = 0.0F;
-        this.rwLoc = null;
-        if ((this.actor instanceof TypeGlider)) push(24);
-        this.maneuver = 0;
-        this.brakeShoe = false;
-        this.turnOffCollisions = false;
-        if (this.CT.bHasCockpitDoorControl) this.AS.setCockpitDoor(this.actor, 0);
-        pop();
-      }
-      if ((this.actor instanceof TypeGlider)) {
-        this.CT.BrakeControl = 0.0F;
-        this.CT.ElevatorControl = 0.05F;
-        this.canTakeoff = true; } break;
-    case 69:
-      f7 = this.Alt;
-      f9 = 0.4F;
-      this.CT.BrakeControl = 1.0F;
-      this.W.scale(0.0D);
-      int i2 = (Actor.isAlive(this.AP.way.takeoffAirport)) && ((this.AP.way.takeoffAirport instanceof AirportCarrier)) ? 1 : 0;
-      if (i2 != 0) {
-        f7 -= ((AirportCarrier)this.AP.way.takeoffAirport).height();
-        f9 = 0.8F;
-        if ((this.Alt < 9.0F) && (this.Vwld.z < 0.0D))
-          this.Vwld.z *= 0.85D;
-        if (this.CT.bHasCockpitDoorControl) {
-          this.AS.setCockpitDoor(this.actor, 1);
-        }
-      }
-      if ((this.Loc.z != 0.0D) && (((HE_LERCHE3)this.actor).suka.getPoint().z == 0.0D)) {
-        ((HE_LERCHE3)this.actor).suka.set(this.Loc, this.Or);
-      }
-      if (this.Loc.z != 0.0D) {
-        if ((this.EI.getPowerOutput() < f9) && (i2 == 0)) {
-          this.callSuperUpdate = false;
-          this.Loc.set(((HE_LERCHE3)this.actor).suka.getPoint());
-          this.Or.set(((HE_LERCHE3)this.actor).suka.getOrient());
-        } else if (f7 < 100.0F) {
-          this.Or.set(((HE_LERCHE3)this.actor).suka.getOrient());
-        }
-
-      }
-
-      if ((this.Gears.onGround()) && 
-        (this.EI.engines[0].getStage() == 0)) {
-        this.CT.setPowerControl(0.0F);
-        setSpeedMode(8);
-        if (((World.Rnd().nextFloat() < 0.05F) && (this.mn_time > 1.0F)) || (this.mn_time > 8.0F)) {
-          push();
-          push(64);
-          this.submaneuver = 0;
-          this.maneuver = 0;
-          safe_pop();
-          break label23415;
-        }
-
-      }
-
-      if (this.EI.engines[0].getStage() == 6) {
-        this.CT.BrakeControl = 0.0F;
-        this.CT.AirBrakeControl = 1.0F;
-        this.brakeShoe = false;
-        this.CT.setPowerControl(1.1F);
-        setSpeedMode(9);
-      }
-
-      if (f7 > 200.0F) {
-        this.CT.GearControl = 0.0F;
-        this.rwLoc = null;
-        this.CT.ElevatorControl = -1.0F;
-        this.CT.AirBrakeControl = 0.0F;
-        if (this.Or.getTangage() < 25.0F) {
-          this.maneuver = 0;
-        }
-        this.brakeShoe = false;
-        this.turnOffCollisions = false;
-        if (this.CT.bHasCockpitDoorControl) this.AS.setCockpitDoor(this.actor, 0);
-        pop(); } break;
-    case 28:
-      if (this.first) {
-        this.direction = World.Rnd().nextFloat(-25.0F, 25.0F);
-        this.AP.setStabAll(false);
-        setSpeedMode(6);
-
-        this.CT.RudderControl = World.Rnd().nextFloat(-0.22F, 0.22F);
-        this.submaneuver = 0;
-        if (getSpeed() < this.Vmin * 1.5F) pop();
-      }
-      this.CT.AileronControl = (-0.04F * (this.Or.getKren() - this.direction));
-      switch (this.submaneuver) {
-      case 0:
-        this.dA = 1.0F;
-        this.maxAOA = (12.0F + 1.0F * this.Skill);
-        if ((this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-          this.CT.ElevatorControl -= 0.6F * paramFloat;
-        else {
-          this.CT.ElevatorControl += 3.3F * paramFloat;
-        }
-        if (this.Or.getTangage() <= 40.0F + 5.1F * this.Skill) break; this.submaneuver += 1; break;
-      case 1:
-        this.direction = World.Rnd().nextFloat(-25.0F, 25.0F);
-        this.CT.RudderControl = World.Rnd().nextFloat(-0.75F, 0.75F);
-        this.submaneuver += 1;
-      case 2:
-        this.dA = -1.0F;
-        this.maxAOA = (12.0F + 5.0F * this.Skill);
-        if ((this.AOA < -this.maxAOA) || (this.CT.ElevatorControl < this.dA))
-          this.CT.ElevatorControl += 0.6F * paramFloat;
-        else {
-          this.CT.ElevatorControl -= 3.3F * paramFloat;
-        }
-        if (this.Or.getTangage() >= -45.0F) break; pop();
-      }
-
-      if (this.mn_time > 3.0F) pop(); break;
-    case 29:
-      this.minElevCoeff = 17.0F;
-      if (this.first) {
-        this.AP.setStabAll(false);
-        setSpeedMode(9);
-        this.sub_Man_Count = 0;
-      }
-      if (this.danger != null) {
-        if (this.sub_Man_Count == 0) {
-          tmpV3d.set(this.danger.getW());
-          this.danger.Or.transform(tmpV3d);
-          if (tmpV3d.z > 0.0D) {
-            this.sinKren = (-World.Rnd().nextFloat(60.0F, 90.0F));
-          }
-          else {
-            this.sinKren = World.Rnd().nextFloat(60.0F, 90.0F);
-          }
-
-        }
-
-        if (this.Loc.distanceSquared(this.danger.Loc) < 5000.0D) {
-          setSpeedMode(8);
-          this.CT.setPowerControl(0.0F);
-        } else {
-          setSpeedMode(9);
-        }
-      } else {
-        pop();
-      }
-
-      this.CT.FlapsControl = 0.2F;
-      if (getSpeed() < 120.0D) this.CT.FlapsControl = 0.33F;
-      if (getSpeed() < 80.0D) this.CT.FlapsControl = 1.0F;
-      this.CT.AileronControl = (-0.08F * (this.Or.getKren() + this.sinKren));
-      this.CT.ElevatorControl = 0.9F;
-      this.CT.RudderControl = 0.0F;
-      this.sub_Man_Count += 1;
-      if (this.sub_Man_Count > 15) this.sub_Man_Count = 0;
-
-      if (this.mn_time > 10.0F) pop(); break;
-    case 56:
-      if (this.first) {
-        this.submaneuver = World.Rnd().nextInt(0, 1);
-        this.direction = World.Rnd().nextFloat(-20.0F, -10.0F);
-      }
-      this.CT.AileronControl = (-0.08F * (this.Or.getKren() - this.direction));
-      switch (this.submaneuver) {
-      case 0:
-        this.dA = 1.0F;
-        this.maxAOA = (10.0F + 2.0F * this.Skill);
-        if ((getOverload() > 1.0D / Math.abs(Math.cos(Math.toRadians(this.Or.getKren())))) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-          this.CT.ElevatorControl -= 0.2F * paramFloat;
-        else {
-          this.CT.ElevatorControl += 0.4F * paramFloat;
-        }
-        this.CT.RudderControl = (-1.0F * (float)Math.sin(Math.toRadians(this.Or.getKren() + 55.0F)));
-        if (this.mn_time <= 1.5F) break; this.submaneuver += 1; break;
-      case 1:
-        this.direction = World.Rnd().nextFloat(10.0F, 20.0F);
-        this.submaneuver += 1;
-      case 2:
-        this.dA = 1.0F;
-        this.maxAOA = (10.0F + 2.0F * this.Skill);
-        if ((getOverload() > 1.0D / Math.abs(Math.cos(Math.toRadians(this.Or.getKren())))) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-          this.CT.ElevatorControl -= 0.2F * paramFloat;
-        else {
-          this.CT.ElevatorControl += 0.4F * paramFloat;
-        }
-        this.CT.RudderControl = (1.0F * (float)Math.sin(Math.toRadians(this.Or.getKren() - 55.0F)));
-        if (this.mn_time <= 4.5F) break; this.submaneuver += 1; break;
-      case 3:
-        this.direction = World.Rnd().nextFloat(-20.0F, -10.0F);
-        this.submaneuver += 1;
-      case 4:
-        this.dA = 1.0F;
-        this.maxAOA = (10.0F + 2.0F * this.Skill);
-        if ((getOverload() > 1.0D / Math.abs(Math.cos(Math.toRadians(this.Or.getKren())))) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-          this.CT.ElevatorControl -= 0.2F * paramFloat;
-        else {
-          this.CT.ElevatorControl += 0.4F * paramFloat;
-        }
-        this.CT.RudderControl = (-1.0F * (float)Math.sin(Math.toRadians(this.Or.getKren() + 55.0F)));
-        if (this.mn_time <= 6.0F) break; pop();
-      }
-
-      break;
-    case 30:
-      push(14);
-      push(18);
-      pop();
-      break;
-    case 31:
-      push(14);
-      push(19);
-      pop();
-      break;
-    case 32:
-      if ((!isCapableOfACM()) && (World.Rnd().nextInt(-2, 9) < this.Skill)) {
-        ((Aircraft)this.actor).hitDaSilk();
-      }
-      if (this.first) {
-        this.AP.setStabAll(false);
-        setSpeedMode(6);
-
-        this.submaneuver = 0;
-        this.direction = (178.0F - World.Rnd().nextFloat(0.0F, 8.0F) * this.Skill);
-      }
-      this.maxAOA = (this.Vwld.z > 0.0D ? 14.0F : 24.0F);
-      if (this.danger != null) {
-        Ve.sub(this.danger.Loc, this.Loc);
-        this.dist = (float)Ve.length();
-        this.Or.transformInv(Ve);
-        Vpl.set(this.danger.Vwld);
-        this.Or.transformInv(Vpl);
-        Vpl.normalize();
-      }
-      switch (this.submaneuver) {
-      case 0:
-        this.dA = (this.Or.getKren() - 180.0F);
-        if (this.dA < -180.0F) this.dA += 360.0F;
-        this.dA = (-0.08F * this.dA);
-        this.CT.AileronControl = this.dA;
-        this.CT.RudderControl = (this.dA > 0.0F ? 1.0F : -1.0F);
-        this.CT.ElevatorControl = (0.01111111F * Math.abs(this.Or.getKren()));
-        if ((this.mn_time <= 2.0F) && (Math.abs(this.Or.getKren()) <= this.direction)) break;
-        this.submaneuver += 1;
-        this.CT.RudderControl = World.Rnd().nextFloat(-0.5F, 0.5F);
-        this.direction = World.Rnd().nextFloat(-60.0F, -30.0F);
-        this.mn_time = 0.5F; break;
-      case 1:
-        this.dA = (this.Or.getKren() - 180.0F);
-        if (this.dA < -180.0F) this.dA += 360.0F;
-        this.dA = (-0.04F * this.dA);
-        this.CT.AileronControl = this.dA;
-        if ((this.Or.getTangage() > this.direction + 5.0F) && (getOverload() < this.maxG) && (this.AOA < this.maxAOA)) {
-          if (this.CT.ElevatorControl < 0.0F) this.CT.ElevatorControl = 0.0F;
-          this.CT.ElevatorControl += 1.0F * paramFloat;
-        } else {
-          if (this.CT.ElevatorControl > 0.0F) this.CT.ElevatorControl = 0.0F;
-          this.CT.ElevatorControl -= 1.0F * paramFloat;
-        }
-        if ((this.mn_time > 2.0F) && (this.Or.getTangage() < this.direction + 20.0F)) {
-          this.submaneuver += 1;
-        }
-        if (this.danger == null) break;
-        if ((this.Skill >= 2) && (this.Or.getTangage() < -30.0F) && (Vpl.x > 0.9986295104026794D)) this.submaneuver += 1;
-        if ((this.Skill < 3) || (Math.abs(this.Or.getTangage()) <= 145.0F) || (Math.abs(this.danger.Or.getTangage()) <= 135.0F) || (this.dist >= 400.0F)) break;
-        this.submaneuver += 1; break;
-      case 2:
-        this.direction = World.Rnd().nextFloat(-60.0F, 60.0F);
-        setSpeedMode(6);
-
-        this.submaneuver += 1;
-      case 3:
-        this.dA = (this.Or.getKren() - this.direction);
-        this.CT.AileronControl = (-0.04F * this.dA);
-        this.CT.RudderControl = (this.dA > 0.0F ? 1.0F : -1.0F);
-        this.CT.ElevatorControl = 0.5F;
-        if (Math.abs(this.dA) >= 4.0F + 3.0F * this.Skill) break; this.submaneuver += 1; break;
-      case 4:
-        this.direction *= World.Rnd().nextFloat(0.5F, 1.0F);
-        setSpeedMode(6);
-
-        this.submaneuver += 1;
-      case 5:
-        this.dA = (this.Or.getKren() - this.direction);
-        this.CT.AileronControl = (-0.04F * this.dA);
-        this.CT.RudderControl = (-0.1F * getAOS());
-        this.dA = 1.0F;
-        if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA) || (this.Or.getTangage() > 40.0F))
-          this.CT.ElevatorControl -= 0.8F * paramFloat;
-        else {
-          this.CT.ElevatorControl += 1.6F * paramFloat;
-        }
-        if ((this.Or.getTangage() > 80.0F) || (this.mn_time > 4.0F) || (getSpeed() < this.Vmin * 1.5F)) pop();
-        if ((this.danger == null) || (
-          (Ve.z >= -1.0D) && (this.dist <= 600.0F) && (Vpl.x >= 0.7880100011825562D))) break; pop();
-      }
-
-      if (this.Alt < -7.0D * this.Vwld.z) pop(); break;
-    case 33:
-      if (this.first) {
-        if (this.Alt < 1000.0F) {
-          pop();
-        }
-        else {
-          this.AP.setStabAll(false);
-          this.submaneuver = 0;
-          this.direction = ((World.Rnd().nextBoolean() ? 1.0F : -1.0F) * World.Rnd().nextFloat(107.0F, 160.0F));
-        }
-      } else {
-        this.maxAOA = (this.Vwld.z > 0.0D ? 14.0F : 24.0F);
-        switch (this.submaneuver) {
-        case 0:
-          if (Math.abs(this.Or.getKren()) < 45.0F) {
-            this.CT.ElevatorControl = (0.005555556F * Math.abs(this.Or.getKren()));
-          }
-          else if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > 1.0F))
-            this.CT.ElevatorControl -= 0.2F * paramFloat;
-          else {
-            this.CT.ElevatorControl += 1.2F * paramFloat;
-          }
-
-          this.dA = (this.Or.getKren() - this.direction);
-          this.CT.AileronControl = (-0.04F * this.dA);
-          this.CT.RudderControl = (-0.1F * getAOS());
-          if (Math.abs(this.dA) >= 4.0F + 1.0F * this.Skill) break; this.submaneuver += 1; break;
-        case 1:
-          setSpeedMode(7);
-          this.smConstPower = 0.5F;
-
-          this.CT.AileronControl = 0.0F;
-          this.CT.RudderControl = (-0.1F * getAOS());
-          this.dA = 1.0F;
-          if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-            this.CT.ElevatorControl -= 0.2F * paramFloat;
-          else {
-            this.CT.ElevatorControl += 1.2F * paramFloat;
-          }
-          if (this.Or.getTangage() >= -60.0F) break; this.submaneuver += 1; break;
-        case 2:
-          if (this.Or.getTangage() > -45.0F) {
-            this.CT.AileronControl = (-0.04F * this.Or.getKren());
-            setSpeedMode(9);
-
-            this.maxAOA = 7.0F;
-          }
-          this.CT.RudderControl = (-0.1F * getAOS());
-          this.dA = 1.0F;
-          if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-            this.CT.ElevatorControl -= 0.8F * paramFloat;
-          else {
-            this.CT.ElevatorControl += 0.4F * paramFloat;
-          }
-          if ((this.Or.getTangage() <= this.AOA - 10.0F) && (this.Vwld.z <= -1.0D)) break; pop();
-        }
-
-        if (this.Alt < -7.0D * this.Vwld.z) pop(); 
-      }break;
-    case 34:
-      if (this.first) {
-        if (this.Alt < 500.0F) {
-          pop();
-        }
-        else {
-          this.direction = this.Or.getTangage();
-          setSpeedMode(9);
-        }
-      } else {
-        this.dA = (this.Or.getKren() - (this.Or.getKren() > 0.0F ? 35.0F : -35.0F));
-
-        this.CT.AileronControl = (-0.04F * this.dA);
-        this.CT.RudderControl = (this.Or.getKren() > 0.0F ? 1.0F : -1.0F);
-        this.CT.ElevatorControl = -1.0F;
-        if ((this.direction > this.Or.getTangage() + 45.0F) || (this.Or.getTangage() < -60.0F) || (this.mn_time > 4.0F))
+        maxAOA = 15F;
+        minElevCoeff = 20F;
+        switch(submaneuver)
         {
-          pop(); } 
-      }break;
-    case 36:
-    case 37:
-      if (this.first) {
-        if (!isCapableOfACM()) pop();
-        if (getSpeed() < this.Vmax * 0.5F) {
-          pop();
-        }
-        else {
-          this.AP.setStabAll(false);
-          this.submaneuver = 0;
-          this.direction = World.Rnd().nextFloat(-30.0F, 80.0F);
-          setSpeedMode(9);
-        }
-      } else {
-        this.maxAOA = (this.Vwld.z > 0.0D ? 14.0F : 24.0F);
-        switch (this.submaneuver) {
-        case 0:
-          this.CT.AileronControl = (-0.04F * this.Or.getKren());
-          this.CT.RudderControl = (-0.1F * getAOS());
-          if (Math.abs(this.Or.getKren()) >= 45.0F) break; this.submaneuver += 1; break;
-        case 1:
-          this.CT.AileronControl = 0.0F;
-          this.dA = 1.0F;
-          if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > this.dA))
-            this.CT.ElevatorControl -= 0.4F * paramFloat;
-          else {
-            this.CT.ElevatorControl += 0.8F * paramFloat;
-          }
-          if (this.Or.getTangage() > this.direction) this.submaneuver += 1;
-          if (getSpeed() >= this.Vmin * 1.25F) break;
-          pop(); break;
-        case 2:
-          push(this.maneuver == 36 ? 7 : 35);
-          pop();
-        }
-      }
-      break;
-    case 38:
-      if (this.first) {
-        this.CT.RudderControl = (this.Or.getKren() > 0.0F ? 1.0F : -1.0F);
-      }
-      this.CT.AileronControl += -0.02F * this.Or.getKren();
-      if (this.CT.AileronControl > 0.1F) this.CT.AileronControl = 0.1F;
-      if (this.CT.AileronControl < -0.1F) this.CT.AileronControl = -0.1F;
-      this.dA = ((getSpeedKMH() - 180.0F - this.Or.getTangage() * 10.0F - getVertSpeed() * 5.0F) * 0.004F);
-      this.CT.ElevatorControl = this.dA;
-      if (this.mn_time > 3.5F) pop(); break;
-    case 39:
-      setSpeedMode(6);
-      this.CT.AileronControl = (-0.04F * this.Or.getKren());
-      this.CT.ElevatorControl = (-0.04F * (this.Or.getTangage() + 10.0F));
-      if (this.CT.RudderControl > 0.1F) this.CT.RudderControl = 0.8F;
-      else if (this.CT.RudderControl < -0.1F) this.CT.RudderControl = -0.8F; else
-        this.CT.RudderControl = (this.Or.getKren() > 0.0F ? 1.0F : -1.0F);
-      if ((getSpeed() > this.Vmax) || (this.mn_time > 7.0F)) pop(); break;
-    case 40:
-      push(39);
-      push(57);
-      pop();
-      break;
-    case 41:
-      push(13);
-      push(18);
-      pop();
-      break;
-    case 42:
-      push(19);
-      push(57);
-      pop();
-      break;
-    case 46:
-      if ((this.target_ground == null) || (this.target_ground.pos == null)) {
-        if (this.Group != null) {
-          this.dont_change_subm = true;
-          boolean bool1 = isBusy();
-          int i5 = this.Group.grTask;
-          this.Group.grTask = 4;
-          setBusy(false);
-          this.Group.setTaskAndManeuver(this.Group.numInGroup((Aircraft)this.actor));
-          setBusy(bool1);
-          this.Group.grTask = i5;
-        }
-        if ((this.target_ground == null) || (this.target_ground.pos == null)) {
-          this.AP.way.first();
-
-          Airport localAirport = Airport.nearest(this.AP.way.curr().getP(), this.actor.getArmy(), 7);
-          WayPoint localWayPoint;
-          if (localAirport != null) localWayPoint = new WayPoint(localAirport.pos.getAbsPoint()); else
-            localWayPoint = new WayPoint(this.AP.way.first().getP());
-          localWayPoint.set(0.6F * this.Vmax);
-          localWayPoint.Action = 2;
-          this.AP.way.add(localWayPoint);
-          this.AP.way.last();
-          set_task(3);
-          clear_stack();
-          this.maneuver = 21;
-          set_maneuver(21);
-          break label23415;
-        }
-      }
-      groundAttackKamikaze(this.target_ground, paramFloat);
-      break;
-    case 43:
-    case 47:
-    case 50:
-    case 51:
-    case 52:
-    case 79:
-    case 80:
-    case 81:
-      if ((this.first) && 
-        (!isCapableOfACM())) {
-        this.bombsOut = true;
-        setReadyToReturn(true);
-        if (this.Group != null) { this.Group.waitGroup(this.Group.numInGroup((Aircraft)this.actor));
-        } else {
-          this.AP.way.next();
-          set_task(3);
-          clear_stack();
-          set_maneuver(21);
-        }
-      }
-      else
-      {
-        if ((this.target_ground == null) || (this.target_ground.pos == null) || (!Actor.isAlive(this.target_ground))) {
-          int i4 = this.maneuver;
-          if ((this.Group != null) && (this.Group.grTask == 4)) {
-            this.dont_change_subm = true;
-            boolean bool2 = isBusy();
-            setBusy(false);
-            this.Group.setTaskAndManeuver(this.Group.numInGroup((Aircraft)this.actor));
-            setBusy(bool2);
-          }
-          if ((this.target_ground == null) || (this.target_ground.pos == null) || (!Actor.isAlive(this.target_ground))) {
-            if (i4 == 50) this.bombsOut = true;
-            if (this.Group != null) { this.Group.waitGroup(this.Group.numInGroup((Aircraft)this.actor));
-            } else {
-              this.AP.way.next();
-              set_task(3);
-              clear_stack();
-              set_maneuver(21);
+        case 0: // '\0'
+            setCheckGround(true);
+            rocketsDelay = 0;
+            if(sub_Man_Count == 0)
+            {
+                Vtarg.set(actor.pos.getAbsPoint());
+                tmpV3f.set(Vwld);
+                tmpV3f.x += com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F);
+                tmpV3f.y += com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F);
+                tmpV3f.z = 0.0D;
+                if(tmpV3f.length() < 9.9999997473787516E-005D)
+                {
+                    tmpV3f.sub(Vtarg, Loc);
+                    tmpV3f.z = 0.0D;
+                }
+                tmpV3f.normalize();
+                Vtarg.x -= tmpV3f.x * 1500D;
+                Vtarg.y -= tmpV3f.y * 1500D;
+                Vtarg.z += 400D;
+                constVtarg.set(Vtarg);
+                Ve.sub(constVtarg, Loc);
+                Ve.normalize();
+                Vxy.cross(Ve, tmpV3f);
+                Ve.sub(tmpV3f);
+                Vtarg.z += 100D;
+                if(Vxy.z > 0.0D)
+                {
+                    Vtarg.x += Ve.y * 1000D;
+                    Vtarg.y -= Ve.x * 1000D;
+                } else
+                {
+                    Vtarg.x -= Ve.y * 1000D;
+                    Vtarg.y += Ve.x * 1000D;
+                }
+                constVtarg1.set(Vtarg);
             }
+            Ve.set(constVtarg1);
+            Ve.sub(Loc);
+            float f2 = (float)Ve.length();
+            Or.transformInv(Ve);
+            if(Ve.x < 0.0D)
+            {
+                push(0);
+                push(8);
+                pop();
+                dontSwitch = true;
+            } else
+            {
+                Ve.normalize();
+                setSpeedMode(6);
+                farTurnToDirection();
+                sub_Man_Count++;
+                if(f2 < 300F)
+                {
+                    submaneuver++;
+                    gattackCounter++;
+                    sub_Man_Count = 0;
+                }
+                if(sub_Man_Count > 1000)
+                    sub_Man_Count = 0;
+            }
+            break;
+
+        case 1: // '\001'
+            setCheckGround(true);
+            Ve.set(constVtarg);
+            Ve.sub(Loc);
+            float f3 = (float)Ve.length();
+            Or.transformInv(Ve);
+            Ve.normalize();
+            setSpeedMode(6);
+            farTurnToDirection();
+            sub_Man_Count++;
+            if(f3 < 300F)
+            {
+                submaneuver++;
+                gattackCounter++;
+                sub_Man_Count = 0;
+            }
+            if(sub_Man_Count > 700)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            break;
+
+        case 2: // '\002'
+            setCheckGround(false);
+            if(rocketsDelay > 0)
+                rocketsDelay--;
+            if(sub_Man_Count > 100)
+                setCheckGround(false);
+            Ve.set(actor.pos.getAbsPoint());
+            Ve.sub(Loc);
+            Vtarg.set(Ve);
+            float f4 = (float)Ve.length();
+            if(this.actor instanceof com.maddox.il2.objects.air.MXY_7)
+            {
+                Ve.z += 0.01D * (double)f4;
+                Vtarg.z += 0.01D * (double)f4;
+            }
+            actor.getSpeed(tmpV3d);
+            tmpV3f.x = (float)tmpV3d.x;
+            tmpV3f.y = (float)tmpV3d.y;
+            tmpV3f.z = (float)tmpV3d.z;
+            tmpV3f.sub(Vwld);
+            tmpV3f.scale(f4 * bullTime * 0.3333F * (float)Skill);
+            Ve.add(tmpV3f);
+            float f5 = 0.3F * (f4 - 1000F);
+            if(f5 < 0.0F)
+                f5 = 0.0F;
+            if(f5 > 300F)
+                f5 = 300F;
+            Ve.z += f5 + com.maddox.il2.ai.World.cur().rnd.nextFloat(-3F, 3F) * (float)(3 - Skill);
+            Or.transformInv(Ve);
+            if(f4 < 50F && java.lang.Math.abs(Ve.y) < 40D && java.lang.Math.abs(Ve.z) < 30D)
+            {
+                CT.WeaponControl[0] = true;
+                CT.WeaponControl[1] = true;
+                CT.WeaponControl[2] = true;
+                CT.WeaponControl[3] = true;
+            }
+            if(Ve.x < -50D)
+            {
+                rocketsDelay = 0;
+                push(0);
+                push(55);
+                push(10);
+                pop();
+                dontSwitch = true;
+                return;
+            }
+            Ve.normalize();
+            attackTurnToDirection(f4, f, 4F + (float)Skill * 2.0F);
+            setSpeedMode(4);
+            smConstSpeed = 130F;
+            break;
+
+        default:
+            submaneuver = 0;
+            sub_Man_Count = 0;
+            break;
+        }
+    }
+
+    private void groundAttackTinyTim(com.maddox.il2.engine.Actor actor, float f)
+    {
+        maxG = 5F;
+        maxAOA = 8F;
+        setSpeedMode(4);
+        smConstSpeed = 120F;
+        minElevCoeff = 20F;
+        switch(submaneuver)
+        {
+        case 0: // '\0'
+            if(sub_Man_Count == 0)
+            {
+                Vtarg.set(actor.pos.getAbsPoint());
+                actor.getSpeed(tmpV3d);
+                if(tmpV3d.length() < 0.5D)
+                    tmpV3d.sub(Vtarg, Loc);
+                tmpV3d.normalize();
+                Vtarg.x -= tmpV3d.x * 3000D;
+                Vtarg.y -= tmpV3d.y * 3000D;
+                Vtarg.z += 500D;
+            }
+            Ve.sub(Vtarg, Loc);
+            double d = Ve.length();
+            Or.transformInv(Ve);
+            sub_Man_Count++;
+            if(d < 1000D)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            Ve.normalize();
+            farTurnToDirection();
+            break;
+
+        case 1: // '\001'
+            Vtarg.set(actor.pos.getAbsPoint());
+            Vtarg.z += 80D;
+            Ve.sub(Vtarg, Loc);
+            double d1 = Ve.length();
+            Or.transformInv(Ve);
+            sub_Man_Count++;
+            if(d1 < 1500D)
+            {
+                if(java.lang.Math.abs(Ve.y) < 40D && java.lang.Math.abs(Ve.z) < 30D)
+                    CT.WeaponControl[2] = true;
+                push(0);
+                push(10);
+                push(48);
+                pop();
+                dontSwitch = true;
+            }
+            if(d1 < 500D && Ve.x < 0.0D)
+            {
+                push(0);
+                push(10);
+                pop();
+            }
+            Ve.normalize();
+            if(Ve.x < 0.80000001192092896D)
+                turnToDirection(f);
+            else
+                attackTurnToDirection((float)d1, f, 2.0F + (float)Skill * 1.5F);
+            break;
+
+        default:
+            submaneuver = 0;
+            sub_Man_Count = 0;
+            break;
+        }
+    }
+
+    private void groundAttackHS293(com.maddox.il2.engine.Actor actor, float f)
+    {
+        maxG = 5F;
+        maxAOA = 8F;
+        setSpeedMode(4);
+        smConstSpeed = 120F;
+        minElevCoeff = 20F;
+        switch(submaneuver)
+        {
+        case 0: // '\0'
+            if(sub_Man_Count == 0)
+            {
+                Vtarg.set(actor.pos.getAbsPoint());
+                actor.getSpeed(tmpV3d);
+                if(tmpV3d.length() < 0.5D)
+                    tmpV3d.sub(Vtarg, Loc);
+                tmpV3d.normalize();
+                Vtarg.x -= tmpV3d.x * 3000D;
+                Vtarg.y -= tmpV3d.y * 3000D;
+                Vtarg.z += 500D;
+            }
+            Ve.sub(Vtarg, Loc);
+            double d = Ve.length();
+            Or.transformInv(Ve);
+            sub_Man_Count++;
+            if(d < 10000D)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            Ve.normalize();
+            farTurnToDirection();
+            break;
+
+        case 1: // '\001'
+            Vtarg.set(actor.pos.getAbsPoint());
+            Vtarg.z += 2000D;
+            Ve.sub(Vtarg, Loc);
+            double d1 = Ve.angle(Vwld);
+            Ve.z = 0.0D;
+            double d2 = Ve.length();
+            Or.transformInv(Ve);
+            sub_Man_Count++;
+            com.maddox.il2.objects.air.TypeGuidedBombCarrier typeguidedbombcarrier = (com.maddox.il2.objects.air.TypeGuidedBombCarrier)this.actor;
+            if(d2 > 2000D && d2 < 6500D && d1 < 0.90000000000000002D && !typeguidedbombcarrier.typeGuidedBombCgetIsGuiding())
+            {
+                CT.WeaponControl[3] = true;
+                push(0);
+                push(10);
+                pop();
+                dontSwitch = true;
+            }
+            if(d2 < 500D && Ve.x < 0.0D)
+            {
+                push(0);
+                push(10);
+                pop();
+            }
+            Ve.normalize();
+            if(Ve.x < 99999.800000011921D)
+                turnToDirection(f);
+            else
+                attackTurnToDirection((float)d2, f, 2.0F + (float)Skill * 1.5F);
+            break;
+
+        default:
+            submaneuver = 0;
+            sub_Man_Count = 0;
+            break;
+        }
+    }
+
+    private void groundAttackFritzX(com.maddox.il2.engine.Actor actor, float f)
+    {
+        maxG = 5F;
+        maxAOA = 8F;
+        setSpeedMode(4);
+        smConstSpeed = 140F;
+        minElevCoeff = 20F;
+        switch(submaneuver)
+        {
+        case 0: // '\0'
+            if(sub_Man_Count == 0)
+            {
+                Vtarg.set(actor.pos.getAbsPoint());
+                actor.getSpeed(tmpV3d);
+                if(tmpV3d.length() < 0.5D)
+                    tmpV3d.sub(Vtarg, Loc);
+                tmpV3d.normalize();
+                Vtarg.x -= tmpV3d.x * 3000D;
+                Vtarg.y -= tmpV3d.y * 3000D;
+                Vtarg.z += 500D;
+            }
+            Ve.sub(Vtarg, Loc);
+            double d = Ve.length();
+            Or.transformInv(Ve);
+            sub_Man_Count++;
+            if(d < 15000D)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            Ve.normalize();
+            farTurnToDirection();
+            break;
+
+        case 1: // '\001'
+            Vtarg.set(actor.pos.getAbsPoint());
+            Vtarg.z += 2000D;
+            Ve.sub(Vtarg, Loc);
+            double d1 = Ve.angle(Vwld);
+            Ve.z = 0.0D;
+            double d2 = Ve.length();
+            Or.transformInv(Ve);
+            sub_Man_Count++;
+            com.maddox.il2.objects.air.TypeGuidedBombCarrier typeguidedbombcarrier = (com.maddox.il2.objects.air.TypeGuidedBombCarrier)this.actor;
+            if(d2 < 4000D && d1 < 0.90000000000000002D && (d2 < 2000D || d1 > 0.40000000000000002D) && !typeguidedbombcarrier.typeGuidedBombCgetIsGuiding())
+            {
+                CT.WeaponControl[3] = true;
+                setSpeedMode(5);
+                push(0);
+                push(10);
+                pop();
+                dontSwitch = true;
+            }
+            if(d2 < 500D && Ve.x < 0.0D)
+            {
+                push(0);
+                push(10);
+                pop();
+            }
+            Ve.normalize();
+            if(Ve.x < 99999.800000011921D)
+                turnToDirection(f);
+            else
+                attackTurnToDirection((float)d2, f, 2.0F + (float)Skill * 1.5F);
+            break;
+
+        default:
+            submaneuver = 0;
+            sub_Man_Count = 0;
+            break;
+        }
+    }
+
+    private void groundAttackShallowDive(com.maddox.il2.engine.Actor actor, float f)
+    {
+        maxAOA = 10F;
+        if(!hasBombs())
+        {
+            set_maneuver(0);
+            wingman(true);
+            return;
+        }
+        if(first)
+            RandomVal = 50F - com.maddox.il2.ai.World.cur().rnd.nextFloat(0.0F, 100F);
+        setSpeedMode(4);
+        smConstSpeed = 120F;
+        Ve.set(actor.pos.getAbsPoint());
+        Ve.sub(Loc);
+        addWindCorrection();
+        float f1 = (float)(-Ve.z);
+        if(f1 < 0.0F)
+            f1 = 0.0F;
+        Ve.z += 250D;
+        float f2 = (float)java.lang.Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y) + RandomVal * (float)(3 - Skill);
+        if(Ve.z < (double)(-0.1F * f2))
+            Ve.z = -0.1F * f2;
+        if((double)Alt + Ve.z < 250D)
+            Ve.z = 250F - Alt;
+        if(Alt < 50F)
+        {
+            push(10);
+            pop();
+        }
+        Vf.set(Ve);
+        CT.BayDoorControl = 1.0F;
+        float f3 = (float)Vwld.z * 0.1019F;
+        f3 += (float)java.lang.Math.sqrt(f3 * f3 + 2.0F * f1 * 0.1019F);
+        float f4 = (float)java.lang.Math.sqrt(Vwld.x * Vwld.x + Vwld.y * Vwld.y);
+        float f5 = f4 * f3 + 10F;
+        actor.getSpeed(tmpV3d);
+        tmpV3d.scale((double)f3 * 0.34999999999999998D * (double)Skill);
+        Ve.x += (float)tmpV3d.x;
+        Ve.y += (float)tmpV3d.y;
+        Ve.z += (float)tmpV3d.z;
+        if(f5 >= f2)
+        {
+            bombsOut = true;
+            com.maddox.il2.objects.sounds.Voice.speakAttackByBombs((com.maddox.il2.objects.air.Aircraft)this.actor);
+            setSpeedMode(6);
+            CT.BayDoorControl = 0.0F;
+            push(0);
+            push(55);
+            push(48);
+            pop();
+            sub_Man_Count = 0;
+        }
+        Or.transformInv(Ve);
+        Ve.normalize();
+        turnToDirection(f);
+    }
+
+    private void groundAttackDiveBomber(com.maddox.il2.engine.Actor actor, float f)
+    {
+        maxG = 5F;
+        maxAOA = 10F;
+        setSpeedMode(6);
+        maxAOA = 4F;
+        minElevCoeff = 20F;
+        if(CT.Weapons[3] == null || CT.getWeaponCount(3) == 0)
+        {
+            if(AP.way.curr().Action == 3)
+                AP.way.next();
+            set_maneuver(0);
+            wingman(true);
+            return;
+        }
+        if(Alt < 350F)
+        {
+            bombsOut = true;
+            com.maddox.il2.objects.sounds.Voice.speakAttackByBombs((com.maddox.il2.objects.air.Aircraft)this.actor);
+            setSpeedMode(6);
+            CT.BayDoorControl = 0.0F;
+            CT.AirBrakeControl = 0.0F;
+            AP.way.next();
+            push(0);
+            push(8);
             push(2);
             pop();
-            break label23415;
-          }
+            sub_Man_Count = 0;
         }
-
-        switch (this.maneuver) {
-        case 43:
-          groundAttack(this.target_ground, paramFloat);
-          if (this.mn_time <= 120.0F) break;
-          set_maneuver(0); break;
-        case 50:
-          groundAttackDiveBomber(this.target_ground, paramFloat);
-          if (this.mn_time <= 120.0F) break;
-          setSpeedMode(6);
-          this.CT.BayDoorControl = 0.0F;
-          this.CT.AirBrakeControl = 0.0F;
-          this.CT.FlapsControl = 0.0F;
-          pop();
-          this.sub_Man_Count = 0; break;
-        case 51:
-          groundAttackTorpedo(this.target_ground, paramFloat);
-          break;
-        case 81:
-          groundAttackTorpedoToKG(this.target_ground, paramFloat);
-          break;
-        case 52:
-          groundAttackCassette(this.target_ground, paramFloat);
-          break;
-        case 46:
-          groundAttackKamikaze(this.target_ground, paramFloat);
-          break;
-        case 47:
-          groundAttackTinyTim(this.target_ground, paramFloat);
-          break;
-        case 79:
-          groundAttackHS293(this.target_ground, paramFloat);
-          break;
-        case 80:
-          groundAttackFritzX(this.target_ground, paramFloat); }  } case 58:
-    case 71:
-    case 72:
-    case 73:
-    case 74:
-    case 75:
-    case 76:
-    case 77:
-    case 78: } label23415: if (this.checkGround) doCheckGround(paramFloat);
-    if ((this.checkStrike) && (this.strikeEmer)) doCheckStrike();
-    this.strikeEmer = false;
-    setSpeedControl(paramFloat);
-
-    this.first = false;
-    this.mn_time += paramFloat;
-    if (this.frequentControl) this.AP.update(paramFloat); else
-      this.AP.update(paramFloat * 4.0F);
-    if (this.bBusy) this.wasBusy = true; else this.wasBusy = false;
-    if (this.shotAtFriend > 0) this.shotAtFriend -= 1;
-  }
-
-  void OutCT(int paramInt)
-  {
-    if (this.actor != Main3D.cur3D().viewActor()) return;
-
-    TextScr.output(paramInt + 5, 45, "Alt(MSL)  " + (int)this.Loc.z + "    " + (this.CT.BrakeControl > 0.0F ? "BRAKE" : ""));
-    TextScr.output(paramInt + 5, 65, "Alt(AGL)  " + (int)(this.Loc.z - Engine.land().HQ_Air(this.Loc.x, this.Loc.y)));
-
-    int i = 0;
-    TextScr.output(paramInt + 225, 140, "---ENGINES (" + this.EI.getNum() + ")---" + this.EI.engines[i].getStage());
-    TextScr.output(paramInt + 245, 120, "THTL " + (int)(100.0F * this.EI.engines[i].getControlThrottle()) + "%" + (this.EI.engines[i].getControlAfterburner() ? " (NITROS)" : ""));
-    TextScr.output(paramInt + 245, 100, "PROP " + (int)(100.0F * this.EI.engines[i].getControlProp()) + "%" + (this.CT.getStepControlAuto() ? " (AUTO)" : ""));
-    TextScr.output(paramInt + 245, 80, "MIX " + (int)(100.0F * this.EI.engines[i].getControlMix()) + "%");
-    TextScr.output(paramInt + 245, 60, "RAD " + (int)(100.0F * this.EI.engines[i].getControlRadiator()) + "%" + (this.CT.getRadiatorControlAuto() ? " (AUTO)" : ""));
-    TextScr.output(paramInt + 245, 40, "SUPC " + this.EI.engines[i].getControlCompressor() + "x");
-    TextScr.output(245, 20, "PropAoA :" + (int)Math.toDegrees(this.EI.engines[i].getPropAoA()));
-
-    TextScr.output(paramInt + 455, 120, "Cyls/Cams " + this.EI.engines[i].getCylindersOperable() + "/" + this.EI.engines[0].getCylinders());
-    TextScr.output(paramInt + 455, 100, "Readyness " + (int)(100.0F * this.EI.engines[i].getReadyness()) + "%");
-    TextScr.output(paramInt + 455, 80, "PRM " + (int)((int)(this.EI.engines[i].getRPM() * 0.02F) * 50.0F) + " rpm");
-    TextScr.output(paramInt + 455, 60, "Thrust " + (int)this.EI.engines[i].getEngineForce().x + " N");
-    TextScr.output(paramInt + 455, 40, "Fuel " + (int)(100.0F * this.M.fuel / this.M.maxFuel) + "% Nitro " + (int)(100.0F * this.M.nitro / this.M.maxNitro) + "%");
-    TextScr.output(paramInt + 455, 20, "MPrs " + (int)(1000.0F * this.EI.engines[i].getManifoldPressure()) + " mBar");
-
-    TextScr.output(paramInt + 640, 140, "---Controls---");
-    TextScr.output(paramInt + 640, 120, "A/C: " + (this.CT.bHasAileronControl ? "" : "AIL ") + (this.CT.bHasElevatorControl ? "" : "ELEV ") + (this.CT.bHasRudderControl ? "" : "RUD ") + (this.Gears.bIsHydroOperable ? "" : "GEAR "));
-    TextScr.output(paramInt + 640, 100, "ENG: " + (this.EI.engines[i].isHasControlThrottle() ? "" : "THTL ") + (this.EI.engines[i].isHasControlProp() ? "" : "PROP ") + (this.EI.engines[i].isHasControlMix() ? "" : "MIX ") + (this.EI.engines[i].isHasControlCompressor() ? "" : "SUPC ") + (this.EI.engines[i].isPropAngleDeviceOperational() ? "" : "GVRNR "));
-    TextScr.output(paramInt + 640, 80, "PIL: (" + (int)(this.AS.getPilotHealth(0) * 100.0F) + "%)");
-
-    TextScr.output(paramInt + 5, 105, "V   " + (int)getSpeedKMH());
-    TextScr.output(paramInt + 5, 125, "AOA " + (int)(getAOA() * 1000.0F) / 1000.0F);
-    TextScr.output(paramInt + 5, 145, "AOS " + (int)(getAOS() * 1000.0F) / 1000.0F);
-    TextScr.output(paramInt + 5, 165, "Kr  " + (int)this.Or.getKren());
-    TextScr.output(paramInt + 5, 185, "Ta  " + (int)this.Or.getTangage());
-    TextScr.output(paramInt + 250, 185, "way.speed  " + this.AP.way.curr().getV() * 3.6F + "way.z " + this.AP.way.curr().z() + "  mn_time = " + this.mn_time);
-
-    TextScr.output(paramInt + 5, 205, "<" + this.actor.name() + ">: " + ManString.tname(this.task) + ":" + ManString.name(this.maneuver) + " , WP=" + this.AP.way.Cur() + "(" + (this.AP.way.size() - 1) + ")-" + ManString.wpname(this.AP.way.curr().Action));
-
-    TextScr.output(paramInt + 7, 225, "======= " + ManString.name(this.program[0]) + "  Sub = " + this.submaneuver + " follOffs.x = " + this.followOffset.x + "  " + (((AutopilotAI)this.AP).bWayPoint ? "Stab WPoint " : "") + (((AutopilotAI)this.AP).bStabAltitude ? "Stab ALT " : "") + (((AutopilotAI)this.AP).bStabDirection ? "Stab DIR " : "") + (((AutopilotAI)this.AP).bStabSpeed ? "Stab SPD " : "   ") + (((Pilot)((Aircraft)this.actor).FM).isDumb() ? "DUMB " : " ") + (((Pilot)((Aircraft)this.actor).FM).Gears.lgear ? "L " : " ") + (((Pilot)((Aircraft)this.actor).FM).Gears.rgear ? "R " : " ") + (((Pilot)((Aircraft)this.actor).FM).TaxiMode ? "TaxiMode" : ""));
-
-    TextScr.output(paramInt + 7, 245, " ====== " + ManString.name(this.program[1]));
-    TextScr.output(paramInt + 7, 265, "  ===== " + ManString.name(this.program[2]));
-    TextScr.output(paramInt + 7, 285, "   ==== " + ManString.name(this.program[3]));
-    TextScr.output(paramInt + 7, 305, "    === " + ManString.name(this.program[4]));
-    TextScr.output(paramInt + 7, 325, "     == " + ManString.name(this.program[5]));
-    TextScr.output(paramInt + 7, 345, "      = " + ManString.name(this.program[6]) + "  " + (this.target == null ? "" : "TARGET  ") + (this.target_ground == null ? "" : "GROUND  ") + (this.danger == null ? "" : "DANGER  "));
-
-    if ((this.target != null) && (Actor.isValid(this.target.actor))) {
-      TextScr.output(paramInt + 1, 365, " AT: (" + this.target.actor.name() + ") " + ((this.target.actor instanceof Aircraft) ? "" : this.target.actor.getClass().getName()));
-    }
-    if ((this.target_ground != null) && (Actor.isValid(this.target_ground))) {
-      TextScr.output(paramInt + 1, 385, " GT: (" + this.target_ground.name() + ") ..." + this.target_ground.getClass().getName());
-    }
-
-    TextScr.output(400, 500, "+");
-    TextScr.output(400, 400, "|");
-    TextScr.output((int)(400.0F + 200.0F * this.CT.AileronControl), (int)(500.0F - 200.0F * this.CT.ElevatorControl), "+");
-    TextScr.output((int)(400.0F + 200.0F * this.CT.RudderControl), 400, "|");
-    TextScr.output(250, 780, "followOffset  " + this.followOffset.x + "  " + this.followOffset.y + "  " + this.followOffset.z + "  ");
-    if ((this.Group != null) && (this.Group.enemies != null)) TextScr.output(250, 760, "Enemies   " + AirGroupList.length(this.Group.enemies[0]));
-    TextScr.output(700, 780, "speedMode   " + this.speedMode);
-    if (this.Group != null) TextScr.output(700, 760, "Group task  " + this.Group.grTaskName());
-    if (this.AP.way.isLandingOnShip()) TextScr.output(5, 460, "Landing On Carrier");
-    TextScr.output(700, 740, "gattackCounter  " + this.gattackCounter);
-    TextScr.output(5, 360, "silence = " + this.silence);
-  }
-
-  private void groundAttackGuns(Actor paramActor, float paramFloat)
-  {
-    float f1;
-    if ((this.submaneuver == 0) && (this.sub_Man_Count == 0) && 
-      (this.CT.Weapons[1] != null)) {
-      f1 = ((GunGeneric)this.CT.Weapons[1][0]).bulletSpeed();
-      if (f1 > 0.01F) {
-        this.bullTime = (1.0F / (f1 + getSpeed()));
-      }
-
-    }
-
-    this.maxAOA = 15.0F;
-    this.minElevCoeff = 20.0F;
-
-    switch (this.submaneuver) {
-    case 0:
-      setCheckGround(true);
-      this.rocketsDelay = 0;
-      if (this.sub_Man_Count == 0) {
-        this.Vtarg.set(paramActor.pos.getAbsPoint());
-        paramActor.getSpeed(tmpV3d);
-        tmpV3f.x = (float)tmpV3d.x; tmpV3f.y = (float)tmpV3d.y; tmpV3f.z = (float)tmpV3d.z;
-        tmpV3f.z = 0.0D;
-        if (tmpV3f.length() < 9.999999747378752E-005D) {
-          tmpV3f.sub(this.Vtarg, this.Loc);
-          tmpV3f.z = 0.0D;
-        }
-        tmpV3f.normalize();
-        this.Vtarg.x -= tmpV3f.x * 1500.0D;
-        this.Vtarg.y -= tmpV3f.y * 1500.0D;
-        this.Vtarg.z += 400.0D;
-        this.constVtarg.set(this.Vtarg);
-
-        Ve.sub(this.constVtarg, this.Loc);
-        Ve.normalize();
-        this.Vxy.cross(Ve, tmpV3f);
-        Ve.sub(tmpV3f);
-        this.Vtarg.z += 100.0D;
-        if (this.Vxy.z > 0.0D) {
-          this.Vtarg.x += Ve.y * 1000.0D;
-          this.Vtarg.y -= Ve.x * 1000.0D;
-        } else {
-          this.Vtarg.x -= Ve.y * 1000.0D;
-          this.Vtarg.y += Ve.x * 1000.0D;
-        }
-        this.constVtarg1.set(this.Vtarg);
-      }
-
-      Ve.set(this.constVtarg1);
-      Ve.sub(this.Loc);
-      f1 = (float)Ve.length();
-      this.Or.transformInv(Ve);
-      if (Ve.x < 0.0D) {
-        push(0);
-        push(8);
-        pop();
-        this.dontSwitch = true;
-      }
-      else {
-        Ve.normalize();
-
-        setSpeedMode(4);
-        this.smConstSpeed = 100.0F;
-        farTurnToDirection();
-
-        this.sub_Man_Count += 1;
-        if (f1 >= 300.0F) break;
-        this.submaneuver += 1;
-        this.gattackCounter += 1;
-        this.sub_Man_Count = 0; } break;
-    case 1:
-      Ve.set(this.constVtarg);
-      Ve.sub(this.Loc);
-      f1 = (float)Ve.length();
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-
-      setSpeedMode(4);
-      this.smConstSpeed = 100.0F;
-      farTurnToDirection();
-
-      this.sub_Man_Count += 1;
-      if (f1 >= 300.0F) break;
-      this.submaneuver += 1;
-      this.gattackCounter += 1;
-      this.sub_Man_Count = 0; break;
-    case 2:
-      if (this.rocketsDelay > 0) this.rocketsDelay -= 1;
-      if (this.sub_Man_Count > 100) setCheckGround(false);
-      P.set(paramActor.pos.getAbsPoint());
-      P.z += 4.0D;
-      Engine.land(); if (Landscape.rayHitHQ(this.Loc, P, P)) {
-        push(0);
-        push(38);
-        pop();
-        this.gattackCounter -= 1;
-        if (this.gattackCounter < 0) this.gattackCounter = 0;
-      }
-      Ve.sub(paramActor.pos.getAbsPoint(), this.Loc);
-
-      this.Vtarg.set(Ve);
-      f1 = (float)Ve.length();
-      paramActor.getSpeed(tmpV3d);
-      tmpV3f.x = (float)tmpV3d.x; tmpV3f.y = (float)tmpV3d.y; tmpV3f.z = (float)tmpV3d.z;
-      tmpV3f.sub(this.Vwld);
-      tmpV3f.scale(f1 * this.bullTime * 0.3333F * this.Skill);
-      Ve.add(tmpV3f);
-      float f2 = 0.3F * (f1 - 1000.0F);
-      if (f2 < 0.0F) f2 = 0.0F;
-      if (f2 > 300.0F) f2 = 300.0F;
-
-      f2 += f1 * getAOA() * 0.005F;
-
-      Ve.z += f2 + World.cur().rnd.nextFloat(-3.0F, 3.0F) * (3 - this.Skill);
-
-      this.Or.transformInv(Ve);
-      if ((f1 < 800.0F) && ((this.shotAtFriend <= 0) || (this.distToFriend > f1)) && 
-        (Math.abs(Ve.y) < 15.0D) && (Math.abs(Ve.z) < 10.0D)) {
-        if (f1 < 550.0F) this.CT.WeaponControl[0] = true;
-        if (f1 < 450.0F) this.CT.WeaponControl[1] = true;
-        if ((this.CT.Weapons[2] != null) && (this.CT.Weapons[2][0] != null) && (this.CT.Weapons[2][(this.CT.Weapons[2].length - 1)].countBullets() != 0) && (this.rocketsDelay < 1) && (f1 < 500.0F))
+        Ve.set(actor.pos.getAbsPoint());
+        Ve.sub(Loc);
+        float f5 = (float)(-Ve.z);
+        float f2 = (float)java.lang.Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y + Ve.z * Ve.z);
+        float f1 = (float)java.lang.Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
+        if(f1 > 1000F || submaneuver == 3 && sub_Man_Count > 100)
         {
-          this.CT.WeaponControl[2] = true;
-          Voice.speakAttackByRockets((Aircraft)this.actor);
-          this.rocketsDelay += 30;
-        }
-      }
-
-      if (((this.sub_Man_Count > 200) && (Ve.x < 200.0D)) || (this.Alt < 40.0F)) {
-        if ((this.Leader == null) || (!Actor.isAlive(this.Leader.actor))) {
-          Voice.speakEndGattack((Aircraft)this.actor);
-        }
-        this.rocketsDelay = 0;
-        push(0);
-        push(55);
-        push(10);
-        pop();
-        this.dontSwitch = true;
-        return;
-      }
-
-      Ve.normalize();
-
-      attackTurnToDirection(f1, paramFloat, 4.0F + this.Skill * 2.0F);
-      setSpeedMode(4);
-      this.smConstSpeed = 100.0F;
-
-      break;
-    default:
-      this.submaneuver = 0;
-      this.sub_Man_Count = 0;
-    }
-  }
-
-  private void groundAttack(Actor paramActor, float paramFloat)
-  {
-    setSpeedMode(4);
-    this.smConstSpeed = 120.0F;
-    float f3 = this.Vwld.z > 0.0D ? 3.0F : 4.0F;
-
-    int i = 0;
-    int j = 0;
-    if ((this.CT.Weapons[3] != null) && (this.CT.Weapons[3][0] != null) && (this.CT.Weapons[3][0].countBullets() != 0)) {
-      i = 1;
-      if ((this.CT.Weapons[3][0] instanceof ParaTorpedoGun))
-      {
-        j = 1;
-      }
-    }
-    else if ((!(this.actor instanceof TypeStormovik)) && (!(this.actor instanceof TypeFighter)) && (!(this.actor instanceof TypeDiveBomber)))
-    {
-      set_maneuver(0);
-      return;
-    }
-
-    Ve.set(paramActor.pos.getAbsPoint());
-
-    if (j != 0)
-    {
-      if ((this.CT.Weapons[3][0] instanceof BombGunTorp45_36AV_A))
-        Ve.z = (this.Loc.z - 100.0D + World.Rnd().nextDouble() * 50.0D);
-      else {
-        Ve.z = (this.Loc.z - 200.0D + World.Rnd().nextDouble() * 50.0D);
-      }
-    }
-    float f4 = (float)this.Loc.z - (float)Ve.z;
-    if (f4 < 0.0F) f4 = 0.0F;
-    float f5 = (float)Math.sqrt(2.0F * f4 * 0.1019F) + 0.0017F * f4;
-
-    paramActor.getSpeed(tmpV3d);
-    if (((paramActor instanceof Aircraft)) && 
-      (tmpV3d.length() > 20.0D)) {
-      this.target = ((Aircraft)paramActor).FM;
-      set_task(6);
-      clear_stack();
-      set_maneuver(27);
-      this.dontSwitch = true;
-      return;
-    }
-
-    float f6 = 0.5F;
-    if (i != 0) f6 = (f5 + 5.0F) * 0.33333F;
-    this.Vtarg.x = ((float)tmpV3d.x * f6 * this.Skill);
-    this.Vtarg.y = ((float)tmpV3d.y * f6 * this.Skill);
-    this.Vtarg.z = ((float)tmpV3d.z * f6 * this.Skill);
-    Ve.add(this.Vtarg);
-
-    Ve.sub(this.Loc);
-    if (i != 0) {
-      addWindCorrection();
-    }
-    Ve.add(0.0D, 0.0D, -0.5F + World.Rnd().nextFloat(-2.0F, 0.8F));
-    Vf.set(Ve);
-
-    float f1 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
-    if (i != 0) {
-      float f7 = getSpeed() * f5 + 500.0F;
-      if (f1 > f7) Ve.z += 200.0D; else
-        Ve.z = 0.0D;
-    }
-    this.Vtarg.set(Ve);
-    this.Vtarg.normalize();
-    this.Or.transformInv(Ve);
-
-    if (i == 0) {
-      groundAttackGuns(paramActor, paramFloat);
-      return;
-    }
-
-    if (((this.actor instanceof TypeFighter)) || ((this.actor instanceof TypeStormovik))) {
-      groundAttackShallowDive(paramActor, paramFloat);
-      return;
-    }
-
-    Ve.normalize();
-    Vpl.set(this.Vwld);
-    Vpl.normalize();
-    this.CT.BayDoorControl = 1.0F;
-    if ((f1 + 4.0F * f5 < getSpeed() * f5) && (Ve.x > 0.0D) && (Vpl.dot(this.Vtarg) > 0.9800000190734863D))
-    {
-      if (!this.bombsOut) {
-        this.bombsOut = true;
-        if ((this.CT.Weapons[3] != null) && (this.CT.Weapons[3][0] != null) && (this.CT.Weapons[3][0].countBullets() != 0) && (!(this.CT.Weapons[3][0] instanceof BombGunPara)))
-        {
-          Voice.speakAttackByBombs((Aircraft)this.actor);
-        }
-      }
-      push(0);
-      push(55);
-      push(48);
-      pop();
-      Voice.speakEndGattack((Aircraft)this.actor);
-      this.CT.BayDoorControl = 0.0F;
-    }
-    if (Ve.x < 0.0D) {
-      push(0);
-      push(55);
-      push(10);
-      pop();
-    }
-
-    if (Math.abs(Ve.y) > 0.1000000014901161D)
-      this.CT.AileronControl = (-(float)Math.atan2(Ve.y, Ve.z) - 0.016F * this.Or.getKren());
-    else {
-      this.CT.AileronControl = (-(float)Math.atan2(Ve.y, Ve.x) - 0.016F * this.Or.getKren());
-    }
-    if (Math.abs(Ve.y) > 0.001000000047497451D)
-      this.CT.RudderControl = (-98.0F * (float)Math.atan2(Ve.y, Ve.x));
-    else
-      this.CT.RudderControl = 0.0F;
-    if (this.CT.RudderControl * this.W.z > 0.0D) this.W.z = 0.0D; else this.W.z *= 1.039999961853027D;
-
-    float f2 = (float)Math.atan2(Ve.z, Ve.x);
-
-    if ((Math.abs(Ve.y) < 0.002000000094994903D) && (Math.abs(Ve.z) < 0.002000000094994903D)) f2 = 0.0F;
-
-    if (Ve.x < 0.0D) { f2 = 1.0F;
-    } else {
-      if (f2 * this.W.y > 0.0D) this.W.y = 0.0D;
-      if (f2 < 0.0F) {
-        if (getOverload() < 0.1F) f2 = 0.0F;
-        if (this.CT.ElevatorControl > 0.0F) this.CT.ElevatorControl = 0.0F;
-      }
-      else if (this.CT.ElevatorControl < 0.0F) { this.CT.ElevatorControl = 0.0F; }
-    }
-    if ((getOverload() > this.maxG) || (this.AOA > f3) || (this.CT.ElevatorControl > f2)) this.CT.ElevatorControl -= 0.2F * paramFloat; else
-      this.CT.ElevatorControl += 0.2F * paramFloat;
-  }
-
-  private void groundAttackKamikaze(Actor paramActor, float paramFloat)
-  {
-    float f1;
-    if ((this.submaneuver == 0) && (this.sub_Man_Count == 0) && 
-      (this.CT.Weapons[1] != null)) {
-      f1 = ((GunGeneric)this.CT.Weapons[1][0]).bulletSpeed();
-      if (f1 > 0.01F) this.bullTime = (1.0F / f1);
-
-    }
-
-    this.maxAOA = 15.0F;
-    this.minElevCoeff = 20.0F;
-
-    switch (this.submaneuver) {
-    case 0:
-      setCheckGround(true);
-      this.rocketsDelay = 0;
-      if (this.sub_Man_Count == 0) {
-        this.Vtarg.set(paramActor.pos.getAbsPoint());
-        tmpV3f.set(this.Vwld);
-        tmpV3f.x += World.Rnd().nextFloat(-100.0F, 100.0F);
-        tmpV3f.y += World.Rnd().nextFloat(-100.0F, 100.0F);
-        tmpV3f.z = 0.0D;
-        if (tmpV3f.length() < 9.999999747378752E-005D) {
-          tmpV3f.sub(this.Vtarg, this.Loc);
-          tmpV3f.z = 0.0D;
-        }
-        tmpV3f.normalize();
-        this.Vtarg.x -= tmpV3f.x * 1500.0D;
-        this.Vtarg.y -= tmpV3f.y * 1500.0D;
-        this.Vtarg.z += 400.0D;
-        this.constVtarg.set(this.Vtarg);
-
-        Ve.sub(this.constVtarg, this.Loc);
-        Ve.normalize();
-        this.Vxy.cross(Ve, tmpV3f);
-        Ve.sub(tmpV3f);
-        this.Vtarg.z += 100.0D;
-        if (this.Vxy.z > 0.0D) {
-          this.Vtarg.x += Ve.y * 1000.0D;
-          this.Vtarg.y -= Ve.x * 1000.0D;
-        } else {
-          this.Vtarg.x -= Ve.y * 1000.0D;
-          this.Vtarg.y += Ve.x * 1000.0D;
-        }
-        this.constVtarg1.set(this.Vtarg);
-      }
-
-      Ve.set(this.constVtarg1);
-      Ve.sub(this.Loc);
-      f1 = (float)Ve.length();
-      this.Or.transformInv(Ve);
-      if (Ve.x < 0.0D) {
-        push(0);
-        push(8);
-        pop();
-        this.dontSwitch = true;
-      }
-      else {
-        Ve.normalize();
-        setSpeedMode(6);
-        farTurnToDirection();
-
-        this.sub_Man_Count += 1;
-        if (f1 < 300.0F) {
-          this.submaneuver += 1;
-          this.gattackCounter += 1;
-          this.sub_Man_Count = 0;
-        }
-        if (this.sub_Man_Count <= 1000) break;
-        this.sub_Man_Count = 0; } break;
-    case 1:
-      setCheckGround(true);
-      Ve.set(this.constVtarg);
-      Ve.sub(this.Loc);
-      f1 = (float)Ve.length();
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      setSpeedMode(6);
-      farTurnToDirection();
-
-      this.sub_Man_Count += 1;
-      if (f1 < 300.0F) {
-        this.submaneuver += 1;
-        this.gattackCounter += 1;
-        this.sub_Man_Count = 0;
-      }
-      if (this.sub_Man_Count <= 700) break;
-      this.submaneuver += 1;
-      this.sub_Man_Count = 0; break;
-    case 2:
-      setCheckGround(false);
-      if (this.rocketsDelay > 0) this.rocketsDelay -= 1;
-      if (this.sub_Man_Count > 100) setCheckGround(false);
-      Ve.set(paramActor.pos.getAbsPoint());
-      Ve.sub(this.Loc);
-      this.Vtarg.set(Ve);
-      f1 = (float)Ve.length();
-      if ((this.actor instanceof MXY_7)) {
-        Ve.z += 0.01D * f1;
-        this.Vtarg.z += 0.01D * f1;
-      }
-      paramActor.getSpeed(tmpV3d);
-      tmpV3f.x = (float)tmpV3d.x; tmpV3f.y = (float)tmpV3d.y; tmpV3f.z = (float)tmpV3d.z;
-      tmpV3f.sub(this.Vwld);
-      tmpV3f.scale(f1 * this.bullTime * 0.3333F * this.Skill);
-      Ve.add(tmpV3f);
-      float f2 = 0.3F * (f1 - 1000.0F);
-      if (f2 < 0.0F) f2 = 0.0F;
-      if (f2 > 300.0F) f2 = 300.0F;
-      Ve.z += f2 + World.cur().rnd.nextFloat(-3.0F, 3.0F) * (3 - this.Skill);
-
-      this.Or.transformInv(Ve);
-      if ((f1 < 50.0F) && 
-        (Math.abs(Ve.y) < 40.0D) && (Math.abs(Ve.z) < 30.0D)) {
-        this.CT.WeaponControl[0] = true;
-        this.CT.WeaponControl[1] = true;
-        this.CT.WeaponControl[2] = true;
-        this.CT.WeaponControl[3] = true;
-      }
-
-      if (Ve.x < -50.0D) {
-        this.rocketsDelay = 0;
-        push(0);
-        push(55);
-        push(10);
-        pop();
-        this.dontSwitch = true;
-        return;
-      }
-
-      Ve.normalize();
-
-      attackTurnToDirection(f1, paramFloat, 4.0F + this.Skill * 2.0F);
-      setSpeedMode(4);
-      this.smConstSpeed = 130.0F;
-
-      break;
-    default:
-      this.submaneuver = 0;
-      this.sub_Man_Count = 0;
-    }
-  }
-
-  private void groundAttackTinyTim(Actor paramActor, float paramFloat)
-  {
-    this.maxG = 5.0F; this.maxAOA = 8.0F;
-    setSpeedMode(4);
-    this.smConstSpeed = 120.0F;
-    this.minElevCoeff = 20.0F;
-    double d;
-    switch (this.submaneuver) {
-    case 0:
-      if (this.sub_Man_Count == 0) {
-        this.Vtarg.set(paramActor.pos.getAbsPoint());
-        paramActor.getSpeed(tmpV3d);
-        if (tmpV3d.length() < 0.5D) tmpV3d.sub(this.Vtarg, this.Loc);
-        tmpV3d.normalize();
-        this.Vtarg.x -= tmpV3d.x * 3000.0D;
-        this.Vtarg.y -= tmpV3d.y * 3000.0D;
-        this.Vtarg.z += 500.0D;
-      }
-      Ve.sub(this.Vtarg, this.Loc);
-      d = Ve.length();
-      this.Or.transformInv(Ve);
-
-      this.sub_Man_Count += 1;
-      if (d < 1000.0D) {
-        this.submaneuver += 1;
-        this.sub_Man_Count = 0;
-      }
-
-      Ve.normalize();
-      farTurnToDirection();
-      break;
-    case 1:
-      this.Vtarg.set(paramActor.pos.getAbsPoint());
-      this.Vtarg.z += 80.0D;
-      Ve.sub(this.Vtarg, this.Loc);
-      d = Ve.length();
-      this.Or.transformInv(Ve);
-
-      this.sub_Man_Count += 1;
-      if (d < 1500.0D) {
-        if ((Math.abs(Ve.y) < 40.0D) && (Math.abs(Ve.z) < 30.0D)) {
-          this.CT.WeaponControl[2] = true;
-        }
-        push(0);
-        push(10);
-        push(48);
-        pop();
-        this.dontSwitch = true;
-      }
-      if ((d < 500.0D) && (Ve.x < 0.0D)) {
-        push(0);
-        push(10);
-        pop();
-      }
-
-      Ve.normalize();
-      if (Ve.x < 0.800000011920929D) turnToDirection(paramFloat); else
-        attackTurnToDirection((float)d, paramFloat, 2.0F + this.Skill * 1.5F);
-      break;
-    default:
-      this.submaneuver = 0;
-      this.sub_Man_Count = 0;
-    }
-  }
-
-  private void groundAttackHS293(Actor paramActor, float paramFloat)
-  {
-    this.maxG = 5.0F;
-    this.maxAOA = 8.0F;
-    setSpeedMode(4);
-    this.smConstSpeed = 120.0F;
-    this.minElevCoeff = 20.0F;
-    double d1;
-    switch (this.submaneuver)
-    {
-    case 0:
-      if (this.sub_Man_Count == 0)
-      {
-        this.Vtarg.set(paramActor.pos.getAbsPoint());
-        paramActor.getSpeed(tmpV3d);
-
-        if (tmpV3d.length() < 0.5D) {
-          tmpV3d.sub(this.Vtarg, this.Loc);
-        }
-
-        tmpV3d.normalize();
-
-        this.Vtarg.x -= tmpV3d.x * 3000.0D;
-        this.Vtarg.y -= tmpV3d.y * 3000.0D;
-        this.Vtarg.z += 500.0D;
-      }
-
-      Ve.sub(this.Vtarg, this.Loc);
-      d1 = Ve.length();
-
-      this.Or.transformInv(Ve);
-
-      this.sub_Man_Count += 1;
-      if (d1 < 10000.0D)
-      {
-        this.submaneuver += 1;
-        this.sub_Man_Count = 0;
-      }
-      Ve.normalize();
-
-      farTurnToDirection();
-      break;
-    case 1:
-      this.Vtarg.set(paramActor.pos.getAbsPoint());
-      this.Vtarg.z += 2000.0D;
-      Ve.sub(this.Vtarg, this.Loc);
-
-      d1 = Ve.angle(this.Vwld);
-
-      Ve.z = 0.0D;
-
-      double d2 = Ve.length();
-      this.Or.transformInv(Ve);
-
-      this.sub_Man_Count += 1;
-
-      TypeGuidedBombCarrier localTypeGuidedBombCarrier = (TypeGuidedBombCarrier)this.actor;
-      if ((d2 > 2000.0D) && (d2 < 6500.0D) && (d1 < 0.9D) && (!localTypeGuidedBombCarrier.typeGuidedBombCgetIsGuiding()))
-      {
-        this.CT.WeaponControl[3] = true;
-
-        push(0);
-        push(10);
-
-        pop();
-        this.dontSwitch = true;
-      }
-      if ((d2 < 500.0D) && (Ve.x < 0.0D))
-      {
-        push(0);
-        push(10);
-        pop();
-      }
-      Ve.normalize();
-      if (Ve.x < 99999.800000011921D)
-        turnToDirection(paramFloat);
-      else
-        attackTurnToDirection((float)d2, paramFloat, 2.0F + this.Skill * 1.5F);
-      break;
-    default:
-      this.submaneuver = 0;
-      this.sub_Man_Count = 0;
-    }
-  }
-
-  private void groundAttackFritzX(Actor paramActor, float paramFloat)
-  {
-    this.maxG = 5.0F;
-    this.maxAOA = 8.0F;
-    setSpeedMode(4);
-    this.smConstSpeed = 140.0F;
-    this.minElevCoeff = 20.0F;
-    double d1;
-    switch (this.submaneuver)
-    {
-    case 0:
-      if (this.sub_Man_Count == 0)
-      {
-        this.Vtarg.set(paramActor.pos.getAbsPoint());
-        paramActor.getSpeed(tmpV3d);
-
-        if (tmpV3d.length() < 0.5D) {
-          tmpV3d.sub(this.Vtarg, this.Loc);
-        }
-
-        tmpV3d.normalize();
-
-        this.Vtarg.x -= tmpV3d.x * 3000.0D;
-        this.Vtarg.y -= tmpV3d.y * 3000.0D;
-        this.Vtarg.z += 500.0D;
-      }
-
-      Ve.sub(this.Vtarg, this.Loc);
-      d1 = Ve.length();
-
-      this.Or.transformInv(Ve);
-
-      this.sub_Man_Count += 1;
-      if (d1 < 15000.0D)
-      {
-        this.submaneuver += 1;
-        this.sub_Man_Count = 0;
-      }
-      Ve.normalize();
-
-      farTurnToDirection();
-      break;
-    case 1:
-      this.Vtarg.set(paramActor.pos.getAbsPoint());
-      this.Vtarg.z += 2000.0D;
-      Ve.sub(this.Vtarg, this.Loc);
-
-      d1 = Ve.angle(this.Vwld);
-
-      Ve.z = 0.0D;
-
-      double d2 = Ve.length();
-      this.Or.transformInv(Ve);
-
-      this.sub_Man_Count += 1;
-
-      TypeGuidedBombCarrier localTypeGuidedBombCarrier = (TypeGuidedBombCarrier)this.actor;
-      if ((d2 < 4000.0D) && (d1 < 0.9D) && ((d2 < 2000.0D) || (d1 > 0.4D)) && (!localTypeGuidedBombCarrier.typeGuidedBombCgetIsGuiding()))
-      {
-        this.CT.WeaponControl[3] = true;
-        setSpeedMode(5);
-        push(0);
-        push(10);
-
-        pop();
-        this.dontSwitch = true;
-      }
-      if ((d2 < 500.0D) && (Ve.x < 0.0D))
-      {
-        push(0);
-        push(10);
-        pop();
-      }
-      Ve.normalize();
-      if (Ve.x < 99999.800000011921D)
-        turnToDirection(paramFloat);
-      else
-        attackTurnToDirection((float)d2, paramFloat, 2.0F + this.Skill * 1.5F);
-      break;
-    default:
-      this.submaneuver = 0;
-      this.sub_Man_Count = 0;
-    }
-  }
-
-  private void groundAttackShallowDive(Actor paramActor, float paramFloat)
-  {
-    this.maxAOA = 10.0F;
-    if (!hasBombs()) {
-      set_maneuver(0);
-      wingman(true);
-      return;
-    }
-
-    if (this.first) this.RandomVal = (50.0F - World.cur().rnd.nextFloat(0.0F, 100.0F));
-    setSpeedMode(4);
-    this.smConstSpeed = 120.0F;
-
-    Ve.set(paramActor.pos.getAbsPoint());
-    Ve.sub(this.Loc);
-
-    addWindCorrection();
-
-    float f1 = (float)(-Ve.z);
-    if (f1 < 0.0F) f1 = 0.0F;
-    Ve.z += 250.0D;
-    float f2 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y) + this.RandomVal * (3 - this.Skill);
-    if (Ve.z < -0.1F * f2) Ve.z = (-0.1F * f2);
-    if (this.Alt + Ve.z < 250.0D) Ve.z = (250.0F - this.Alt);
-    if (this.Alt < 50.0F) {
-      push(10);
-      pop();
-    }
-
-    Vf.set(Ve);
-    this.CT.BayDoorControl = 1.0F;
-
-    float f3 = (float)this.Vwld.z * 0.1019F;
-    f3 += (float)Math.sqrt(f3 * f3 + 2.0F * f1 * 0.1019F);
-    float f4 = (float)Math.sqrt(this.Vwld.x * this.Vwld.x + this.Vwld.y * this.Vwld.y);
-    float f5 = f4 * f3 + 10.0F;
-    paramActor.getSpeed(tmpV3d);
-    tmpV3d.scale(f3 * 0.35D * this.Skill);
-    Ve.x += (float)tmpV3d.x;
-    Ve.y += (float)tmpV3d.y;
-    Ve.z += (float)tmpV3d.z;
-
-    if (f5 >= f2) {
-      this.bombsOut = true;
-      Voice.speakAttackByBombs((Aircraft)this.actor);
-      setSpeedMode(6);
-      this.CT.BayDoorControl = 0.0F;
-      push(0);
-      push(55);
-      push(48);
-      pop();
-      this.sub_Man_Count = 0;
-    }
-
-    this.Or.transformInv(Ve);
-    Ve.normalize();
-    turnToDirection(paramFloat);
-  }
-
-  private void groundAttackDiveBomber(Actor paramActor, float paramFloat)
-  {
-    this.maxG = 5.0F; this.maxAOA = 10.0F;
-    setSpeedMode(6);
-    this.maxAOA = 4.0F;
-    this.minElevCoeff = 20.0F;
-
-    if ((this.CT.Weapons[3] == null) || (this.CT.getWeaponCount(3) == 0)) {
-      if (this.AP.way.curr().Action == 3) this.AP.way.next();
-      set_maneuver(0);
-      wingman(true);
-      return;
-    }
-    if (this.Alt < 350.0F) {
-      this.bombsOut = true;
-      Voice.speakAttackByBombs((Aircraft)this.actor);
-      setSpeedMode(6);
-      this.CT.BayDoorControl = 0.0F;
-      this.CT.AirBrakeControl = 0.0F;
-      this.AP.way.next();
-      push(0);
-      push(8);
-      push(2);
-      pop();
-      this.sub_Man_Count = 0;
-    }
-
-    Ve.set(paramActor.pos.getAbsPoint());
-    Ve.sub(this.Loc);
-    float f5 = (float)(-Ve.z);
-    float f2 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y + Ve.z * Ve.z);
-    float f1 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
-    float f6;
-    if ((f1 > 1000.0F) || ((this.submaneuver == 3) && (this.sub_Man_Count > 100))) {
-      this.Vtarg.set(paramActor.pos.getAbsPoint());
-      paramActor.getSpeed(tmpV3d);
-      f6 = 0.0F;
-      switch (this.submaneuver) { case 0:
-        f6 = f1 / 40.0F + 4.0F + this.Alt / 48.0F;
-      case 1:
-        f6 = (f1 - this.man1Dist) / (float)this.Vwld.length() + 4.0F + this.Alt / 48.0F;
-      case 2:
-        f6 = this.Alt / 60.0F;
-      case 3:
-        f6 = this.Alt / 120.0F;
-      }
-      f6 *= 0.33333F;
-      this.Vtarg.x += (float)tmpV3d.x * f6 * this.Skill;
-      this.Vtarg.y += (float)tmpV3d.y * f6 * this.Skill;
-      this.Vtarg.z += (float)tmpV3d.z * f6 * this.Skill;
-    }
-
-    Ve.set(this.Vtarg);
-    Ve.sub(this.Loc);
-    float f4 = (float)(-Ve.z);
-    if (f4 < 0.0F) f4 = 0.0F;
-    Ve.add(this.Vxy);
-    f5 = (float)(-Ve.z);
-    f2 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y + Ve.z * Ve.z);
-    f1 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
-
-    if (this.submaneuver < 2) Ve.z = 0.0D;
-    Vf.set(Ve);
-    Ve.normalize();
-    Vpl.set(this.Vwld);
-    Vpl.normalize();
-
-    switch (this.submaneuver) {
-    case 0:
-      push();
-      pop();
-      if (f5 < 1200.0F) this.man1Dist = 400.0F;
-      else if (f5 > 4500.0F) this.man1Dist = 50.0F; else
-        this.man1Dist = (50.0F + 350.0F * (4500.0F - f5) / 3300.0F);
-      f6 = 0.01F * f5;
-      if (f6 < 10.0F) f6 = 10.0F;
-      this.Vxy.set(World.Rnd().nextFloat(-10.0F, 10.0F), World.Rnd().nextFloat(-10.0F, 10.0F), World.Rnd().nextFloat(5.0F, f6));
-      this.Vxy.scale(4.0F - this.Skill);
-      float f7 = 2.0E-005F * f5 * f5;
-      if (f7 < 60.0F) f7 = 60.0F;
-      if (f7 > 350.0F) f7 = 350.0F;
-      this.Vxy.z += f7;
-      this.submaneuver += 1;
-      break;
-    case 1:
-      setSpeedMode(4);
-      this.smConstSpeed = 110.0F;
-      if (f1 >= this.man1Dist) break;
-      this.CT.AirBrakeControl = 1.0F;
-      if ((this.actor instanceof TypeFighter)) this.CT.FlapsControl = 1.0F;
-      push();
-      push(6);
-      safe_pop();
-      this.submaneuver += 1; break;
-    case 2:
-      setSpeedMode(4);
-      this.smConstSpeed = 110.0F;
-      this.sub_Man_Count += 1;
-      this.CT.AirBrakeControl = 1.0F;
-      if ((this.actor instanceof TypeFighter)) this.CT.FlapsControl = 1.0F;
-
-      float f3 = this.Or.getKren();
-      if (this.Or.getTangage() > -90.0F) {
-        f3 -= 180.0F;
-        if (f3 < -180.0F) f3 += 360.0F;
-      }
-      this.CT.AileronControl = (float)(-0.04F * f3 - 0.5D * getW().x);
-
-      if (getOverload() < 4.0F)
-        this.CT.ElevatorControl += 0.3F * paramFloat;
-      else {
-        this.CT.ElevatorControl -= 0.3F * paramFloat;
-      }
-      if (((this.sub_Man_Count <= 30) || (this.Or.getTangage() >= -90.0F)) && (this.sub_Man_Count <= 150)) break;
-      this.sub_Man_Count = 0;
-      this.submaneuver += 1; break;
-    case 3:
-      this.CT.AirBrakeControl = 1.0F;
-      if ((this.actor instanceof TypeFighter)) this.CT.FlapsControl = 1.0F;
-      this.CT.BayDoorControl = 1.0F;
-      setSpeedMode(4);
-      this.smConstSpeed = 110.0F;
-      this.sub_Man_Count += 1;
-      if (this.sub_Man_Count > 80) {
-        float f8 = (float)this.Vwld.z * 0.1019F;
-        f8 = f8 + (float)Math.sqrt(f8 * f8 + 2.0F * f4 * 0.1019F) + 0.00035F * f4;
-        float f9 = (float)Math.sqrt(this.Vwld.x * this.Vwld.x + this.Vwld.y * this.Vwld.y);
-        float f10 = f9 * f8;
-        float f11 = 0.2F * (f1 - f10);
-        this.Vxy.z += f11;
-        if (this.Vxy.z > 0.7F * f4) this.Vxy.z = (0.7F * f4);
-      }
-      if (((this.sub_Man_Count <= 100) || (this.Alt >= 1000.0F) || (Vpl.dot(Ve) <= 0.9900000095367432D)) && (this.Alt >= 600.0F))
-        break;
-      this.bombsOut = true;
-      Voice.speakAttackByBombs((Aircraft)this.actor);
-      this.CT.BayDoorControl = 0.0F;
-      this.CT.AirBrakeControl = 0.0F;
-      this.AP.way.next();
-      push(0);
-      push(8);
-      push(2);
-      pop();
-    }
-
-    this.Or.transformInv(Ve);
-    Ve.normalize();
-    if (this.submaneuver == 3) attackTurnToDirection(1000.0F, paramFloat, 30.0F);
-    else if (this.submaneuver != 2) turnToDirection(paramFloat);
-  }
-
-  private void groundAttackTorpedo(Actor paramActor, float paramFloat)
-  {
-    float f4 = 50.0F;
-    this.maxG = 5.0F; this.maxAOA = 8.0F;
-    float f5 = 0.0F;
-    setSpeedMode(4);
-    Class localClass = null;
-    if ((this.CT.Weapons[3][0] instanceof TorpedoGun)) {
-      TorpedoGun localTorpedoGun = (TorpedoGun)this.CT.Weapons[3][0];
-      localClass = (Class)Property.value(localTorpedoGun.getClass(), "bulletClass", null);
-    }
-
-    this.smConstSpeed = 100.0F;
-    if (localClass != null)
-    {
-      this.smConstSpeed = (Property.floatValue(localClass, "dropSpeed", 100.0F) / 3.7F);
-      f4 = Property.floatValue(localClass, "dropAltitude", 50.0F) + 10.0F;
-    }
-
-    if ((this.actor instanceof Swordfish))
-    {
-      setSpeedMode(9);
-      f4 = 20.0F;
-    }
-    float f6 = 0.0F;
-    this.minElevCoeff = 20.0F;
-
-    Ve.set(paramActor.pos.getAbsPoint());
-    Ve.sub(this.Loc);
-
-    double d1 = Ve.x * Ve.x + Ve.y * Ve.y;
-    float f1 = (float)Math.sqrt(d1);
-
-    if (this.first) {
-      this.Vtarg.set(paramActor.pos.getAbsPoint());
-      this.submaneuver = 0;
-    }
-    if ((this.submaneuver == 1) && (this.sub_Man_Count == 0)) {
-      tmpV3f.set(paramActor.pos.getAbsPoint());
-      tmpV3f.sub(this.Vtarg);
-      paramActor.getSpeed(tmpV3d);
-      if (tmpV3f.length() > 9.999999747378752E-005D) tmpV3f.normalize();
-      this.Vxy.set(tmpV3f.y * 3000.0D, -tmpV3f.x * 3000.0D, 0.0D);
-      this.direc = (this.Vxy.dot(Ve) > 0.0D);
-      if (this.direc) this.Vxy.scale(-1.0D);
-      this.Vtarg.add(this.Vxy);
-      this.Vtarg.x += tmpV3d.x * 80.0D;
-      this.Vtarg.y += tmpV3d.y * 80.0D;
-      this.Vtarg.z = 80.0D;
-      this.TargDevV.set(World.cur().rnd.nextFloat(-16.0F, 16.0F) * (3.5D - this.Skill), World.cur().rnd.nextFloat(-16.0F, 16.0F) * (3.5D - this.Skill), 0.0D);
-    }
-    float f9;
-    float f10;
-    if (this.submaneuver == 2) {
-      this.Vtarg.set(paramActor.pos.getAbsPoint());
-      paramActor.getSpeed(tmpV3d);
-
-      float f7 = 20.0F;
-      if (localClass != null) {
-        f7 = Property.floatValue(localClass, "velocity", 1.0F);
-      }
-      f9 = paramActor.collisionR();
-      if (f9 > 80.0F)
-        f5 = 50.0F;
-      if (f9 > 130.0F)
-        f5 = 100.0F;
-      if (f9 < 25.0F) {
-        f5 = -50.0F;
-      }
-      f10 = 950.0F;
-
-      if (f4 > 110.0F)
-      {
-        f6 = f4;
-        f10 += f4 * 0.4F;
-      }
-
-      if ((this.actor instanceof JU_88NEW))
-        f10 += 90.0F;
-      double d2 = Math.sqrt(0.204D * this.Loc.z);
-      double d3 = 1.0D * d2 * getSpeed();
-      double d4 = (f10 + f5 - d3) / f7;
-      this.Vtarg.x += (float)(tmpV3d.x * d4);
-      this.Vtarg.y += (float)(tmpV3d.y * d4);
-      this.Vtarg.z = f4;
-      if (this.Loc.z < 30.0D)
-      {
-        this.Vtarg.z += 3.0D * (30.0D - this.Loc.z);
-      }
-      this.Vtarg.add(this.TargDevV);
-    }
-
-    Ve.set(this.Vtarg);
-    Ve.sub(this.Loc);
-    float f2 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y + Ve.z * Ve.z);
-
-    Vf.set(Ve);
-    float f3 = (float)(-Ve.z);
-    Vpl.set(this.Vwld);
-    Vpl.normalize();
-    if (this.Alt < f4 - 5.0F) {
-      if (this.Vwld.z < 0.0D)
-      {
-        this.Vwld.z += (f4 - this.Alt) * 0.25F;
-      }
-      if (this.Alt < 8.0F) {
-        set_maneuver(2);
-      }
-      if ((this.Alt < 20.0F) && (f2 < 75.0F))
-      {
-        set_maneuver(2);
-      }
-    }
-    else if ((this.Alt > f4 + 5.0F) && (this.submaneuver == 1))
-    {
-      if (this.Vwld.z > 0.0D)
-      {
-        this.Vwld.z -= 1.0D;
-      }
-    }
-
-    switch (this.submaneuver) {
-    case 0:
-      this.sub_Man_Count += 1;
-      if (this.sub_Man_Count > 60) {
-        this.submaneuver += 1;
-        this.sub_Man_Count = 0;
-      }
-      addWindCorrection();
-      break;
-    case 1:
-      setSpeedMode(4);
-      if ((this.actor instanceof Swordfish))
-      {
-        setSpeedMode(9);
-      }
-
-      this.sub_Man_Count += 1;
-      if ((f2 < 1200.0F) || ((f2 < 2000.0F) && (ZutiSupportMethods.isStaticActor(paramActor)))) {
-        this.submaneuver += 1;
-        this.sub_Man_Count = 0;
-      }
-      addWindCorrection();
-      break;
-    case 2:
-      setSpeedMode(4);
-      if (f2 < 800.0F + f5 + f6)
-      {
-        if (((this.actor instanceof TypeHasToKG)) && (((TypeHasToKG)this.actor).isSalvo()))
-        {
-          int i = 0;
-          f9 = paramActor.collisionR() * 1.8F;
-          i = (int)Math.toDegrees(Math.atan(f9 / 800.0F));
-          i += World.Rnd().nextInt(-2, 2);
-          if (i < 3)
-            i = 3;
-          this.AS.setSpreadAngle(i);
-        }
-
-        this.CT.WeaponControl[3] = true;
-        setSpeedMode(6);
-        this.AP.way.next();
-        this.submaneuver += 1;
-        this.sub_Man_Count = 0;
-      } else {
-        if (!ZutiSupportMethods.isStaticActor(paramActor))
-          break;
-        float f8 = Property.floatValue(localClass, "velocity", 20.0F);
-        f9 = Property.floatValue(localClass, "traveltime", 100.0F);
-        f10 = f8 * f9 - 150.0F;
-        if ((f2 < f10) && (World.land().isWater(this.actor.pos.getAbsPoint().x, this.actor.pos.getAbsPoint().y)))
-        {
-          this.CT.WeaponControl[3] = true;
-          setSpeedMode(6);
-          this.AP.way.next();
-          this.submaneuver += 1;
-          this.sub_Man_Count = 0;
-        }
-      }
-      break;
-    case 3:
-      setSpeedMode(9);
-      this.sub_Man_Count += 1;
-      if (this.sub_Man_Count <= 150) break;
-      this.task = 3;
-      push(0);
-      push(8);
-      pop();
-      this.submaneuver = 0;
-      this.sub_Man_Count = 0;
-    }
-
-    this.Or.transformInv(Ve);
-    if (this.submaneuver == 3) {
-      if (this.sub_Man_Count < 20)
-        Ve.set(1.0D, 0.09000000357627869D, 0.02999999932944775D);
-      else {
-        Ve.set(1.0D, 0.09000000357627869D, 0.009999999776482582D);
-      }
-      if (!this.direc) Ve.y *= -1.0D;
-    }
-    Ve.normalize();
-    turnToDirection(paramFloat);
-  }
-
-  private void groundAttackTorpedoToKG(Actor paramActor, float paramFloat)
-  {
-    float f2 = 50.0F;
-    this.maxG = 5.0F; this.maxAOA = 8.0F;
-    setSpeedMode(4);
-    Class localClass = null;
-    if ((this.CT.Weapons[3][0] instanceof TorpedoGun)) {
-      TorpedoGun localTorpedoGun = (TorpedoGun)this.CT.Weapons[3][0];
-      localClass = (Class)Property.value(localTorpedoGun.getClass(), "bulletClass", null);
-    }
-
-    this.smConstSpeed = 100.0F;
-    if (localClass != null)
-    {
-      this.smConstSpeed = (Property.floatValue(localClass, "dropSpeed", 100.0F) / 3.7F);
-      f2 = Property.floatValue(localClass, "dropAltitude", 50.0F) + 10.0F;
-    }
-
-    this.minElevCoeff = 20.0F;
-
-    Ve.set(paramActor.pos.getAbsPoint());
-    Ve.sub(this.Loc);
-
-    if (this.first) {
-      this.Vtarg.set(paramActor.pos.getAbsPoint());
-      this.submaneuver = 0;
-    }
-    if ((this.submaneuver == 1) && (this.sub_Man_Count == 0)) {
-      tmpV3f.set(paramActor.pos.getAbsPoint());
-      tmpV3f.sub(this.Vtarg);
-
-      if (tmpV3f.length() > 9.999999747378752E-005D) tmpV3f.normalize();
-      this.Vxy.set(tmpV3f.y * 3000.0D, -tmpV3f.x * 3000.0D, 0.0D);
-      this.direc = (this.Vxy.dot(Ve) > 0.0D);
-      if (this.direc) this.Vxy.scale(-1.0D);
-      this.Vtarg.add(this.Vxy);
-      this.Vtarg.z = 80.0D;
-    }
-    if (this.submaneuver == 2) {
-      this.Vtarg.set(paramActor.pos.getAbsPoint());
-      this.Vtarg.z = f2;
-      if (this.Loc.z < 30.0D)
-      {
-        this.Vtarg.z += 3.0D * (30.0D - this.Loc.z);
-      }
-    }
-
-    Ve.set(this.Vtarg);
-    Ve.sub(this.Loc);
-    float f1 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y + Ve.z * Ve.z);
-
-    Vf.set(Ve);
-    Vpl.set(this.Vwld);
-    Vpl.normalize();
-    if (this.Alt < f2 - 5.0F) {
-      if (this.Vwld.z < 0.0D)
-      {
-        this.Vwld.z += (f2 - this.Alt) * 0.25F;
-      }
-      if (this.Alt < 8.0F) {
-        set_maneuver(2);
-      }
-      if ((this.Alt < 20.0F) && (f1 < 75.0F))
-      {
-        set_maneuver(2);
-      }
-    }
-    else if ((this.Alt > f2 + 5.0F) && (this.submaneuver == 1))
-    {
-      if (this.Vwld.z > 0.0D)
-      {
-        this.Vwld.z -= 1.0D;
-      }
-    }
-    int j;
-    switch (this.submaneuver) {
-    case 0:
-      this.sub_Man_Count += 1;
-      if (this.sub_Man_Count > 60) {
-        this.submaneuver += 1;
-        this.sub_Man_Count = 0;
-      }
-      addWindCorrection();
-      break;
-    case 1:
-      setSpeedMode(4);
-
-      this.sub_Man_Count += 1;
-      if (f1 < 4000.0F) {
-        this.submaneuver += 1;
-        this.sub_Man_Count = 0;
-      }
-      addWindCorrection();
-      break;
-    case 2:
-      setSpeedMode(4);
-      double d1 = Ve.angle(this.Vwld);
-      float f3 = 180.0F - (this.Or.getYaw() - paramActor.pos.getAbsOrient().getYaw());
-      if (f3 < -180.0F)
-        f3 += 360.0F;
-      else if (f3 > 180.0F) {
-        f3 -= 360.0F;
-      }
-      float f4 = Property.floatValue(localClass, "velocity", 20.0F);
-      float f5 = Property.floatValue(localClass, "traveltime", 100.0F);
-      float f6 = f4 * f5 - 10.0F;
-      if (f6 > 2700.0F) {
-        f6 = 2700.0F;
-      }
-      double d2 = (Math.abs(f3) - 90.0F) * 8.0F;
-      if (d2 < 0.0D)
-        d2 = 0.0D;
-      if (this.Skill == 2) {
-        d2 += 100.0D;
-      }
-      if ((f1 < f6 - d2) && (f1 > 1800.0F) && (d1 < 0.2D)) {
-        paramActor.getSpeed(tmpV3d);
-
-        float f7 = 1.0F;
-        if (this.Skill == 2)
-          f7 = World.Rnd().nextFloat(0.8F, 1.2F);
-        else if (this.Skill == 3) {
-          f7 = World.Rnd().nextFloat(0.9F, 1.1F);
-        }
-
-        f7 = (float)(f7 + 0.1D);
-        ToKGUtils.setTorpedoGyroAngle(this, f3, (float)(1.95D * tmpV3d.length()) * f7);
-
-        if (((TypeHasToKG)this.actor).isSalvo())
-        {
-          j = 0;
-          float f8 = paramActor.collisionR() * 1.8F;
-          j = (int)Math.toDegrees(Math.atan(f8 / (f6 - d2)));
-          j += World.Rnd().nextInt(-2, 2);
-          if (j < 1)
-            j = 1;
-          this.AS.setSpreadAngle(j);
-        }
-
-        this.CT.WeaponControl[3] = true;
-        setSpeedMode(6);
-        this.AP.way.next();
-        push(15);
-        this.submaneuver += 1;
-        this.sub_Man_Count = 0;
-      } else {
-        if (f1 >= 1500.0F)
-          break;
-        ToKGUtils.setTorpedoGyroAngle(this, 0.0F, 0.0F);
-        set_maneuver(51); } break;
-    case 3:
-      setSpeedMode(9);
-      push(15);
-      pop();
-      this.task = 61;
-      this.sub_Man_Count += 1;
-
-      int i = 0;
-      for (j = 0; j < this.CT.Weapons[3].length; j++) {
-        if ((this.CT.Weapons[3][j] != null) && (!(this.CT.Weapons[3][j] instanceof BombGunNull)) && (this.CT.Weapons[3][j].countBullets() != 0))
-          i = 1;
-      }
-      if ((this.sub_Man_Count <= 800) && (i != 0)) break;
-      this.task = 3;
-      push(21);
-      push(8);
-      pop();
-      this.submaneuver = 0;
-      this.sub_Man_Count = 0;
-    }
-
-    this.Or.transformInv(Ve);
-    if (this.submaneuver == 3) {
-      if (this.sub_Man_Count < 20)
-        Ve.set(1.0D, 0.09000000357627869D, 0.02999999932944775D);
-      else {
-        Ve.set(1.0D, 0.09000000357627869D, 0.009999999776482582D);
-      }
-      if (!this.direc) Ve.y *= -1.0D;
-    }
-    Ve.normalize();
-    turnToDirection(paramFloat);
-  }
-
-  private void groundAttackCassette(Actor paramActor, float paramFloat)
-  {
-    this.maxG = 5.0F; this.maxAOA = 8.0F;
-    setSpeedMode(4);
-    this.smConstSpeed = 120.0F;
-    this.minElevCoeff = 20.0F;
-
-    Ve.set(paramActor.pos.getAbsPoint());
-    Ve.sub(this.Loc);
-    float f1 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
-    float f4;
-    if ((this.submaneuver == 3) && (this.sub_Man_Count > 0) && (this.sub_Man_Count < 45) && (f1 > 200.0F)) {
-      tmpV3f.set(this.Vxy);
-      f4 = (float)tmpV3f.dot(Ve);
-      tmpV3f.scale(-f4);
-      tmpV3f.add(Ve);
-
-      float f6 = (float)tmpV3f.length();
-      float f5;
-      if (f6 > 150.0F) f5 = 7.5F / f6;
-      else
-        f5 = 0.05F;
-      tmpV3f.scale(f5);
-      tmpV3f.z = 0.0D;
-      this.Vwld.add(tmpV3f);
-    }
-    if (f1 <= 200.0F) this.sub_Man_Count = 50;
-
-    if (this.first) {
-      this.Vtarg.set(paramActor.pos.getAbsPoint());
-      this.submaneuver = 0;
-    }
-
-    if ((this.submaneuver == 1) && (this.sub_Man_Count == 0)) {
-      tmpV3f.set(paramActor.pos.getAbsPoint());
-      paramActor.getSpeed(tmpV3d);
-      if (tmpV3d.length() < 0.5D) tmpV3d.set(Ve);
-      tmpV3d.normalize();
-      this.Vxy.set((float)tmpV3d.x, (float)tmpV3d.y, (float)tmpV3d.z);
-      this.Vtarg.x -= tmpV3d.x * 3000.0D;
-      this.Vtarg.y -= tmpV3d.y * 3000.0D;
-      this.Vtarg.z += 250.0D;
-    }
-    if ((this.submaneuver == 2) && (this.sub_Man_Count == 0)) {
-      this.Vtarg.set(paramActor.pos.getAbsPoint());
-      this.Vtarg.x -= this.Vxy.x * 1000.0D;
-      this.Vtarg.y -= this.Vxy.y * 1000.0D;
-      this.Vtarg.z += 50.0D;
-    }
-    if ((this.submaneuver == 3) && (this.sub_Man_Count == 0)) {
-      this.checkGround = false;
-      this.Vtarg.set(paramActor.pos.getAbsPoint());
-      this.Vtarg.x += this.Vxy.x * 1000.0D;
-      this.Vtarg.y += this.Vxy.y * 1000.0D;
-      this.Vtarg.z += 50.0D;
-    }
-
-    Ve.set(this.Vtarg);
-    Ve.sub(this.Loc);
-
-    addWindCorrection();
-
-    float f2 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y + Ve.z * Ve.z);
-
-    Vf.set(Ve);
-    float f3 = (float)(-Ve.z);
-    this.Or.transformInv(Ve);
-    Ve.normalize();
-    Vpl.set(this.Vwld);
-    Vpl.normalize();
-
-    if (this.Alt < 10.0F) {
-      push(0);
-      push(2);
-      pop();
-    }
-
-    switch (this.submaneuver) {
-    case 0:
-      setSpeedMode(9);
-      this.sub_Man_Count += 1;
-      if (this.sub_Man_Count <= 60) break;
-      this.submaneuver += 1;
-      this.sub_Man_Count = 0; break;
-    case 1:
-      setSpeedMode(9);
-      this.sub_Man_Count += 1;
-      if (f2 >= 1000.0F) break;
-      this.submaneuver += 1;
-      this.sub_Man_Count = 0; break;
-    case 2:
-      setSpeedMode(6);
-      this.sub_Man_Count += 1;
-      if (f2 < 155.0F) {
-        this.submaneuver += 1;
-        this.sub_Man_Count = 0;
-      }
-      if (this.sub_Man_Count <= 320) break;
-      push(0);
-      push(10);
-      pop(); break;
-    case 3:
-      setSpeedMode(6);
-      this.sub_Man_Count += 1;
-      this.Vwld.z *= 0.800000011920929D;
-      this.Or.transformInv(this.Vwld);
-      this.Vwld.y *= 0.8999999761581421D;
-      this.Or.transform(this.Vwld);
-      f4 = this.sub_Man_Count;
-      if (f4 < 100.0F) f4 = 100.0F;
-      if (this.Alt > 45.0F) this.Vwld.z -= 0.002F * (this.Alt - 45.0F) * f4; else
-        this.Vwld.z -= 0.005F * (this.Alt - 45.0F) * f4;
-      if (this.Alt < 0.0F) this.Alt = 0.0F;
-      if (f2 < 1080.0F + getSpeed() * (float)Math.sqrt(2.0F * this.Alt / 9.81F)) this.bombsOut = true;
-      if ((Ve.x >= 0.0D) && (f2 >= 350.0F) && (this.sub_Man_Count <= 160)) break;
-      push(0);
-      push(10);
-      push(10);
-      pop();
-    }
-
-    if (this.submaneuver == 0) {
-      Ve.set(1.0D, 0.0D, 0.0D);
-    }
-    turnToDirection(paramFloat);
-  }
-
-  public void goodFighterVsFighter(float paramFloat)
-  {
-    Ve.sub(this.target.Loc, this.Loc);
-    float f1 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
-    this.Or.transformInv(Ve);
-    float f2 = (float)Ve.length();
-    float f3 = 1.0F / f2;
-    this.Vtarg.set(Ve);
-    this.Vtarg.scale(f3);
-    float f4 = (this.Energy - this.target.Energy) * 0.1019F;
-    tmpV3f.sub(this.target.Vwld, this.Vwld);
-    float f5;
-    if (this.sub_Man_Count == 0) {
-      f5 = 0.0F;
-      if ((this.CT.Weapons[1] != null) && (this.CT.Weapons[1][0].countBullets() > 0))
-        f5 = ((GunGeneric)this.CT.Weapons[1][0]).bulletSpeed();
-      else if (this.CT.Weapons[0] != null) {
-        f5 = ((GunGeneric)this.CT.Weapons[0][0]).bulletSpeed();
-      }
-      if (f5 > 0.01F) this.bullTime = (1.0F / f5);
-      this.submanDelay = 0;
-    }
-    float f6;
-    float f7;
-    if (f1 < 1500.0F) {
-      f5 = 0.0F;
-      f6 = 0.0F;
-      if (this.Vtarg.x > -0.2000000029802322D) {
-        f5 = 3.0F * ((float)this.Vtarg.x + 0.2F);
-        this.Vxy.set(tmpV3f);
-        this.Vxy.scale(1.0D);
-        this.Or.transformInv(this.Vxy);
-        this.Vxy.add(Ve);
-        this.Vxy.normalize();
-        f6 = 10.0F * (float)(this.Vxy.x - this.Vtarg.x);
-        if (f6 < -1.0F) f6 = -1.0F;
-        if (f6 > 1.0F) f6 = 1.0F; 
-      }
-      else {
-        f5 = 3.0F * ((float)this.Vtarg.x + 0.2F);
-      }
-
-      if ((this.submaneuver == 4) && (this.Vtarg.x < 0.6000000238418579D) && (f2 < 300.0D)) {
-        this.submaneuver = 1;
-        this.submanDelay = 30;
-      }
-      if ((this.submaneuver != 4) && (f4 > 300.0D) && (this.Vtarg.x > 0.75D)) {
-        this.submaneuver = 4;
-        this.submanDelay = 240;
-      }
-
-      f7 = 0.0015F * f4 + 0.0006F * f1 + f5 + 0.5F * f6;
-      if ((f7 > 0.9F) && (this.submanDelay == 0)) {
-        if ((this.Vtarg.x > 0.5D) || (f1 * 2.0D < f2)) {
-          this.submaneuver = 4;
-          this.submanDelay = 240;
-        } else {
-          this.submaneuver = 3;
-          this.submanDelay = 120;
-        }
-
-      }
-      else if (((f4 > 800.0F) && (this.submaneuver == 0)) || (f4 > 1000.0F)) {
-        Ve.set(0.0D, 0.0D, 800.0D);
-        if (this.submanDelay == 0) { this.submaneuver = 0; this.submanDelay = 30; }
-      }
-      else if (((f2 > 450.0F) && (this.submaneuver == 2)) || (f2 > 600.0F)) {
-        if (this.submanDelay == 0) { this.submaneuver = 2; this.submanDelay = 60; }
-      }
-      else if (this.submanDelay == 0) { this.submaneuver = 1; this.submanDelay = 30;
-      }
-
-    }
-    else if (f1 < 3000.0F) {
-      if (this.Vtarg.x < 0.5D) {
-        if (this.submanDelay == 0) { this.submaneuver = 3; this.submanDelay = 120; }
-      }
-      else if (((f4 > 600.0F) && (this.submaneuver == 0)) || (f4 > 800.0F)) {
-        Ve.set(0.0D, 0.0D, 800.0D);
-        if (this.submanDelay == 0) {
-          this.submaneuver = 0;
-          this.submanDelay = 120;
-        }
-      }
-      else if (((f4 > -200.0F) && (this.submaneuver >= 4)) || (f4 > -100.0F))
-      {
-        if (this.submanDelay == 0) {
-          this.submaneuver = 4;
-          this.submanDelay = 120;
-        }
-      }
-      else {
-        Ve.set(0.0D, 0.0D, this.Loc.z);
-        if (this.submanDelay == 0) {
-          this.submaneuver = 0;
-          this.submanDelay = 120;
-        }
-      }
-    }
-    else {
-      Ve.set(0.0D, 0.0D, 1000.0D);
-      if (this.submanDelay == 0) { this.submaneuver = 0; this.submanDelay = 180;
-      }
-    }
-
-    switch (this.submaneuver) {
-    case 0:
-      this.target.Or.transform(Ve);
-      Ve.add(this.target.Loc);
-      Ve.sub(this.Loc);
-      tmpV3f.set(Ve);
-      tmpV3f.z = 0.0D;
-      f2 = (float)tmpV3f.length();
-      tmpV3f.normalize();
-      this.Vtarg.set(this.target.Vwld);
-      this.Vtarg.z = 0.0D;
-      f5 = (float)tmpV3f.dot(this.Vtarg);
-      f6 = getSpeed() - f5;
-      if (f6 < 10.0F) f6 = 10.0F;
-      f7 = f2 / f6;
-      if (f7 < 0.0F) f7 = 0.0F;
-      tmpV3f.scale(this.Vtarg, f7);
-      Ve.add(tmpV3f);
-
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      setSpeedMode(9);
-      farTurnToDirection();
-      this.sub_Man_Count += 1;
-      break;
-    case 1:
-      setSpeedMode(9);
-      this.CT.AileronControl = (-0.04F * this.Or.getKren());
-      this.CT.ElevatorControl = (-0.04F * (this.Or.getTangage() + 5.0F));
-      this.CT.RudderControl = 0.0F;
-      break;
-    case 2:
-      setSpeedMode(9);
-      tmpOr.setYPR(this.Or.getYaw(), 0.0F, 0.0F);
-      float f8 = 6.0F;
-
-      if (this.Or.getKren() > 0.0F) Ve.set(100.0D, -f8, 10.0D); else
-        Ve.set(100.0D, f8, 10.0D);
-      tmpOr.transform(Ve);
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      farTurnToDirection();
-      break;
-    case 3:
-      this.minElevCoeff = 20.0F;
-      setSpeedMode(9);
-      tmpOr.setYPR(this.Or.getYaw(), 0.0F, 0.0F);
-      Ve.sub(this.target.Loc, this.Loc);
-      Ve.z = 0.0D;
-      Ve.normalize();
-      Ve.z = 0.4D;
-
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      attackTurnToDirection(1000.0F, paramFloat, 15.0F);
-
-      break;
-    case 4:
-      this.minElevCoeff = 20.0F;
-      boomAttack(paramFloat);
-      setSpeedMode(9);
-      break;
-    default:
-      this.minElevCoeff = 20.0F;
-      fighterVsFighter(paramFloat);
-    }
-    if (this.submanDelay > 0) this.submanDelay -= 1;
-  }
-
-  public void bNZFighterVsFighter(float paramFloat)
-  {
-    Ve.sub(this.target.Loc, this.Loc);
-    this.Or.transformInv(Ve);
-    this.dist = (float)Ve.length();
-    float f1 = (float)Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
-    float f2 = 1.0F / this.dist;
-    this.Vtarg.set(Ve);
-    this.Vtarg.scale(f2);
-    float f3 = (this.Energy - this.target.Energy) * 0.1019F;
-    tmpV3f.sub(this.target.Vwld, this.Vwld);
-    float f4;
-    if (this.sub_Man_Count == 0) {
-      f4 = 0.0F;
-      if ((this.CT.Weapons[1] != null) && (this.CT.Weapons[1][0].countBullets() > 0))
-        f4 = ((GunGeneric)this.CT.Weapons[1][0]).bulletSpeed();
-      else if (this.CT.Weapons[0] != null) {
-        f4 = ((GunGeneric)this.CT.Weapons[0][0]).bulletSpeed();
-      }
-      if (f4 > 0.01F) this.bullTime = (1.0F / f4);
-      this.submanDelay = 0;
-    }
-    float f5;
-    float f6;
-    if (f1 < 1500.0F) {
-      f4 = 0.0F;
-      f5 = 0.0F;
-      if (this.Vtarg.x > -0.2000000029802322D) {
-        f4 = 3.0F * ((float)this.Vtarg.x + 0.2F);
-        this.Vxy.set(tmpV3f);
-        this.Vxy.scale(1.0D);
-        this.Or.transformInv(this.Vxy);
-        this.Vxy.add(Ve);
-        this.Vxy.normalize();
-        f5 = 20.0F * (float)(this.Vxy.x - this.Vtarg.x);
-        if (f5 < -1.0F) f5 = -1.0F;
-        if (f5 > 1.0F) f5 = 1.0F;
-      }
-      f6 = f3 * 0.0015F + f1 * 0.0006F + f4 + f5;
-      if (((f6 > 0.8F) && (this.submaneuver >= 3)) || (f6 > 1.2F)) {
-        if (tmpV3f.length() < 100.0D) {
-          if (this.submanDelay == 0) { this.submaneuver = 4; this.submanDelay = 120; }
-        }
-        else if (this.submanDelay == 0) { this.submaneuver = 3; this.submanDelay = 120;
-        }
-      }
-      else if (((f3 > 800.0F) && (this.submaneuver == 0)) || (f3 > 1000.0F)) {
-        Ve.set(0.0D, 0.0D, 800.0D);
-        if (this.submanDelay == 0) { this.submaneuver = 0; this.submanDelay = 30; }
-      }
-      else if (((this.dist > 450.0F) && (this.submaneuver == 2)) || (this.dist > 600.0F)) {
-        if (this.submanDelay == 0) { this.submaneuver = 2; this.submanDelay = 60; }
-      }
-      else if (this.submanDelay == 0) { this.submaneuver = 1; this.submanDelay = 30;
-      }
-
-    }
-    else if (f1 < 3000.0F) {
-      if (((f3 > 600.0F) && (this.submaneuver == 0)) || (f3 > 800.0F)) {
-        Ve.set(0.0D, 0.0D, 800.0D);
-        if (this.submanDelay == 0) { this.submaneuver = 0; this.submanDelay = 120; }
-      } else if (((f3 > -200.0F) && (this.submaneuver >= 3)) || (f3 > -100.0F)) {
-        if (this.submanDelay == 0) { this.submaneuver = 3; this.submanDelay = 120; }
-      } else {
-        Ve.set(0.0D, 0.0D, this.Loc.z);
-        if (this.submanDelay == 0) { this.submaneuver = 0; this.submanDelay = 120; }
-      }
-    } else {
-      Ve.set(0.0D, 0.0D, 1000.0D);
-      if (this.submanDelay == 0) { this.submaneuver = 0; this.submanDelay = 180;
-      }
-    }
-
-    switch (this.submaneuver) {
-    case 0:
-      this.target.Or.transform(Ve);
-      Ve.add(this.target.Loc);
-      Ve.sub(this.Loc);
-      tmpV3f.set(Ve);
-      tmpV3f.z = 0.0D;
-      this.dist = (float)tmpV3f.length();
-      tmpV3f.normalize();
-      this.Vtarg.set(this.target.Vwld);
-      this.Vtarg.z = 0.0D;
-      f4 = (float)tmpV3f.dot(this.Vtarg);
-      f5 = getSpeed() - f4;
-      if (f5 < 10.0F) f5 = 10.0F;
-      f6 = this.dist / f5;
-      if (f6 < 0.0F) f6 = 0.0F;
-      tmpV3f.scale(this.Vtarg, f6);
-      Ve.add(tmpV3f);
-
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      setSpeedMode(9);
-      farTurnToDirection();
-      this.sub_Man_Count += 1;
-      break;
-    case 1:
-      setSpeedMode(9);
-      this.CT.AileronControl = (-0.04F * this.Or.getKren());
-      this.CT.ElevatorControl = (-0.04F * (this.Or.getTangage() + 5.0F));
-      this.CT.RudderControl = 0.0F;
-      break;
-    case 2:
-      setSpeedMode(9);
-      tmpOr.setYPR(this.Or.getYaw(), 0.0F, 0.0F);
-      if (this.Or.getKren() > 0.0F) Ve.set(100.0D, -6.0D, 10.0D); else
-        Ve.set(100.0D, 6.0D, 10.0D);
-      tmpOr.transform(Ve);
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      farTurnToDirection();
-      break;
-    case 3:
-      this.minElevCoeff = 20.0F;
-      fighterVsFighter(paramFloat);
-      setSpeedMode(6);
-      break;
-    default:
-      this.minElevCoeff = 20.0F;
-      fighterVsFighter(paramFloat);
-    }
-    if (this.submanDelay > 0) this.submanDelay -= 1;
-  }
-
-  public void setBomberAttackType(int paramInt)
-  {
-    float f1;
-    if (Actor.isValid(this.target.actor)) f1 = this.target.actor.collisionR(); else
-      f1 = 15.0F;
-    setRandomTargDeviation(0.8F);
-    switch (paramInt) {
-    case 0:
-      this.ApproachV.set(-300.0F + World.Rnd().nextFloat(-100.0F, 100.0F), 0.0D, 600.0F + World.Rnd().nextFloat(-100.0F, 100.0F));
-      this.TargV.set(0.0D, 0.0D, 0.0D);
-      this.ApproachR = 150.0F;
-      this.TargY = (2.1F * f1); this.TargZ = (3.9F * f1);
-      this.TargYS = (0.43F * f1); this.TargZS = (0.43F * f1);
-      break;
-    case 1:
-      this.ApproachV.set(-300.0F + World.Rnd().nextFloat(-100.0F, 100.0F), 0.0D, 600.0F + World.Rnd().nextFloat(-100.0F, 100.0F));
-      this.TargV.set(this.target.EI.engines[World.Rnd().nextInt(0, this.target.EI.getNum() - 1)].getEnginePos());
-      this.TargV.x -= 1.0D;
-      this.ApproachR = 150.0F;
-      this.TargY = (2.1F * f1); this.TargZ = (3.9F * f1);
-      this.TargYS = (0.43F * f1); this.TargZS = (0.43F * f1);
-      break;
-    case 2:
-      this.ApproachV.set(-600.0F + World.Rnd().nextFloat(-100.0F, 100.0F), 0.0D, 600.0F + World.Rnd().nextFloat(-100.0F, 100.0F));
-      this.TargV.set(this.target.EI.engines[World.Rnd().nextInt(0, this.target.EI.getNum() - 1)].getEnginePos());
-      this.TargV.x -= 1.0D;
-      this.ApproachR = 300.0F;
-      this.TargY = (2.1F * f1); this.TargZ = (3.9F * f1);
-      this.TargYS = (0.43F * f1); this.TargZS = (0.43F * f1);
-      break;
-    case 3:
-      this.ApproachV.set(2600.0D, 0.0D, 300.0F + World.Rnd().nextFloat(-100.0F, 100.0F));
-      this.TargV.set(0.0D, 0.0D, 0.0D);
-      this.ApproachR = 800.0F;
-      this.TargY = 25.0F; this.TargZ = 15.0F;
-      this.TargYS = 3.0F; this.TargZS = 3.0F;
-      break;
-    case 4:
-      this.ApproachV.set(-400.0F + World.Rnd().nextFloat(-100.0F, 100.0F), 0.0D, -200.0F + World.Rnd().nextFloat(-50.0F, 50.0F));
-      this.TargV.set(0.0D, 0.0D, 0.0D);
-      this.ApproachR = 300.0F;
-      this.TargY = (2.1F * f1); this.TargZ = (1.3F * f1);
-      this.TargYS = (0.26F * f1); this.TargZS = (0.26F * f1);
-      break;
-    case 5:
-      this.ApproachV.set(0.0D, 0.0D, 0.0D);
-      this.TargV.set(0.0D, 0.0D, 0.0D);
-      this.ApproachR = 600.0F;
-      this.TargY = 25.0F; this.TargZ = 12.0F;
-      this.TargYS = (0.26F * f1); this.TargZS = (0.26F * f1);
-      break;
-    case 6:
-      this.ApproachV.set(600.0D, 600 - World.Rnd().nextInt(0, 1) * 1200 + World.Rnd().nextFloat(-100.0F, 100.0F), 300.0D);
-      this.TargV.set(0.0D, 0.0D, 0.0D);
-      this.ApproachR = 300.0F;
-      this.TargY = (2.1F * f1); this.TargZ = (1.2F * f1);
-      this.TargYS = (0.26F * f1); this.TargZS = (0.26F * f1);
-      break;
-    case 7:
-      this.ApproachV.set(-1000.0F + World.Rnd().nextFloat(-200.0F, 200.0F), 0.0D, 100.0F + World.Rnd().nextFloat(-50.0F, 50.0F));
-      this.TargV.set(this.target.EI.engines[World.Rnd().nextInt(0, this.target.EI.getNum() - 1)].getEnginePos());
-      this.ApproachR = 200.0F;
-      this.TargY = 10.0F; this.TargZ = 10.0F;
-      this.TargYS = 2.0F; this.TargZS = 2.0F;
-      break;
-    case 8:
-      this.ApproachV.set(-1000.0F + World.Rnd().nextFloat(-200.0F, 200.0F), 0.0D, 100.0F + World.Rnd().nextFloat(-50.0F, 50.0F));
-      this.TargV.set(0.0D, 0.0D, 0.0D);
-      this.ApproachR = 200.0F;
-      this.TargY = (2.1F * f1); this.TargZ = (3.9F * f1);
-      this.TargYS = (0.2F * f1); this.TargZS = (0.2F * f1);
-      break;
-    case 9:
-      this.ApproachV.set(-600.0F + World.Rnd().nextFloat(-100.0F, 100.0F), 0.0D, 600.0F + World.Rnd().nextFloat(-100.0F, 100.0F));
-      this.TargV.set(0.0D, 0.0D, 0.0D);
-      this.ApproachR = 300.0F;
-      this.TargY = (2.1F * f1); this.TargZ = (3.9F * f1);
-      this.TargYS = (0.2F * f1); this.TargZS = (0.2F * f1);
-      break;
-    case 10:
-      this.ApproachV.set(-600.0F + World.Rnd().nextFloat(-100.0F, 100.0F), 0.0D, -300.0F + World.Rnd().nextFloat(-100.0F, 100.0F));
-      this.TargV.set(100.0D, 0.0D, -400.0D);
-      this.ApproachR = 300.0F;
-      this.TargY = (2.1F * f1); this.TargZ = (3.9F * f1);
-      this.TargYS = (0.43F * f1); this.TargZS = (0.43F * f1);
-      break;
-    default:
-      this.ApproachV.set(-1000.0F + World.Rnd().nextFloat(-200.0F, 200.0F), 0.0D, 100.0F + World.Rnd().nextFloat(-50.0F, 50.0F));
-      this.TargV.set(this.target.EI.engines[World.Rnd().nextInt(0, this.target.EI.getNum() - 1)].getEnginePos());
-      this.ApproachR = 200.0F;
-      this.TargY = 10.0F; this.TargZ = 10.0F;
-      this.TargYS = 2.0F; this.TargZS = 2.0F;
-    }
-
-    float f2 = 0.0F;
-    if ((this.CT.Weapons[1] != null) && (this.CT.Weapons[1][0].countBullets() > 0))
-      f2 = ((GunGeneric)this.CT.Weapons[1][0]).bulletSpeed();
-    else if (this.CT.Weapons[0] != null) {
-      f2 = ((GunGeneric)this.CT.Weapons[0][0]).bulletSpeed();
-    }
-    if (f2 > 0.01F) this.bullTime = (1.0F / f2);
-  }
-
-  public void fighterVsBomber(float paramFloat)
-  {
-    this.maxAOA = 15.0F;
-    tmpOr.setAT0(this.target.Vwld);
-    float f1;
-    float f2;
-    switch (this.submaneuver) {
-    case 0:
-      this.minElevCoeff = 4.0F;
-      this.rocketsDelay = 0; this.bulletDelay = 0;
-      double d1 = 0.0001D * this.target.Loc.z;
-
-      Ve.sub(this.target.Loc, this.Loc);
-      tmpOr.transformInv(Ve);
-      this.scaledApproachV.set(this.ApproachV);
-      this.scaledApproachV.x -= 700.0D * d1;
-      this.scaledApproachV.z += 500.0D * d1;
-      Ve.add(this.scaledApproachV);
-      Ve.normalize();
-      tmpV3f.scale(this.scaledApproachV, -1.0D);
-      tmpV3f.normalize();
-      double d2 = Ve.dot(tmpV3f);
-      Ve.set(this.Vwld);
-      Ve.normalize();
-      tmpV3f.set(this.target.Vwld);
-      tmpV3f.normalize();
-      double d3 = Ve.dot(tmpV3f);
-
-      Ve.set(this.scaledApproachV);
-      Ve.x += 60.0D * (2.0D * (1.0D - d2) + 4.0D * (1.0D - d3));
-
-      tmpOr.transform(Ve);
-      Ve.add(this.target.Loc);
-      Ve.sub(this.Loc);
-      double d4 = Ve.z;
-      tmpV3f.set(Ve);
-      tmpV3f.z = 0.0D;
-      f1 = (float)tmpV3f.length();
-      f2 = 0.55F + 0.15F * this.Skill;
-      tmpV3f.normalize();
-      this.Vtarg.set(this.target.Vwld);
-      this.Vtarg.z = 0.0D;
-      float f3 = (float)tmpV3f.dot(this.Vtarg);
-      float f4 = getSpeed() - f3;
-      if (f4 < 10.0F) f4 = 10.0F;
-      float f5 = f1 / f4;
-      if (f5 < 0.0F) f5 = 0.0F;
-      tmpV3f.scale(this.Vtarg, f5 * f2);
-      Ve.add(tmpV3f);
-
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      if (d4 > -200.0D) {
-        setSpeedMode(9);
-      } else {
-        setSpeedMode(4);
-        this.smConstSpeed = 180.0F;
-      }
-
-      attackTurnToDirection(f1, paramFloat, 10.0F * (float)(1.0D + d1));
-
-      this.sub_Man_Count += 1;
-      if ((f1 >= this.ApproachR * (1.0D + d1)) || (d4 >= 200.0D)) break;
-      this.submaneuver += 1;
-      this.sub_Man_Count = 0; break;
-    case 1:
-      this.minElevCoeff = 20.0F;
-      Ve.set(this.TargV);
-      this.target.Or.transform(Ve);
-      Ve.add(this.target.Loc);
-      Ve.sub(this.Loc);
-      f1 = (float)Ve.length();
-      f2 = 0.55F + 0.15F * this.Skill;
-      tmpV3f.sub(this.target.Vwld, this.Vwld);
-      float f6 = f1 * this.bullTime * 0.0025F;
-      if (f6 > 0.05F)
-        f6 = 0.05F;
-      tmpV3f.scale(f1 * f6 * f2);
-      Ve.add(tmpV3f);
-
-      this.Vtarg.set(Ve);
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      ((Maneuver)this.target).incDangerAggressiveness(1, (float)Ve.x, f1, this);
-
-      if ((f1 > 3200.0F) || (this.Vtarg.z > 1500.0D)) {
-        this.submaneuver = 0;
-        this.sub_Man_Count = 0;
-        set_maneuver(0);
-      }
-      else {
-        if (Ve.x < 0.300000011920929D) {
-          this.Vtarg.z += 0.012F * this.Skill * (800.0F + f1) * (0.300000011920929D - Ve.x);
-          Ve.set(this.Vtarg);
-          this.Or.transformInv(Ve);
-          Ve.normalize();
-        }
-
-        attackTurnToDirection(f1, paramFloat, 10.0F + this.Skill * 8.0F);
-        setSpeedMode(4);
-        this.smConstSpeed = 180.0F;
-
-        if (f1 >= 400.0F) break;
-        this.submaneuver += 1;
-        this.sub_Man_Count = 0; } break;
-    case 2:
-      this.minElevCoeff = 20.0F;
-      if (this.rocketsDelay > 0) this.rocketsDelay -= 1;
-      if (this.bulletDelay > 0) this.bulletDelay -= 1;
-      if (this.bulletDelay == 120) this.bulletDelay = 0;
-      setRandomTargDeviation(0.8F);
-      Ve.set(this.TargV);
-      Ve.add(this.TargDevV);
-      this.target.Or.transform(Ve);
-      Ve.add(this.target.Loc);
-      Ve.sub(this.Loc);
-      this.Vtarg.set(Ve);
-      f1 = (float)Ve.length();
-      f2 = 0.55F + 0.15F * this.Skill;
-      float f7 = 0.0002F * this.Skill;
-      tmpV3f.sub(this.target.Vwld, this.Vwld);
-      Vpl.set(tmpV3f);
-      tmpV3f.scale(f1 * (this.bullTime + f7) * f2);
-      Ve.add(tmpV3f);
-      tmpV3f.set(Vpl);
-      tmpV3f.scale(f1 * this.bullTime * f2);
-      this.Vtarg.add(tmpV3f);
-
-      if ((f1 > 4000.0F) || (this.Vtarg.z > 2000.0D)) {
-        this.submaneuver = 0;
-        this.sub_Man_Count = 0;
-        set_maneuver(0);
-      }
-      else
-      {
-        this.Or.transformInv(this.Vtarg);
-        if ((this.Vtarg.x > 0.0D) && (f1 < 500.0F) && ((this.shotAtFriend <= 0) || (this.distToFriend > f1)) && 
-          (Math.abs(this.Vtarg.y) < this.TargY - this.TargYS * this.Skill) && (Math.abs(this.Vtarg.z) < this.TargZ - this.TargZS * this.Skill) && (this.bulletDelay < 120))
-        {
-          if (!(this.actor instanceof KI_46_OTSUHEI))
-            this.CT.WeaponControl[0] = true;
-          this.CT.WeaponControl[1] = true;
-          this.bulletDelay += 2;
-          if (this.bulletDelay >= 118) {
-            int i = (int)(this.target.getW().length() * 150.0D);
-            if (i > 60)
-              i = 60;
-            this.bulletDelay += World.Rnd().nextInt(i * this.Skill, 2 * i * this.Skill);
-          }
-
-          if ((this.CT.Weapons[2] != null) && (this.CT.Weapons[2][0] != null) && (this.CT.Weapons[2][(this.CT.Weapons[2].length - 1)].countBullets() != 0) && (this.rocketsDelay < 1))
-          {
-            tmpV3f.sub(this.target.Vwld, this.Vwld);
-            this.Or.transformInv(tmpV3f);
-            if ((Math.abs(tmpV3f.y) < this.TargY - this.TargYS * this.Skill) && (Math.abs(tmpV3f.z) < this.TargZ - this.TargZS * this.Skill))
+            Vtarg.set(actor.pos.getAbsPoint());
+            actor.getSpeed(tmpV3d);
+            float f6 = 0.0F;
+            switch(submaneuver)
             {
-              this.CT.WeaponControl[2] = true;
-            }Voice.speakAttackByRockets((Aircraft)this.actor);
-            this.rocketsDelay += 120;
-          }
-          ((Maneuver)this.target).incDangerAggressiveness(1, 0.8F, f1, this);
+            case 0: // '\0'
+                f6 = f1 / 40F + 4F + Alt / 48F;
+                // fall through
 
-          ((Pilot)this.target).setAsDanger(this.actor);
+            case 1: // '\001'
+                f6 = (f1 - man1Dist) / (float)Vwld.length() + 4F + Alt / 48F;
+                // fall through
+
+            case 2: // '\002'
+                f6 = Alt / 60F;
+                // fall through
+
+            case 3: // '\003'
+                f6 = Alt / 120F;
+                // fall through
+
+            default:
+                f6 *= 0.33333F;
+                break;
+            }
+            Vtarg.x += (float)tmpV3d.x * f6 * (float)Skill;
+            Vtarg.y += (float)tmpV3d.y * f6 * (float)Skill;
+            Vtarg.z += (float)tmpV3d.z * f6 * (float)Skill;
         }
-
-        this.Vtarg.set(Ve);
-        this.Or.transformInv(Ve);
+        Ve.set(Vtarg);
+        Ve.sub(Loc);
+        float f4 = (float)(-Ve.z);
+        if(f4 < 0.0F)
+            f4 = 0.0F;
+        Ve.add(Vxy);
+        f5 = (float)(-Ve.z);
+        f2 = (float)java.lang.Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y + Ve.z * Ve.z);
+        f1 = (float)java.lang.Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
+        if(submaneuver < 2)
+            Ve.z = 0.0D;
+        Vf.set(Ve);
         Ve.normalize();
-        ((Maneuver)this.target).incDangerAggressiveness(1, (float)Ve.x, f1, this);
-
-        if (Ve.x < 0.300000011920929D) {
-          this.Vtarg.z += 0.01F * this.Skill * (800.0F + f1) * (0.300000011920929D - Ve.x);
-          Ve.set(this.Vtarg);
-          this.Or.transformInv(Ve);
-          Ve.normalize();
-        }
-
-        attackTurnToDirection(f1, paramFloat, 10.0F + this.Skill * 8.0F);
-        if (this.target.getSpeed() > 70.0F) {
-          setSpeedMode(2);
-          this.tailForStaying = this.target;
-          this.tailOffset.set(-20.0D, 0.0D, 0.0D);
-        }
-        else {
-          setSpeedMode(4);
-          this.smConstSpeed = 70.0F;
-        }
-
-        if (this.strikeEmer) {
-          Vpl.sub(this.strikeTarg.Loc, this.Loc);
-          tmpV3f.set(Vpl);
-          this.Or.transformInv(tmpV3f);
-          if (tmpV3f.x < 0.0D)
-            return;
-          tmpV3f.sub(this.strikeTarg.Vwld, this.Vwld);
-          tmpV3f.scale(0.699999988079071D);
-          Vpl.add(tmpV3f);
-          this.Or.transformInv(Vpl);
-          push();
-          if (Vpl.z < 0.0D) {
-            push(0);
-            push(8);
-            push(60);
-          }
-          else {
-            push(0);
-            push(8);
-            push(61);
-          }
-          pop();
-          this.strikeEmer = false;
-          this.submaneuver = 0;
-          this.sub_Man_Count = 0;
-        }
-        if (this.sub_Man_Count <= 600) break;
-        push(8);
-        pop(); } break;
-    default:
-      this.submaneuver = 0;
-      this.sub_Man_Count = 0;
-      set_maneuver(0);
-    }
-  }
-
-  public void fighterUnderBomber(float paramFloat)
-  {
-    this.maxAOA = 15.0F;
-    float f1;
-    float f2;
-    switch (this.submaneuver) {
-    case 0:
-      this.rocketsDelay = 0; this.bulletDelay = 0;
-      Ve.set(this.ApproachV);
-      this.target.Or.transform(Ve);
-      Ve.add(this.target.Loc);
-      Ve.sub(this.Loc);
-      tmpV3f.set(Ve);
-      tmpV3f.z = 0.0D;
-      f1 = (float)tmpV3f.length();
-      f2 = 0.55F + 0.15F * this.Skill;
-      tmpV3f.normalize();
-      this.Vtarg.set(this.target.Vwld);
-      this.Vtarg.z = 0.0D;
-      float f3 = (float)tmpV3f.dot(this.Vtarg);
-      float f4 = getSpeed() - f3;
-      if (f4 < 10.0F) f4 = 10.0F;
-      float f5 = f1 / f4;
-      if (f5 < 0.0F) f5 = 0.0F;
-      tmpV3f.scale(this.Vtarg, f5 * f2);
-      Ve.add(tmpV3f);
-
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      setSpeedMode(4);
-      this.smConstSpeed = 140.0F;
-      farTurnToDirection();
-
-      this.sub_Man_Count += 1;
-      if (f1 >= this.ApproachR) break;
-      this.submaneuver += 1;
-      this.sub_Man_Count = 0; break;
-    case 1:
-      Ve.set(this.TargV);
-      this.target.Or.transform(Ve);
-      Ve.add(this.target.Loc);
-      Ve.sub(this.Loc);
-      f1 = (float)Ve.length();
-      f2 = 0.55F + 0.15F * this.Skill;
-      tmpV3f.sub(this.target.Vwld, this.Vwld);
-      float f6 = f1 * this.bullTime * 0.0025F;
-      if (f6 > 0.02F) f6 = 0.02F;
-      tmpV3f.scale(f1 * f6 * f2);
-      Ve.add(tmpV3f);
-
-      this.Vtarg.set(Ve);
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      ((Maneuver)this.target).incDangerAggressiveness(1, (float)Ve.x, f1, this);
-
-      if ((f1 > 3200.0F) || (this.Vtarg.z > 1500.0D)) {
-        this.submaneuver = 0;
-        this.sub_Man_Count = 0;
-      }
-      else {
-        if (Ve.x < 0.300000011920929D) {
-          this.Vtarg.z += 0.01F * this.Skill * (800.0F + f1) * (0.300000011920929D - Ve.x);
-          Ve.set(this.Vtarg);
-          this.Or.transformInv(Ve);
-          Ve.normalize();
-        }
-
-        attackTurnToDirection(f1, paramFloat, 10.0F);
-        if (this.target.getSpeed() > 120.0F) {
-          setSpeedMode(2);
-          this.tailForStaying = this.target;
-        } else {
-          setSpeedMode(4);
-          this.smConstSpeed = 120.0F;
-        }
-
-        if (f1 >= 400.0F) break;
-        this.submaneuver += 1;
-        this.sub_Man_Count = 0; } break;
-    case 2:
-      setCheckStrike(false);
-      if (this.rocketsDelay > 0) this.rocketsDelay -= 1;
-      if (this.bulletDelay > 0) this.bulletDelay -= 1;
-      if (this.bulletDelay == 120) this.bulletDelay = 0;
-      setRandomTargDeviation(0.8F);
-      Ve.set(this.TargV);
-      Ve.add(this.TargDevV);
-      this.target.Or.transform(Ve);
-      Ve.add(this.target.Loc);
-      Ve.sub(this.Loc);
-      f1 = (float)Ve.length();
-      f2 = 0.55F + 0.15F * this.Skill;
-      tmpV3f.sub(this.target.Vwld, this.Vwld);
-      tmpV3f.scale(f1 * this.bullTime * f2);
-      Ve.add(tmpV3f);
-      this.Vtarg.set(Ve);
-      this.Or.transformInv(Ve);
-
-      if ((f1 > 4000.0F) || (this.Vtarg.z > 2000.0D)) {
-        this.submaneuver = 0;
-        this.sub_Man_Count = 0;
-      }
-      else {
-        if ((this.AS.astatePilotStates[1] < 100) && (f1 < 330.0F) && (Math.abs(this.Or.getKren()) < 3.0F)) {
-          this.CT.WeaponControl[0] = true;
-        }
-
-        Ve.normalize();
-
-        if (Ve.x < 0.300000011920929D) {
-          this.Vtarg.z += 0.01F * this.Skill * (800.0F + f1) * (0.300000011920929D - Ve.x);
-          Ve.set(this.Vtarg);
-          this.Or.transformInv(Ve);
-          Ve.normalize();
-        }
-
-        attackTurnToDirection(f1, paramFloat, 6.0F + this.Skill * 3.0F);
-
-        setSpeedMode(1);
-        this.tailForStaying = this.target;
-        this.tailOffset.set(-190.0D, 0.0D, 0.0D);
-
-        if ((this.sub_Man_Count <= 10000) && (f1 >= 240.0F)) break;
-        push(9);
-        pop(); } break;
-    default:
-      this.submaneuver = 0;
-      this.sub_Man_Count = 0;
-    }
-  }
-
-  public void fighterVsFighter(float paramFloat) {
-    if (this.sub_Man_Count == 0) {
-      f1 = 0.0F;
-      if ((this.CT.Weapons[1] != null) && (this.CT.Weapons[1][0].countBullets() > 0))
-        f1 = ((GunGeneric)this.CT.Weapons[1][0]).bulletSpeed();
-      else if (this.CT.Weapons[0] != null) {
-        f1 = ((GunGeneric)this.CT.Weapons[0][0]).bulletSpeed();
-      }
-      if (f1 > 0.01F) this.bullTime = (1.0F / f1);
-    }
-    this.maxAOA = 15.0F;
-    if (this.rocketsDelay > 0) this.rocketsDelay -= 1;
-    if (this.bulletDelay > 0) this.bulletDelay -= 1;
-    if (this.bulletDelay == 122) this.bulletDelay = 0;
-
-    Ve.sub(this.target.Loc, this.Loc);
-    setRandomTargDeviation(0.3F);
-    Ve.add(this.TargDevV);
-    this.Vtarg.set(Ve);
-    float f1 = (float)Ve.length();
-    float f2 = 0.55F + 0.15F * this.Skill;
-    float f3 = 0.0002F * this.Skill;
-    tmpV3f.sub(this.target.Vwld, this.Vwld);
-    Vpl.set(tmpV3f);
-    tmpV3f.scale(f1 * (this.bullTime + f3) * f2);
-    Ve.add(tmpV3f);
-    tmpV3f.set(Vpl);
-    tmpV3f.scale(f1 * this.bullTime * f2);
-    this.Vtarg.add(tmpV3f);
-
-    this.Or.transformInv(Vpl);
-    float f4 = (float)(-Vpl.x);
-    if (f4 < 0.001F) f4 = 0.001F;
-    Vpl.normalize();
-    if ((Vpl.x < -0.9399999976158142D) && (f1 / f4 < 1.5F * (3 - this.Skill))) {
-      push();
-      set_maneuver(14);
-      return;
-    }
-
-    this.Or.transformInv(this.Vtarg);
-    if ((this.Vtarg.x > 0.0D) && (f1 < 500.0F) && ((this.shotAtFriend <= 0) || (this.distToFriend > f1))) {
-      if ((Math.abs(this.Vtarg.y) < 13.0D) && (Math.abs(this.Vtarg.z) < 13.0D)) {
-        ((Maneuver)this.target).incDangerAggressiveness(1, 0.95F, f1, this);
-      }
-      if ((Math.abs(this.Vtarg.y) < 12.5F - 3.5F * this.Skill) && (Math.abs(this.Vtarg.z) < 12.5D - 3.5D * this.Skill) && (this.bulletDelay < 120)) {
-        if (!(this.actor instanceof KI_46_OTSUHEI)) this.CT.WeaponControl[0] = true;
-        this.bulletDelay += 2;
-        if (this.bulletDelay >= 118) {
-          int i = (int)(this.target.getW().length() * 150.0D);
-          if (i > 60) i = 60;
-          this.bulletDelay += World.Rnd().nextInt(i * this.Skill, 2 * i * this.Skill);
-        }
-        if (f1 < 400.0F) {
-          this.CT.WeaponControl[1] = true;
-          if ((f1 < 100.0F) && (this.CT.Weapons[2] != null) && (this.CT.Weapons[2][0] != null) && (this.CT.Weapons[2][(this.CT.Weapons[2].length - 1)].countBullets() != 0) && (this.rocketsDelay < 1))
-          {
-            tmpV3f.sub(this.target.Vwld, this.Vwld);
-            this.Or.transformInv(tmpV3f);
-            if ((Math.abs(tmpV3f.y) < 4.0D) && (Math.abs(tmpV3f.z) < 4.0D))
-              this.CT.WeaponControl[2] = true;
-            Voice.speakAttackByRockets((Aircraft)this.actor);
-            this.rocketsDelay += 120;
-          }
-        }
-        ((Pilot)this.target).setAsDanger(this.actor);
-      }
-    }
-
-    this.Vtarg.set(Ve);
-    this.Or.transformInv(Ve);
-    Ve.normalize();
-    ((Maneuver)this.target).incDangerAggressiveness(1, (float)Ve.x, f1, this);
-
-    if (Ve.x < 0.300000011920929D) {
-      this.Vtarg.z += 0.01F * this.Skill * (800.0F + f1) * (0.300000011920929D - Ve.x);
-      Ve.set(this.Vtarg);
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-    }
-
-    attackTurnToDirection(f1, paramFloat, 10.0F + this.Skill * 8.0F);
-    if ((this.Alt > 150.0F) && (Ve.x > 0.6D) && (f1 < 70.0D)) {
-      setSpeedMode(1);
-      this.tailForStaying = this.target;
-      this.tailOffset.set(-20.0D, 0.0D, 0.0D);
-    } else {
-      setSpeedMode(9);
-    }
-  }
-
-  public void boomAttack(float paramFloat)
-  {
-    if (this.sub_Man_Count == 0) {
-      f1 = 0.0F;
-      if ((this.CT.Weapons[1] != null) && (this.CT.Weapons[1][0].countBullets() > 0))
-        f1 = ((GunGeneric)this.CT.Weapons[1][0]).bulletSpeed();
-      else if (this.CT.Weapons[0] != null) {
-        f1 = ((GunGeneric)this.CT.Weapons[0][0]).bulletSpeed();
-      }
-      if (f1 > 0.01F) this.bullTime = (1.0F / f1);
-    }
-    this.maxAOA = 15.0F;
-    if (this.rocketsDelay > 0) this.rocketsDelay -= 1;
-    if (this.bulletDelay > 0) this.bulletDelay -= 1;
-    if (this.bulletDelay == 122) this.bulletDelay = 0;
-
-    Ve.sub(this.target.Loc, this.Loc);
-    setRandomTargDeviation(0.3F);
-    Ve.add(this.TargDevV);
-    this.Vtarg.set(Ve);
-    float f1 = (float)Ve.length();
-    float f2 = 0.55F + 0.15F * this.Skill;
-    float f3 = 0.000333F * this.Skill;
-    tmpV3f.sub(this.target.Vwld, this.Vwld);
-    Vpl.set(tmpV3f);
-    tmpV3f.scale(f1 * (this.bullTime + f3) * f2);
-    Ve.add(tmpV3f);
-    tmpV3f.set(Vpl);
-    tmpV3f.scale(f1 * this.bullTime * f2);
-    this.Vtarg.add(tmpV3f);
-
-    this.Or.transformInv(Vpl);
-    float f4 = (float)(-Vpl.x);
-    if (f4 < 0.001F) f4 = 0.001F;
-    Vpl.normalize();
-    if ((Vpl.x < -0.9399999976158142D) && (f1 / f4 < 1.5F * (3 - this.Skill))) {
-      push();
-      set_maneuver(14);
-      return;
-    }
-
-    this.Or.transformInv(this.Vtarg);
-    if ((this.Vtarg.x > 0.0D) && (f1 < 700.0F) && ((this.shotAtFriend <= 0) || (this.distToFriend > f1)) && 
-      (Math.abs(this.Vtarg.y) < 15.5F - 3.5F * this.Skill) && (Math.abs(this.Vtarg.z) < 15.5D - 3.5D * this.Skill) && (this.bulletDelay < 120)) {
-      ((Maneuver)this.target).incDangerAggressiveness(1, 0.8F, f1, this);
-      if (!(this.actor instanceof KI_46_OTSUHEI)) this.CT.WeaponControl[0] = true;
-      this.bulletDelay += 2;
-      if (this.bulletDelay >= 118) {
-        int i = (int)(this.target.getW().length() * 150.0D);
-        if (i > 60) i = 60;
-        this.bulletDelay += World.Rnd().nextInt(i * this.Skill, 2 * i * this.Skill);
-      }
-      if (f1 < 500.0F) {
-        this.CT.WeaponControl[1] = true;
-        if ((f1 < 100.0F) && (this.CT.Weapons[2] != null) && (this.CT.Weapons[2][0] != null) && (this.CT.Weapons[2][(this.CT.Weapons[2].length - 1)].countBullets() != 0) && (this.rocketsDelay < 1))
+        Vpl.set(Vwld);
+        Vpl.normalize();
+        switch(submaneuver)
         {
-          tmpV3f.sub(this.target.Vwld, this.Vwld);
-          this.Or.transformInv(tmpV3f);
-          if ((Math.abs(tmpV3f.y) < 4.0D) && (Math.abs(tmpV3f.z) < 4.0D))
-            this.CT.WeaponControl[2] = true;
-          Voice.speakAttackByRockets((Aircraft)this.actor);
-          this.rocketsDelay += 120;
-        }
-      }
-      ((Pilot)this.target).setAsDanger(this.actor);
-    }
+        default:
+            break;
 
-    this.Vtarg.set(Ve);
-    this.Or.transformInv(Ve);
-    Ve.normalize();
-    ((Maneuver)this.target).incDangerAggressiveness(1, (float)Ve.x, f1, this);
+        case 0: // '\0'
+            push();
+            pop();
+            if(f5 < 1200F)
+                man1Dist = 400F;
+            else
+            if(f5 > 4500F)
+                man1Dist = 50F;
+            else
+                man1Dist = 50F + (350F * (4500F - f5)) / 3300F;
+            float f7 = 0.01F * f5;
+            if(f7 < 10F)
+                f7 = 10F;
+            Vxy.set(com.maddox.il2.ai.World.Rnd().nextFloat(-10F, 10F), com.maddox.il2.ai.World.Rnd().nextFloat(-10F, 10F), com.maddox.il2.ai.World.Rnd().nextFloat(5F, f7));
+            Vxy.scale(4F - (float)Skill);
+            float f8 = 2E-005F * f5 * f5;
+            if(f8 < 60F)
+                f8 = 60F;
+            if(f8 > 350F)
+                f8 = 350F;
+            Vxy.z += f8;
+            submaneuver++;
+            break;
 
-    if (Ve.x < 0.8999999761581421D) {
-      this.Vtarg.z += 0.03F * this.Skill * (800.0F + f1) * (0.8999999761581421D - Ve.x);
-      Ve.set(this.Vtarg);
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-    }
+        case 1: // '\001'
+            setSpeedMode(4);
+            smConstSpeed = 110F;
+            if(f1 >= man1Dist)
+                break;
+            CT.AirBrakeControl = 1.0F;
+            if(this.actor instanceof com.maddox.il2.objects.air.TypeFighter)
+                CT.FlapsControl = 1.0F;
+            push();
+            push(6);
+            safe_pop();
+            submaneuver++;
+            break;
 
-    attackTurnToDirection(f1, paramFloat, 10.0F + this.Skill * 8.0F);
-  }
-
-  private void turnToDirection(float paramFloat)
-  {
-    if (Math.abs(Ve.y) > 0.1000000014901161D)
-      this.CT.AileronControl = (-(float)Math.atan2(Ve.y, Ve.z) - 0.016F * this.Or.getKren());
-    else {
-      this.CT.AileronControl = (-(float)Math.atan2(Ve.y, Ve.x) - 0.016F * this.Or.getKren());
-    }
-    this.CT.RudderControl = (-10.0F * (float)Math.atan2(Ve.y, Ve.x));
-    if (this.CT.RudderControl * this.W.z > 0.0D) this.W.z = 0.0D; else this.W.z *= 1.039999961853027D;
-
-    float f = (float)Math.atan2(Ve.z, Ve.x);
-
-    if ((Math.abs(Ve.y) < 0.002000000094994903D) && (Math.abs(Ve.z) < 0.002000000094994903D)) f = 0.0F;
-
-    if (Ve.x < 0.0D) { f = 1.0F;
-    } else {
-      if (f * this.W.y > 0.0D) this.W.y = 0.0D;
-      if (f < 0.0F) {
-        if (getOverload() < 0.1F) f = 0.0F;
-        if (this.CT.ElevatorControl > 0.0F) this.CT.ElevatorControl = 0.0F;
-      }
-      else if (this.CT.ElevatorControl < 0.0F) { this.CT.ElevatorControl = 0.0F; }
-    }
-    if ((getOverload() > this.maxG) || (this.AOA > this.maxAOA) || (this.CT.ElevatorControl > f)) this.CT.ElevatorControl -= 0.3F * paramFloat; else
-      this.CT.ElevatorControl += 0.3F * paramFloat;
-  }
-
-  private void farTurnToDirection() {
-    farTurnToDirection(4.0F);
-  }
-  private void farTurnToDirection(float paramFloat) {
-    Vpl.set(1.0D, 0.0D, 0.0D);
-    tmpV3f.cross(Vpl, Ve);
-    this.Or.transform(tmpV3f);
-
-    this.CT.RudderControl = (-10.0F * (float)Math.atan2(Ve.y, Ve.x) + 1.0F * (float)this.W.y);
-
-    float f7 = getSpeed() / this.Vmax * 45.0F;
-    if (f7 > 85.0F) f7 = 85.0F;
-    float f8 = (float)Ve.x;
-    if (f8 < 0.0F) f8 = 0.0F;
-    float f1;
-    if (tmpV3f.z >= 0.0D)
-      f1 = -0.02F * (f7 + this.Or.getKren()) * (1.0F - f8) - 0.05F * this.Or.getTangage() + 1.0F * (float)this.W.x;
-    else {
-      f1 = -0.02F * (-f7 + this.Or.getKren()) * (1.0F - f8) + 0.05F * this.Or.getTangage() + 1.0F * (float)this.W.x;
-    }
-    float f2 = -(float)Math.atan2(Ve.y, Ve.x) - 0.016F * this.Or.getKren() + 1.0F * (float)this.W.x;
-
-    float f4 = -0.1F * (getAOA() - 10.0F) + 0.5F * (float)getW().y;
-    float f5;
-    if (Ve.z > 0.0D)
-      f5 = -0.1F * (getAOA() - paramFloat) + 0.5F * (float)getW().y;
-    else {
-      f5 = 1.0F * (float)Ve.z + 0.5F * (float)getW().y;
-    }
-    if (Math.abs(Ve.y) < 0.002000000094994903D) {
-      f2 = 0.0F;
-      this.CT.RudderControl = 0.0F;
-    }
-
-    tmpV3f.set(Ve);
-    this.Or.transform(tmpV3f);
-    float f9 = (float)Math.atan2(tmpV3f.y, tmpV3f.x) * 180.0F / 3.1415F;
-
-    float f10 = 1.0F - Math.abs(f9 - this.Or.getYaw()) * 0.01F;
-
-    if ((f10 < 0.0F) || (Ve.x < 0.0D)) f10 = 0.0F;
-    float f3 = f10 * f2 + (1.0F - f10) * f1;
-    float f6 = f10 * f5 + (1.0F - f10) * f4;
-
-    this.CT.AileronControl = f3;
-    this.CT.ElevatorControl = f6;
-  }
-
-  private void attackTurnToDirection(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    if (Ve.x < 0.009999999776482582D) Ve.x = 0.009999999776482582D;
-    if (this.sub_Man_Count == 0) this.oldVe.set(Ve);
-    float f1;
-    if (Ve.x > 0.949999988079071D)
-    {
-      this.CT.RudderControl = (float)(-30.0D * Math.atan2(Ve.y, Ve.x) + 1.5D * (Ve.y - this.oldVe.y));
-
-      if ((Ve.z > 0.0D) || (this.CT.RudderControl > 0.9F)) {
-        f1 = (float)(10.0D * Math.atan2(Ve.z, Ve.x) + 6.0D * (Ve.z - this.oldVe.z));
-
-        this.CT.AileronControl = (-30.0F * (float)Math.atan2(Ve.y, Ve.x) - 0.02F * this.Or.getKren() + 5.0F * (float)this.W.x);
-      } else {
-        f1 = (float)(5.0D * Math.atan2(Ve.z, Ve.x) + 6.0D * (Ve.z - this.oldVe.z));
-        this.CT.AileronControl = (-5.0F * (float)Math.atan2(Ve.y, Ve.x) - 0.02F * this.Or.getKren() + 5.0F * (float)this.W.x);
-      }
-
-      if (Ve.x > 1.0F - 0.005F * this.Skill) {
-        tmpOr.set(this.Or);
-        tmpOr.increment((float)Math.toDegrees(Math.atan2(Ve.y, Ve.x)), (float)Math.toDegrees(Math.atan2(Ve.z, Ve.x)), 0.0F);
-        this.Or.interpolate(tmpOr, 0.1F);
-      }
-
-      if (Math.abs(this.CT.ElevatorControl - f1) < paramFloat3 * paramFloat2) this.CT.ElevatorControl = f1;
-      else if (this.CT.ElevatorControl < f1)
-        this.CT.ElevatorControl += paramFloat3 * paramFloat2;
-      else {
-        this.CT.ElevatorControl -= paramFloat3 * paramFloat2;
-      }
-
-    }
-    else
-    {
-      if ((this.Skill >= 2) && (Ve.z > 0.5D) && (paramFloat1 < 600.0F)) this.CT.FlapsControl = 0.1F; else {
-        this.CT.FlapsControl = 0.0F;
-      }
-      f2 = 0.6F - (float)Ve.z;
-      if (f2 < 0.0F) f2 = 0.0F;
-      this.CT.RudderControl = (float)(-30.0D * Math.atan2(Ve.y, Ve.x) * f2 + 1.0D * (Ve.y - this.oldVe.y) * Ve.x + 0.5D * this.W.z);
-
-      if (Ve.z > 0.0D) {
-        f1 = (float)(10.0D * Math.atan2(Ve.z, Ve.x) + 6.0D * (Ve.z - this.oldVe.z) + 0.5D * (float)this.W.y);
-        if (f1 < 0.0F) f1 = 0.0F;
-        this.CT.AileronControl = (float)(-20.0D * Math.atan2(Ve.y, Ve.z) - 0.05D * this.Or.getKren() + 5.0D * this.W.x);
-      } else {
-        f1 = (float)(-5.0D * Math.atan2(Ve.z, Ve.x) + 6.0D * (Ve.z - this.oldVe.z) + 0.5D * (float)this.W.y);
-        this.CT.AileronControl = (float)(-20.0D * Math.atan2(Ve.y, Ve.z) - 0.05D * this.Or.getKren() + 5.0D * this.W.x);
-      }
-      if (f1 < 0.0F) f1 = 0.0F;
-
-      if (Math.abs(this.CT.ElevatorControl - f1) < paramFloat3 * paramFloat2) this.CT.ElevatorControl = f1;
-      else if (this.CT.ElevatorControl < f1)
-        this.CT.ElevatorControl += 0.3F * paramFloat2;
-      else {
-        this.CT.ElevatorControl -= 0.3F * paramFloat2;
-      }
-    }
-
-    float f2 = 0.054F * (600.0F - paramFloat1);
-    if (f2 < 4.0F) f2 = 4.0F;
-    if (f2 > this.AOA_Crit) f2 = this.AOA_Crit;
-    if (this.AOA > f2 - 1.5F) this.Or.increment(0.0F, 0.16F * (f2 - 1.5F - this.AOA), 0.0F);
-    if (this.AOA < -5.0F) this.Or.increment(0.0F, 0.12F * (-5.0F - this.AOA), 0.0F);
-    this.oldVe.set(Ve);
-    this.oldAOA = this.AOA;
-    this.sub_Man_Count += 1;
-
-    this.W.x *= 0.95D;
-  }
-
-  private void doCheckStrike() {
-    if ((this.M.massEmpty > 5000.0F) && (!this.AP.way.isLanding())) return;
-    if ((this.maneuver == 24) && (this.strikeTarg == this.Leader)) return;
-    if (((this.actor instanceof TypeDockable)) && (((TypeDockable)this.actor).typeDockableIsDocked())) {
-      return;
-    }
-    Vpl.sub(this.strikeTarg.Loc, this.Loc);
-    tmpV3f.set(Vpl);
-    this.Or.transformInv(tmpV3f);
-    if (tmpV3f.x < 0.0D) return;
-    tmpV3f.sub(this.strikeTarg.Vwld, this.Vwld);
-    tmpV3f.scale(0.699999988079071D);
-    Vpl.add(tmpV3f);
-    this.Or.transformInv(Vpl);
-    push();
-    if (Vpl.z > 0.0D) {
-      push(61);
-    }
-    else {
-      push(60);
-    }
-    safe_pop();
-  }
-
-  public void setStrikeEmer(FlightModel paramFlightModel) {
-    this.strikeEmer = true;
-    this.strikeTarg = paramFlightModel;
-  }
-
-  private float bombDist(float paramFloat) {
-    float f = positiveSquareEquation(-0.5F * World.g(), (float)this.Vwld.z, paramFloat);
-    if (f < 0.0F) return -1000000.0F;
-    return f * (float)Math.sqrt(this.Vwld.x * this.Vwld.x + this.Vwld.y * this.Vwld.y);
-  }
-
-  protected void wingman(boolean paramBoolean) {
-    if (this.Wingman == null) return;
-    this.Wingman.Leader = (paramBoolean ? this : null);
-  }
-
-  public float getMnTime() {
-    return this.mn_time;
-  }
-
-  public void doDumpBombsPassively()
-  {
-    int k = 0;
-    for (int i = 0; i < this.CT.Weapons.length; i++) {
-      if ((this.CT.Weapons[i] == null) || (this.CT.Weapons[i].length <= 0)) continue; for (int j = 0; j < this.CT.Weapons[i].length; j++) {
-        if ((this.CT.Weapons[i][j] instanceof BombGun)) {
-          if (((this.CT.Weapons[i][j] instanceof BombGunPara)) || (((this.actor instanceof SM79)) && ((this.CT.Weapons[i][j] instanceof TorpedoGun)))) {
-            k = 1;
-          } else {
-            ((BombGun)this.CT.Weapons[i][j]).setBombDelay(33000000.0F);
-            if ((this.actor == World.getPlayerAircraft()) && (!World.cur().diffCur.Limited_Ammo)) {
-              this.CT.Weapons[i][j].loadBullets(0);
+        case 2: // '\002'
+            setSpeedMode(4);
+            smConstSpeed = 110F;
+            sub_Man_Count++;
+            CT.AirBrakeControl = 1.0F;
+            if(this.actor instanceof com.maddox.il2.objects.air.TypeFighter)
+                CT.FlapsControl = 1.0F;
+            float f3 = Or.getKren();
+            if(Or.getTangage() > -90F)
+            {
+                f3 -= 180F;
+                if(f3 < -180F)
+                    f3 += 360F;
             }
-          }
+            CT.AileronControl = (float)((double)(-0.04F * f3) - 0.5D * getW().x);
+            if(getOverload() < 4F)
+                CT.ElevatorControl += 0.3F * f;
+            else
+                CT.ElevatorControl -= 0.3F * f;
+            if(sub_Man_Count > 30 && Or.getTangage() < -90F || sub_Man_Count > 150)
+            {
+                sub_Man_Count = 0;
+                submaneuver++;
+            }
+            break;
+
+        case 3: // '\003'
+            CT.AirBrakeControl = 1.0F;
+            if(this.actor instanceof com.maddox.il2.objects.air.TypeFighter)
+                CT.FlapsControl = 1.0F;
+            CT.BayDoorControl = 1.0F;
+            setSpeedMode(4);
+            smConstSpeed = 110F;
+            sub_Man_Count++;
+            if(sub_Man_Count > 80)
+            {
+                float f9 = (float)Vwld.z * 0.1019F;
+                f9 = f9 + (float)java.lang.Math.sqrt(f9 * f9 + 2.0F * f4 * 0.1019F) + 0.00035F * f4;
+                float f10 = (float)java.lang.Math.sqrt(Vwld.x * Vwld.x + Vwld.y * Vwld.y);
+                float f11 = f10 * f9;
+                float f12 = 0.2F * (f1 - f11);
+                Vxy.z += f12;
+                if(Vxy.z > (double)(0.7F * f4))
+                    Vxy.z = 0.7F * f4;
+            }
+            if(sub_Man_Count > 100 && Alt < 1000F && Vpl.dot(Ve) > 0.99000000953674316D || Alt < 600F)
+            {
+                bombsOut = true;
+                com.maddox.il2.objects.sounds.Voice.speakAttackByBombs((com.maddox.il2.objects.air.Aircraft)this.actor);
+                CT.BayDoorControl = 0.0F;
+                CT.AirBrakeControl = 0.0F;
+                AP.way.next();
+                push(0);
+                push(8);
+                push(2);
+                pop();
+            }
+            break;
         }
-      }
+        Or.transformInv(Ve);
+        Ve.normalize();
+        if(submaneuver == 3)
+            attackTurnToDirection(1000F, f, 30F);
+        else
+        if(submaneuver != 2)
+            turnToDirection(f);
     }
-    if (k == 0) this.bombsOut = true;
-  }
 
-  protected void printDebugFM()
-  {
-    System.out.print("<" + this.actor.name() + "> " + ManString.tname(this.task) + ":" + ManString.name(this.maneuver) + (this.target != null ? "T" : "t") + (this.danger != null ? "D" : "d") + (this.target_ground != null ? "G " : "g "));
-
-    switch (this.maneuver) {
-    case 21:
-      System.out.println(": WP=" + this.AP.way.Cur() + "(" + (this.AP.way.size() - 1) + ")-" + ManString.wpname(this.AP.way.curr().Action));
-
-      if (this.target_ground == null) break;
-      System.out.println(" GT=" + this.target_ground.getClass().getName() + "(" + this.target_ground.name() + ")");
-
-      break;
-    case 27:
-      if ((this.target == null) || (!Actor.isValid(this.target.actor))) System.out.println(" T=null"); else {
-        System.out.println(" T=" + this.target.actor.getClass().getName() + "(" + this.target.actor.name() + ")");
-      }
-      break;
-    case 43:
-    case 50:
-    case 51:
-    case 52:
-      if ((this.target_ground == null) || (!Actor.isValid(this.target_ground))) System.out.println(" GT=null"); else {
-        System.out.println(" GT=" + this.target_ground.getClass().getName() + "(" + this.target_ground.name() + ")");
-      }
-      break;
-    default:
-      System.out.println("");
-      if ((this.target == null) || (!Actor.isValid(this.target.actor))) { System.out.println(" T=null"); } else {
-        System.out.println(" T=" + this.target.actor.getClass().getName() + "(" + this.target.actor.name() + ")");
-
-        if ((this.target_ground == null) || (!Actor.isValid(this.target_ground))) System.out.println(" GT=null"); else
-          System.out.println(" GT=" + this.target_ground.getClass().getName() + "(" + this.target_ground.name() + ")");
-      }
-    }
-  }
-
-  protected void headTurn(float paramFloat)
-  {
-    if ((this.actor == Main3D.cur3D().viewActor()) && (this.AS.astatePilotStates[0] < 90))
+    private void groundAttackTorpedo(com.maddox.il2.engine.Actor actor, float f)
     {
-      int i = 0;
-      switch (get_task()) {
-      case 2:
-        if (this.Leader == null) break; Ve.set(this.Leader.Loc); i = 1; break;
-      case 6:
-        if (this.target == null) break; Ve.set(this.target.Loc); i = 1; break;
-      case 5:
-        if (this.airClient == null) break; Ve.set(this.airClient.Loc); i = 1; break;
-      case 4:
-        if (this.danger == null) break; Ve.set(this.danger.Loc); i = 1; break;
-      case 7:
-        if (this.target_ground == null) break; Ve.set(this.target_ground.pos.getAbsPoint()); i = 1;
-      case 3:
-      }
-      float f1;
-      float f2;
-      if (i != 0) {
-        Ve.sub(this.Loc);
-        this.Or.transformInv(Ve);
-        tmpOr.setAT0(Ve);
-        f1 = tmpOr.getTangage();
-        f2 = tmpOr.getYaw();
-        if (f2 > 75.0F) f2 = 75.0F;
-        if (f2 < -75.0F) f2 = -75.0F;
-        if (f1 < -15.0F) f1 = -15.0F;
-        if (f1 > 40.0F) f1 = 40.0F;
-      }
-      else if (get_maneuver() != 44) {
-        f1 = 0.0F;
-        f2 = 0.0F;
-      } else {
-        f2 = -15.0F;
-        f1 = -15.0F;
-      }
-
-      if (Math.abs(this.pilotHeadT - f1) > 3.0F) this.pilotHeadT += 90.0F * (this.pilotHeadT > f1 ? -1.0F : 1.0F) * paramFloat; else
-        this.pilotHeadT = f1;
-      if (Math.abs(this.pilotHeadY - f2) > 2.0F) this.pilotHeadY += 60.0F * (this.pilotHeadY > f2 ? -1.0F : 1.0F) * paramFloat; else
-        this.pilotHeadY = f2;
-      tmpOr.setYPR(0.0F, 0.0F, 0.0F);
-      tmpOr.increment(0.0F, this.pilotHeadY, 0.0F);
-      tmpOr.increment(this.pilotHeadT, 0.0F, 0.0F);
-      tmpOr.increment(0.0F, 0.0F, -0.2F * this.pilotHeadT + 0.05F * this.pilotHeadY);
-      this.headOr[0] = tmpOr.getYaw();
-      this.headOr[1] = tmpOr.getPitch();
-      this.headOr[2] = tmpOr.getRoll();
-      this.headPos[0] = (0.0005F * Math.abs(this.pilotHeadY));
-      this.headPos[1] = (-1.0E-004F * Math.abs(this.pilotHeadY));
-      this.headPos[2] = 0.0F;
-      ((ActorHMesh)this.actor).hierMesh().chunkSetLocate("Head1_D0", this.headPos, this.headOr);
-    }
-  }
-
-  protected void turnOffTheWeapon() {
-    this.CT.WeaponControl[0] = false;
-    this.CT.WeaponControl[1] = false;
-    this.CT.WeaponControl[2] = false;
-    this.CT.WeaponControl[3] = false;
-    if (this.bombsOut) {
-      this.bombsOutCounter += 1;
-      if (this.bombsOutCounter > 128) { this.bombsOutCounter = 0; this.bombsOut = false; }
-      if (this.CT.Weapons[3] != null) this.CT.WeaponControl[3] = true; else this.bombsOut = false;
-      if ((this.CT.Weapons[3] != null) && (this.CT.Weapons[3][0] != null)) {
-        int i = 0;
-        for (int j = 0; j < this.CT.Weapons[3].length; j++) {
-          i += this.CT.Weapons[3][j].countBullets();
+        float f4 = 50F;
+        maxG = 5F;
+        maxAOA = 8F;
+        float f5 = 0.0F;
+        setSpeedMode(4);
+        java.lang.Class class1 = null;
+        if(CT.Weapons[3][0] instanceof com.maddox.il2.objects.weapons.TorpedoGun)
+        {
+            com.maddox.il2.objects.weapons.TorpedoGun torpedogun = (com.maddox.il2.objects.weapons.TorpedoGun)CT.Weapons[3][0];
+            class1 = (java.lang.Class)com.maddox.rts.Property.value(torpedogun.getClass(), "bulletClass", null);
         }
-        if (i == 0) {
-          this.bombsOut = false;
-          for (j = 0; j < this.CT.Weapons[3].length; j++)
-            this.CT.Weapons[3][j].loadBullets(0);
+        smConstSpeed = 100F;
+        if(class1 != null)
+        {
+            smConstSpeed = com.maddox.rts.Property.floatValue(class1, "dropSpeed", 100F) / 3.7F;
+            f4 = com.maddox.rts.Property.floatValue(class1, "dropAltitude", 50F) + 10F;
         }
-      }
-    }
-  }
+        if(this.actor instanceof com.maddox.il2.objects.air.Swordfish)
+        {
+            setSpeedMode(9);
+            f4 *= 0.75F;
+        }
+        minElevCoeff = 20F;
+        Ve.set(actor.pos.getAbsPoint());
+        Ve.sub(Loc);
+        double d = Ve.x * Ve.x + Ve.y * Ve.y;
+        float f1 = (float)java.lang.Math.sqrt(d);
+        if(first)
+        {
+            Vtarg.set(actor.pos.getAbsPoint());
+            submaneuver = 0;
+        }
+        if(submaneuver == 1 && sub_Man_Count == 0)
+        {
+            tmpV3f.set(actor.pos.getAbsPoint());
+            tmpV3f.sub(Vtarg);
+            actor.getSpeed(tmpV3d);
+            if(tmpV3f.length() > 9.9999997473787516E-005D)
+                tmpV3f.normalize();
+            Vxy.set(tmpV3f.y * 3000D, -tmpV3f.x * 3000D, 0.0D);
+            direc = Vxy.dot(Ve) > 0.0D;
+            if(direc)
+                Vxy.scale(-1D);
+            Vtarg.add(Vxy);
+            Vtarg.x += tmpV3d.x * 80D;
+            Vtarg.y += tmpV3d.y * 80D;
+            Vtarg.z = 80D;
+            TargDevV.set((double)com.maddox.il2.ai.World.cur().rnd.nextFloat(-16F, 16F) * (3.5D - (double)Skill), (double)com.maddox.il2.ai.World.cur().rnd.nextFloat(-16F, 16F) * (3.5D - (double)Skill), 0.0D);
+        }
+        if(submaneuver == 2)
+        {
+            Vtarg.set(actor.pos.getAbsPoint());
+            actor.getSpeed(tmpV3d);
+            float f6 = 20F;
+            if(class1 != null)
+                f6 = com.maddox.rts.Property.floatValue(class1, "velocity", 1.0F);
+            float f8 = actor.collisionR();
+            if(f8 > 80F)
+                f5 = 50F;
+            if(f8 > 130F)
+                f5 = 100F;
+            if(f8 < 25F)
+                f5 = -50F;
+            float f11 = 950F;
+            if(this.actor instanceof com.maddox.il2.objects.air.JU_88NEW)
+                f11 += 90F;
+            double d1 = java.lang.Math.sqrt(0.20399999999999999D * Loc.z);
+            double d2 = 1.0D * d1 * (double)getSpeed();
+            double d3 = ((double)(f11 + f5) - d2) / (double)f6;
+            Vtarg.x += (float)(tmpV3d.x * d3);
+            Vtarg.y += (float)(tmpV3d.y * d3);
+            Vtarg.z = f4;
+            if(Loc.z < 30D)
+                Vtarg.z += 3D * (30D - Loc.z);
+            Vtarg.add(TargDevV);
+        }
+        Ve.set(Vtarg);
+        Ve.sub(Loc);
+        float f2 = (float)java.lang.Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y + Ve.z * Ve.z);
+        Vf.set(Ve);
+        float f3 = (float)(-Ve.z);
+        Vpl.set(Vwld);
+        Vpl.normalize();
+        if(Alt < f4 - 5F)
+        {
+            if(Vwld.z < 0.0D)
+                Vwld.z += (f4 - Alt) * 0.25F;
+            if(Alt < 8F)
+                set_maneuver(2);
+            if(Alt < 20F && f2 < 75F)
+                set_maneuver(2);
+        } else
+        if(Alt > f4 + 5F && submaneuver == 1 && Vwld.z > 0.0D)
+            Vwld.z--;
+        switch(submaneuver)
+        {
+        default:
+            break;
 
-  protected void turnOnChristmasTree(boolean paramBoolean)
-  {
-    if (paramBoolean) {
-      if (World.Sun().ToSun.z < -0.22F)
-        this.AS.setNavLightsState(true);
-    }
-    else
-      this.AS.setNavLightsState(false);
-  }
+        case 0: // '\0'
+            sub_Man_Count++;
+            if(sub_Man_Count > 60)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            addWindCorrection();
+            break;
 
-  protected void turnOnCloudShine(boolean paramBoolean)
-  {
-    if (paramBoolean) {
-      if (World.Sun().ToSun.z < -0.22F)
-        this.AS.setLandingLightState(true);
-    }
-    else
-      this.AS.setLandingLightState(false);
-  }
+        case 1: // '\001'
+            setSpeedMode(4);
+            if(this.actor instanceof com.maddox.il2.objects.air.Swordfish)
+                setSpeedMode(9);
+            sub_Man_Count++;
+            if(f2 < 1200F || f2 < 2000F && com.maddox.il2.game.ZutiSupportMethods.isStaticActor(actor))
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            addWindCorrection();
+            break;
 
-  protected void doCheckGround(float paramFloat)
-  {
-    if (this.CT.AileronControl > 1.0F) this.CT.AileronControl = 1.0F;
-    if (this.CT.AileronControl < -1.0F) this.CT.AileronControl = -1.0F;
-    if (this.CT.ElevatorControl > 1.0F) this.CT.ElevatorControl = 1.0F;
-    if (this.CT.ElevatorControl < -1.0F) this.CT.ElevatorControl = -1.0F;
-    float f4 = 0.0003F * this.M.massEmpty;
-    float f5 = 10.0F;
-    float f6 = 80.0F;
-    if (this.maneuver == 24) {
-      f5 = 15.0F;
-      f6 = 120.0F;
+        case 2: // '\002'
+            setSpeedMode(4);
+            if(f2 < 800F + f5)
+            {
+                if((this.actor instanceof com.maddox.il2.objects.air.TypeHasToKG) && ((com.maddox.il2.objects.air.TypeHasToKG)this.actor).isSalvo())
+                {
+                    int i = 0;
+                    float f9 = actor.collisionR() * 1.8F;
+                    i = (int)java.lang.Math.toDegrees(java.lang.Math.atan(f9 / 800F));
+                    i += com.maddox.il2.ai.World.Rnd().nextInt(-2, 2);
+                    if(i < 3)
+                        i = 3;
+                    AS.setSpreadAngle(i);
+                }
+                CT.WeaponControl[3] = true;
+                setSpeedMode(6);
+                AP.way.next();
+                submaneuver++;
+                sub_Man_Count = 0;
+                break;
+            }
+            if(!com.maddox.il2.game.ZutiSupportMethods.isStaticActor(actor))
+                break;
+            float f7 = com.maddox.rts.Property.floatValue(class1, "velocity", 20F);
+            float f10 = com.maddox.rts.Property.floatValue(class1, "traveltime", 100F);
+            float f12 = f7 * f10 - 150F;
+            if(f2 < f12 && com.maddox.il2.ai.World.land().isWater(this.actor.pos.getAbsPoint().x, this.actor.pos.getAbsPoint().y))
+            {
+                CT.WeaponControl[3] = true;
+                setSpeedMode(6);
+                AP.way.next();
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            break;
+
+        case 3: // '\003'
+            setSpeedMode(9);
+            sub_Man_Count++;
+            if(sub_Man_Count > 150)
+            {
+                task = 3;
+                push(0);
+                push(8);
+                pop();
+                submaneuver = 0;
+                sub_Man_Count = 0;
+            }
+            break;
+        }
+        Or.transformInv(Ve);
+        if(submaneuver == 3)
+        {
+            if(sub_Man_Count < 20)
+                Ve.set(1.0D, 0.090000003576278687D, 0.029999999329447746D);
+            else
+                Ve.set(1.0D, 0.090000003576278687D, 0.0099999997764825821D);
+            if(!direc)
+                Ve.y *= -1D;
+        }
+        Ve.normalize();
+        turnToDirection(f);
     }
-    float f7 = (float)(-this.Vwld.z) * f5 * f4;
-    float f8 = 1.0F + 7.0F * ((this.indSpeed - this.VmaxAllowed) / this.VmaxAllowed);
-    if (f8 > 1.0F) f8 = 1.0F;
-    if (f8 < 0.0F) f8 = 0.0F;
-    float f1;
-    float f2;
-    float f3;
-    if ((f7 > this.Alt) || (this.Alt < f6) || (f8 > 0.0F))
+
+    private void groundAttackTorpedoToKG(com.maddox.il2.engine.Actor actor, float f)
     {
-      if (this.Alt < 0.001F) this.Alt = 0.001F;
-      f1 = (f7 - this.Alt) / this.Alt;
-      Math.max(0.01667D * (f6 - this.Alt), f1);
+        float f2 = 50F;
+        maxG = 5F;
+        maxAOA = 8F;
+        setSpeedMode(4);
+        java.lang.Class class1 = null;
+        if(CT.Weapons[3][0] instanceof com.maddox.il2.objects.weapons.TorpedoGun)
+        {
+            com.maddox.il2.objects.weapons.TorpedoGun torpedogun = (com.maddox.il2.objects.weapons.TorpedoGun)CT.Weapons[3][0];
+            class1 = (java.lang.Class)com.maddox.rts.Property.value(torpedogun.getClass(), "bulletClass", null);
+        }
+        smConstSpeed = 100F;
+        if(class1 != null)
+        {
+            smConstSpeed = com.maddox.rts.Property.floatValue(class1, "dropSpeed", 100F) / 3.7F;
+            f2 = com.maddox.rts.Property.floatValue(class1, "dropAltitude", 50F) + 10F;
+        }
+        minElevCoeff = 20F;
+        Ve.set(actor.pos.getAbsPoint());
+        Ve.sub(Loc);
+        if(first)
+        {
+            Vtarg.set(actor.pos.getAbsPoint());
+            submaneuver = 0;
+        }
+        if(submaneuver == 1 && sub_Man_Count == 0)
+        {
+            tmpV3f.set(actor.pos.getAbsPoint());
+            tmpV3f.sub(Vtarg);
+            if(tmpV3f.length() > 9.9999997473787516E-005D)
+                tmpV3f.normalize();
+            Vxy.set(tmpV3f.y * 3000D, -tmpV3f.x * 3000D, 0.0D);
+            direc = Vxy.dot(Ve) > 0.0D;
+            if(direc)
+                Vxy.scale(-1D);
+            Vtarg.add(Vxy);
+            Vtarg.z = 80D;
+        }
+        if(submaneuver == 2)
+        {
+            Vtarg.set(actor.pos.getAbsPoint());
+            Vtarg.z = f2;
+            if(Loc.z < 30D)
+                Vtarg.z += 3D * (30D - Loc.z);
+        }
+        Ve.set(Vtarg);
+        Ve.sub(Loc);
+        float f1 = (float)java.lang.Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y + Ve.z * Ve.z);
+        Vf.set(Ve);
+        Vpl.set(Vwld);
+        Vpl.normalize();
+        if(Alt < f2 - 5F)
+        {
+            if(Vwld.z < 0.0D)
+                Vwld.z += (f2 - Alt) * 0.25F;
+            if(Alt < 8F)
+                set_maneuver(2);
+            if(Alt < 20F && f1 < 75F)
+                set_maneuver(2);
+        } else
+        if(Alt > f2 + 5F && submaneuver == 1 && Vwld.z > 0.0D)
+            Vwld.z--;
+        switch(submaneuver)
+        {
+        default:
+            break;
 
-      if (f1 > 1.0F) f1 = 1.0F;
-      if (f1 < 0.0F) f1 = 0.0F;
-      if (f1 < f8) f1 = f8;
-      f2 = -0.12F * (this.Or.getTangage() - 5.0F) + 3.0F * (float)this.W.y;
-      f3 = -0.07F * this.Or.getKren() + 3.0F * (float)this.W.x;
-      if (f3 > 2.0F) f3 = 2.0F;
-      if (f3 < -2.0F) f3 = -2.0F;
-      if (f2 > 2.0F) f2 = 2.0F;
-      if (f2 < -2.0F) f2 = -2.0F; 
+        case 0: // '\0'
+            sub_Man_Count++;
+            if(sub_Man_Count > 60)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            addWindCorrection();
+            break;
+
+        case 1: // '\001'
+            setSpeedMode(4);
+            sub_Man_Count++;
+            if(f1 < 4000F)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            addWindCorrection();
+            break;
+
+        case 2: // '\002'
+            setSpeedMode(4);
+            double d = Ve.angle(Vwld);
+            float f3 = 180F - (Or.getYaw() - actor.pos.getAbsOrient().getYaw());
+            if(f3 < -180F)
+                f3 += 360F;
+            else
+            if(f3 > 180F)
+                f3 -= 360F;
+            float f4 = com.maddox.rts.Property.floatValue(class1, "velocity", 20F);
+            float f5 = com.maddox.rts.Property.floatValue(class1, "traveltime", 100F);
+            float f6 = f4 * f5 - 10F;
+            if(f6 > 2700F)
+                f6 = 2700F;
+            double d1 = (java.lang.Math.abs(f3) - 90F) * 8F;
+            if(d1 < 0.0D)
+                d1 = 0.0D;
+            if(Skill == 2)
+                d1 += 100D;
+            if((double)f1 < (double)f6 - d1 && f1 > 1800F && d < 0.20000000000000001D)
+            {
+                actor.getSpeed(tmpV3d);
+                float f7 = 1.0F;
+                if(Skill == 2)
+                    f7 = com.maddox.il2.ai.World.Rnd().nextFloat(0.8F, 1.2F);
+                else
+                if(Skill == 3)
+                    f7 = com.maddox.il2.ai.World.Rnd().nextFloat(0.9F, 1.1F);
+                f7 = (float)((double)f7 + 0.10000000000000001D);
+                com.maddox.il2.objects.weapons.ToKGUtils.setTorpedoGyroAngle(this, f3, (float)(1.95D * tmpV3d.length()) * f7);
+                if(((com.maddox.il2.objects.air.TypeHasToKG)this.actor).isSalvo())
+                {
+                    int i = 0;
+                    float f8 = actor.collisionR() * 1.8F;
+                    i = (int)java.lang.Math.toDegrees(java.lang.Math.atan((double)f8 / ((double)f6 - d1)));
+                    i += com.maddox.il2.ai.World.Rnd().nextInt(-2, 2);
+                    if(i < 1)
+                        i = 1;
+                    AS.setSpreadAngle(i);
+                }
+                CT.WeaponControl[3] = true;
+                setSpeedMode(6);
+                AP.way.next();
+                push(15);
+                submaneuver++;
+                sub_Man_Count = 0;
+                break;
+            }
+            if(f1 < 1500F)
+            {
+                com.maddox.il2.objects.weapons.ToKGUtils.setTorpedoGyroAngle(this, 0.0F, 0.0F);
+                set_maneuver(51);
+            }
+            break;
+
+        case 3: // '\003'
+            setSpeedMode(9);
+            push(15);
+            pop();
+            task = 61;
+            sub_Man_Count++;
+            boolean flag = false;
+            for(int j = 0; j < CT.Weapons[3].length; j++)
+                if(CT.Weapons[3][j] != null && !(CT.Weapons[3][j] instanceof com.maddox.il2.objects.weapons.BombGunNull) && CT.Weapons[3][j].countBullets() != 0)
+                    flag = true;
+
+            if(sub_Man_Count > 800 || !flag)
+            {
+                task = 3;
+                push(21);
+                push(8);
+                pop();
+                submaneuver = 0;
+                sub_Man_Count = 0;
+            }
+            break;
+        }
+        Or.transformInv(Ve);
+        if(submaneuver == 3)
+        {
+            if(sub_Man_Count < 20)
+                Ve.set(1.0D, 0.090000003576278687D, 0.029999999329447746D);
+            else
+                Ve.set(1.0D, 0.090000003576278687D, 0.0099999997764825821D);
+            if(!direc)
+                Ve.y *= -1D;
+        }
+        Ve.normalize();
+        turnToDirection(f);
     }
-    else
+
+    private void groundAttackCassette(com.maddox.il2.engine.Actor actor, float f)
     {
-      f1 = 0.0F;
-      f2 = 0.0F;
-      f3 = 0.0F;
+        maxG = 5F;
+        maxAOA = 8F;
+        setSpeedMode(4);
+        smConstSpeed = 120F;
+        minElevCoeff = 20F;
+        Ve.set(actor.pos.getAbsPoint());
+        Ve.sub(Loc);
+        float f1 = (float)java.lang.Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
+        if(submaneuver == 3 && sub_Man_Count > 0 && sub_Man_Count < 45 && f1 > 200F)
+        {
+            tmpV3f.set(Vxy);
+            float f4 = (float)tmpV3f.dot(Ve);
+            tmpV3f.scale(-f4);
+            tmpV3f.add(Ve);
+            float f7 = (float)tmpV3f.length();
+            float f6;
+            if(f7 > 150F)
+                f6 = 7.5F / f7;
+            else
+                f6 = 0.05F;
+            tmpV3f.scale(f6);
+            tmpV3f.z = 0.0D;
+            Vwld.add(tmpV3f);
+        }
+        if(f1 <= 200F)
+            sub_Man_Count = 50;
+        if(first)
+        {
+            Vtarg.set(actor.pos.getAbsPoint());
+            submaneuver = 0;
+        }
+        if(submaneuver == 1 && sub_Man_Count == 0)
+        {
+            tmpV3f.set(actor.pos.getAbsPoint());
+            actor.getSpeed(tmpV3d);
+            if(tmpV3d.length() < 0.5D)
+                tmpV3d.set(Ve);
+            tmpV3d.normalize();
+            Vxy.set((float)tmpV3d.x, (float)tmpV3d.y, (float)tmpV3d.z);
+            Vtarg.x -= tmpV3d.x * 3000D;
+            Vtarg.y -= tmpV3d.y * 3000D;
+            Vtarg.z += 250D;
+        }
+        if(submaneuver == 2 && sub_Man_Count == 0)
+        {
+            Vtarg.set(actor.pos.getAbsPoint());
+            Vtarg.x -= Vxy.x * 1000D;
+            Vtarg.y -= Vxy.y * 1000D;
+            Vtarg.z += 50D;
+        }
+        if(submaneuver == 3 && sub_Man_Count == 0)
+        {
+            checkGround = false;
+            Vtarg.set(actor.pos.getAbsPoint());
+            Vtarg.x += Vxy.x * 1000D;
+            Vtarg.y += Vxy.y * 1000D;
+            Vtarg.z += 50D;
+        }
+        Ve.set(Vtarg);
+        Ve.sub(Loc);
+        addWindCorrection();
+        float f2 = (float)java.lang.Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y + Ve.z * Ve.z);
+        Vf.set(Ve);
+        float f3 = (float)(-Ve.z);
+        Or.transformInv(Ve);
+        Ve.normalize();
+        Vpl.set(Vwld);
+        Vpl.normalize();
+        if(Alt < 10F)
+        {
+            push(0);
+            push(2);
+            pop();
+        }
+        switch(submaneuver)
+        {
+        case 0: // '\0'
+            setSpeedMode(9);
+            sub_Man_Count++;
+            if(sub_Man_Count > 60)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            break;
+
+        case 1: // '\001'
+            setSpeedMode(9);
+            sub_Man_Count++;
+            if(f2 < 1000F)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            break;
+
+        case 2: // '\002'
+            setSpeedMode(6);
+            sub_Man_Count++;
+            if(f2 < 155F)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            if(sub_Man_Count > 320)
+            {
+                push(0);
+                push(10);
+                pop();
+            }
+            break;
+
+        case 3: // '\003'
+            setSpeedMode(6);
+            sub_Man_Count++;
+            Vwld.z *= 0.80000001192092896D;
+            Or.transformInv(Vwld);
+            Vwld.y *= 0.89999997615814209D;
+            Or.transform(Vwld);
+            float f5 = sub_Man_Count;
+            if(f5 < 100F)
+                f5 = 100F;
+            if(Alt > 45F)
+                Vwld.z -= 0.002F * (Alt - 45F) * f5;
+            else
+                Vwld.z -= 0.005F * (Alt - 45F) * f5;
+            if(Alt < 0.0F)
+                Alt = 0.0F;
+            if(f2 < 1080F + getSpeed() * (float)java.lang.Math.sqrt((2.0F * Alt) / 9.81F))
+                bombsOut = true;
+            if(Ve.x < 0.0D || f2 < 350F || sub_Man_Count > 160)
+            {
+                push(0);
+                push(10);
+                push(10);
+                pop();
+            }
+            break;
+        }
+        if(submaneuver == 0)
+            Ve.set(1.0D, 0.0D, 0.0D);
+        turnToDirection(f);
     }
 
-    float f9 = 0.2F;
+    public void goodFighterVsFighter(float f)
+    {
+        Ve.sub(target.Loc, Loc);
+        float f1 = (float)java.lang.Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
+        Or.transformInv(Ve);
+        float f2 = (float)Ve.length();
+        float f4 = 1.0F / f2;
+        Vtarg.set(Ve);
+        Vtarg.scale(f4);
+        float f5 = (Energy - target.Energy) * 0.1019F;
+        tmpV3f.sub(target.Vwld, Vwld);
+        if(sub_Man_Count == 0)
+        {
+            float f6 = 0.0F;
+            if(CT.Weapons[1] != null && CT.Weapons[1][0].countBullets() > 0)
+                f6 = ((com.maddox.il2.engine.GunGeneric)CT.Weapons[1][0]).bulletSpeed();
+            else
+            if(CT.Weapons[0] != null)
+                f6 = ((com.maddox.il2.engine.GunGeneric)CT.Weapons[0][0]).bulletSpeed();
+            if(f6 > 0.01F)
+                bullTime = 1.0F / f6;
+            submanDelay = 0;
+        }
+        if(f1 < 1500F)
+        {
+            float f7 = 0.0F;
+            float f9 = 0.0F;
+            if(Vtarg.x > -0.20000000298023224D)
+            {
+                f7 = 3F * ((float)Vtarg.x + 0.2F);
+                Vxy.set(tmpV3f);
+                Vxy.scale(1.0D);
+                Or.transformInv(Vxy);
+                Vxy.add(Ve);
+                Vxy.normalize();
+                f9 = 10F * (float)(Vxy.x - Vtarg.x);
+                if(f9 < -1F)
+                    f9 = -1F;
+                if(f9 > 1.0F)
+                    f9 = 1.0F;
+            } else
+            {
+                f7 = 3F * ((float)Vtarg.x + 0.2F);
+            }
+            if(submaneuver == 4 && Vtarg.x < 0.60000002384185791D && (double)f2 < 300D)
+            {
+                submaneuver = 1;
+                submanDelay = 30;
+            }
+            if(submaneuver != 4 && (double)f5 > 300D && Vtarg.x > 0.75D)
+            {
+                submaneuver = 4;
+                submanDelay = 240;
+            }
+            float f11 = 0.0015F * f5 + 0.0006F * f1 + f7 + 0.5F * f9;
+            if(f11 > 0.9F && submanDelay == 0)
+            {
+                if(Vtarg.x > 0.5D || (double)f1 * 2D < (double)f2)
+                {
+                    submaneuver = 4;
+                    submanDelay = 240;
+                } else
+                {
+                    submaneuver = 3;
+                    submanDelay = 120;
+                }
+            } else
+            if(f5 > 800F && submaneuver == 0 || f5 > 1000F)
+            {
+                Ve.set(0.0D, 0.0D, 800D);
+                if(submanDelay == 0)
+                {
+                    submaneuver = 0;
+                    submanDelay = 30;
+                }
+            } else
+            if(f2 > 450F && submaneuver == 2 || f2 > 600F)
+            {
+                if(submanDelay == 0)
+                {
+                    submaneuver = 2;
+                    submanDelay = 60;
+                }
+            } else
+            if(submanDelay == 0)
+            {
+                submaneuver = 1;
+                submanDelay = 30;
+            }
+        } else
+        if(f1 < 3000F)
+        {
+            if(Vtarg.x < 0.5D)
+            {
+                if(submanDelay == 0)
+                {
+                    submaneuver = 3;
+                    submanDelay = 120;
+                }
+            } else
+            if(f5 > 600F && submaneuver == 0 || f5 > 800F)
+            {
+                Ve.set(0.0D, 0.0D, 800D);
+                if(submanDelay == 0)
+                {
+                    submaneuver = 0;
+                    submanDelay = 120;
+                }
+            } else
+            if(f5 > -200F && submaneuver >= 4 || f5 > -100F)
+            {
+                if(submanDelay == 0)
+                {
+                    submaneuver = 4;
+                    submanDelay = 120;
+                }
+            } else
+            {
+                Ve.set(0.0D, 0.0D, Loc.z);
+                if(submanDelay == 0)
+                {
+                    submaneuver = 0;
+                    submanDelay = 120;
+                }
+            }
+        } else
+        {
+            Ve.set(0.0D, 0.0D, 1000D);
+            if(submanDelay == 0)
+            {
+                submaneuver = 0;
+                submanDelay = 180;
+            }
+        }
+        switch(submaneuver)
+        {
+        case 0: // '\0'
+            target.Or.transform(Ve);
+            Ve.add(target.Loc);
+            Ve.sub(Loc);
+            tmpV3f.set(Ve);
+            tmpV3f.z = 0.0D;
+            float f3 = (float)tmpV3f.length();
+            tmpV3f.normalize();
+            Vtarg.set(target.Vwld);
+            Vtarg.z = 0.0D;
+            float f8 = (float)tmpV3f.dot(Vtarg);
+            float f10 = getSpeed() - f8;
+            if(f10 < 10F)
+                f10 = 10F;
+            float f12 = f3 / f10;
+            if(f12 < 0.0F)
+                f12 = 0.0F;
+            tmpV3f.scale(Vtarg, f12);
+            Ve.add(tmpV3f);
+            Or.transformInv(Ve);
+            Ve.normalize();
+            setSpeedMode(9);
+            farTurnToDirection();
+            sub_Man_Count++;
+            break;
 
-    if (this.corrCoeff < f1) this.corrCoeff = f1;
-    if (this.corrCoeff > f1) this.corrCoeff = (float)(this.corrCoeff * (1.0D - f9 * paramFloat));
-    if (f2 < 0.0F) {
-      if (this.corrElev > f2) this.corrElev = f2;
-      if (this.corrElev < f2) this.corrElev = (float)(this.corrElev * (1.0D - f9 * paramFloat)); 
-    }
-    else {
-      if (this.corrElev < f2) this.corrElev = f2;
-      if (this.corrElev > f2) this.corrElev = (float)(this.corrElev * (1.0D - f9 * paramFloat));
-    }
-    if (f3 < 0.0F) {
-      if (this.corrAile > f3) this.corrAile = f3;
-      if (this.corrAile < f3) this.corrAile = (float)(this.corrAile * (1.0D - f9 * paramFloat)); 
-    }
-    else {
-      if (this.corrAile < f3) this.corrAile = f3;
-      if (this.corrAile > f3) this.corrAile = (float)(this.corrAile * (1.0D - f9 * paramFloat));
+        case 1: // '\001'
+            setSpeedMode(9);
+            CT.AileronControl = -0.04F * Or.getKren();
+            CT.ElevatorControl = -0.04F * (Or.getTangage() + 5F);
+            CT.RudderControl = 0.0F;
+            break;
+
+        case 2: // '\002'
+            setSpeedMode(9);
+            tmpOr.setYPR(Or.getYaw(), 0.0F, 0.0F);
+            float f13 = 6F;
+            if(Or.getKren() > 0.0F)
+                Ve.set(100D, -f13, 10D);
+            else
+                Ve.set(100D, f13, 10D);
+            tmpOr.transform(Ve);
+            Or.transformInv(Ve);
+            Ve.normalize();
+            farTurnToDirection();
+            break;
+
+        case 3: // '\003'
+            minElevCoeff = 20F;
+            setSpeedMode(9);
+            tmpOr.setYPR(Or.getYaw(), 0.0F, 0.0F);
+            Ve.sub(target.Loc, Loc);
+            Ve.z = 0.0D;
+            Ve.normalize();
+            Ve.z = 0.40000000000000002D;
+            Or.transformInv(Ve);
+            Ve.normalize();
+            attackTurnToDirection(1000F, f, 15F);
+            break;
+
+        case 4: // '\004'
+            minElevCoeff = 20F;
+            boomAttack(f);
+            setSpeedMode(9);
+            break;
+
+        default:
+            minElevCoeff = 20F;
+            fighterVsFighter(f);
+            break;
+        }
+        if(submanDelay > 0)
+            submanDelay--;
     }
 
-    this.CT.AileronControl = (this.corrCoeff * this.corrAile + (1.0F - this.corrCoeff) * this.CT.AileronControl);
-    this.CT.ElevatorControl = (this.corrCoeff * this.corrElev + (1.0F - this.corrCoeff) * this.CT.ElevatorControl);
-    if ((this.Alt < 15.0F) && (this.Vwld.z < 0.0D)) this.Vwld.z *= 0.8500000238418579D;
+    public void bNZFighterVsFighter(float f)
+    {
+        Ve.sub(target.Loc, Loc);
+        Or.transformInv(Ve);
+        dist = (float)Ve.length();
+        float f1 = (float)java.lang.Math.sqrt(Ve.x * Ve.x + Ve.y * Ve.y);
+        float f2 = 1.0F / dist;
+        Vtarg.set(Ve);
+        Vtarg.scale(f2);
+        float f3 = (Energy - target.Energy) * 0.1019F;
+        tmpV3f.sub(target.Vwld, Vwld);
+        if(sub_Man_Count == 0)
+        {
+            float f4 = 0.0F;
+            if(CT.Weapons[1] != null && CT.Weapons[1][0].countBullets() > 0)
+                f4 = ((com.maddox.il2.engine.GunGeneric)CT.Weapons[1][0]).bulletSpeed();
+            else
+            if(CT.Weapons[0] != null)
+                f4 = ((com.maddox.il2.engine.GunGeneric)CT.Weapons[0][0]).bulletSpeed();
+            if(f4 > 0.01F)
+                bullTime = 1.0F / f4;
+            submanDelay = 0;
+        }
+        if(f1 < 1500F)
+        {
+            float f5 = 0.0F;
+            float f7 = 0.0F;
+            if(Vtarg.x > -0.20000000298023224D)
+            {
+                f5 = 3F * ((float)Vtarg.x + 0.2F);
+                Vxy.set(tmpV3f);
+                Vxy.scale(1.0D);
+                Or.transformInv(Vxy);
+                Vxy.add(Ve);
+                Vxy.normalize();
+                f7 = 20F * (float)(Vxy.x - Vtarg.x);
+                if(f7 < -1F)
+                    f7 = -1F;
+                if(f7 > 1.0F)
+                    f7 = 1.0F;
+            }
+            float f9 = f3 * 0.0015F + f1 * 0.0006F + f5 + f7;
+            if(f9 > 0.8F && submaneuver >= 3 || f9 > 1.2F)
+            {
+                if(tmpV3f.length() < 100D)
+                {
+                    if(submanDelay == 0)
+                    {
+                        submaneuver = 4;
+                        submanDelay = 120;
+                    }
+                } else
+                if(submanDelay == 0)
+                {
+                    submaneuver = 3;
+                    submanDelay = 120;
+                }
+            } else
+            if(f3 > 800F && submaneuver == 0 || f3 > 1000F)
+            {
+                Ve.set(0.0D, 0.0D, 800D);
+                if(submanDelay == 0)
+                {
+                    submaneuver = 0;
+                    submanDelay = 30;
+                }
+            } else
+            if(dist > 450F && submaneuver == 2 || dist > 600F)
+            {
+                if(submanDelay == 0)
+                {
+                    submaneuver = 2;
+                    submanDelay = 60;
+                }
+            } else
+            if(submanDelay == 0)
+            {
+                submaneuver = 1;
+                submanDelay = 30;
+            }
+        } else
+        if(f1 < 3000F)
+        {
+            if(f3 > 600F && submaneuver == 0 || f3 > 800F)
+            {
+                Ve.set(0.0D, 0.0D, 800D);
+                if(submanDelay == 0)
+                {
+                    submaneuver = 0;
+                    submanDelay = 120;
+                }
+            } else
+            if(f3 > -200F && submaneuver >= 3 || f3 > -100F)
+            {
+                if(submanDelay == 0)
+                {
+                    submaneuver = 3;
+                    submanDelay = 120;
+                }
+            } else
+            {
+                Ve.set(0.0D, 0.0D, Loc.z);
+                if(submanDelay == 0)
+                {
+                    submaneuver = 0;
+                    submanDelay = 120;
+                }
+            }
+        } else
+        {
+            Ve.set(0.0D, 0.0D, 1000D);
+            if(submanDelay == 0)
+            {
+                submaneuver = 0;
+                submanDelay = 180;
+            }
+        }
+        switch(submaneuver)
+        {
+        case 0: // '\0'
+            target.Or.transform(Ve);
+            Ve.add(target.Loc);
+            Ve.sub(Loc);
+            tmpV3f.set(Ve);
+            tmpV3f.z = 0.0D;
+            dist = (float)tmpV3f.length();
+            tmpV3f.normalize();
+            Vtarg.set(target.Vwld);
+            Vtarg.z = 0.0D;
+            float f6 = (float)tmpV3f.dot(Vtarg);
+            float f8 = getSpeed() - f6;
+            if(f8 < 10F)
+                f8 = 10F;
+            float f10 = dist / f8;
+            if(f10 < 0.0F)
+                f10 = 0.0F;
+            tmpV3f.scale(Vtarg, f10);
+            Ve.add(tmpV3f);
+            Or.transformInv(Ve);
+            Ve.normalize();
+            setSpeedMode(9);
+            farTurnToDirection();
+            sub_Man_Count++;
+            break;
 
-    if ((-this.Vwld.z * 1.5D > this.Alt) || (this.Alt < 10.0F)) {
-      if ((this.maneuver == 27) || (this.maneuver == 43) || (this.maneuver == 21) || (this.maneuver == 24) || (this.maneuver == 68) || (this.maneuver == 53))
-      {
+        case 1: // '\001'
+            setSpeedMode(9);
+            CT.AileronControl = -0.04F * Or.getKren();
+            CT.ElevatorControl = -0.04F * (Or.getTangage() + 5F);
+            CT.RudderControl = 0.0F;
+            break;
+
+        case 2: // '\002'
+            setSpeedMode(9);
+            tmpOr.setYPR(Or.getYaw(), 0.0F, 0.0F);
+            if(Or.getKren() > 0.0F)
+                Ve.set(100D, -6D, 10D);
+            else
+                Ve.set(100D, 6D, 10D);
+            tmpOr.transform(Ve);
+            Or.transformInv(Ve);
+            Ve.normalize();
+            farTurnToDirection();
+            break;
+
+        case 3: // '\003'
+            minElevCoeff = 20F;
+            fighterVsFighter(f);
+            setSpeedMode(6);
+            break;
+
+        default:
+            minElevCoeff = 20F;
+            fighterVsFighter(f);
+            break;
+        }
+        if(submanDelay > 0)
+            submanDelay--;
+    }
+
+    public void setBomberAttackType(int i)
+    {
+        float f;
+        if(com.maddox.il2.engine.Actor.isValid(target.actor))
+            f = target.actor.collisionR();
+        else
+            f = 15F;
+        setRandomTargDeviation(0.8F);
+        switch(i)
+        {
+        case 0: // '\0'
+            ApproachV.set(-300F + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F), 0.0D, 600F + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F));
+            TargV.set(0.0D, 0.0D, 0.0D);
+            ApproachR = 150F;
+            TargY = 2.1F * f;
+            TargZ = 3.9F * f;
+            TargYS = 0.43F * f;
+            TargZS = 0.43F * f;
+            break;
+
+        case 1: // '\001'
+            ApproachV.set(-300F + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F), 0.0D, 600F + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F));
+            TargV.set(target.EI.engines[com.maddox.il2.ai.World.Rnd().nextInt(0, target.EI.getNum() - 1)].getEnginePos());
+            TargV.x--;
+            ApproachR = 150F;
+            TargY = 2.1F * f;
+            TargZ = 3.9F * f;
+            TargYS = 0.43F * f;
+            TargZS = 0.43F * f;
+            break;
+
+        case 2: // '\002'
+            ApproachV.set(-600F + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F), 0.0D, 600F + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F));
+            TargV.set(target.EI.engines[com.maddox.il2.ai.World.Rnd().nextInt(0, target.EI.getNum() - 1)].getEnginePos());
+            TargV.x--;
+            ApproachR = 300F;
+            TargY = 2.1F * f;
+            TargZ = 3.9F * f;
+            TargYS = 0.43F * f;
+            TargZS = 0.43F * f;
+            break;
+
+        case 3: // '\003'
+            ApproachV.set(2600D, 0.0D, 300F + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F));
+            TargV.set(0.0D, 0.0D, 0.0D);
+            ApproachR = 800F;
+            TargY = 25F;
+            TargZ = 15F;
+            TargYS = 3F;
+            TargZS = 3F;
+            break;
+
+        case 4: // '\004'
+            ApproachV.set(-400F + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F), 0.0D, -200F + com.maddox.il2.ai.World.Rnd().nextFloat(-50F, 50F));
+            TargV.set(0.0D, 0.0D, 0.0D);
+            ApproachR = 300F;
+            TargY = 2.1F * f;
+            TargZ = 1.3F * f;
+            TargYS = 0.26F * f;
+            TargZS = 0.26F * f;
+            break;
+
+        case 5: // '\005'
+            ApproachV.set(0.0D, 0.0D, 0.0D);
+            TargV.set(0.0D, 0.0D, 0.0D);
+            ApproachR = 600F;
+            TargY = 25F;
+            TargZ = 12F;
+            TargYS = 0.26F * f;
+            TargZS = 0.26F * f;
+            break;
+
+        case 6: // '\006'
+            ApproachV.set(600D, (float)(600 - com.maddox.il2.ai.World.Rnd().nextInt(0, 1) * 1200) + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F), 300D);
+            TargV.set(0.0D, 0.0D, 0.0D);
+            ApproachR = 300F;
+            TargY = 2.1F * f;
+            TargZ = 1.2F * f;
+            TargYS = 0.26F * f;
+            TargZS = 0.26F * f;
+            break;
+
+        case 7: // '\007'
+            ApproachV.set(-1000F + com.maddox.il2.ai.World.Rnd().nextFloat(-200F, 200F), 0.0D, 100F + com.maddox.il2.ai.World.Rnd().nextFloat(-50F, 50F));
+            TargV.set(target.EI.engines[com.maddox.il2.ai.World.Rnd().nextInt(0, target.EI.getNum() - 1)].getEnginePos());
+            ApproachR = 200F;
+            TargY = 10F;
+            TargZ = 10F;
+            TargYS = 2.0F;
+            TargZS = 2.0F;
+            break;
+
+        case 8: // '\b'
+            ApproachV.set(-1000F + com.maddox.il2.ai.World.Rnd().nextFloat(-200F, 200F), 0.0D, 100F + com.maddox.il2.ai.World.Rnd().nextFloat(-50F, 50F));
+            TargV.set(0.0D, 0.0D, 0.0D);
+            ApproachR = 200F;
+            TargY = 2.1F * f;
+            TargZ = 3.9F * f;
+            TargYS = 0.2F * f;
+            TargZS = 0.2F * f;
+            break;
+
+        case 9: // '\t'
+            ApproachV.set(-600F + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F), 0.0D, 600F + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F));
+            TargV.set(0.0D, 0.0D, 0.0D);
+            ApproachR = 300F;
+            TargY = 2.1F * f;
+            TargZ = 3.9F * f;
+            TargYS = 0.2F * f;
+            TargZS = 0.2F * f;
+            break;
+
+        case 10: // '\n'
+            ApproachV.set(-600F + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F), 0.0D, -300F + com.maddox.il2.ai.World.Rnd().nextFloat(-100F, 100F));
+            TargV.set(100D, 0.0D, -400D);
+            ApproachR = 300F;
+            TargY = 2.1F * f;
+            TargZ = 3.9F * f;
+            TargYS = 0.43F * f;
+            TargZS = 0.43F * f;
+            break;
+
+        default:
+            ApproachV.set(-1000F + com.maddox.il2.ai.World.Rnd().nextFloat(-200F, 200F), 0.0D, 100F + com.maddox.il2.ai.World.Rnd().nextFloat(-50F, 50F));
+            TargV.set(target.EI.engines[com.maddox.il2.ai.World.Rnd().nextInt(0, target.EI.getNum() - 1)].getEnginePos());
+            ApproachR = 200F;
+            TargY = 10F;
+            TargZ = 10F;
+            TargYS = 2.0F;
+            TargZS = 2.0F;
+            break;
+        }
+        float f1 = 0.0F;
+        if(CT.Weapons[1] != null && CT.Weapons[1][0].countBullets() > 0)
+            f1 = ((com.maddox.il2.engine.GunGeneric)CT.Weapons[1][0]).bulletSpeed();
+        else
+        if(CT.Weapons[0] != null)
+            f1 = ((com.maddox.il2.engine.GunGeneric)CT.Weapons[0][0]).bulletSpeed();
+        if(f1 > 0.01F)
+            bullTime = 1.0F / f1;
+    }
+
+    public void fighterVsBomber(float f)
+    {
+        maxAOA = 15F;
+        tmpOr.setAT0(target.Vwld);
+        switch(submaneuver)
+        {
+        case 0: // '\0'
+            minElevCoeff = 4F;
+            rocketsDelay = 0;
+            bulletDelay = 0;
+            double d = 0.0001D * target.Loc.z;
+            Ve.sub(target.Loc, Loc);
+            tmpOr.transformInv(Ve);
+            scaledApproachV.set(ApproachV);
+            scaledApproachV.x -= 700D * d;
+            scaledApproachV.z += 500D * d;
+            Ve.add(scaledApproachV);
+            Ve.normalize();
+            tmpV3f.scale(scaledApproachV, -1D);
+            tmpV3f.normalize();
+            double d1 = Ve.dot(tmpV3f);
+            Ve.set(Vwld);
+            Ve.normalize();
+            tmpV3f.set(target.Vwld);
+            tmpV3f.normalize();
+            double d2 = Ve.dot(tmpV3f);
+            Ve.set(scaledApproachV);
+            Ve.x += 60D * (2D * (1.0D - d1) + 4D * (1.0D - d2));
+            tmpOr.transform(Ve);
+            Ve.add(target.Loc);
+            Ve.sub(Loc);
+            double d3 = Ve.z;
+            tmpV3f.set(Ve);
+            tmpV3f.z = 0.0D;
+            float f1 = (float)tmpV3f.length();
+            float f4 = 0.55F + 0.15F * (float)Skill;
+            tmpV3f.normalize();
+            Vtarg.set(target.Vwld);
+            Vtarg.z = 0.0D;
+            float f7 = (float)tmpV3f.dot(Vtarg);
+            float f8 = getSpeed() - f7;
+            if(f8 < 10F)
+                f8 = 10F;
+            float f9 = f1 / f8;
+            if(f9 < 0.0F)
+                f9 = 0.0F;
+            tmpV3f.scale(Vtarg, f9 * f4);
+            Ve.add(tmpV3f);
+            Or.transformInv(Ve);
+            Ve.normalize();
+            if(d3 > -200D)
+            {
+                setSpeedMode(9);
+            } else
+            {
+                setSpeedMode(4);
+                smConstSpeed = 180F;
+            }
+            attackTurnToDirection(f1, f, 10F * (float)(1.0D + d));
+            sub_Man_Count++;
+            if((double)f1 < (double)ApproachR * (1.0D + d) && d3 < 200D)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            break;
+
+        case 1: // '\001'
+            minElevCoeff = 20F;
+            Ve.set(TargV);
+            target.Or.transform(Ve);
+            Ve.add(target.Loc);
+            Ve.sub(Loc);
+            float f2 = (float)Ve.length();
+            float f5 = 0.55F + 0.15F * (float)Skill;
+            tmpV3f.sub(target.Vwld, Vwld);
+            float f10 = f2 * bullTime * 0.0025F;
+            if(f10 > 0.05F)
+                f10 = 0.05F;
+            tmpV3f.scale(f2 * f10 * f5);
+            Ve.add(tmpV3f);
+            Vtarg.set(Ve);
+            Or.transformInv(Ve);
+            Ve.normalize();
+            ((com.maddox.il2.ai.air.Maneuver)target).incDangerAggressiveness(1, (float)Ve.x, f2, this);
+            if(f2 > 3200F || Vtarg.z > 1500D)
+            {
+                submaneuver = 0;
+                sub_Man_Count = 0;
+                set_maneuver(0);
+                break;
+            }
+            if(Ve.x < 0.30000001192092896D)
+            {
+                Vtarg.z += (double)(0.012F * (float)Skill * (800F + f2)) * (0.30000001192092896D - Ve.x);
+                Ve.set(Vtarg);
+                Or.transformInv(Ve);
+                Ve.normalize();
+            }
+            attackTurnToDirection(f2, f, 10F + (float)Skill * 8F);
+            setSpeedMode(4);
+            smConstSpeed = 180F;
+            if(f2 < 400F)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            break;
+
+        case 2: // '\002'
+            minElevCoeff = 20F;
+            if(rocketsDelay > 0)
+                rocketsDelay--;
+            if(bulletDelay > 0)
+                bulletDelay--;
+            if(bulletDelay == 120)
+                bulletDelay = 0;
+            setRandomTargDeviation(0.8F);
+            Ve.set(TargV);
+            Ve.add(TargDevV);
+            target.Or.transform(Ve);
+            Ve.add(target.Loc);
+            Ve.sub(Loc);
+            Vtarg.set(Ve);
+            float f3 = (float)Ve.length();
+            float f6 = 0.55F + 0.15F * (float)Skill;
+            float f11 = 0.0002F * (float)Skill;
+            tmpV3f.sub(target.Vwld, Vwld);
+            Vpl.set(tmpV3f);
+            tmpV3f.scale(f3 * (bullTime + f11) * f6);
+            Ve.add(tmpV3f);
+            tmpV3f.set(Vpl);
+            tmpV3f.scale(f3 * bullTime * f6);
+            Vtarg.add(tmpV3f);
+            if(f3 > 4000F || Vtarg.z > 2000D)
+            {
+                submaneuver = 0;
+                sub_Man_Count = 0;
+                set_maneuver(0);
+                break;
+            }
+            Or.transformInv(Vtarg);
+            if(Vtarg.x > 0.0D && f3 < 500F && (shotAtFriend <= 0 || distToFriend > f3) && java.lang.Math.abs(Vtarg.y) < (double)(TargY - TargYS * (float)Skill) && java.lang.Math.abs(Vtarg.z) < (double)(TargZ - TargZS * (float)Skill) && bulletDelay < 120)
+            {
+                if(!(actor instanceof com.maddox.il2.objects.air.KI_46_OTSUHEI))
+                    CT.WeaponControl[0] = true;
+                CT.WeaponControl[1] = true;
+                bulletDelay += 2;
+                if(bulletDelay >= 118)
+                {
+                    int i = (int)(target.getW().length() * 150D);
+                    if(i > 60)
+                        i = 60;
+                    bulletDelay += com.maddox.il2.ai.World.Rnd().nextInt(i * Skill, 2 * i * Skill);
+                }
+                if(CT.Weapons[2] != null && CT.Weapons[2][0] != null && CT.Weapons[2][CT.Weapons[2].length - 1].countBullets() != 0 && rocketsDelay < 1)
+                {
+                    tmpV3f.sub(target.Vwld, Vwld);
+                    Or.transformInv(tmpV3f);
+                    if(java.lang.Math.abs(tmpV3f.y) < (double)(TargY - TargYS * (float)Skill) && java.lang.Math.abs(tmpV3f.z) < (double)(TargZ - TargZS * (float)Skill))
+                        CT.WeaponControl[2] = true;
+                    com.maddox.il2.objects.sounds.Voice.speakAttackByRockets((com.maddox.il2.objects.air.Aircraft)actor);
+                    rocketsDelay += 120;
+                }
+                ((com.maddox.il2.ai.air.Maneuver)target).incDangerAggressiveness(1, 0.8F, f3, this);
+                ((com.maddox.il2.ai.air.Pilot)target).setAsDanger(actor);
+            }
+            Vtarg.set(Ve);
+            Or.transformInv(Ve);
+            Ve.normalize();
+            ((com.maddox.il2.ai.air.Maneuver)target).incDangerAggressiveness(1, (float)Ve.x, f3, this);
+            if(Ve.x < 0.30000001192092896D)
+            {
+                Vtarg.z += (double)(0.01F * (float)Skill * (800F + f3)) * (0.30000001192092896D - Ve.x);
+                Ve.set(Vtarg);
+                Or.transformInv(Ve);
+                Ve.normalize();
+            }
+            attackTurnToDirection(f3, f, 10F + (float)Skill * 8F);
+            if(target.getSpeed() > 70F)
+            {
+                setSpeedMode(2);
+                tailForStaying = target;
+                tailOffset.set(-20D, 0.0D, 0.0D);
+            } else
+            {
+                setSpeedMode(4);
+                smConstSpeed = 70F;
+            }
+            if(strikeEmer)
+            {
+                Vpl.sub(strikeTarg.Loc, Loc);
+                tmpV3f.set(Vpl);
+                Or.transformInv(tmpV3f);
+                if(tmpV3f.x < 0.0D)
+                    return;
+                tmpV3f.sub(strikeTarg.Vwld, Vwld);
+                tmpV3f.scale(0.69999998807907104D);
+                Vpl.add(tmpV3f);
+                Or.transformInv(Vpl);
+                push();
+                if(Vpl.z < 0.0D)
+                {
+                    push(0);
+                    push(8);
+                    push(60);
+                } else
+                {
+                    push(0);
+                    push(8);
+                    push(61);
+                }
+                pop();
+                strikeEmer = false;
+                submaneuver = 0;
+                sub_Man_Count = 0;
+            }
+            if(sub_Man_Count > 600)
+            {
+                push(8);
+                pop();
+            }
+            break;
+
+        default:
+            submaneuver = 0;
+            sub_Man_Count = 0;
+            set_maneuver(0);
+            break;
+        }
+    }
+
+    public void fighterUnderBomber(float f)
+    {
+        maxAOA = 15F;
+        switch(submaneuver)
+        {
+        case 0: // '\0'
+            rocketsDelay = 0;
+            bulletDelay = 0;
+            Ve.set(ApproachV);
+            target.Or.transform(Ve);
+            Ve.add(target.Loc);
+            Ve.sub(Loc);
+            tmpV3f.set(Ve);
+            tmpV3f.z = 0.0D;
+            float f1 = (float)tmpV3f.length();
+            float f4 = 0.55F + 0.15F * (float)Skill;
+            tmpV3f.normalize();
+            Vtarg.set(target.Vwld);
+            Vtarg.z = 0.0D;
+            float f7 = (float)tmpV3f.dot(Vtarg);
+            float f8 = getSpeed() - f7;
+            if(f8 < 10F)
+                f8 = 10F;
+            float f9 = f1 / f8;
+            if(f9 < 0.0F)
+                f9 = 0.0F;
+            tmpV3f.scale(Vtarg, f9 * f4);
+            Ve.add(tmpV3f);
+            Or.transformInv(Ve);
+            Ve.normalize();
+            setSpeedMode(4);
+            smConstSpeed = 140F;
+            farTurnToDirection();
+            sub_Man_Count++;
+            if(f1 < ApproachR)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            break;
+
+        case 1: // '\001'
+            Ve.set(TargV);
+            target.Or.transform(Ve);
+            Ve.add(target.Loc);
+            Ve.sub(Loc);
+            float f2 = (float)Ve.length();
+            float f5 = 0.55F + 0.15F * (float)Skill;
+            tmpV3f.sub(target.Vwld, Vwld);
+            float f10 = f2 * bullTime * 0.0025F;
+            if(f10 > 0.02F)
+                f10 = 0.02F;
+            tmpV3f.scale(f2 * f10 * f5);
+            Ve.add(tmpV3f);
+            Vtarg.set(Ve);
+            Or.transformInv(Ve);
+            Ve.normalize();
+            ((com.maddox.il2.ai.air.Maneuver)target).incDangerAggressiveness(1, (float)Ve.x, f2, this);
+            if(f2 > 3200F || Vtarg.z > 1500D)
+            {
+                submaneuver = 0;
+                sub_Man_Count = 0;
+                break;
+            }
+            if(Ve.x < 0.30000001192092896D)
+            {
+                Vtarg.z += (double)(0.01F * (float)Skill * (800F + f2)) * (0.30000001192092896D - Ve.x);
+                Ve.set(Vtarg);
+                Or.transformInv(Ve);
+                Ve.normalize();
+            }
+            attackTurnToDirection(f2, f, 10F);
+            if(target.getSpeed() > 120F)
+            {
+                setSpeedMode(2);
+                tailForStaying = target;
+            } else
+            {
+                setSpeedMode(4);
+                smConstSpeed = 120F;
+            }
+            if(f2 < 400F)
+            {
+                submaneuver++;
+                sub_Man_Count = 0;
+            }
+            break;
+
+        case 2: // '\002'
+            setCheckStrike(false);
+            if(rocketsDelay > 0)
+                rocketsDelay--;
+            if(bulletDelay > 0)
+                bulletDelay--;
+            if(bulletDelay == 120)
+                bulletDelay = 0;
+            setRandomTargDeviation(0.8F);
+            Ve.set(TargV);
+            Ve.add(TargDevV);
+            target.Or.transform(Ve);
+            Ve.add(target.Loc);
+            Ve.sub(Loc);
+            float f3 = (float)Ve.length();
+            float f6 = 0.55F + 0.15F * (float)Skill;
+            tmpV3f.sub(target.Vwld, Vwld);
+            tmpV3f.scale(f3 * bullTime * f6);
+            Ve.add(tmpV3f);
+            Vtarg.set(Ve);
+            Or.transformInv(Ve);
+            if(f3 > 4000F || Vtarg.z > 2000D)
+            {
+                submaneuver = 0;
+                sub_Man_Count = 0;
+                break;
+            }
+            if(AS.astatePilotStates[1] < 100 && f3 < 330F && java.lang.Math.abs(Or.getKren()) < 3F)
+                CT.WeaponControl[0] = true;
+            Ve.normalize();
+            if(Ve.x < 0.30000001192092896D)
+            {
+                Vtarg.z += (double)(0.01F * (float)Skill * (800F + f3)) * (0.30000001192092896D - Ve.x);
+                Ve.set(Vtarg);
+                Or.transformInv(Ve);
+                Ve.normalize();
+            }
+            attackTurnToDirection(f3, f, 6F + (float)Skill * 3F);
+            setSpeedMode(1);
+            tailForStaying = target;
+            tailOffset.set(-190D, 0.0D, 0.0D);
+            if(sub_Man_Count > 10000 || f3 < 240F)
+            {
+                push(9);
+                pop();
+            }
+            break;
+
+        default:
+            submaneuver = 0;
+            sub_Man_Count = 0;
+            break;
+        }
+    }
+
+    public void fighterVsFighter(float f)
+    {
+        if(sub_Man_Count == 0)
+        {
+            float f1 = 0.0F;
+            if(CT.Weapons[1] != null && CT.Weapons[1][0].countBullets() > 0)
+                f1 = ((com.maddox.il2.engine.GunGeneric)CT.Weapons[1][0]).bulletSpeed();
+            else
+            if(CT.Weapons[0] != null)
+                f1 = ((com.maddox.il2.engine.GunGeneric)CT.Weapons[0][0]).bulletSpeed();
+            if(f1 > 0.01F)
+                bullTime = 1.0F / f1;
+        }
+        maxAOA = 15F;
+        if(rocketsDelay > 0)
+            rocketsDelay--;
+        if(bulletDelay > 0)
+            bulletDelay--;
+        if(bulletDelay == 122)
+            bulletDelay = 0;
+        Ve.sub(target.Loc, Loc);
+        setRandomTargDeviation(0.3F);
+        Ve.add(TargDevV);
+        Vtarg.set(Ve);
+        float f2 = (float)Ve.length();
+        float f3 = 0.55F + 0.15F * (float)Skill;
+        float f4 = 0.0002F * (float)Skill;
+        tmpV3f.sub(target.Vwld, Vwld);
+        Vpl.set(tmpV3f);
+        tmpV3f.scale(f2 * (bullTime + f4) * f3);
+        Ve.add(tmpV3f);
+        tmpV3f.set(Vpl);
+        tmpV3f.scale(f2 * bullTime * f3);
+        Vtarg.add(tmpV3f);
+        Or.transformInv(Vpl);
+        float f5 = (float)(-Vpl.x);
+        if(f5 < 0.001F)
+            f5 = 0.001F;
+        Vpl.normalize();
+        if(Vpl.x < -0.93999999761581421D && f2 / f5 < 1.5F * (float)(3 - Skill))
+        {
+            push();
+            set_maneuver(14);
+            return;
+        }
+        Or.transformInv(Vtarg);
+        if(Vtarg.x > 0.0D && f2 < 500F && (shotAtFriend <= 0 || distToFriend > f2))
+        {
+            if(java.lang.Math.abs(Vtarg.y) < 13D && java.lang.Math.abs(Vtarg.z) < 13D)
+                ((com.maddox.il2.ai.air.Maneuver)target).incDangerAggressiveness(1, 0.95F, f2, this);
+            if(java.lang.Math.abs(Vtarg.y) < (double)(12.5F - 3.5F * (float)Skill) && java.lang.Math.abs(Vtarg.z) < 12.5D - 3.5D * (double)Skill && bulletDelay < 120)
+            {
+                if(!(actor instanceof com.maddox.il2.objects.air.KI_46_OTSUHEI))
+                    CT.WeaponControl[0] = true;
+                bulletDelay += 2;
+                if(bulletDelay >= 118)
+                {
+                    int i = (int)(target.getW().length() * 150D);
+                    if(i > 60)
+                        i = 60;
+                    bulletDelay += com.maddox.il2.ai.World.Rnd().nextInt(i * Skill, 2 * i * Skill);
+                }
+                if(f2 < 400F)
+                {
+                    CT.WeaponControl[1] = true;
+                    if(f2 < 100F && CT.Weapons[2] != null && CT.Weapons[2][0] != null && CT.Weapons[2][CT.Weapons[2].length - 1].countBullets() != 0 && rocketsDelay < 1)
+                    {
+                        tmpV3f.sub(target.Vwld, Vwld);
+                        Or.transformInv(tmpV3f);
+                        if(java.lang.Math.abs(tmpV3f.y) < 4D && java.lang.Math.abs(tmpV3f.z) < 4D)
+                            CT.WeaponControl[2] = true;
+                        com.maddox.il2.objects.sounds.Voice.speakAttackByRockets((com.maddox.il2.objects.air.Aircraft)actor);
+                        rocketsDelay += 120;
+                    }
+                }
+                ((com.maddox.il2.ai.air.Pilot)target).setAsDanger(actor);
+            }
+        }
+        Vtarg.set(Ve);
+        Or.transformInv(Ve);
+        Ve.normalize();
+        ((com.maddox.il2.ai.air.Maneuver)target).incDangerAggressiveness(1, (float)Ve.x, f2, this);
+        if(Ve.x < 0.30000001192092896D)
+        {
+            Vtarg.z += (double)(0.01F * (float)Skill * (800F + f2)) * (0.30000001192092896D - Ve.x);
+            Ve.set(Vtarg);
+            Or.transformInv(Ve);
+            Ve.normalize();
+        }
+        attackTurnToDirection(f2, f, 10F + (float)Skill * 8F);
+        if(Alt > 150F && Ve.x > 0.59999999999999998D && (double)f2 < 70D)
+        {
+            setSpeedMode(1);
+            tailForStaying = target;
+            tailOffset.set(-20D, 0.0D, 0.0D);
+        } else
+        {
+            setSpeedMode(9);
+        }
+    }
+
+    public void boomAttack(float f)
+    {
+        if(sub_Man_Count == 0)
+        {
+            float f1 = 0.0F;
+            if(CT.Weapons[1] != null && CT.Weapons[1][0].countBullets() > 0)
+                f1 = ((com.maddox.il2.engine.GunGeneric)CT.Weapons[1][0]).bulletSpeed();
+            else
+            if(CT.Weapons[0] != null)
+                f1 = ((com.maddox.il2.engine.GunGeneric)CT.Weapons[0][0]).bulletSpeed();
+            if(f1 > 0.01F)
+                bullTime = 1.0F / f1;
+        }
+        maxAOA = 15F;
+        if(rocketsDelay > 0)
+            rocketsDelay--;
+        if(bulletDelay > 0)
+            bulletDelay--;
+        if(bulletDelay == 122)
+            bulletDelay = 0;
+        Ve.sub(target.Loc, Loc);
+        setRandomTargDeviation(0.3F);
+        Ve.add(TargDevV);
+        Vtarg.set(Ve);
+        float f2 = (float)Ve.length();
+        float f3 = 0.55F + 0.15F * (float)Skill;
+        float f4 = 0.000333F * (float)Skill;
+        tmpV3f.sub(target.Vwld, Vwld);
+        Vpl.set(tmpV3f);
+        tmpV3f.scale(f2 * (bullTime + f4) * f3);
+        Ve.add(tmpV3f);
+        tmpV3f.set(Vpl);
+        tmpV3f.scale(f2 * bullTime * f3);
+        Vtarg.add(tmpV3f);
+        Or.transformInv(Vpl);
+        float f5 = (float)(-Vpl.x);
+        if(f5 < 0.001F)
+            f5 = 0.001F;
+        Vpl.normalize();
+        if(Vpl.x < -0.93999999761581421D && f2 / f5 < 1.5F * (float)(3 - Skill))
+        {
+            push();
+            set_maneuver(14);
+            return;
+        }
+        Or.transformInv(Vtarg);
+        if(Vtarg.x > 0.0D && f2 < 700F && (shotAtFriend <= 0 || distToFriend > f2) && java.lang.Math.abs(Vtarg.y) < (double)(15.5F - 3.5F * (float)Skill) && java.lang.Math.abs(Vtarg.z) < 15.5D - 3.5D * (double)Skill && bulletDelay < 120)
+        {
+            ((com.maddox.il2.ai.air.Maneuver)target).incDangerAggressiveness(1, 0.8F, f2, this);
+            if(!(actor instanceof com.maddox.il2.objects.air.KI_46_OTSUHEI))
+                CT.WeaponControl[0] = true;
+            bulletDelay += 2;
+            if(bulletDelay >= 118)
+            {
+                int i = (int)(target.getW().length() * 150D);
+                if(i > 60)
+                    i = 60;
+                bulletDelay += com.maddox.il2.ai.World.Rnd().nextInt(i * Skill, 2 * i * Skill);
+            }
+            if(f2 < 500F)
+            {
+                CT.WeaponControl[1] = true;
+                if(f2 < 100F && CT.Weapons[2] != null && CT.Weapons[2][0] != null && CT.Weapons[2][CT.Weapons[2].length - 1].countBullets() != 0 && rocketsDelay < 1)
+                {
+                    tmpV3f.sub(target.Vwld, Vwld);
+                    Or.transformInv(tmpV3f);
+                    if(java.lang.Math.abs(tmpV3f.y) < 4D && java.lang.Math.abs(tmpV3f.z) < 4D)
+                        CT.WeaponControl[2] = true;
+                    com.maddox.il2.objects.sounds.Voice.speakAttackByRockets((com.maddox.il2.objects.air.Aircraft)actor);
+                    rocketsDelay += 120;
+                }
+            }
+            ((com.maddox.il2.ai.air.Pilot)target).setAsDanger(actor);
+        }
+        Vtarg.set(Ve);
+        Or.transformInv(Ve);
+        Ve.normalize();
+        ((com.maddox.il2.ai.air.Maneuver)target).incDangerAggressiveness(1, (float)Ve.x, f2, this);
+        if(Ve.x < 0.89999997615814209D)
+        {
+            Vtarg.z += (double)(0.03F * (float)Skill * (800F + f2)) * (0.89999997615814209D - Ve.x);
+            Ve.set(Vtarg);
+            Or.transformInv(Ve);
+            Ve.normalize();
+        }
+        attackTurnToDirection(f2, f, 10F + (float)Skill * 8F);
+    }
+
+    private void turnToDirection(float f)
+    {
+        if(java.lang.Math.abs(Ve.y) > 0.10000000149011612D)
+            CT.AileronControl = -(float)java.lang.Math.atan2(Ve.y, Ve.z) - 0.016F * Or.getKren();
+        else
+            CT.AileronControl = -(float)java.lang.Math.atan2(Ve.y, Ve.x) - 0.016F * Or.getKren();
+        CT.RudderControl = -10F * (float)java.lang.Math.atan2(Ve.y, Ve.x);
+        if((double)CT.RudderControl * W.z > 0.0D)
+            W.z = 0.0D;
+        else
+            W.z *= 1.0399999618530273D;
+        float f1 = (float)java.lang.Math.atan2(Ve.z, Ve.x);
+        if(java.lang.Math.abs(Ve.y) < 0.0020000000949949026D && java.lang.Math.abs(Ve.z) < 0.0020000000949949026D)
+            f1 = 0.0F;
+        if(Ve.x < 0.0D)
+        {
+            f1 = 1.0F;
+        } else
+        {
+            if((double)f1 * W.y > 0.0D)
+                W.y = 0.0D;
+            if(f1 < 0.0F)
+            {
+                if(getOverload() < 0.1F)
+                    f1 = 0.0F;
+                if(CT.ElevatorControl > 0.0F)
+                    CT.ElevatorControl = 0.0F;
+            } else
+            if(CT.ElevatorControl < 0.0F)
+                CT.ElevatorControl = 0.0F;
+        }
+        if(getOverload() > maxG || AOA > maxAOA || CT.ElevatorControl > f1)
+            CT.ElevatorControl -= 0.3F * f;
+        else
+            CT.ElevatorControl += 0.3F * f;
+    }
+
+    private void farTurnToDirection()
+    {
+        farTurnToDirection(4F);
+    }
+
+    private void farTurnToDirection(float f)
+    {
+        Vpl.set(1.0D, 0.0D, 0.0D);
+        tmpV3f.cross(Vpl, Ve);
+        Or.transform(tmpV3f);
+        CT.RudderControl = -10F * (float)java.lang.Math.atan2(Ve.y, Ve.x) + 1.0F * (float)W.y;
+        float f7 = (getSpeed() / Vmax) * 45F;
+        if(f7 > 85F)
+            f7 = 85F;
+        float f8 = (float)Ve.x;
+        if(f8 < 0.0F)
+            f8 = 0.0F;
+        float f1;
+        if(tmpV3f.z >= 0.0D)
+            f1 = (-0.02F * (f7 + Or.getKren()) * (1.0F - f8) - 0.05F * Or.getTangage()) + 1.0F * (float)W.x;
+        else
+            f1 = -0.02F * (-f7 + Or.getKren()) * (1.0F - f8) + 0.05F * Or.getTangage() + 1.0F * (float)W.x;
+        float f2 = (-(float)java.lang.Math.atan2(Ve.y, Ve.x) - 0.016F * Or.getKren()) + 1.0F * (float)W.x;
+        float f4 = -0.1F * (getAOA() - 10F) + 0.5F * (float)getW().y;
+        float f5;
+        if(Ve.z > 0.0D)
+            f5 = -0.1F * (getAOA() - f) + 0.5F * (float)getW().y;
+        else
+            f5 = 1.0F * (float)Ve.z + 0.5F * (float)getW().y;
+        if(java.lang.Math.abs(Ve.y) < 0.0020000000949949026D)
+        {
+            f2 = 0.0F;
+            CT.RudderControl = 0.0F;
+        }
+        tmpV3f.set(Ve);
+        Or.transform(tmpV3f);
+        float f9 = ((float)java.lang.Math.atan2(tmpV3f.y, tmpV3f.x) * 180F) / 3.1415F;
+        float f10 = 1.0F - java.lang.Math.abs(f9 - Or.getYaw()) * 0.01F;
+        if(f10 < 0.0F || Ve.x < 0.0D)
+            f10 = 0.0F;
+        float f3 = f10 * f2 + (1.0F - f10) * f1;
+        float f6 = f10 * f5 + (1.0F - f10) * f4;
+        CT.AileronControl = f3;
+        CT.ElevatorControl = f6;
+    }
+
+    private void attackTurnToDirection(float f, float f1, float f2)
+    {
+        if(Ve.x < 0.0099999997764825821D)
+            Ve.x = 0.0099999997764825821D;
+        if(sub_Man_Count == 0)
+            oldVe.set(Ve);
+        if(Ve.x > 0.94999998807907104D)
+        {
+            CT.RudderControl = (float)(-30D * java.lang.Math.atan2(Ve.y, Ve.x) + 1.5D * (Ve.y - oldVe.y));
+            float f3;
+            if(Ve.z > 0.0D || CT.RudderControl > 0.9F)
+            {
+                f3 = (float)(10D * java.lang.Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z));
+                CT.AileronControl = (-30F * (float)java.lang.Math.atan2(Ve.y, Ve.x) - 0.02F * Or.getKren()) + 5F * (float)W.x;
+            } else
+            {
+                f3 = (float)(5D * java.lang.Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z));
+                CT.AileronControl = (-5F * (float)java.lang.Math.atan2(Ve.y, Ve.x) - 0.02F * Or.getKren()) + 5F * (float)W.x;
+            }
+            if(Ve.x > (double)(1.0F - 0.005F * (float)Skill))
+            {
+                tmpOr.set(Or);
+                tmpOr.increment((float)java.lang.Math.toDegrees(java.lang.Math.atan2(Ve.y, Ve.x)), (float)java.lang.Math.toDegrees(java.lang.Math.atan2(Ve.z, Ve.x)), 0.0F);
+                Or.interpolate(tmpOr, 0.1F);
+            }
+            if(java.lang.Math.abs(CT.ElevatorControl - f3) < f2 * f1)
+                CT.ElevatorControl = f3;
+            else
+            if(CT.ElevatorControl < f3)
+                CT.ElevatorControl += f2 * f1;
+            else
+                CT.ElevatorControl -= f2 * f1;
+        } else
+        {
+            if(Skill >= 2 && Ve.z > 0.5D && f < 600F)
+                CT.FlapsControl = 0.1F;
+            else
+                CT.FlapsControl = 0.0F;
+            float f5 = 0.6F - (float)Ve.z;
+            if(f5 < 0.0F)
+                f5 = 0.0F;
+            CT.RudderControl = (float)(-30D * java.lang.Math.atan2(Ve.y, Ve.x) * (double)f5 + 1.0D * (Ve.y - oldVe.y) * Ve.x + 0.5D * W.z);
+            float f4;
+            if(Ve.z > 0.0D)
+            {
+                f4 = (float)(10D * java.lang.Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z) + 0.5D * (double)(float)W.y);
+                if(f4 < 0.0F)
+                    f4 = 0.0F;
+                CT.AileronControl = (float)((-20D * java.lang.Math.atan2(Ve.y, Ve.z) - 0.050000000000000003D * (double)Or.getKren()) + 5D * W.x);
+            } else
+            {
+                f4 = (float)(-5D * java.lang.Math.atan2(Ve.z, Ve.x) + 6D * (Ve.z - oldVe.z) + 0.5D * (double)(float)W.y);
+                CT.AileronControl = (float)((-20D * java.lang.Math.atan2(Ve.y, Ve.z) - 0.050000000000000003D * (double)Or.getKren()) + 5D * W.x);
+            }
+            if(f4 < 0.0F)
+                f4 = 0.0F;
+            if(java.lang.Math.abs(CT.ElevatorControl - f4) < f2 * f1)
+                CT.ElevatorControl = f4;
+            else
+            if(CT.ElevatorControl < f4)
+                CT.ElevatorControl += 0.3F * f1;
+            else
+                CT.ElevatorControl -= 0.3F * f1;
+        }
+        float f6 = 0.054F * (600F - f);
+        if(f6 < 4F)
+            f6 = 4F;
+        if(f6 > AOA_Crit)
+            f6 = AOA_Crit;
+        if(AOA > f6 - 1.5F)
+            Or.increment(0.0F, 0.16F * (f6 - 1.5F - AOA), 0.0F);
+        if(AOA < -5F)
+            Or.increment(0.0F, 0.12F * (-5F - AOA), 0.0F);
+        oldVe.set(Ve);
+        oldAOA = AOA;
+        sub_Man_Count++;
+        W.x *= 0.94999999999999996D;
+    }
+
+    private void doCheckStrike()
+    {
+        if(M.massEmpty > 5000F && !AP.way.isLanding())
+            return;
+        if(maneuver == 24 && strikeTarg == Leader)
+            return;
+        if((actor instanceof com.maddox.il2.objects.air.TypeDockable) && ((com.maddox.il2.objects.air.TypeDockable)actor).typeDockableIsDocked())
+            return;
+        Vpl.sub(strikeTarg.Loc, Loc);
+        tmpV3f.set(Vpl);
+        Or.transformInv(tmpV3f);
+        if(tmpV3f.x < 0.0D)
+            return;
+        tmpV3f.sub(strikeTarg.Vwld, Vwld);
+        tmpV3f.scale(0.69999998807907104D);
+        Vpl.add(tmpV3f);
+        Or.transformInv(Vpl);
         push();
-      }push(2);
-      pop();
-      this.submaneuver = 0;
-      this.sub_Man_Count = 0;
+        if(Vpl.z > 0.0D)
+            push(61);
+        else
+            push(60);
+        safe_pop();
     }
 
-    this.W.x *= 0.95D;
-  }
-
-  protected void setSpeedControl(float paramFloat) {
-    float f1 = 0.8F;
-    float f2 = 0.02F;
-    float f3 = 1.5F;
-
-    this.CT.setAfterburnerControl(false);
-    float f4;
-    float f6;
-    float f5;
-    float f9;
-    float f10;
-    float f7;
-    float f11;
-    float f12;
-    switch (this.speedMode) {
-    case 1:
-      if (this.tailForStaying == null) { f1 = 1.0F; } else {
-        Ve.sub(this.tailForStaying.Loc, this.Loc);
-        this.tailForStaying.Or.transform(this.tailOffset, tmpV3f);
-        Ve.add(tmpV3f);
-        f8 = (float)Ve.z;
-        f4 = 0.005F * (200.0F - (float)Ve.length());
-        this.Or.transformInv(Ve);
-        f6 = (float)Ve.x;
-        Ve.normalize();
-        f4 = Math.max(f4, (float)Ve.x);
-        if (f4 < 0.0F) f4 = 0.0F;
-        Ve.set(this.Vwld);
-        Ve.normalize();
-        tmpV3f.set(this.tailForStaying.Vwld);
-        tmpV3f.normalize();
-        f5 = (float)tmpV3f.dot(Ve);
-        if (f5 < 0.0F) f5 = 0.0F;
-        f4 *= f5;
-        if ((f4 > 0.0F) && (f6 < 1000.0F)) {
-          if (f6 > 300.0F) f6 = 300.0F;
-          f9 = 0.6F;
-          if (this.tailForStaying.VmaxH == this.VmaxH) f9 = this.tailForStaying.CT.getPower();
-          if (this.Vmax < 83.0F) {
-            f10 = f8;
-            if (f10 > 0.0F) {
-              if (f10 > 20.0F) f10 = 20.0F;
-              this.Vwld.z += 0.01F * f10;
-            }
-          }
-          if (f6 > 0.0F) f7 = 0.007F * f6 + 0.005F * f8; else
-            f7 = 0.03F * f6 + 0.001F * f8;
-          f10 = getSpeed() - this.tailForStaying.getSpeed();
-          f11 = -0.3F * f10;
-          f12 = -3.0F * (getForwAccel() - this.tailForStaying.getForwAccel());
-          if (f10 > 27.0F) {
-            this.CT.FlapsControl = 1.0F;
-            f1 = 0.0F;
-          } else {
-            this.CT.FlapsControl = (0.02F * f10 + 0.02F * -f6);
-            f1 = f9 + f7 + f11 + f12;
-          }
-        } else {
-          f1 = 1.1F;
-        }
-      }break;
-    case 2:
-      f1 = (float)(1.0D - 8.000000000000001E-005D * (0.5D * this.Vwld.lengthSquared() - 9.800000000000001D * Ve.z - 0.5D * this.tailForStaying.Vwld.lengthSquared()));
-      break;
-    case 3:
-      f1 = this.CT.PowerControl;
-      if (this.AP.way.curr().Speed < 10.0F) this.AP.way.curr().set(1.7F * this.Vmin);
-      f9 = this.AP.way.curr().Speed / this.VmaxH;
-      f1 = 0.2F + 0.8F * (float)Math.pow(f9, 1.5D);
-      f1 += 0.1F * (this.AP.way.curr().Speed - Pitot.Indicator((float)this.Loc.z, getSpeed())) - 3.0F * getForwAccel();
-      if (getAltitude() < this.AP.way.curr().z() - 70.0F) f1 += this.AP.way.curr().z() - 70.0F - getAltitude();
-      if (f1 > 0.93F) f1 = 0.93F;
-      if ((f1 >= 0.35F) || (this.AP.way.isLanding())) break; f1 = 0.35F; break;
-    case 4:
-      f1 = this.CT.PowerControl;
-      f1 = (float)(f1 + (f2 * (this.smConstSpeed - Pitot.Indicator((float)this.Loc.z, getSpeed())) - f3 * getLocalAccel().x / 9.810000419616699D) * paramFloat);
-
-      if (f1 <= 1.0F) break; f1 = 1.0F; break;
-    case 5:
-      f1 = this.CT.PowerControl;
-      this.CT.FlapsControl = 1.0F;
-      f1 += (f2 * (1.3F * this.VminFLAPS - Pitot.Indicator((float)this.Loc.z, getSpeed())) - f3 * getForwAccel()) * paramFloat;
-      break;
-    case 8:
-      f1 = 0.0F;
-      break;
-    case 6:
-      f1 = 1.0F;
-      break;
-    case 9:
-      f1 = 1.1F;
-      this.CT.setAfterburnerControl(true);
-      break;
-    case 7:
-      f1 = this.smConstPower;
-      break;
-    case 10:
-      if (this.tailForStaying == null) { f1 = 1.0F; } else {
-        Ve.sub(this.tailForStaying.Loc, this.Loc);
-        this.tailForStaying.Or.transform(this.tailOffset, tmpV3f);
-        Ve.add(tmpV3f);
-        f8 = (float)Ve.z;
-        f4 = 0.005F * (200.0F - (float)Ve.length());
-        this.Or.transformInv(Ve);
-        f6 = (float)Ve.x;
-        Ve.normalize();
-        f4 = Math.max(f4, (float)Ve.x);
-        if (f4 < 0.0F) f4 = 0.0F;
-        Ve.set(this.Vwld);
-        Ve.normalize();
-        tmpV3f.set(this.tailForStaying.Vwld);
-        tmpV3f.normalize();
-        f5 = (float)tmpV3f.dot(Ve);
-        if (f5 < 0.0F) f5 = 0.0F;
-        f4 *= f5;
-        if ((f4 > 0.0F) && (f6 < 1000.0F)) {
-          if (f6 > 300.0F) f6 = 300.0F;
-          f10 = 0.6F;
-          if (this.tailForStaying.VmaxH == this.VmaxH) f10 = this.tailForStaying.CT.getPower();
-          if (this.Vmax < 83.0F) {
-            f11 = f8;
-            if (f11 > 0.0F) {
-              if (f11 > 20.0F) f11 = 20.0F;
-              this.Vwld.z += 0.01F * f11;
-            }
-          }
-          if (f6 > 0.0F) f7 = 0.007F * f6 + 0.005F * f8; else
-            f7 = 0.03F * f6 + 0.001F * f8;
-          f11 = getSpeed() - this.tailForStaying.getSpeed();
-          f12 = -0.3F * f11;
-          float f13 = -3.0F * (getForwAccel() - this.tailForStaying.getForwAccel());
-          if (f11 > 27.0F) {
-            this.Vwld.scale(0.9800000190734863D);
-            f1 = 0.0F;
-          } else {
-            float f14 = 1.0F - 0.02F * (0.02F * f11 + 0.02F * -f6);
-            if (f14 < 0.98F) f14 = 0.98F;
-            if (f14 > 1.0F) f14 = 1.0F;
-            this.Vwld.scale(f14);
-            f1 = f10 + f7 + f12 + f13;
-          }
-        } else {
-          f1 = 1.1F;
-        }
-      }break;
-    default:
-      return;
-    }
-    if (f1 > 1.1F) f1 = 1.1F;
-    else if (f1 < 0.0F) f1 = 0.0F;
-
-    if (Math.abs(this.CT.PowerControl - f1) < 0.5D * paramFloat) this.CT.setPowerControl(f1);
-    else if (this.CT.PowerControl < f1)
-      this.CT.setPowerControl(this.CT.getPowerControl() + 0.5F * paramFloat);
-    else {
-      this.CT.setPowerControl(this.CT.getPowerControl() - 0.5F * paramFloat);
-    }
-
-    float f8 = this.EI.engines[0].getCriticalW();
-    if (this.EI.engines[0].getw() > 0.9F * f8) {
-      f1 = 10.0F * (f8 - this.EI.engines[0].getw()) / f8;
-      if (f1 < this.CT.PowerControl) this.CT.setPowerControl(f1);
-    }
-
-    if (this.indSpeed > 0.8F * this.VmaxAllowed) {
-      f1 = 1.0F * (this.VmaxAllowed - this.indSpeed) / this.VmaxAllowed;
-      if (f1 < this.CT.PowerControl) this.CT.setPowerControl(f1);
-    }
-  }
-
-  private void setRandomTargDeviation(float paramFloat)
-  {
-    if (isTick(16, 0)) {
-      float f = paramFloat * (8.0F - 1.5F * this.Skill);
-      this.TargDevVnew.set(World.Rnd().nextFloat(-f, f), World.Rnd().nextFloat(-f, f), World.Rnd().nextFloat(-f, f));
-    }
-
-    this.TargDevV.interpolate(this.TargDevVnew, 0.01F);
-  }
-
-  private Point_Any getNextAirdromeWayPoint()
-  {
-    if (this.airdromeWay == null) return null;
-    if (this.airdromeWay.length == 0) return null;
-    if (this.curAirdromePoi >= this.airdromeWay.length) return null;
-    return this.airdromeWay[(this.curAirdromePoi++)];
-  }
-
-  private void findPointForEmLanding(float paramFloat)
-  {
-    Point3d localPoint3d = elLoc.getPoint();
-
-    if (this.radius > 2.0D * this.rmax) {
-      if (this.submaneuver != 69) initTargPoint(paramFloat); else
-        return;
-    }
-    for (int i = 0; i < 32; i++) {
-      Po.set(this.Vtarg.x + this.radius * Math.sin(this.phase), this.Vtarg.y + this.radius * Math.cos(this.phase), this.Loc.z);
-
-      this.radius += 0.01D * this.rmax;
-      this.phase += 0.3D;
-      Ve.sub(Po, this.Loc);
-      double d = Ve.length();
-      this.Or.transformInv(Ve);
-      Ve.normalize();
-      float f1 = 0.9F - 0.005F * this.Alt;
-      if (f1 < -1.0F) f1 = -1.0F;
-      if (f1 > 0.8F) f1 = 0.8F;
-      float f2 = 1.5F - 0.0005F * this.Alt;
-      if (f2 < 1.0F) f2 = 1.0F;
-      if (f2 > 1.5F) f2 = 1.5F;
-      if ((this.rmax <= d) || (d <= this.rmin * f2) || (Ve.x <= f1) || 
-        (!isConvenientPoint())) continue;
-      this.submaneuver = 69;
-      localPoint3d.set(Po);
-      this.pointQuality = this.curPointQuality;
-
-      return;
-    }
-  }
-
-  private boolean isConvenientPoint()
-  {
-    Po.z = Engine.cur.land.HQ_Air(Po.x, Po.y);
-    this.curPointQuality = 50;
-    for (int i = -1; i < 2; i++) {
-      for (int j = -1; j < 2; j++) {
-        if (Engine.land().isWater(Po.x + 500.0D * i, Po.y + 500.0D * j)) {
-          if (!(this.actor instanceof TypeSailPlane)) this.curPointQuality -= 1;
-        }
-        else if ((this.actor instanceof TypeSailPlane)) this.curPointQuality -= 1;
-
-        if (Engine.cur.land.HQ_ForestHeightHere(Po.x + 500.0D * i, Po.y + 500.0D * j) > 1.0D) this.curPointQuality -= 2;
-        if (Engine.cur.land.EQN(Po.x + 500.0D * i, Po.y + 500.0D * j, Ve) <= 1110.949951171875D) continue; this.curPointQuality -= 2;
-      }
-    }
-    if (this.curPointQuality < 0) this.curPointQuality = 0;
-    return this.curPointQuality > this.pointQuality;
-  }
-
-  private void emergencyTurnToDirection(float paramFloat)
-  {
-    if (Math.abs(Ve.y) > 0.1000000014901161D)
-      this.CT.AileronControl = (-(float)Math.atan2(Ve.y, Ve.z) - 0.016F * this.Or.getKren());
-    else {
-      this.CT.AileronControl = (-(float)Math.atan2(Ve.y, Ve.x) - 0.016F * this.Or.getKren());
-    }
-    this.CT.RudderControl = (-10.0F * (float)Math.atan2(Ve.y, Ve.x));
-    if (this.CT.RudderControl * this.W.z > 0.0D) this.W.z = 0.0D; else this.W.z *= 1.039999961853027D; 
-  }
-
-  private void initTargPoint(float paramFloat)
-  {
-    int i = this.AP.way.Cur();
-    this.Vtarg.set(this.AP.way.last().x(), this.AP.way.last().y(), 0.0D);
-    this.AP.way.setCur(i);
-    this.Vtarg.sub(this.Loc);
-    this.Vtarg.z = 0.0D;
-    if (this.Vtarg.length() > this.rmax) {
-      this.Vtarg.normalize();
-      this.Vtarg.scale(this.rmax);
-    }
-    this.Vtarg.add(this.Loc);
-    this.phase = 0.0D;
-    this.radius = 50.0D;
-    this.pointQuality = -1;
-  }
-
-  private void emergencyLanding(float paramFloat)
-  {
-    if (this.first) {
-      this.Kmax = (this.Wing.new_Cya(5.0F) / this.Wing.new_Cxa(5.0F));
-      if (this.Kmax > 14.0F) this.Kmax = 14.0F;
-      this.Kmax *= 0.8F;
-      this.rmax = (1.2F * this.Kmax * this.Alt);
-      this.rmin = (0.6F * this.Kmax * this.Alt);
-      initTargPoint(paramFloat);
-
-      setReadyToDieSoftly(true);
-      this.AP.setStabAll(false);
-      if (this.TaxiMode) {
-        setSpeedMode(8);
-        this.smConstPower = 0.0F;
-        push(44);
-        pop();
-      }
-      this.dist = this.Alt;
-
-      if ((this.actor instanceof TypeSailPlane)) {
-        this.EI.setEngineStops();
-      }
-    }
-
-    setSpeedMode(4);
-    this.smConstSpeed = (this.VminFLAPS * 1.25F);
-    if ((this.Alt < 500.0F) && (((this.actor instanceof TypeGlider)) || ((this.actor instanceof TypeSailPlane)))) this.CT.GearControl = 1.0F;
-    if (this.Alt < 10.0F) {
-      this.CT.AileronControl = (-0.04F * this.Or.getKren());
-      setSpeedMode(4);
-      this.smConstSpeed = (this.VminFLAPS * 1.1F);
-      if (this.Alt < 5.0F) setSpeedMode(8);
-      this.CT.BrakeControl = 0.2F;
-      if ((this.Vwld.length() < 0.300000011920929D) && (World.Rnd().nextInt(0, 99) < 4)) {
-        setStationedOnGround(true);
-        World.cur(); if (this.actor != World.getPlayerAircraft()) {
-          push(44);
-          safe_pop();
-          if ((this.actor instanceof TypeSailPlane)) {
-            this.EI.setCurControlAll(true);
-            this.EI.setEngineStops();
-            if (Engine.land().isWater(this.Loc.x, this.Loc.y)) {
-              return;
-            }
-          }
-          ((Aircraft)this.actor).hitDaSilk();
-        }
-        if (this.Group != null) this.Group.delAircraft((Aircraft)this.actor);
-        if (((this.actor instanceof TypeGlider)) || ((this.actor instanceof TypeSailPlane))) return;
-        World.cur(); if (this.actor != World.getPlayerAircraft()) {
-          if (Airport.distToNearestAirport(this.Loc) > 900.0D) {
-            ((Aircraft)this.actor).postEndAction(60.0D, this.actor, 4, null);
-          }
-          else {
-            MsgDestroy.Post(Time.current() + 30000L, this.actor);
-          }
-        }
-      }
-    }
-    this.dA = (0.2F * (getSpeed() - this.Vmin * 1.3F) - 0.8F * (getAOA() - 5.0F));
-
-    if (this.Alt < 40.0F) {
-      this.CT.AileronControl = (-0.04F * this.Or.getKren());
-      this.CT.RudderControl = 0.0F;
-      if (((this.actor instanceof BI_1)) || ((this.actor instanceof ME_163B1A))) this.CT.GearControl = 1.0F;
-      float f1;
-      if (this.Gears.Pitch < 10.0F) {
-        f1 = (40.0F * (getSpeed() - this.VminFLAPS * 1.15F) - 60.0F * (this.Or.getTangage() + 3.0F) - 240.0F * (getVertSpeed() + 1.0F) - 120.0F * ((float)getAccel().z - 1.0F)) * 0.004F;
-      }
-      else {
-        f1 = (40.0F * (getSpeed() - this.VminFLAPS * 1.15F) - 60.0F * (this.Or.getTangage() - this.Gears.Pitch + 10.0F) - 240.0F * (getVertSpeed() + 1.0F) - 120.0F * ((float)getAccel().z - 1.0F)) * 0.004F;
-      }
-
-      if (this.Alt > 0.0F) {
-        float f2 = 0.01666F * this.Alt;
-        this.dA = (this.dA * f2 + f1 * (1.0F - f2)); } else {
-        this.dA = f1;
-      }
-      this.CT.FlapsControl = 0.33F;
-      if ((this.Alt < 9.0F) && (Math.abs(this.Or.getKren()) < 5.0F) && (getVertSpeed() < -0.7F)) this.Vwld.z *= 0.8700000047683716D;
-    }
-    else
+    public void setStrikeEmer(com.maddox.il2.fm.FlightModel flightmodel)
     {
-      this.rmax = (1.2F * this.Kmax * this.Alt);
-      this.rmin = (0.6F * this.Kmax * this.Alt);
+        strikeEmer = true;
+        strikeTarg = flightmodel;
+    }
 
-      if (((this.actor instanceof TypeGlider)) && (this.Alt > 200.0F)) {
-        this.CT.RudderControl = 0.0F;
-      }
-      else if ((this.pointQuality < 50) && (this.mn_time > 0.5F)) {
-        findPointForEmLanding(paramFloat);
-      }
+    private float bombDist(float f)
+    {
+        float f1 = com.maddox.il2.ai.air.Maneuver.positiveSquareEquation(-0.5F * com.maddox.il2.ai.World.g(), (float)Vwld.z, f);
+        if(f1 < 0.0F)
+            return -1000000F;
+        else
+            return f1 * (float)java.lang.Math.sqrt(Vwld.x * Vwld.x + Vwld.y * Vwld.y);
+    }
 
-      if (this.submaneuver == 69) {
-        Ve.sub(elLoc.getPoint(), this.Loc);
-        d = Ve.length();
-        this.Or.transformInv(Ve);
+    protected void wingman(boolean flag)
+    {
+        if(Wingman == null)
+        {
+            return;
+        } else
+        {
+            Wingman.Leader = flag ? ((com.maddox.il2.fm.FlightModel) (this)) : null;
+            return;
+        }
+    }
+
+    public float getMnTime()
+    {
+        return mn_time;
+    }
+
+    public void doDumpBombsPassively()
+    {
+        boolean flag = false;
+        for(int i = 0; i < CT.Weapons.length; i++)
+        {
+            if(CT.Weapons[i] == null || CT.Weapons[i].length <= 0)
+                continue;
+            for(int j = 0; j < CT.Weapons[i].length; j++)
+            {
+                if(!(CT.Weapons[i][j] instanceof com.maddox.il2.objects.weapons.BombGun))
+                    continue;
+                if((CT.Weapons[i][j] instanceof com.maddox.il2.objects.weapons.BombGunPara) || (actor instanceof com.maddox.il2.objects.air.SM79) && (CT.Weapons[i][j] instanceof com.maddox.il2.objects.weapons.TorpedoGun))
+                {
+                    flag = true;
+                    continue;
+                }
+                ((com.maddox.il2.objects.weapons.BombGun)CT.Weapons[i][j]).setBombDelay(3.3E+007F);
+                if(actor == com.maddox.il2.ai.World.getPlayerAircraft() && !com.maddox.il2.ai.World.cur().diffCur.Limited_Ammo)
+                    CT.Weapons[i][j].loadBullets(0);
+            }
+
+        }
+
+        if(!flag)
+            bombsOut = true;
+    }
+
+    protected void printDebugFM()
+    {
+        java.lang.System.out.print("<" + actor.name() + "> " + com.maddox.il2.ai.air.ManString.tname(task) + ":" + com.maddox.il2.ai.air.ManString.name(maneuver) + (target == null ? "t" : "T") + (danger == null ? "d" : "D") + (target_ground == null ? "g " : "G "));
+        switch(maneuver)
+        {
+        case 21: // '\025'
+            java.lang.System.out.println(": WP=" + AP.way.Cur() + "(" + (AP.way.size() - 1) + ")-" + com.maddox.il2.ai.air.ManString.wpname(AP.way.curr().Action));
+            if(target_ground != null)
+                java.lang.System.out.println(" GT=" + target_ground.getClass().getName() + "(" + target_ground.name() + ")");
+            break;
+
+        case 27: // '\033'
+            if(target == null || !com.maddox.il2.engine.Actor.isValid(target.actor))
+                java.lang.System.out.println(" T=null");
+            else
+                java.lang.System.out.println(" T=" + target.actor.getClass().getName() + "(" + target.actor.name() + ")");
+            break;
+
+        case 43: // '+'
+        case 50: // '2'
+        case 51: // '3'
+        case 52: // '4'
+            if(target_ground == null || !com.maddox.il2.engine.Actor.isValid(target_ground))
+                java.lang.System.out.println(" GT=null");
+            else
+                java.lang.System.out.println(" GT=" + target_ground.getClass().getName() + "(" + target_ground.name() + ")");
+            break;
+
+        default:
+            java.lang.System.out.println("");
+            if(target == null || !com.maddox.il2.engine.Actor.isValid(target.actor))
+            {
+                java.lang.System.out.println(" T=null");
+                break;
+            }
+            java.lang.System.out.println(" T=" + target.actor.getClass().getName() + "(" + target.actor.name() + ")");
+            if(target_ground == null || !com.maddox.il2.engine.Actor.isValid(target_ground))
+                java.lang.System.out.println(" GT=null");
+            else
+                java.lang.System.out.println(" GT=" + target_ground.getClass().getName() + "(" + target_ground.name() + ")");
+            break;
+        }
+    }
+
+    protected void headTurn(float f)
+    {
+        if(actor == com.maddox.il2.game.Main3D.cur3D().viewActor() && AS.astatePilotStates[0] < 90)
+        {
+            boolean flag = false;
+            switch(get_task())
+            {
+            case 2: // '\002'
+                if(Leader != null)
+                {
+                    Ve.set(Leader.Loc);
+                    flag = true;
+                }
+                break;
+
+            case 6: // '\006'
+                if(target != null)
+                {
+                    Ve.set(target.Loc);
+                    flag = true;
+                }
+                break;
+
+            case 5: // '\005'
+                if(airClient != null)
+                {
+                    Ve.set(airClient.Loc);
+                    flag = true;
+                }
+                break;
+
+            case 4: // '\004'
+                if(danger != null)
+                {
+                    Ve.set(danger.Loc);
+                    flag = true;
+                }
+                break;
+
+            case 7: // '\007'
+                if(target_ground != null)
+                {
+                    Ve.set(target_ground.pos.getAbsPoint());
+                    flag = true;
+                }
+                break;
+            }
+            float f1;
+            float f2;
+            if(flag)
+            {
+                Ve.sub(Loc);
+                Or.transformInv(Ve);
+                tmpOr.setAT0(Ve);
+                f1 = tmpOr.getTangage();
+                f2 = tmpOr.getYaw();
+                if(f2 > 75F)
+                    f2 = 75F;
+                if(f2 < -75F)
+                    f2 = -75F;
+                if(f1 < -15F)
+                    f1 = -15F;
+                if(f1 > 40F)
+                    f1 = 40F;
+            } else
+            if(get_maneuver() != 44)
+            {
+                f1 = 0.0F;
+                f2 = 0.0F;
+            } else
+            {
+                f2 = -15F;
+                f1 = -15F;
+            }
+            if(java.lang.Math.abs(pilotHeadT - f1) > 3F)
+                pilotHeadT += 90F * (pilotHeadT <= f1 ? 1.0F : -1F) * f;
+            else
+                pilotHeadT = f1;
+            if(java.lang.Math.abs(pilotHeadY - f2) > 2.0F)
+                pilotHeadY += 60F * (pilotHeadY <= f2 ? 1.0F : -1F) * f;
+            else
+                pilotHeadY = f2;
+            tmpOr.setYPR(0.0F, 0.0F, 0.0F);
+            tmpOr.increment(0.0F, pilotHeadY, 0.0F);
+            tmpOr.increment(pilotHeadT, 0.0F, 0.0F);
+            tmpOr.increment(0.0F, 0.0F, -0.2F * pilotHeadT + 0.05F * pilotHeadY);
+            headOr[0] = tmpOr.getYaw();
+            headOr[1] = tmpOr.getPitch();
+            headOr[2] = tmpOr.getRoll();
+            headPos[0] = 0.0005F * java.lang.Math.abs(pilotHeadY);
+            headPos[1] = -0.0001F * java.lang.Math.abs(pilotHeadY);
+            headPos[2] = 0.0F;
+            ((com.maddox.il2.engine.ActorHMesh)actor).hierMesh().chunkSetLocate("Head1_D0", headPos, headOr);
+        }
+    }
+
+    protected void turnOffTheWeapon()
+    {
+        CT.WeaponControl[0] = false;
+        CT.WeaponControl[1] = false;
+        CT.WeaponControl[2] = false;
+        CT.WeaponControl[3] = false;
+        if(bombsOut)
+        {
+            bombsOutCounter++;
+            if(bombsOutCounter > 128)
+            {
+                bombsOutCounter = 0;
+                bombsOut = false;
+            }
+            if(CT.Weapons[3] != null)
+                CT.WeaponControl[3] = true;
+            else
+                bombsOut = false;
+            if(CT.Weapons[3] != null && CT.Weapons[3][0] != null)
+            {
+                int i = 0;
+                for(int j = 0; j < CT.Weapons[3].length; j++)
+                    i += CT.Weapons[3][j].countBullets();
+
+                if(i == 0)
+                {
+                    bombsOut = false;
+                    for(int k = 0; k < CT.Weapons[3].length; k++)
+                        CT.Weapons[3][k].loadBullets(0);
+
+                }
+            }
+        }
+    }
+
+    protected void turnOnChristmasTree(boolean flag)
+    {
+        if(flag)
+        {
+            if(com.maddox.il2.ai.World.Sun().ToSun.z < -0.22F)
+                AS.setNavLightsState(true);
+        } else
+        {
+            AS.setNavLightsState(false);
+        }
+    }
+
+    protected void turnOnCloudShine(boolean flag)
+    {
+        if(flag)
+        {
+            if(com.maddox.il2.ai.World.Sun().ToSun.z < -0.22F)
+                AS.setLandingLightState(true);
+        } else
+        {
+            AS.setLandingLightState(false);
+        }
+    }
+
+    protected void doCheckGround(float f)
+    {
+        if(CT.AileronControl > 1.0F)
+            CT.AileronControl = 1.0F;
+        if(CT.AileronControl < -1F)
+            CT.AileronControl = -1F;
+        if(CT.ElevatorControl > 1.0F)
+            CT.ElevatorControl = 1.0F;
+        if(CT.ElevatorControl < -1F)
+            CT.ElevatorControl = -1F;
+        float f4 = 0.0003F * M.massEmpty;
+        float f5 = 10F;
+        float f6 = 80F;
+        if(maneuver == 24)
+        {
+            f5 = 15F;
+            f6 = 120F;
+        }
+        float f7 = (float)(-Vwld.z) * f5 * f4;
+        float f8 = 1.0F + 7F * ((indSpeed - VmaxAllowed) / VmaxAllowed);
+        if(f8 > 1.0F)
+            f8 = 1.0F;
+        if(f8 < 0.0F)
+            f8 = 0.0F;
+        float f1;
+        float f2;
+        float f3;
+        if(f7 > Alt || Alt < f6 || f8 > 0.0F)
+        {
+            if(Alt < 0.001F)
+                Alt = 0.001F;
+            f1 = (f7 - Alt) / Alt;
+            java.lang.Math.max(0.016670000000000001D * (double)(f6 - Alt), f1);
+            if(f1 > 1.0F)
+                f1 = 1.0F;
+            if(f1 < 0.0F)
+                f1 = 0.0F;
+            if(f1 < f8)
+                f1 = f8;
+            f2 = -0.12F * (Or.getTangage() - 5F) + 3F * (float)W.y;
+            f3 = -0.07F * Or.getKren() + 3F * (float)W.x;
+            if(f3 > 2.0F)
+                f3 = 2.0F;
+            if(f3 < -2F)
+                f3 = -2F;
+            if(f2 > 2.0F)
+                f2 = 2.0F;
+            if(f2 < -2F)
+                f2 = -2F;
+        } else
+        {
+            f1 = 0.0F;
+            f2 = 0.0F;
+            f3 = 0.0F;
+        }
+        float f9 = 0.2F;
+        if(corrCoeff < f1)
+            corrCoeff = f1;
+        if(corrCoeff > f1)
+            corrCoeff *= 1.0D - (double)(f9 * f);
+        if(f2 < 0.0F)
+        {
+            if(corrElev > f2)
+                corrElev = f2;
+            if(corrElev < f2)
+                corrElev *= 1.0D - (double)(f9 * f);
+        } else
+        {
+            if(corrElev < f2)
+                corrElev = f2;
+            if(corrElev > f2)
+                corrElev *= 1.0D - (double)(f9 * f);
+        }
+        if(f3 < 0.0F)
+        {
+            if(corrAile > f3)
+                corrAile = f3;
+            if(corrAile < f3)
+                corrAile *= 1.0D - (double)(f9 * f);
+        } else
+        {
+            if(corrAile < f3)
+                corrAile = f3;
+            if(corrAile > f3)
+                corrAile *= 1.0D - (double)(f9 * f);
+        }
+        CT.AileronControl = corrCoeff * corrAile + (1.0F - corrCoeff) * CT.AileronControl;
+        CT.ElevatorControl = corrCoeff * corrElev + (1.0F - corrCoeff) * CT.ElevatorControl;
+        if(Alt < 15F && Vwld.z < 0.0D)
+            Vwld.z *= 0.85000002384185791D;
+        if(-Vwld.z * 1.5D > (double)Alt || Alt < 10F)
+        {
+            if(maneuver == 27 || maneuver == 43 || maneuver == 21 || maneuver == 24 || maneuver == 68 || maneuver == 53)
+                push();
+            push(2);
+            pop();
+            submaneuver = 0;
+            sub_Man_Count = 0;
+        }
+        W.x *= 0.94999999999999996D;
+    }
+
+    protected void setSpeedControl(float f)
+    {
+        float f1 = 0.8F;
+        float f4 = 0.02F;
+        float f5 = 1.5F;
+        CT.setAfterburnerControl(false);
+        switch(speedMode)
+        {
+        case 1: // '\001'
+            if(tailForStaying == null)
+            {
+                f1 = 1.0F;
+            } else
+            {
+                Ve.sub(tailForStaying.Loc, Loc);
+                tailForStaying.Or.transform(tailOffset, tmpV3f);
+                Ve.add(tmpV3f);
+                float f14 = (float)Ve.z;
+                float f6 = 0.005F * (200F - (float)Ve.length());
+                Or.transformInv(Ve);
+                float f10 = (float)Ve.x;
+                Ve.normalize();
+                f6 = java.lang.Math.max(f6, (float)Ve.x);
+                if(f6 < 0.0F)
+                    f6 = 0.0F;
+                Ve.set(Vwld);
+                Ve.normalize();
+                tmpV3f.set(tailForStaying.Vwld);
+                tmpV3f.normalize();
+                float f8 = (float)tmpV3f.dot(Ve);
+                if(f8 < 0.0F)
+                    f8 = 0.0F;
+                f6 *= f8;
+                if(f6 > 0.0F && f10 < 1000F)
+                {
+                    if(f10 > 300F)
+                        f10 = 300F;
+                    float f17 = 0.6F;
+                    if(tailForStaying.VmaxH == VmaxH)
+                        f17 = tailForStaying.CT.getPower();
+                    if(Vmax < 83F)
+                    {
+                        float f19 = f14;
+                        if(f19 > 0.0F)
+                        {
+                            if(f19 > 20F)
+                                f19 = 20F;
+                            Vwld.z += 0.01F * f19;
+                        }
+                    }
+                    float f12;
+                    if(f10 > 0.0F)
+                        f12 = 0.007F * f10 + 0.005F * f14;
+                    else
+                        f12 = 0.03F * f10 + 0.001F * f14;
+                    float f20 = getSpeed() - tailForStaying.getSpeed();
+                    float f22 = -0.3F * f20;
+                    float f25 = -3F * (getForwAccel() - tailForStaying.getForwAccel());
+                    if(f20 > 27F)
+                    {
+                        CT.FlapsControl = 1.0F;
+                        f1 = 0.0F;
+                    } else
+                    {
+                        CT.FlapsControl = 0.02F * f20 + 0.02F * -f10;
+                        f1 = f17 + f12 + f22 + f25;
+                    }
+                } else
+                {
+                    f1 = 1.1F;
+                }
+            }
+            break;
+
+        case 2: // '\002'
+            f1 = (float)(1.0D - 8.0000000000000007E-005D * (0.5D * Vwld.lengthSquared() - 9.8000000000000007D * Ve.z - 0.5D * tailForStaying.Vwld.lengthSquared()));
+            break;
+
+        case 3: // '\003'
+            f1 = CT.PowerControl;
+            if(AP.way.curr().Speed < 10F)
+                AP.way.curr().set(1.7F * Vmin);
+            float f18 = AP.way.curr().Speed / VmaxH;
+            f1 = 0.2F + 0.8F * (float)java.lang.Math.pow(f18, 1.5D);
+            f1 += 0.1F * (AP.way.curr().Speed - com.maddox.il2.fm.Pitot.Indicator((float)Loc.z, getSpeed())) - 3F * getForwAccel();
+            if(getAltitude() < AP.way.curr().z() - 70F)
+                f1 += AP.way.curr().z() - 70F - getAltitude();
+            if(f1 > 0.93F)
+                f1 = 0.93F;
+            if(f1 < 0.35F && !AP.way.isLanding())
+                f1 = 0.35F;
+            break;
+
+        case 4: // '\004'
+            f1 = CT.PowerControl;
+            f1 = (float)((double)f1 + ((double)(f4 * (smConstSpeed - com.maddox.il2.fm.Pitot.Indicator((float)Loc.z, getSpeed()))) - ((double)f5 * getLocalAccel().x) / 9.8100004196166992D) * (double)f);
+            if(f1 > 1.0F)
+                f1 = 1.0F;
+            break;
+
+        case 5: // '\005'
+            f1 = CT.PowerControl;
+            CT.FlapsControl = 1.0F;
+            f1 += (f4 * (1.3F * VminFLAPS - com.maddox.il2.fm.Pitot.Indicator((float)Loc.z, getSpeed())) - f5 * getForwAccel()) * f;
+            break;
+
+        case 8: // '\b'
+            f1 = 0.0F;
+            break;
+
+        case 6: // '\006'
+            f1 = 1.0F;
+            break;
+
+        case 9: // '\t'
+            f1 = 1.1F;
+            CT.setAfterburnerControl(true);
+            break;
+
+        case 7: // '\007'
+            f1 = smConstPower;
+            break;
+
+        case 10: // '\n'
+            if(tailForStaying == null)
+            {
+                f1 = 1.0F;
+            } else
+            {
+                Ve.sub(tailForStaying.Loc, Loc);
+                tailForStaying.Or.transform(tailOffset, tmpV3f);
+                Ve.add(tmpV3f);
+                float f15 = (float)Ve.z;
+                float f7 = 0.005F * (200F - (float)Ve.length());
+                Or.transformInv(Ve);
+                float f11 = (float)Ve.x;
+                Ve.normalize();
+                f7 = java.lang.Math.max(f7, (float)Ve.x);
+                if(f7 < 0.0F)
+                    f7 = 0.0F;
+                Ve.set(Vwld);
+                Ve.normalize();
+                tmpV3f.set(tailForStaying.Vwld);
+                tmpV3f.normalize();
+                float f9 = (float)tmpV3f.dot(Ve);
+                if(f9 < 0.0F)
+                    f9 = 0.0F;
+                f7 *= f9;
+                if(f7 > 0.0F && f11 < 1000F)
+                {
+                    if(f11 > 300F)
+                        f11 = 300F;
+                    float f21 = 0.6F;
+                    if(tailForStaying.VmaxH == VmaxH)
+                        f21 = tailForStaying.CT.getPower();
+                    if(Vmax < 83F)
+                    {
+                        float f23 = f15;
+                        if(f23 > 0.0F)
+                        {
+                            if(f23 > 20F)
+                                f23 = 20F;
+                            Vwld.z += 0.01F * f23;
+                        }
+                    }
+                    float f13;
+                    if(f11 > 0.0F)
+                        f13 = 0.007F * f11 + 0.005F * f15;
+                    else
+                        f13 = 0.03F * f11 + 0.001F * f15;
+                    float f24 = getSpeed() - tailForStaying.getSpeed();
+                    float f26 = -0.3F * f24;
+                    float f27 = -3F * (getForwAccel() - tailForStaying.getForwAccel());
+                    if(f24 > 27F)
+                    {
+                        Vwld.scale(0.98000001907348633D);
+                        f1 = 0.0F;
+                    } else
+                    {
+                        float f28 = 1.0F - 0.02F * (0.02F * f24 + 0.02F * -f11);
+                        if(f28 < 0.98F)
+                            f28 = 0.98F;
+                        if(f28 > 1.0F)
+                            f28 = 1.0F;
+                        Vwld.scale(f28);
+                        f1 = f21 + f13 + f26 + f27;
+                    }
+                } else
+                {
+                    f1 = 1.1F;
+                }
+            }
+            break;
+
+        default:
+            return;
+        }
+        if(f1 > 1.1F)
+            f1 = 1.1F;
+        else
+        if(f1 < 0.0F)
+            f1 = 0.0F;
+        if((double)java.lang.Math.abs(CT.PowerControl - f1) < 0.5D * (double)f)
+            CT.setPowerControl(f1);
+        else
+        if(CT.PowerControl < f1)
+            CT.setPowerControl(CT.getPowerControl() + 0.5F * f);
+        else
+            CT.setPowerControl(CT.getPowerControl() - 0.5F * f);
+        float f16 = EI.engines[0].getCriticalW();
+        if(EI.engines[0].getw() > 0.9F * f16)
+        {
+            float f2 = (10F * (f16 - EI.engines[0].getw())) / f16;
+            if(f2 < CT.PowerControl)
+                CT.setPowerControl(f2);
+        }
+        if(indSpeed > 0.8F * VmaxAllowed)
+        {
+            float f3 = (1.0F * (VmaxAllowed - indSpeed)) / VmaxAllowed;
+            if(f3 < CT.PowerControl)
+                CT.setPowerControl(f3);
+        }
+    }
+
+    private void setRandomTargDeviation(float f)
+    {
+        if(isTick(16, 0))
+        {
+            float f1 = f * (8F - 1.5F * (float)Skill);
+            TargDevVnew.set(com.maddox.il2.ai.World.Rnd().nextFloat(-f1, f1), com.maddox.il2.ai.World.Rnd().nextFloat(-f1, f1), com.maddox.il2.ai.World.Rnd().nextFloat(-f1, f1));
+        }
+        TargDevV.interpolate(TargDevVnew, 0.01F);
+    }
+
+    private com.maddox.il2.ai.air.Point_Any getNextAirdromeWayPoint()
+    {
+        if(airdromeWay == null)
+            return null;
+        if(airdromeWay.length == 0)
+            return null;
+        if(curAirdromePoi >= airdromeWay.length)
+            return null;
+        else
+            return airdromeWay[curAirdromePoi++];
+    }
+
+    private void findPointForEmLanding(float f)
+    {
+        com.maddox.JGP.Point3d point3d = elLoc.getPoint();
+        if(radius > 2D * (double)rmax)
+            if(submaneuver != 69)
+                initTargPoint(f);
+            else
+                return;
+        for(int i = 0; i < 32; i++)
+        {
+            Po.set(Vtarg.x + radius * java.lang.Math.sin(phase), Vtarg.y + radius * java.lang.Math.cos(phase), Loc.z);
+            radius += 0.01D * (double)rmax;
+            phase += 0.29999999999999999D;
+            Ve.sub(Po, Loc);
+            double d = Ve.length();
+            Or.transformInv(Ve);
+            Ve.normalize();
+            float f1 = 0.9F - 0.005F * Alt;
+            if(f1 < -1F)
+                f1 = -1F;
+            if(f1 > 0.8F)
+                f1 = 0.8F;
+            float f2 = 1.5F - 0.0005F * Alt;
+            if(f2 < 1.0F)
+                f2 = 1.0F;
+            if(f2 > 1.5F)
+                f2 = 1.5F;
+            if((double)rmax > d && d > (double)(rmin * f2) && Ve.x > (double)f1 && isConvenientPoint())
+            {
+                submaneuver = 69;
+                point3d.set(Po);
+                pointQuality = curPointQuality;
+                return;
+            }
+        }
+
+    }
+
+    private boolean isConvenientPoint()
+    {
+        Po.z = com.maddox.il2.engine.Engine.cur.land.HQ_Air(Po.x, Po.y);
+        curPointQuality = 50;
+        for(int i = -1; i < 2; i++)
+        {
+            for(int j = -1; j < 2; j++)
+            {
+                com.maddox.il2.engine.Engine _tmp = com.maddox.il2.engine.Engine.cur;
+                if(com.maddox.il2.engine.Engine.land().isWater(Po.x + 500D * (double)i, Po.y + 500D * (double)j))
+                {
+                    if(!(actor instanceof com.maddox.il2.objects.air.TypeSailPlane))
+                        curPointQuality--;
+                } else
+                if(actor instanceof com.maddox.il2.objects.air.TypeSailPlane)
+                    curPointQuality--;
+                if(com.maddox.il2.engine.Engine.cur.land.HQ_ForestHeightHere(Po.x + 500D * (double)i, Po.y + 500D * (double)j) > 1.0D)
+                    curPointQuality -= 2;
+                if(com.maddox.il2.engine.Engine.cur.land.EQN(Po.x + 500D * (double)i, Po.y + 500D * (double)j, Ve) > 1110.949951171875D)
+                    curPointQuality -= 2;
+            }
+
+        }
+
+        if(curPointQuality < 0)
+            curPointQuality = 0;
+        return curPointQuality > pointQuality;
+    }
+
+    private void emergencyTurnToDirection(float f)
+    {
+        if(java.lang.Math.abs(Ve.y) > 0.10000000149011612D)
+            CT.AileronControl = -(float)java.lang.Math.atan2(Ve.y, Ve.z) - 0.016F * Or.getKren();
+        else
+            CT.AileronControl = -(float)java.lang.Math.atan2(Ve.y, Ve.x) - 0.016F * Or.getKren();
+        CT.RudderControl = -10F * (float)java.lang.Math.atan2(Ve.y, Ve.x);
+        if((double)CT.RudderControl * W.z > 0.0D)
+            W.z = 0.0D;
+        else
+            W.z *= 1.0399999618530273D;
+    }
+
+    private void initTargPoint(float f)
+    {
+        int i = AP.way.Cur();
+        Vtarg.set(AP.way.last().x(), AP.way.last().y(), 0.0D);
+        AP.way.setCur(i);
+        Vtarg.sub(Loc);
+        Vtarg.z = 0.0D;
+        if(Vtarg.length() > (double)rmax)
+        {
+            Vtarg.normalize();
+            Vtarg.scale(rmax);
+        }
+        Vtarg.add(Loc);
+        phase = 0.0D;
+        radius = 50D;
+        pointQuality = -1;
+    }
+
+    private void emergencyLanding(float f)
+    {
+        if(first)
+        {
+            Kmax = Wing.new_Cya(5F) / Wing.new_Cxa(5F);
+            if(Kmax > 14F)
+                Kmax = 14F;
+            Kmax *= 0.8F;
+            rmax = 1.2F * Kmax * Alt;
+            rmin = 0.6F * Kmax * Alt;
+            initTargPoint(f);
+            setReadyToDieSoftly(true);
+            AP.setStabAll(false);
+            if(TaxiMode)
+            {
+                setSpeedMode(8);
+                smConstPower = 0.0F;
+                push(44);
+                pop();
+            }
+            dist = Alt;
+            if(actor instanceof com.maddox.il2.objects.air.TypeSailPlane)
+                EI.setEngineStops();
+        }
+        setSpeedMode(4);
+        smConstSpeed = VminFLAPS * 1.25F;
+        if(Alt < 500F && ((actor instanceof com.maddox.il2.objects.air.TypeGlider) || (actor instanceof com.maddox.il2.objects.air.TypeSailPlane)))
+            CT.GearControl = 1.0F;
+        if(Alt < 10F)
+        {
+            CT.AileronControl = -0.04F * Or.getKren();
+            setSpeedMode(4);
+            smConstSpeed = VminFLAPS * 1.1F;
+            if(Alt < 5F)
+                setSpeedMode(8);
+            CT.BrakeControl = 0.2F;
+            if(Vwld.length() < 0.30000001192092896D && com.maddox.il2.ai.World.Rnd().nextInt(0, 99) < 4)
+            {
+                setStationedOnGround(true);
+                com.maddox.il2.ai.World.cur();
+                if(actor != com.maddox.il2.ai.World.getPlayerAircraft())
+                {
+                    push(44);
+                    safe_pop();
+                    if(actor instanceof com.maddox.il2.objects.air.TypeSailPlane)
+                    {
+                        EI.setCurControlAll(true);
+                        EI.setEngineStops();
+                        if(com.maddox.il2.engine.Engine.land().isWater(Loc.x, Loc.y))
+                            return;
+                    }
+                    ((com.maddox.il2.objects.air.Aircraft)actor).hitDaSilk();
+                }
+                if(Group != null)
+                    Group.delAircraft((com.maddox.il2.objects.air.Aircraft)actor);
+                if((actor instanceof com.maddox.il2.objects.air.TypeGlider) || (actor instanceof com.maddox.il2.objects.air.TypeSailPlane))
+                    return;
+                com.maddox.il2.ai.World.cur();
+                if(actor != com.maddox.il2.ai.World.getPlayerAircraft())
+                    if(com.maddox.il2.ai.Airport.distToNearestAirport(Loc) > 900D)
+                        ((com.maddox.il2.objects.air.Aircraft)actor).postEndAction(60D, actor, 4, null);
+                    else
+                        com.maddox.rts.MsgDestroy.Post(com.maddox.rts.Time.current() + 30000L, actor);
+            }
+        }
+        dA = 0.2F * (getSpeed() - Vmin * 1.3F) - 0.8F * (getAOA() - 5F);
+        if(Alt < 40F)
+        {
+            CT.AileronControl = -0.04F * Or.getKren();
+            CT.RudderControl = 0.0F;
+            if((actor instanceof com.maddox.il2.objects.air.BI_1) || (actor instanceof com.maddox.il2.objects.air.ME_163B1A))
+                CT.GearControl = 1.0F;
+            float f1;
+            if(Gears.Pitch < 10F)
+                f1 = (40F * (getSpeed() - VminFLAPS * 1.15F) - 60F * (Or.getTangage() + 3F) - 240F * (getVertSpeed() + 1.0F) - 120F * ((float)getAccel().z - 1.0F)) * 0.004F;
+            else
+                f1 = (40F * (getSpeed() - VminFLAPS * 1.15F) - 60F * ((Or.getTangage() - Gears.Pitch) + 10F) - 240F * (getVertSpeed() + 1.0F) - 120F * ((float)getAccel().z - 1.0F)) * 0.004F;
+            if(Alt > 0.0F)
+            {
+                float f2 = 0.01666F * Alt;
+                dA = dA * f2 + f1 * (1.0F - f2);
+            } else
+            {
+                dA = f1;
+            }
+            CT.FlapsControl = 0.33F;
+            if(Alt < 9F && java.lang.Math.abs(Or.getKren()) < 5F && getVertSpeed() < -0.7F)
+                Vwld.z *= 0.87000000476837158D;
+        } else
+        {
+            rmax = 1.2F * Kmax * Alt;
+            rmin = 0.6F * Kmax * Alt;
+            if((actor instanceof com.maddox.il2.objects.air.TypeGlider) && Alt > 200F)
+                CT.RudderControl = 0.0F;
+            else
+            if(pointQuality < 50 && mn_time > 0.5F)
+                findPointForEmLanding(f);
+            if(submaneuver == 69)
+            {
+                Ve.sub(elLoc.getPoint(), Loc);
+                double d = Ve.length();
+                Or.transformInv(Ve);
+                Ve.normalize();
+                float f3 = 0.9F - 0.005F * Alt;
+                if(f3 < -1F)
+                    f3 = -1F;
+                if(f3 > 0.8F)
+                    f3 = 0.8F;
+                if((double)(rmax * 2.0F) < d || d < (double)rmin || Ve.x < (double)f3)
+                {
+                    submaneuver = 0;
+                    initTargPoint(f);
+                }
+                if(d > 88D)
+                {
+                    emergencyTurnToDirection(f);
+                    if((double)Alt > d)
+                        submaneuver = 0;
+                } else
+                {
+                    CT.AileronControl = -0.04F * Or.getKren();
+                }
+            } else
+            {
+                CT.AileronControl = -0.04F * Or.getKren();
+            }
+            if(Or.getTangage() > -1F)
+                dA -= 0.1F * (Or.getTangage() + 1.0F);
+            if(Or.getTangage() < -10F)
+                dA -= 0.1F * (Or.getTangage() + 10F);
+        }
+        if(Alt < 2.0F || Gears.onGround())
+            dA = -2F * (Or.getTangage() - Gears.Pitch);
+        double d1 = Vwld.length() / (double)Vmin;
+        if(d1 > 1.0D)
+            d1 = 1.0D;
+        CT.ElevatorControl += (double)((dA - CT.ElevatorControl) * 3.33F * f) + 1.5D * getW().y * d1 + 0.5D * getAW().y * d1;
+    }
+
+    public boolean canITakeoff()
+    {
+        Po.set(Loc);
+        Vpl.set(69D, 0.0D, 0.0D);
+        Or.transform(Vpl);
+        Po.add(Vpl);
+        Pd.set(Po);
+        if(actor != com.maddox.il2.ai.War.getNearestFriendAtPoint(Pd, (com.maddox.il2.objects.air.Aircraft)actor, 70F))
+            return false;
+        if(canTakeoff)
+            return true;
+        if(com.maddox.il2.engine.Actor.isAlive(AP.way.takeoffAirport))
+        {
+            if(AP.way.takeoffAirport.takeoffRequest <= 0)
+            {
+                AP.way.takeoffAirport.takeoffRequest = 2000;
+                canTakeoff = true;
+                return true;
+            } else
+            {
+                return false;
+            }
+        } else
+        {
+            return true;
+        }
+    }
+
+    public void set_maneuver_imm(int i)
+    {
+        int j = maneuver;
+        maneuver = i;
+        if(j != maneuver)
+            set_flags();
+    }
+
+    private void addWindCorrection()
+    {
+label0:
+        {
+            if(com.maddox.il2.ai.World.cur().diffCur.Wind_N_Turbulence)
+            {
+                com.maddox.il2.ai.World.cur();
+                if(!com.maddox.il2.ai.World.wind().noWind)
+                    break label0;
+            }
+            return;
+        }
+        double d = Ve.length();
+        com.maddox.il2.ai.World.cur();
+        com.maddox.il2.ai.World.wind().getVectorAI(actor.pos.getAbsPoint(), windV);
+        windV.scale(-1D);
         Ve.normalize();
-        float f3 = 0.9F - 0.005F * this.Alt;
-        if (f3 < -1.0F) f3 = -1.0F;
-        if (f3 > 0.8F) f3 = 0.8F;
-        if ((this.rmax * 2.0F < d) || (d < this.rmin) || (Ve.x < f3)) {
-          this.submaneuver = 0;
-          initTargPoint(paramFloat);
-        }
-        if (d > 88.0D) {
-          emergencyTurnToDirection(paramFloat);
-          if (this.Alt > d) this.submaneuver = 0; 
-        }
-        else {
-          this.CT.AileronControl = (-0.04F * this.Or.getKren());
-        }
-      } else {
-        this.CT.AileronControl = (-0.04F * this.Or.getKren());
-      }
-      if (this.Or.getTangage() > -1.0F) this.dA -= 0.1F * (this.Or.getTangage() + 1.0F);
-      if (this.Or.getTangage() < -10.0F) this.dA -= 0.1F * (this.Or.getTangage() + 10.0F);
+        Ve.scale(getSpeed());
+        Ve.add(windV);
+        Ve.normalize();
+        Ve.scale(d);
     }
 
-    if ((this.Alt < 2.0F) || (this.Gears.onGround())) {
-      this.dA = (-2.0F * (this.Or.getTangage() - this.Gears.Pitch));
-    }
-    double d = this.Vwld.length() / this.Vmin;
-    if (d > 1.0D) d = 1.0D;
-    Controls tmp1302_1299 = this.CT; tmp1302_1299.ElevatorControl = (float)(tmp1302_1299.ElevatorControl + ((this.dA - this.CT.ElevatorControl) * 3.33F * paramFloat + 1.5D * getW().y * d + 0.5D * getAW().y * d));
-  }
+    private int task;
+    private int maneuver;
+    private int curman;
+    protected float mn_time;
+    private int program[];
+    private boolean bBusy;
+    public boolean wasBusy;
+    public boolean dontSwitch;
+    public boolean aggressiveWingman;
+    public boolean kamikaze;
+    public boolean silence;
+    public boolean bombsOut;
+    private int bombsOutCounter;
+    public float direction;
+    public com.maddox.il2.engine.Loc rwLoc;
+    private boolean first;
+    private int rocketsDelay;
+    private int bulletDelay;
+    private int submanDelay;
+    private static final int volleyL = 120;
+    private float maxG;
+    private float maxAOA;
+    private float LandHQ;
+    public float Alt;
+    private float oldAOA;
+    private float corrCoeff;
+    private float corrElev;
+    private float corrAile;
+    private boolean checkGround;
+    private boolean checkStrike;
+    private boolean frequentControl;
+    private boolean stallable;
+    public com.maddox.il2.fm.FlightModel airClient;
+    public com.maddox.il2.fm.FlightModel target;
+    public com.maddox.il2.fm.FlightModel danger;
+    private float dangerAggressiveness;
+    private float oldDanCoeff;
+    private int shotAtFriend;
+    private float distToFriend;
+    public com.maddox.il2.engine.Actor target_ground;
+    public com.maddox.il2.ai.air.AirGroup Group;
+    protected boolean TaxiMode;
+    protected boolean finished;
+    protected boolean canTakeoff;
+    public com.maddox.il2.ai.air.Point_Any wayCurPos;
+    protected com.maddox.il2.ai.air.Point_Any wayPrevPos;
+    protected com.maddox.il2.ai.air.Point_Any airdromeWay[];
+    protected int curAirdromePoi;
+    public long actionTimerStart;
+    public long actionTimerStop;
+    protected int gattackCounter;
+    private int beNearOffsPhase;
+    public int submaneuver;
+    private boolean dont_change_subm;
+    private int tmpi;
+    private int sub_Man_Count;
+    private float dA;
+    private float dist;
+    private float man1Dist;
+    private float bullTime;
+    protected static final int STAY_ON_THE_TAIL = 1;
+    protected static final int NOT_TOO_FAST = 2;
+    protected static final int FROM_WAYPOINT = 3;
+    protected static final int CONST_SPEED = 4;
+    protected static final int MIN_SPEED = 5;
+    protected static final int MAX_SPEED = 6;
+    protected static final int CONST_POWER = 7;
+    protected static final int ZERO_POWER = 8;
+    protected static final int BOOST_ON = 9;
+    protected static final int FOLLOW_WITHOUT_FLAPS = 10;
+    protected int speedMode;
+    protected float smConstSpeed;
+    protected float smConstPower;
+    protected com.maddox.il2.fm.FlightModel tailForStaying;
+    public com.maddox.JGP.Vector3d tailOffset;
+    protected int Speak5minutes;
+    protected int Speak1minute;
+    protected int SpeakBeginGattack;
+    protected boolean WeWereInGAttack;
+    protected boolean WeWereInAttack;
+    protected boolean SpeakMissionAccomplished;
+    public static final int ROOKIE = 0;
+    public static final int NORMAL = 1;
+    public static final int VETERAN = 2;
+    public static final int ACE = 3;
+    public static final int NO_TASK = 0;
+    public static final int WAIT = 1;
+    public static final int STAY_FORMATION = 2;
+    public static final int FLY_WAYPOINT = 3;
+    public static final int DEFENCE = 4;
+    public static final int DEFENDING = 5;
+    public static final int ATTACK_AIR = 6;
+    public static final int ATTACK_GROUND = 7;
+    public static final int NONE = 0;
+    public static final int HOLD = 1;
+    public static final int PULL_UP = 2;
+    public static final int LEVEL_PLANE = 3;
+    public static final int ROLL = 4;
+    public static final int ROLL_90 = 5;
+    public static final int ROLL_180 = 6;
+    public static final int SPIRAL_BRAKE = 7;
+    public static final int SPIRAL_UP = 8;
+    public static final int SPIRAL_DOWN = 9;
+    public static final int CLIMB = 10;
+    public static final int DIVING_0_RPM = 11;
+    public static final int DIVING_30_DEG = 12;
+    public static final int DIVING_45_DEG = 13;
+    public static final int TURN = 14;
+    public static final int MIL_TURN = 15;
+    public static final int LOOP = 16;
+    public static final int LOOP_DOWN = 17;
+    public static final int HALF_LOOP_UP = 18;
+    public static final int HALF_LOOP_DOWN = 19;
+    public static final int STALL = 20;
+    public static final int WAYPOINT = 21;
+    public static final int SPEEDUP = 22;
+    public static final int BELL = 23;
+    public static final int FOLLOW = 24;
+    public static final int LANDING = 25;
+    public static final int TAKEOFF = 26;
+    public static final int ATTACK = 27;
+    public static final int WAVEOUT = 28;
+    public static final int SINUS = 29;
+    public static final int ZIGZAG_UP = 30;
+    public static final int ZIGZAG_DOWN = 31;
+    public static final int ZIGZAG_SPIT = 32;
+    public static final int HALF_LOOP_DOWN_135 = 33;
+    public static final int HARTMANN_REDOUT = 34;
+    public static final int ROLL_360 = 35;
+    public static final int STALL_POKRYSHKIN = 36;
+    public static final int BARREL_POKRYSHKIN = 37;
+    public static final int SLIDE_LEVEL = 38;
+    public static final int SLIDE_DESCENT = 39;
+    public static final int RANVERSMAN = 40;
+    public static final int CUBAN = 41;
+    public static final int CUBAN_INVERT = 42;
+    public static final int GATTACK = 43;
+    public static final int PILOT_DEAD = 44;
+    public static final int HANG_ON = 45;
+    public static final int DELAY = 48;
+    public static final int EMERGENCY_LANDING = 49;
+    public static final int GATTACK_DIVE = 50;
+    public static final int GATTACK_TORPEDO = 51;
+    public static final int GATTACK_CASSETTE = 52;
+    public static final int GATTACK_KAMIKAZE = 46;
+    public static final int GATTACK_TINYTIM = 47;
+    public static final int GATTACK_HS293 = 79;
+    public static final int GATTACK_FRITZX = 80;
+    public static final int GATTACK_TORPEDO_TOKG = 81;
+    public static final int FAR_FOLLOW = 53;
+    public static final int SPIRAL_DOWN_SLOW = 54;
+    public static final int FOLLOW_SPIRAL_UP = 55;
+    public static final int SINUS_SHALLOW = 56;
+    public static final int GAIN = 57;
+    public static final int SEPARATE = 58;
+    public static final int BE_NEAR = 59;
+    public static final int EVADE_UP = 60;
+    public static final int EVADE_DN = 61;
+    public static final int ENERGY_ATTACK = 62;
+    public static final int ATTACK_BOMBER = 63;
+    public static final int PARKED_STARTUP = 64;
+    public static final int COVER = 65;
+    public static final int TAXI = 66;
+    public static final int RUN_AWAY = 67;
+    public static final int FAR_COVER = 68;
+    public static final int TAKEOFF_VTOL_A = 69;
+    public static final int LANDING_VTOL_A = 70;
+    private static final int SUB_MAN0 = 0;
+    private static final int SUB_MAN1 = 1;
+    private static final int SUB_MAN2 = 2;
+    private static final int SUB_MAN3 = 3;
+    private static final int SUB_MAN4 = 4;
+    public static final int LIVE = 0;
+    public static final int RETURN = 1;
+    public static final int TASK = 2;
+    public static final int PROTECT_LEADER = 3;
+    public static final int PROTECT_WINGMAN = 4;
+    public static final int PROTECT_FRIENDS = 5;
+    public static final int DESTROY_ENEMIES = 6;
+    public static final int KEEP_ORDER = 7;
+    public float takeIntoAccount[];
+    public float AccountCoeff[];
+    public static final int FVSB_BOOM_ZOOM = 0;
+    public static final int FVSB_BOOM_ZOOM_TO_ENGINE = 1;
+    public static final int FVSB_SHALLOW_DIVE_TO_ENGINE = 2;
+    public static final int FVSB_FROM_AHEAD = 3;
+    public static final int FVSB_FROM_BELOW = 4;
+    public static final int FVSB_AS_IT_IS = 5;
+    public static final int FVSB_FROM_SIDE = 6;
+    public static final int FVSB_FROM_TAIL_TO_ENGINE = 7;
+    public static final int FVSB_FROM_TAIL = 8;
+    public static final int FVSB_SHALLOW_DIVE = 9;
+    public static final int FVSB_FROM_BOTTOM = 10;
+    private static final int demultiplier = 4;
+    private com.maddox.JGP.Vector3d ApproachV;
+    private com.maddox.JGP.Vector3d TargV;
+    private com.maddox.JGP.Vector3d TargDevV;
+    private com.maddox.JGP.Vector3d TargDevVnew;
+    private com.maddox.JGP.Vector3d scaledApproachV;
+    private float ApproachR;
+    private float TargY;
+    private float TargZ;
+    private float TargYS;
+    private float TargZS;
+    private float RandomVal;
+    public com.maddox.JGP.Vector3d followOffset;
+    private com.maddox.JGP.Vector3d followTargShift;
+    private com.maddox.JGP.Vector3d followCurShift;
+    private float raAilShift;
+    private float raElevShift;
+    private float raRudShift;
+    private float sinKren;
+    private boolean strikeEmer;
+    private com.maddox.il2.fm.FlightModel strikeTarg;
+    private com.maddox.JGP.Vector3d strikeV;
+    private boolean direc;
+    float Kmax;
+    float rmin;
+    float rmax;
+    double phase;
+    double radius;
+    int pointQuality;
+    int curPointQuality;
+    private static com.maddox.JGP.Vector3d tmpV3d = new Vector3d();
+    private static com.maddox.JGP.Vector3d tmpV3f = new Vector3d();
+    public static com.maddox.il2.engine.Orient tmpOr = new Orient();
+    public com.maddox.il2.engine.Orient saveOr;
+    private static com.maddox.JGP.Point3d Po = new Point3d();
+    private static com.maddox.JGP.Point3d Pc = new Point3d();
+    private static com.maddox.JGP.Point3d Pd = new Point3d();
+    private static com.maddox.JGP.Vector3d Ve = new Vector3d();
+    private com.maddox.JGP.Vector3d oldVe;
+    private com.maddox.JGP.Vector3d Vtarg;
+    private com.maddox.JGP.Vector3d constVtarg;
+    private com.maddox.JGP.Vector3d constVtarg1;
+    private static com.maddox.JGP.Vector3d Vf = new Vector3d();
+    private com.maddox.JGP.Vector3d Vxy;
+    private static com.maddox.JGP.Vector3d Vpl = new Vector3d();
+    private com.maddox.il2.ai.AnglesFork AFo;
+    private static com.maddox.JGP.Vector3f LandingOffset = new Vector3f(220F, 4F, 0.0F);
+    private float headPos[];
+    private float headOr[];
+    private static com.maddox.JGP.Point3d P = new Point3d();
+    private static com.maddox.JGP.Point2f Pcur = new Point2f();
+    private static com.maddox.JGP.Vector2d Vcur = new Vector2d();
+    private static com.maddox.JGP.Vector2f V_to = new Vector2f();
+    private static com.maddox.JGP.Vector2d Vdiff = new Vector2d();
+    private static com.maddox.il2.engine.Loc elLoc = new Loc();
+    public static boolean showFM;
+    private float pilotHeadT;
+    private float pilotHeadY;
+    com.maddox.JGP.Vector3d windV;
 
-  public boolean canITakeoff()
-  {
-    Po.set(this.Loc);
-    Vpl.set(69.0D, 0.0D, 0.0D);
-    this.Or.transform(Vpl);
-    Po.add(Vpl);
-    Pd.set(Po);
-    if (this.actor != War.getNearestFriendAtPoint(Pd, (Aircraft)this.actor, 70.0F)) {
-      return false;
-    }
-    if (this.canTakeoff) {
-      return true;
-    }
-    if (Actor.isAlive(this.AP.way.takeoffAirport)) {
-      if (this.AP.way.takeoffAirport.takeoffRequest <= 0) {
-        this.AP.way.takeoffAirport.takeoffRequest = 2000;
-        this.canTakeoff = true;
-        return true;
-      }
-    } else return true;
-    return false;
-  }
-
-  public void set_maneuver_imm(int paramInt)
-  {
-    int i = this.maneuver;
-    this.maneuver = paramInt;
-    if (i != this.maneuver)
-      set_flags();
-  }
-
-  private void addWindCorrection()
-  {
-    if (World.cur().diffCur.Wind_N_Turbulence) { World.cur(); if (!World.wind().noWind); } else { return;
-    }
-    double d = Ve.length();
-    World.cur(); World.wind().getVectorAI(this.actor.pos.getAbsPoint(), this.windV);
-    this.windV.scale(-1.0D);
-    Ve.normalize();
-    Ve.scale(getSpeed());
-    Ve.add(this.windV);
-    Ve.normalize();
-    Ve.scale(d);
-  }
 }

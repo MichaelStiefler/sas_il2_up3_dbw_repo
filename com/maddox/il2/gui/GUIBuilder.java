@@ -1,15 +1,20 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIBuilder.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GFont;
 import com.maddox.gwindow.GWin95LookAndFeel;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.gwindow.GWindowRootMenu;
+import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.World;
 import com.maddox.il2.builder.Builder;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.GUIWindowManager;
-import com.maddox.il2.engine.GUIWindowManager._Render;
 import com.maddox.il2.engine.Render;
 import com.maddox.il2.engine.RendersMain;
 import com.maddox.il2.game.GameState;
@@ -17,65 +22,64 @@ import com.maddox.il2.game.Main3D;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.Time;
 
-public class GUIBuilder extends GameState
+public class GUIBuilder extends com.maddox.il2.game.GameState
 {
-  public static final String envName = "builder";
-  public GWindowRootMenu rootWindow;
-  public GUIWindowManager guiManager;
-  public Builder builder;
 
-  public void _enter()
-  {
-    GUIWindowManager localGUIWindowManager = Main3D.cur3D().guiManager;
-    localGUIWindowManager.unActivateAll();
-    RendersMain.setRenderFocus(null);
-    localGUIWindowManager.render.setShow(false);
+    public void _enter()
+    {
+        com.maddox.il2.engine.GUIWindowManager guiwindowmanager = com.maddox.il2.game.Main3D.cur3D().guiManager;
+        guiwindowmanager.unActivateAll();
+        com.maddox.il2.engine.RendersMain.setRenderFocus(null);
+        guiwindowmanager.render.setShow(false);
+        guiManager.activateTime(true);
+        guiManager.activateKeyboard(true);
+        guiManager.activateMouse(true);
+        com.maddox.rts.Time.setPause(true);
+        guiManager.activateJoy(true);
+        com.maddox.rts.Time.setRealOnly(true);
+        guiManager.render.setShow(true);
+        com.maddox.il2.ai.World.cur().diffCur.NewCloudsRender = com.maddox.il2.engine.Config.cur.newCloudsRender;
+        builder.enter();
+        com.maddox.il2.game.Main3D.cur3D();
+        com.maddox.il2.game.Main3D.cur3D().enableOnlyHotKeyCmdEnvs(com.maddox.il2.game.Main3D.builderHotKeyCmdEnvs);
+        com.maddox.rts.CmdEnv.top().exec("music PUSH");
+        com.maddox.rts.CmdEnv.top().exec("music STOP");
+    }
 
-    this.guiManager.activateTime(true);
-    this.guiManager.activateKeyboard(true);
-    this.guiManager.activateMouse(true);
-    Time.setPause(true);
-    this.guiManager.activateJoy(true);
-    Time.setRealOnly(true);
-    this.guiManager.render.setShow(true);
+    public void _leave()
+    {
+        builder.leave();
+        com.maddox.rts.Time.setRealOnly(false);
+        guiManager.unActivateAll();
+        guiManager.render.setShow(false);
+        com.maddox.il2.engine.GUIWindowManager guiwindowmanager = com.maddox.il2.game.Main3D.cur3D().guiManager;
+        guiwindowmanager.activateTime(true);
+        guiwindowmanager.activateKeyboard(true);
+        guiwindowmanager.activateMouse(true);
+        com.maddox.rts.Time.setPause(true);
+        guiwindowmanager.activateJoy(true);
+        guiwindowmanager.render.setShow(true);
+        com.maddox.il2.engine.RendersMain.setRenderFocus((com.maddox.il2.engine.Render)com.maddox.il2.engine.Actor.getByName("renderGUI"));
+        com.maddox.il2.game.Main3D.cur3D().disableAllHotKeyCmdEnv();
+        com.maddox.rts.CmdEnv.top().exec("music POP");
+        com.maddox.rts.CmdEnv.top().exec("music PLAY");
+    }
 
-    World.cur().diffCur.NewCloudsRender = Config.cur.newCloudsRender;
+    public GUIBuilder(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(18);
+        rootWindow = new GWindowRootMenu();
+        guiManager = new GUIWindowManager(-2.5F, rootWindow, new GWin95LookAndFeel(), "renderGUIBuilder");
+        rootWindow.textFonts[0] = com.maddox.gwindow.GFont.New("arial8");
+        rootWindow.textFonts[1] = com.maddox.gwindow.GFont.New("arialb8");
+        ((com.maddox.gwindow.GWin95LookAndFeel)rootWindow.lAF()).metric = (int)(rootWindow.textFonts[0].height + 0.5F);
+        rootWindow.resized();
+        builder = new Builder(rootWindow, "builder");
+        guiManager.render.setShow(false);
+    }
 
-    this.builder.enter();
-    Main3D.cur3D(); Main3D.cur3D().enableOnlyHotKeyCmdEnvs(Main3D.builderHotKeyCmdEnvs);
-    CmdEnv.top().exec("music PUSH");
-    CmdEnv.top().exec("music STOP");
-  }
-
-  public void _leave() {
-    this.builder.leave();
-
-    Time.setRealOnly(false);
-    this.guiManager.unActivateAll();
-    this.guiManager.render.setShow(false);
-
-    GUIWindowManager localGUIWindowManager = Main3D.cur3D().guiManager;
-    localGUIWindowManager.activateTime(true);
-    localGUIWindowManager.activateKeyboard(true);
-    localGUIWindowManager.activateMouse(true);
-    Time.setPause(true);
-    localGUIWindowManager.activateJoy(true);
-    localGUIWindowManager.render.setShow(true);
-    RendersMain.setRenderFocus((Render)Actor.getByName("renderGUI"));
-    Main3D.cur3D().disableAllHotKeyCmdEnv();
-    CmdEnv.top().exec("music POP");
-    CmdEnv.top().exec("music PLAY");
-  }
-
-  public GUIBuilder(GWindowRoot paramGWindowRoot) {
-    super(18);
-    this.rootWindow = new GWindowRootMenu();
-    this.guiManager = new GUIWindowManager(-2.5F, this.rootWindow, new GWin95LookAndFeel(), "renderGUIBuilder");
-    this.rootWindow.textFonts[0] = GFont.New("arial8");
-    this.rootWindow.textFonts[1] = GFont.New("arialb8");
-    ((GWin95LookAndFeel)this.rootWindow.lAF()).metric = (int)(this.rootWindow.textFonts[0].height + 0.5F);
-    this.rootWindow.resized();
-    this.builder = new Builder(this.rootWindow, "builder");
-    this.guiManager.render.setShow(false);
-  }
+    public static final java.lang.String envName = "builder";
+    public com.maddox.gwindow.GWindowRootMenu rootWindow;
+    public com.maddox.il2.engine.GUIWindowManager guiManager;
+    public com.maddox.il2.builder.Builder builder;
 }

@@ -1,79 +1,106 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Property.java
+
 package com.maddox.rts;
 
 import java.util.ArrayList;
 
-class PropertyObserver extends Property
+// Referenced classes of package com.maddox.rts:
+//            Property, PropertyListener, MsgProperty
+
+class PropertyObserver extends com.maddox.rts.Property
 {
-  private static ArrayList invokeStack = new ArrayList();
-  private static int invokeStackPtr = -1;
 
-  private ArrayList listeners = new ArrayList();
-
-  protected void addListener(Object paramObject, boolean paramBoolean1, boolean paramBoolean2)
-  {
-    checkListeners();
-    int i = findListener(paramObject);
-    if (i < 0)
-      this.listeners.add(new PropertyListener(paramObject, paramBoolean1, paramBoolean2));
-  }
-
-  protected void removeListener(Object paramObject) {
-    checkListeners();
-    int i = findListener(paramObject);
-    if (i >= 0) {
-      PropertyListener localPropertyListener = (PropertyListener)this.listeners.get(i);
-      this.listeners.remove(i);
-      localPropertyListener.clear();
+    protected void addListener(java.lang.Object obj, boolean flag, boolean flag1)
+    {
+        checkListeners();
+        int i = findListener(obj);
+        if(i < 0)
+            listeners.add(new PropertyListener(obj, flag, flag1));
     }
-  }
 
-  protected void invokeListeners(int paramInt, Property paramProperty) {
-    if (this.listeners.size() == 0) return;
-    checkListeners();
-    if (this.listeners.size() == 0) return;
-    invokeStackPtr += 1;
-    Object[] arrayOfObject1 = null;
-    if (invokeStackPtr == invokeStack.size()) {
-      arrayOfObject1 = this.listeners.toArray();
-      invokeStack.add(arrayOfObject1);
-    } else {
-      Object[] arrayOfObject2 = (Object[])(Object[])invokeStack.get(invokeStackPtr);
-      arrayOfObject1 = this.listeners.toArray(arrayOfObject2);
-      if (arrayOfObject1 != arrayOfObject2)
-        this.listeners.set(invokeStackPtr, arrayOfObject1);
+    protected void removeListener(java.lang.Object obj)
+    {
+        checkListeners();
+        int i = findListener(obj);
+        if(i >= 0)
+        {
+            com.maddox.rts.PropertyListener propertylistener = (com.maddox.rts.PropertyListener)listeners.get(i);
+            listeners.remove(i);
+            propertylistener.clear();
+        }
     }
-    for (int i = 0; i < arrayOfObject1.length; i++) {
-      PropertyListener localPropertyListener = (PropertyListener)arrayOfObject1[i];
-      if (localPropertyListener == null) break;
-      Object localObject = localPropertyListener.listener();
-      if (localObject != null)
-        MsgProperty.post(localPropertyListener.isRealTime(), localPropertyListener.isSend(), localObject, paramProperty, paramInt);
-      arrayOfObject1[i] = null;
-    }
-    invokeStackPtr -= 1;
-  }
 
-  protected void checkListeners()
-  {
-    for (int i = 0; i < this.listeners.size(); i++) {
-      PropertyListener localPropertyListener = (PropertyListener)this.listeners.get(i);
-      if (localPropertyListener.listener() == null) {
-        this.listeners.remove(i);
-        i--;
-      }
-    }
-  }
+    protected void invokeListeners(int i, com.maddox.rts.Property property)
+    {
+        if(listeners.size() == 0)
+            return;
+        checkListeners();
+        if(listeners.size() == 0)
+            return;
+        invokeStackPtr++;
+        java.lang.Object aobj[] = null;
+        if(invokeStackPtr == invokeStack.size())
+        {
+            aobj = listeners.toArray();
+            invokeStack.add(((java.lang.Object) (aobj)));
+        } else
+        {
+            java.lang.Object aobj1[] = (java.lang.Object[])(java.lang.Object[])invokeStack.get(invokeStackPtr);
+            aobj = listeners.toArray(aobj1);
+            if(aobj != aobj1)
+                listeners.set(invokeStackPtr, ((java.lang.Object) (aobj)));
+        }
+        for(int j = 0; j < aobj.length; j++)
+        {
+            com.maddox.rts.PropertyListener propertylistener = (com.maddox.rts.PropertyListener)aobj[j];
+            if(propertylistener == null)
+                break;
+            java.lang.Object obj = propertylistener.listener();
+            if(obj != null)
+                com.maddox.rts.MsgProperty.post(propertylistener.isRealTime(), propertylistener.isSend(), obj, property, i);
+            aobj[j] = null;
+        }
 
-  protected int findListener(Object paramObject) {
-    for (int i = 0; i < this.listeners.size(); i++) {
-      PropertyListener localPropertyListener = (PropertyListener)this.listeners.get(i);
-      if (localPropertyListener.listener() == paramObject)
-        return i;
+        invokeStackPtr--;
     }
-    return -1;
-  }
 
-  protected PropertyObserver(Object paramObject) {
-    super(paramObject, "OBSERVER");
-  }
+    protected void checkListeners()
+    {
+        for(int i = 0; i < listeners.size(); i++)
+        {
+            com.maddox.rts.PropertyListener propertylistener = (com.maddox.rts.PropertyListener)listeners.get(i);
+            if(propertylistener.listener() == null)
+            {
+                listeners.remove(i);
+                i--;
+            }
+        }
+
+    }
+
+    protected int findListener(java.lang.Object obj)
+    {
+        for(int i = 0; i < listeners.size(); i++)
+        {
+            com.maddox.rts.PropertyListener propertylistener = (com.maddox.rts.PropertyListener)listeners.get(i);
+            if(propertylistener.listener() == obj)
+                return i;
+        }
+
+        return -1;
+    }
+
+    protected PropertyObserver(java.lang.Object obj)
+    {
+        super(obj, "OBSERVER");
+        listeners = new ArrayList();
+    }
+
+    private static java.util.ArrayList invokeStack = new ArrayList();
+    private static int invokeStackPtr = -1;
+    private java.util.ArrayList listeners;
+
 }

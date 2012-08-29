@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   R_5_SKIS.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.RangeRandom;
@@ -6,220 +11,251 @@ import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.Config;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Orientation;
+import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
+import com.maddox.il2.fm.Gear;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
-public class R_5_SKIS extends R_5xyz
+// Referenced classes of package com.maddox.il2.objects.air:
+//            R_5xyz, PaintSchemeFCSPar08, Aircraft, NetAircraft
+
+public class R_5_SKIS extends com.maddox.il2.objects.air.R_5xyz
 {
-  private float skiAngleL = 0.0F;
-  private float skiAngleR = 0.0F;
-  private float spring = 0.15F;
 
-  public void onAircraftLoaded()
-  {
-    super.onAircraftLoaded();
-    this.FM.CT.bHasBrakeControl = false;
-  }
-
-  protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
-  {
-    switch (paramInt1)
+    public R_5_SKIS()
     {
-    case 9:
-      hierMesh().chunkVisible("SkiL2_D0", false);
-      break;
-    case 10:
-      hierMesh().chunkVisible("SkiR2_D0", false);
+        skiAngleL = 0.0F;
+        skiAngleR = 0.0F;
+        spring = 0.15F;
     }
 
-    return super.cutFM(paramInt1, paramInt2, paramActor);
-  }
-
-  protected void moveFan(float paramFloat) {
-    if (Config.isUSE_RENDER())
+    public void onAircraftLoaded()
     {
-      int i = 0;
-
-      float f1 = Aircraft.cvt(this.FM.getSpeed(), 20.0F, 50.0F, 1.0F, 0.0F);
-      float f2 = Aircraft.cvt(this.FM.getSpeed(), 0.0F, 20.0F, 0.0F, 0.5F);
-
-      if (this.FM.Gears.gWheelSinking[0] > 0.0F)
-      {
-        i = 1;
-        this.skiAngleL = (0.5F * this.skiAngleL + 0.5F * this.FM.Or.getTangage());
-
-        if (this.skiAngleL > 20.0F)
-        {
-          this.skiAngleL -= this.spring;
-        }
-
-        hierMesh().chunkSetAngles("SkiL0_D0", World.Rnd().nextFloat(-f2, f2), World.Rnd().nextFloat(-f2 * 2.0F, f2 * 2.0F) - this.skiAngleL, World.Rnd().nextFloat(f2, f2));
-      }
-      else
-      {
-        if (this.skiAngleL > f1 * -10.0F + 0.01D)
-        {
-          this.skiAngleL -= this.spring;
-          i = 1;
-        }
-        else if (this.skiAngleL < f1 * -10.0F - 0.01D)
-        {
-          this.skiAngleL += this.spring;
-          i = 1;
-        }
-
-        hierMesh().chunkSetAngles("SkiL0_D0", 0.0F, -this.skiAngleL, 0.0F);
-      }
-
-      if (this.FM.Gears.gWheelSinking[1] > 0.0F)
-      {
-        i = 1;
-        this.skiAngleR = (0.5F * this.skiAngleR + 0.5F * this.FM.Or.getTangage());
-
-        if (this.skiAngleR > 20.0F)
-        {
-          this.skiAngleR -= this.spring;
-        }
-
-        hierMesh().chunkSetAngles("SkiR0_D0", World.Rnd().nextFloat(-f2, f2), World.Rnd().nextFloat(-f2 * 2.0F, f2 * 2.0F) - this.skiAngleR, World.Rnd().nextFloat(f2, f2));
-
-        if ((this.FM.Gears.gWheelSinking[0] == 0.0F) && (this.FM.Or.getRoll() < 365.0F) && (this.FM.Or.getRoll() > 355.0F))
-        {
-          this.skiAngleL = this.skiAngleR;
-          hierMesh().chunkSetAngles("SkiL0_D0", World.Rnd().nextFloat(-f2, f2), World.Rnd().nextFloat(-f2 * 2.0F, f2 * 2.0F) - this.skiAngleL, World.Rnd().nextFloat(f2, f2));
-        }
-
-      }
-      else
-      {
-        if (this.skiAngleR > f1 * -10.0F + 0.01D)
-        {
-          this.skiAngleR -= this.spring;
-          i = 1;
-        }
-        else if (this.skiAngleR < f1 * -10.0F - 0.01D)
-        {
-          this.skiAngleR += this.spring;
-          i = 1;
-        }
-        hierMesh().chunkSetAngles("SkiR0_D0", 0.0F, -this.skiAngleR, 0.0F);
-      }
-
-      if ((i == 0) && (f1 == 0.0F))
-      {
-        super.moveFan(paramFloat);
-        return;
-      }
-
-      hierMesh().chunkSetAngles("SkiC_D0", 0.0F, (this.skiAngleL + this.skiAngleR) / 2.0F, 0.0F);
-
-      float f3 = this.skiAngleL / 20.0F;
-
-      hierMesh().chunkSetAngles("SkiL1_D0", 0.0F, f3 * -2.0F + 0.25F * this.suspL, f3 * 8.25F + 3.0F * this.suspL);
-      hierMesh().chunkSetAngles("SkiL2_D0", 0.0F, f3 * -7.0F + 1.25F * this.suspL, f3 * -6.25F + 2.75F * this.suspL);
-      float f4;
-      float f5;
-      float f6;
-      float f7;
-      if (this.skiAngleL < 0.0F)
-      {
-        hierMesh().chunkSetAngles("SkiL3_D0", 0.0F, 0.0F, f3 * 15.0F);
-        hierMesh().chunkSetAngles("SkiL4_D0", 0.0F, 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("SkiL5_D0", 0.0F, 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("SkiL6_D0", 0.0F, 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("SkiL7_D0", 0.0F, 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("SkiL8_D0", 0.0F, 0.0F, 0.0F);
-      }
-      else
-      {
-        hierMesh().chunkSetAngles("SkiL3_D0", 0.0F, f3 * 40.0F, f3 * 70.0F);
-
-        f4 = f3 * -5.0F;
-        f5 = f3 * 10.0F;
-        f6 = f3 * 15.0F;
-        f7 = f3 * 20.0F;
-
-        hierMesh().chunkSetAngles("SkiL4_D0", 0.0F, -f4, -f7);
-        hierMesh().chunkSetAngles("SkiL5_D0", 0.0F, -f5, -f7);
-        hierMesh().chunkSetAngles("SkiL6_D0", 0.0F, -f6, -f7);
-        hierMesh().chunkSetAngles("SkiL7_D0", 0.0F, -f5, -f7);
-        hierMesh().chunkSetAngles("SkiL8_D0", 0.0F, -f5, -f7);
-      }
-
-      f3 = this.skiAngleR / 20.0F;
-
-      hierMesh().chunkSetAngles("SkiR1_D0", 0.0F, f3 * 2.0F - 0.25F * this.suspR, f3 * 8.25F + 3.0F * this.suspR);
-      hierMesh().chunkSetAngles("SkiR2_D0", 0.0F, f3 * -7.0F + 1.25F * this.suspR, f3 * -6.25F + 2.75F * this.suspR);
-
-      if (this.skiAngleR < 0.0F)
-      {
-        hierMesh().chunkSetAngles("SkiR3_D0", 0.0F, 0.0F, f3 * 15.0F);
-        hierMesh().chunkSetAngles("SkiR4_D0", 0.0F, 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("SkiR5_D0", 0.0F, 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("SkiR6_D0", 0.0F, 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("SkiR7_D0", 0.0F, 0.0F, 0.0F);
-        hierMesh().chunkSetAngles("SkiR8_D0", 0.0F, 0.0F, 0.0F);
-      }
-      else
-      {
-        hierMesh().chunkSetAngles("SkiR3_D0", 0.0F, f3 * 40.0F, f3 * 70.0F);
-
-        f4 = f3 * -5.0F;
-        f5 = f3 * 10.0F;
-        f6 = f3 * 15.0F;
-        f7 = f3 * 20.0F;
-
-        hierMesh().chunkSetAngles("SkiR4_D0", 0.0F, -f5, -f7);
-        hierMesh().chunkSetAngles("SkiR5_D0", 0.0F, -f5, -f7);
-        hierMesh().chunkSetAngles("SkiR6_D0", 0.0F, -f4, -f7);
-        hierMesh().chunkSetAngles("SkiR7_D0", 0.0F, -f6, -f7);
-        hierMesh().chunkSetAngles("SkiR8_D0", 0.0F, -f5, -f7);
-      }
-    }
-    super.moveFan(paramFloat);
-  }
-
-  static Class class$(String paramString) {
-    Class localClass;
-    try {
-      localClass = Class.forName(paramString);
-    } catch (ClassNotFoundException localClassNotFoundException) {
-      throw new NoClassDefFoundError(localClassNotFoundException.getMessage());
+        super.onAircraftLoaded();
+        FM.CT.bHasBrakeControl = false;
     }
 
-    return localClass;
-  }
+    protected boolean cutFM(int i, int j, com.maddox.il2.engine.Actor actor)
+    {
+        switch(i)
+        {
+        case 9: // '\t'
+            hierMesh().chunkVisible("SkiL2_D0", false);
+            break;
 
-  static {
-    Class localClass = CLASS.THIS();
-    new NetAircraft.SPAWN(localClass);
-    Property.set(localClass, "iconFar_shortClassName", "R-5");
-    Property.set(localClass, "meshName", "3do/plane/R-5/hier_skis.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFCSPar08());
-    Property.set(localClass, "yearService", 1931.0F);
-    Property.set(localClass, "yearExpired", 1944.0F);
-    Property.set(localClass, "FlightModel", "FlightModels/R-5.fmd");
-    Aircraft.weaponTriggersRegister(localClass, new int[] { 0, 10, 10, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 9, 9, 9 });
+        case 10: // '\n'
+            hierMesh().chunkVisible("SkiR2_D0", false);
+            break;
+        }
+        return super.cutFM(i, j, actor);
+    }
 
-    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11", "_ExternalBomb12", "_ExternalBomb13", "_ExternalBomb14", "_ExternalBomb15", "_ExternalBomb16", "_ExternalBomb17", "_ExternalBomb18", "_ExternalBomb19", "_ExternalBomb20", "_ExternalBomb21", "_ExternalBomb22", "_ExternalBomb23", "_ExternalBomb24", "_ExternalBomb25", "_ExternalBomb26", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05" });
+    protected void moveFan(float f)
+    {
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            boolean flag = false;
+            float f1 = com.maddox.il2.objects.air.Aircraft.cvt(FM.getSpeed(), 20F, 50F, 1.0F, 0.0F);
+            float f2 = com.maddox.il2.objects.air.Aircraft.cvt(FM.getSpeed(), 0.0F, 20F, 0.0F, 0.5F);
+            if(FM.Gears.gWheelSinking[0] > 0.0F)
+            {
+                flag = true;
+                skiAngleL = 0.5F * skiAngleL + 0.5F * FM.Or.getTangage();
+                if(skiAngleL > 20F)
+                    skiAngleL = skiAngleL - spring;
+                hierMesh().chunkSetAngles("SkiL0_D0", com.maddox.il2.ai.World.Rnd().nextFloat(-f2, f2), com.maddox.il2.ai.World.Rnd().nextFloat(-f2 * 2.0F, f2 * 2.0F) - skiAngleL, com.maddox.il2.ai.World.Rnd().nextFloat(f2, f2));
+            } else
+            {
+                if((double)skiAngleL > (double)(f1 * -10F) + 0.01D)
+                {
+                    skiAngleL = skiAngleL - spring;
+                    flag = true;
+                } else
+                if((double)skiAngleL < (double)(f1 * -10F) - 0.01D)
+                {
+                    skiAngleL = skiAngleL + spring;
+                    flag = true;
+                }
+                hierMesh().chunkSetAngles("SkiL0_D0", 0.0F, -skiAngleL, 0.0F);
+            }
+            if(FM.Gears.gWheelSinking[1] > 0.0F)
+            {
+                flag = true;
+                skiAngleR = 0.5F * skiAngleR + 0.5F * FM.Or.getTangage();
+                if(skiAngleR > 20F)
+                    skiAngleR = skiAngleR - spring;
+                hierMesh().chunkSetAngles("SkiR0_D0", com.maddox.il2.ai.World.Rnd().nextFloat(-f2, f2), com.maddox.il2.ai.World.Rnd().nextFloat(-f2 * 2.0F, f2 * 2.0F) - skiAngleR, com.maddox.il2.ai.World.Rnd().nextFloat(f2, f2));
+                if(FM.Gears.gWheelSinking[0] == 0.0F && FM.Or.getRoll() < 365F && FM.Or.getRoll() > 355F)
+                {
+                    skiAngleL = skiAngleR;
+                    hierMesh().chunkSetAngles("SkiL0_D0", com.maddox.il2.ai.World.Rnd().nextFloat(-f2, f2), com.maddox.il2.ai.World.Rnd().nextFloat(-f2 * 2.0F, f2 * 2.0F) - skiAngleL, com.maddox.il2.ai.World.Rnd().nextFloat(f2, f2));
+                }
+            } else
+            {
+                if((double)skiAngleR > (double)(f1 * -10F) + 0.01D)
+                {
+                    skiAngleR = skiAngleR - spring;
+                    flag = true;
+                } else
+                if((double)skiAngleR < (double)(f1 * -10F) - 0.01D)
+                {
+                    skiAngleR = skiAngleR + spring;
+                    flag = true;
+                }
+                hierMesh().chunkSetAngles("SkiR0_D0", 0.0F, -skiAngleR, 0.0F);
+            }
+            if(!flag && f1 == 0.0F)
+            {
+                super.moveFan(f);
+                return;
+            }
+            hierMesh().chunkSetAngles("SkiC_D0", 0.0F, (skiAngleL + skiAngleR) / 2.0F, 0.0F);
+            float f3 = skiAngleL / 20F;
+            hierMesh().chunkSetAngles("SkiL1_D0", 0.0F, f3 * -2F + 0.25F * suspL, f3 * 8.25F + 3F * suspL);
+            hierMesh().chunkSetAngles("SkiL2_D0", 0.0F, f3 * -7F + 1.25F * suspL, f3 * -6.25F + 2.75F * suspL);
+            if(skiAngleL < 0.0F)
+            {
+                hierMesh().chunkSetAngles("SkiL3_D0", 0.0F, 0.0F, f3 * 15F);
+                hierMesh().chunkSetAngles("SkiL4_D0", 0.0F, 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("SkiL5_D0", 0.0F, 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("SkiL6_D0", 0.0F, 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("SkiL7_D0", 0.0F, 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("SkiL8_D0", 0.0F, 0.0F, 0.0F);
+            } else
+            {
+                hierMesh().chunkSetAngles("SkiL3_D0", 0.0F, f3 * 40F, f3 * 70F);
+                float f4 = f3 * -5F;
+                float f6 = f3 * 10F;
+                float f8 = f3 * 15F;
+                float f10 = f3 * 20F;
+                hierMesh().chunkSetAngles("SkiL4_D0", 0.0F, -f4, -f10);
+                hierMesh().chunkSetAngles("SkiL5_D0", 0.0F, -f6, -f10);
+                hierMesh().chunkSetAngles("SkiL6_D0", 0.0F, -f8, -f10);
+                hierMesh().chunkSetAngles("SkiL7_D0", 0.0F, -f6, -f10);
+                hierMesh().chunkSetAngles("SkiL8_D0", 0.0F, -f6, -f10);
+            }
+            f3 = skiAngleR / 20F;
+            hierMesh().chunkSetAngles("SkiR1_D0", 0.0F, f3 * 2.0F - 0.25F * suspR, f3 * 8.25F + 3F * suspR);
+            hierMesh().chunkSetAngles("SkiR2_D0", 0.0F, f3 * -7F + 1.25F * suspR, f3 * -6.25F + 2.75F * suspR);
+            if(skiAngleR < 0.0F)
+            {
+                hierMesh().chunkSetAngles("SkiR3_D0", 0.0F, 0.0F, f3 * 15F);
+                hierMesh().chunkSetAngles("SkiR4_D0", 0.0F, 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("SkiR5_D0", 0.0F, 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("SkiR6_D0", 0.0F, 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("SkiR7_D0", 0.0F, 0.0F, 0.0F);
+                hierMesh().chunkSetAngles("SkiR8_D0", 0.0F, 0.0F, 0.0F);
+            } else
+            {
+                hierMesh().chunkSetAngles("SkiR3_D0", 0.0F, f3 * 40F, f3 * 70F);
+                float f5 = f3 * -5F;
+                float f7 = f3 * 10F;
+                float f9 = f3 * 15F;
+                float f11 = f3 * 20F;
+                hierMesh().chunkSetAngles("SkiR4_D0", 0.0F, -f7, -f11);
+                hierMesh().chunkSetAngles("SkiR5_D0", 0.0F, -f7, -f11);
+                hierMesh().chunkSetAngles("SkiR6_D0", 0.0F, -f5, -f11);
+                hierMesh().chunkSetAngles("SkiR7_D0", 0.0F, -f9, -f11);
+                hierMesh().chunkSetAngles("SkiR8_D0", 0.0F, -f7, -f11);
+            }
+        }
+        super.moveFan(f);
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        java.lang.Class class1;
+        try
+        {
+            class1 = java.lang.Class.forName(s);
+        }
+        catch(java.lang.ClassNotFoundException classnotfoundexception)
+        {
+            throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+        }
+        return class1;
+    }
 
-    weaponsRegister(localClass, "Gunpods", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "PylonR5GPodL 1", "PylonR5GPodR 1", null, null, null });
+    private float skiAngleL;
+    private float skiAngleR;
+    private float spring;
 
-    weaponsRegister(localClass, "Gunpods+8x10+2x100", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "PylonR5GPodL 1", "PylonR5GPodR 1", "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1" });
-
-    weaponsRegister(localClass, "Gunpods+16x10+2x100", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "PylonR5GPodL 1", "PylonR5GPodR 1", "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1" });
-
-    weaponsRegister(localClass, "Gunpods+4x50+2x50", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, null, "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "PylonR5GPodL 1", "PylonR5GPodR 1", "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1" });
-
-    weaponsRegister(localClass, "8x50+2x100", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1" });
-
-    weaponsRegister(localClass, "2x100+2x100", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, null, null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1" });
-
-    weaponsRegister(localClass, "2x100+2x50+2x100", new String[] { "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, null, null, null, null, "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.rts.CLASS.THIS();
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "R-5");
+        com.maddox.rts.Property.set(class1, "meshName", "3do/plane/R-5/hier_skis.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFCSPar08());
+        com.maddox.rts.Property.set(class1, "yearService", 1931F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1944F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/R-5.fmd");
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            0, 10, 10, 0, 0, 0, 0, 3, 3, 3, 
+            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 
+            3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 
+            3, 3, 3, 9, 9, 9, 9, 9
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb03", 
+            "_ExternalBomb04", "_ExternalBomb05", "_ExternalBomb06", "_ExternalBomb07", "_ExternalBomb08", "_ExternalBomb09", "_ExternalBomb10", "_ExternalBomb11", "_ExternalBomb12", "_ExternalBomb13", 
+            "_ExternalBomb14", "_ExternalBomb15", "_ExternalBomb16", "_ExternalBomb17", "_ExternalBomb18", "_ExternalBomb19", "_ExternalBomb20", "_ExternalBomb21", "_ExternalBomb22", "_ExternalBomb23", 
+            "_ExternalBomb24", "_ExternalBomb25", "_ExternalBomb26", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04", "_ExternalDev05"
+        });
+        com.maddox.il2.objects.air.R_5_SKIS.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.R_5_SKIS.weaponsRegister(class1, "Gunpods", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, "PylonR5GPodL 1", "PylonR5GPodR 1", null, null, null
+        });
+        com.maddox.il2.objects.air.R_5_SKIS.weaponsRegister(class1, "Gunpods+8x10+2x100", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, 
+            null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", "BombGunAO10S 1", null, "BombGunAO10S 1", 
+            null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", null, "BombGunAO10S 1", 
+            null, "BombGunAO10S 1", null, "PylonR5GPodL 1", "PylonR5GPodR 1", "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1"
+        });
+        com.maddox.il2.objects.air.R_5_SKIS.weaponsRegister(class1, "Gunpods+16x10+2x100", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, 
+            null, null, null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", 
+            "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", 
+            "BombGunAO10S 1", "BombGunAO10S 1", "BombGunAO10S 1", "PylonR5GPodL 1", "PylonR5GPodR 1", "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1"
+        });
+        com.maddox.il2.objects.air.R_5_SKIS.weaponsRegister(class1, "Gunpods+4x50+2x50", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", "MGunPV1i 200", null, null, null, 
+            null, "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, "PylonR5GPodL 1", "PylonR5GPodR 1", "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1"
+        });
+        com.maddox.il2.objects.air.R_5_SKIS.weaponsRegister(class1, "8x50+2x100", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", 
+            "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1"
+        });
+        com.maddox.il2.objects.air.R_5_SKIS.weaponsRegister(class1, "2x100+2x100", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, null, null, null, 
+            null, null, null, "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1"
+        });
+        com.maddox.il2.objects.air.R_5_SKIS.weaponsRegister(class1, "2x100+2x50+2x100", new java.lang.String[] {
+            "MGunPV1sipzl 500", "MGunDA762t 500", "MGunDA762t 500", null, null, null, null, null, null, null, 
+            null, "BombGunFAB50 1", "BombGunFAB50 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, "PylonR5BombRackL 1", "PylonR5BombRackR 1", "PylonR5BombRackC 1"
+        });
+        com.maddox.il2.objects.air.R_5_SKIS.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null
+        });
+    }
 }

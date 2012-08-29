@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Target.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.JGP.Point3d;
@@ -7,55 +12,69 @@ import com.maddox.il2.engine.ActorPosStatic;
 import com.maddox.il2.engine.Landscape;
 import com.maddox.il2.engine.Orient;
 
-class TDefenceGround extends Target
-{
-  double r;
-  int countActors = 0;
-  int destructLevel;
-  public static Point3d p = new Point3d();
+// Referenced classes of package com.maddox.il2.ai:
+//            Target, World
 
-  protected boolean checkActorDied(Actor paramActor)
-  {
-    if (paramActor.pos == null) return false;
-    paramActor.pos.getAbs(p);
-    p.z = this.pos.getAbsPoint().z;
-    if (this.pos.getAbsPoint().distance(p) <= this.r) {
-      if (!isStaticActor(paramActor)) return false;
-      this.countActors -= 1;
-      if (this.countActors <= 0) {
+class TDefenceGround extends com.maddox.il2.ai.Target
+{
+
+    protected boolean checkActorDied(com.maddox.il2.engine.Actor actor)
+    {
+        if(actor.pos == null)
+            return false;
+        actor.pos.getAbs(p);
+        p.z = pos.getAbsPoint().z;
+        if(pos.getAbsPoint().distance(p) <= r)
+        {
+            if(!com.maddox.il2.ai.TDefenceGround.isStaticActor(actor))
+                return false;
+            countActors--;
+            if(countActors <= 0)
+            {
+                setDiedFlag(true);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean checkTimeoutOff()
+    {
+        setTaskCompleteFlag(true);
         setDiedFlag(true);
         return true;
-      }
     }
-    return false;
-  }
 
-  protected boolean checkTimeoutOff()
-  {
-    setTaskCompleteFlag(true);
-    setDiedFlag(true);
-    return true;
-  }
-
-  public TDefenceGround(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6) {
-    super(paramInt1, paramInt2);
-    this.r = paramInt5;
-    this.destructLevel = paramInt6;
-    World.land(); this.pos = new ActorPosStatic(this, new Point3d(paramInt3, paramInt4, Landscape.HQ(paramInt3, paramInt4)), new Orient());
-    this.countActors = countStaticActors(this.pos.getAbsPoint(), this.r);
-    if (this.countActors == 0) {
-      setTaskCompleteFlag(true);
-    } else {
-      this.countActors = Math.round(this.countActors * this.destructLevel / 100.0F);
-      if (this.countActors == 0)
-        this.countActors = 1;
+    public TDefenceGround(int i, int j, int k, int l, int i1, int j1)
+    {
+        super(i, j);
+        countActors = 0;
+        r = i1;
+        destructLevel = j1;
+        com.maddox.il2.ai.World.land();
+        pos = new ActorPosStatic(this, new Point3d(k, l, com.maddox.il2.engine.Landscape.HQ(k, l)), new Orient());
+        countActors = com.maddox.il2.ai.TDefenceGround.countStaticActors(pos.getAbsPoint(), r);
+        if(countActors == 0)
+        {
+            setTaskCompleteFlag(true);
+        } else
+        {
+            countActors = java.lang.Math.round((float)(countActors * destructLevel) / 100F);
+            if(countActors == 0)
+                countActors = 1;
+        }
     }
-  }
 
-  public boolean zutiIsOverTarged(double paramDouble1, double paramDouble2) {
-    double d1 = this.r * this.r;
-    double d2 = (paramDouble1 - p.x) * (paramDouble1 - p.x) + (paramDouble2 - p.y) * (paramDouble2 - p.y);
+    public boolean zutiIsOverTarged(double d, double d1)
+    {
+        double d2 = r * r;
+        double d3 = (d - p.x) * (d - p.x) + (d1 - p.y) * (d1 - p.y);
+        return d3 < d2;
+    }
 
-    return d2 < d1;
-  }
+    double r;
+    int countActors;
+    int destructLevel;
+    public static com.maddox.JGP.Point3d p = new Point3d();
+
 }

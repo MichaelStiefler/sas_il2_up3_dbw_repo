@@ -1,87 +1,107 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   FObj.java
+
 package com.maddox.il2.engine;
 
-public class FObj extends GObj
-  implements FObjInstance
+
+// Referenced classes of package com.maddox.il2.engine:
+//            GObj, FObjInstance
+
+public class FObj extends com.maddox.il2.engine.GObj
+    implements com.maddox.il2.engine.FObjInstance
 {
-  public FObj(int paramInt)
-  {
-    super(paramInt);
-  }
 
-  public String Name()
-  {
-    return Name(this.cppObj);
-  }
-
-  public void Rename(String paramString)
-  {
-    Rename(this.cppObj, paramString);
-  }
-
-  public long Hash()
-  {
-    return Hash(this.cppObj);
-  }
-
-  public static native String Name(int paramInt);
-
-  public static native void Rename(int paramInt, String paramString);
-
-  public static native long Hash(int paramInt);
-
-  public static Object Get(String paramString)
-  {
-    int i = GetFObj(paramString);
-    if (i != 0) {
-      Object localObject = GObj.getJavaObject(i);
-      GObj.Unlink(i);
-      return localObject;
+    public FObj(int i)
+    {
+        super(i);
     }
-    return null;
-  }
 
-  public static Object Get(String paramString1, String paramString2)
-  {
-    int i = GetFObj(paramString1, paramString2);
-    if (i != 0) {
-      Object localObject = GObj.getJavaObject(i);
-      GObj.Unlink(i);
-      return localObject;
+    public java.lang.String Name()
+    {
+        return com.maddox.il2.engine.FObj.Name(cppObj);
     }
-    return null;
-  }
 
-  public static Object Get(long paramLong)
-  {
-    int i = GetFObj(paramLong);
-    if (i != 0) {
-      Object localObject = GObj.getJavaObject(i);
-      GObj.Unlink(i);
-      return localObject;
+    public void Rename(java.lang.String s)
+    {
+        com.maddox.il2.engine.FObj.Rename(cppObj, s);
     }
-    return null;
-  }
 
-  public static native int GetFObj(String paramString);
+    public long Hash()
+    {
+        return com.maddox.il2.engine.FObj.Hash(cppObj);
+    }
 
-  public static native int GetFObj(String paramString1, String paramString2);
+    public static native java.lang.String Name(int i);
 
-  public static native int GetFObj(long paramLong);
+    public static native void Rename(int i, java.lang.String s);
 
-  public static native boolean Exist(String paramString);
+    public static native long Hash(int i);
 
-  public static native boolean Exist(long paramLong);
+    public static java.lang.Object Get(java.lang.String s)
+    {
+        int i = com.maddox.il2.engine.FObj.GetFObj(s);
+        if(i != 0)
+        {
+            java.lang.Object obj = com.maddox.il2.engine.GObj.getJavaObject(i);
+            com.maddox.il2.engine.GObj.Unlink(i);
+            return obj;
+        } else
+        {
+            return null;
+        }
+    }
 
-  public static native int NextFObj(int paramInt);
+    public static java.lang.Object Get(java.lang.String s, java.lang.String s1)
+    {
+        int i = com.maddox.il2.engine.FObj.GetFObj(s, s1);
+        if(i != 0)
+        {
+            java.lang.Object obj = com.maddox.il2.engine.GObj.getJavaObject(i);
+            com.maddox.il2.engine.GObj.Unlink(i);
+            return obj;
+        } else
+        {
+            return null;
+        }
+    }
 
-  public boolean ReLoad()
-  {
-    return ReLoad(this.cppObj) != 0;
-  }
+    public static java.lang.Object Get(long l)
+    {
+        int i = com.maddox.il2.engine.FObj.GetFObj(l);
+        if(i != 0)
+        {
+            java.lang.Object obj = com.maddox.il2.engine.GObj.getJavaObject(i);
+            com.maddox.il2.engine.GObj.Unlink(i);
+            return obj;
+        } else
+        {
+            return null;
+        }
+    }
 
-  public static native int ReLoad(int paramInt);
+    public static native int GetFObj(java.lang.String s);
 
-  static {
-    GObj.loadNative();
-  }
+    public static native int GetFObj(java.lang.String s, java.lang.String s1);
+
+    public static native int GetFObj(long l);
+
+    public static native boolean Exist(java.lang.String s);
+
+    public static native boolean Exist(long l);
+
+    public static native int NextFObj(int i);
+
+    public boolean ReLoad()
+    {
+        return com.maddox.il2.engine.FObj.ReLoad(cppObj) != 0;
+    }
+
+    public static native int ReLoad(int i);
+
+    static 
+    {
+        com.maddox.il2.engine.GObj.loadNative();
+    }
 }

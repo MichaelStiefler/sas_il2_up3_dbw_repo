@@ -1,8 +1,12 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RocketRazon.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
 import com.maddox.JGP.Point3d;
-import com.maddox.JGP.Tuple3d;
 import com.maddox.JGP.Vector3d;
 import com.maddox.il2.ai.MsgExplosion;
 import com.maddox.il2.ai.RangeRandom;
@@ -34,470 +38,438 @@ import com.maddox.rts.Time;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public class RocketRazon extends RocketBomb
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            RocketBomb
+
+public class RocketRazon extends com.maddox.il2.objects.weapons.RocketBomb
 {
-  private FlightModel fm;
-  private Maneuver maneuver;
-  private Actor target;
-  private Eff3DActor fl1;
-  private Eff3DActor fl2;
-  private static Orient or = new Orient();
-  private static Point3d p = new Point3d();
-  private static Point3d pT = new Point3d();
-  private static Vector3d v = new Vector3d();
-  private static Vector3d pOld = new Vector3d();
-  private static Vector3d pNew = new Vector3d();
-  private static Actor hunted = null;
-  private long tStart;
-  private float prevd;
-  private static double azimuthControlScaleFact = 0.9D;
-  private static double tangageControlScaleFact = 0.9D;
-  private boolean first = true;
-
-  public static String lastBombAlive = "NONE";
-  public boolean isMaster = false;
-
-  void endMaster()
-  {
-    if (isMaster())
+    class Master extends com.maddox.il2.engine.ActorNet
+        implements com.maddox.rts.NetUpdate
     {
-      if ((getOwner() != null) && ((getOwner() instanceof TypeGuidedBombCarrier)))
-      {
-        TypeGuidedBombCarrier localTypeGuidedBombCarrier = (TypeGuidedBombCarrier)(TypeGuidedBombCarrier)getOwner();
-        localTypeGuidedBombCarrier.typeGuidedBombCsetMasterAlive(false);
-      }
-    }
-  }
 
-  boolean isMaster()
-  {
-    return this.isMaster;
-  }
-
-  public boolean interpolateStep()
-  {
-    float f1 = Time.tickLenFs();
-    this.pos.getAbs(p, or);
-
-    if ((World.Rnd().nextFloat() > 0.8F) && 
-      (this.fl1 != null))
-    {
-      mydebug("setIntesity() fl1");
-      Eff3DActor.setIntesity(this.fl1, World.Rnd().nextFloat(0.1F, 2.5F));
-    }
-
-    mydebug("****************** BOMB NAME |" + name() + "|");
-    if (this.first)
-    {
-      mydebug("INTERPOLATE ");
-      mydebug("V = " + this.speed);
-      mydebug("POS = " + p);
-      mydebug("TICKLEN = " + f1);
-      this.first = false;
-    }
-    mydebug(p.x + "| " + p.y + "| " + p.z);
-
-    if (Actor.isValid(getOwner()))
-    {
-      if (((getOwner() != World.getPlayerAircraft()) || (!((RealFlightModel)this.fm).isRealMode())) && ((this.fm instanceof Maneuver)))
-      {
-        if (this.target != null)
+        public void msgNetNewChannel(com.maddox.rts.NetChannel netchannel)
         {
-          mydebug("Target =  " + this.target.name());
-          pT = this.target.pos.getAbsPoint();
-
-          Point3d localPoint3d = new Point3d();
-          localPoint3d.x = pT.x;
-          localPoint3d.y = pT.y;
-
-          localPoint3d.z = (pT.z + 2.5D);
-
-          mydebug("Target pos =  " + localPoint3d);
-          mydebug("Bomb pos =  " + p);
-
-          localPoint3d.sub(p);
-          or.transformInv(localPoint3d);
-
-          mydebug("Target error =  " + localPoint3d);
-
-          localObject = (Aircraft)getOwner();
-          int i = (((Aircraft)localObject).FM.isCapableOfACM()) && (!((Aircraft)localObject).FM.isReadyToDie()) && (!((Aircraft)localObject).FM.isTakenMortalDamage()) && (!((Aircraft)localObject).FM.AS.bIsAboutToBailout) && (!((Aircraft)localObject).FM.AS.isPilotDead(1)) ? 1 : 0;
-
-          if ((localPoint3d.x > -10.0D) && (i != 0))
-          {
-            double d;
-            if (isMaster())
-              d = Aircraft.cvt(this.fm.Skill * ((Aircraft)localObject).FM.AS.getPilotHealth(1), 0.0F, 3.0F, 25.0F, 0.0F);
-            else {
-              d = Aircraft.cvt(this.fm.Skill * ((Aircraft)localObject).FM.AS.getPilotHealth(1), 0.0F, 3.0F, 100.0F, 20.0F);
+            if(!com.maddox.il2.engine.Actor.isValid(actor()))
+                return;
+            if(netchannel.isMirrored(this))
+                return;
+            try
+            {
+                if(netchannel.userState == 0)
+                {
+                    com.maddox.rts.NetMsgSpawn netmsgspawn = actor().netReplicate(netchannel);
+                    if(netmsgspawn != null)
+                    {
+                        postTo(netchannel, netmsgspawn);
+                        actor().netFirstUpdate(netchannel);
+                    }
+                }
             }
-
-            ((TypeX4Carrier)this.fm.actor).typeX4CResetControls();
-
-            if (localPoint3d.y > d)
-              ((TypeX4Carrier)this.fm.actor).typeX4CAdjSideMinus();
-            if (localPoint3d.y < -d)
-              ((TypeX4Carrier)this.fm.actor).typeX4CAdjSidePlus();
-            if (localPoint3d.z < -d)
-              ((TypeX4Carrier)this.fm.actor).typeX4CAdjAttitudeMinus();
-            if (localPoint3d.z > d) {
-              ((TypeX4Carrier)this.fm.actor).typeX4CAdjAttitudePlus();
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.NetObj.printDebug(exception);
             }
-          }
         }
-      }
-      getSpeed(spd);
-      float f2 = (float)spd.length();
 
-      Object localObject = new Vector3d(0.0D, 0.0D, 0.0D);
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            return false;
+        }
 
-      ((Vector3d)localObject).y = (-azimuthControlScaleFact * f2 * ((TypeX4Carrier)this.fm.actor).typeX4CgetdeltaAzimuth());
-      ((Vector3d)localObject).z = (tangageControlScaleFact * f2 * ((TypeX4Carrier)this.fm.actor).typeX4CgetdeltaTangage());
+        public void netUpdate()
+        {
+            try
+            {
+                out.unLockAndClear();
+                getSpeed(com.maddox.il2.objects.weapons.RocketRazon.v);
+                out.writeFloat((float)com.maddox.il2.objects.weapons.RocketRazon.v.x);
+                out.writeFloat((float)com.maddox.il2.objects.weapons.RocketRazon.v.y);
+                out.writeFloat((float)com.maddox.il2.objects.weapons.RocketRazon.v.z);
+                mydebug("WRITE DATA: " + com.maddox.il2.objects.weapons.RocketRazon.v);
+                post(com.maddox.rts.Time.current(), out);
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.NetObj.printDebug(exception);
+            }
+        }
 
-      if ((getOwner() != null) && ((getOwner() instanceof TypeGuidedBombCarrier)))
-      {
-        TypeGuidedBombCarrier localTypeGuidedBombCarrier = (TypeGuidedBombCarrier)(TypeGuidedBombCarrier)getOwner();
-        mydebug("isMasterAlive " + ((Actor)localTypeGuidedBombCarrier).name() + " " + localTypeGuidedBombCarrier.typeGuidedBombCisMasterAlive());
-        mydebug("isMaster() = " + isMaster());
-        mydebug("last bomb alive = " + lastBombAlive);
-      }
+        com.maddox.rts.NetMsgFiltered out;
 
-      if (lastBombAlive.equals(name()))
-      {
-        ((TypeX4Carrier)this.fm.actor).typeX4CResetControls();
-      }
+        public Master(com.maddox.il2.engine.Actor actor)
+        {
+            super(actor);
+            out = new NetMsgFiltered();
+        }
+    }
 
-      mydebug("correction: " + localObject);
+    class Mirror extends com.maddox.il2.engine.ActorNet
+    {
 
-      if ((((Vector3d)localObject).y != 0.0D) || (((Vector3d)localObject).z != 0.0D))
-      {
-        this.pos.getAbs(Or);
+        public void msgNetNewChannel(com.maddox.rts.NetChannel netchannel)
+        {
+            if(!com.maddox.il2.engine.Actor.isValid(actor()))
+                return;
+            if(netchannel.isMirrored(this))
+                return;
+            try
+            {
+                if(netchannel.userState == 0)
+                {
+                    com.maddox.rts.NetMsgSpawn netmsgspawn = actor().netReplicate(netchannel);
+                    if(netmsgspawn != null)
+                    {
+                        postTo(netchannel, netmsgspawn);
+                        actor().netFirstUpdate(netchannel);
+                    }
+                }
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.rts.NetObj.printDebug(exception);
+            }
+        }
 
-        Or.transform((Tuple3d)localObject);
-        spd.add((Tuple3d)localObject);
-        float f3 = (float)spd.length();
-        float f4 = f2 / f3;
-        spd.scale(f4);
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.isGuaranted())
+                return false;
+            if(isMirrored())
+            {
+                out.unLockAndSet(netmsginput, 0);
+                postReal(com.maddox.rts.Message.currentTime(true), out);
+            }
+            com.maddox.il2.objects.weapons.RocketRazon.v.x = netmsginput.readFloat();
+            com.maddox.il2.objects.weapons.RocketRazon.v.y = netmsginput.readFloat();
+            com.maddox.il2.objects.weapons.RocketRazon.v.z = netmsginput.readFloat();
+            mydebug("READ DATA: " + com.maddox.il2.objects.weapons.RocketRazon.v);
+            setSpeed(com.maddox.il2.objects.weapons.RocketRazon.v);
+            return true;
+        }
 
+        com.maddox.rts.NetMsgFiltered out;
+
+        public Mirror(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(actor, netchannel, i);
+            out = new NetMsgFiltered();
+        }
+    }
+
+    static class SPAWN
+        implements com.maddox.rts.NetSpawn
+    {
+
+        public void netSpawn(int i, com.maddox.rts.NetMsgInput netmsginput)
+        {
+            com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+            if(netobj == null)
+                return;
+            try
+            {
+                com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)netobj.superObj();
+                com.maddox.JGP.Point3d point3d = new Point3d(netmsginput.readFloat(), netmsginput.readFloat(), netmsginput.readFloat());
+                com.maddox.il2.engine.Orient orient = new Orient(netmsginput.readFloat(), netmsginput.readFloat(), 0.0F);
+                float f = netmsginput.readFloat();
+                com.maddox.il2.objects.weapons.RocketRazon rocketrazon = new RocketRazon(actor, netmsginput.channel(), i, point3d, orient, f);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+        }
+
+        SPAWN()
+        {
+        }
+    }
+
+
+    void endMaster()
+    {
+        if(isMaster() && getOwner() != null && (getOwner() instanceof com.maddox.il2.objects.air.TypeGuidedBombCarrier))
+        {
+            com.maddox.il2.objects.air.TypeGuidedBombCarrier typeguidedbombcarrier = (com.maddox.il2.objects.air.TypeGuidedBombCarrier)(com.maddox.il2.objects.air.TypeGuidedBombCarrier)getOwner();
+            typeguidedbombcarrier.typeGuidedBombCsetMasterAlive(false);
+        }
+    }
+
+    boolean isMaster()
+    {
+        return isMaster;
+    }
+
+    public boolean interpolateStep()
+    {
+        float f = com.maddox.rts.Time.tickLenFs();
+        pos.getAbs(p, or);
+        if(com.maddox.il2.ai.World.Rnd().nextFloat() > 0.8F && fl1 != null)
+        {
+            mydebug("setIntesity() fl1");
+            com.maddox.il2.engine.Eff3DActor.setIntesity(fl1, com.maddox.il2.ai.World.Rnd().nextFloat(0.1F, 2.5F));
+        }
+        mydebug("****************** BOMB NAME |" + name() + "|");
+        if(first)
+        {
+            mydebug("INTERPOLATE ");
+            mydebug("V = " + speed);
+            mydebug("POS = " + p);
+            mydebug("TICKLEN = " + f);
+            first = false;
+        }
+        mydebug(p.x + "| " + p.y + "| " + p.z);
+        if(com.maddox.il2.engine.Actor.isValid(getOwner()))
+        {
+            if((getOwner() != com.maddox.il2.ai.World.getPlayerAircraft() || !((com.maddox.il2.fm.RealFlightModel)fm).isRealMode()) && (fm instanceof com.maddox.il2.ai.air.Maneuver) && target != null)
+            {
+                mydebug("Target =  " + target.name());
+                pT = target.pos.getAbsPoint();
+                com.maddox.JGP.Point3d point3d = new Point3d();
+                point3d.x = pT.x;
+                point3d.y = pT.y;
+                point3d.z = pT.z + 2.5D;
+                mydebug("Target pos =  " + point3d);
+                mydebug("Bomb pos =  " + p);
+                point3d.sub(p);
+                or.transformInv(point3d);
+                mydebug("Target error =  " + point3d);
+                com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft)getOwner();
+                boolean flag = aircraft.FM.isCapableOfACM() && !aircraft.FM.isReadyToDie() && !aircraft.FM.isTakenMortalDamage() && !aircraft.FM.AS.bIsAboutToBailout && !aircraft.FM.AS.isPilotDead(1);
+                if(point3d.x > -10D && flag)
+                {
+                    double d;
+                    if(isMaster())
+                        d = com.maddox.il2.objects.air.Aircraft.cvt((float)fm.Skill * aircraft.FM.AS.getPilotHealth(1), 0.0F, 3F, 25F, 0.0F);
+                    else
+                        d = com.maddox.il2.objects.air.Aircraft.cvt((float)fm.Skill * aircraft.FM.AS.getPilotHealth(1), 0.0F, 3F, 100F, 20F);
+                    ((com.maddox.il2.objects.air.TypeX4Carrier)fm.actor).typeX4CResetControls();
+                    if(point3d.y > d)
+                        ((com.maddox.il2.objects.air.TypeX4Carrier)fm.actor).typeX4CAdjSideMinus();
+                    if(point3d.y < -d)
+                        ((com.maddox.il2.objects.air.TypeX4Carrier)fm.actor).typeX4CAdjSidePlus();
+                    if(point3d.z < -d)
+                        ((com.maddox.il2.objects.air.TypeX4Carrier)fm.actor).typeX4CAdjAttitudeMinus();
+                    if(point3d.z > d)
+                        ((com.maddox.il2.objects.air.TypeX4Carrier)fm.actor).typeX4CAdjAttitudePlus();
+                }
+            }
+            getSpeed(spd);
+            float f1 = (float)spd.length();
+            com.maddox.JGP.Vector3d vector3d = new Vector3d(0.0D, 0.0D, 0.0D);
+            vector3d.y = -azimuthControlScaleFact * (double)f1 * (double)((com.maddox.il2.objects.air.TypeX4Carrier)fm.actor).typeX4CgetdeltaAzimuth();
+            vector3d.z = tangageControlScaleFact * (double)f1 * (double)((com.maddox.il2.objects.air.TypeX4Carrier)fm.actor).typeX4CgetdeltaTangage();
+            if(getOwner() != null && (getOwner() instanceof com.maddox.il2.objects.air.TypeGuidedBombCarrier))
+            {
+                com.maddox.il2.objects.air.TypeGuidedBombCarrier typeguidedbombcarrier = (com.maddox.il2.objects.air.TypeGuidedBombCarrier)(com.maddox.il2.objects.air.TypeGuidedBombCarrier)getOwner();
+                mydebug("isMasterAlive " + ((com.maddox.il2.engine.Actor)typeguidedbombcarrier).name() + " " + typeguidedbombcarrier.typeGuidedBombCisMasterAlive());
+                mydebug("isMaster() = " + isMaster());
+                mydebug("last bomb alive = " + lastBombAlive);
+            }
+            if(lastBombAlive.equals(name()))
+                ((com.maddox.il2.objects.air.TypeX4Carrier)fm.actor).typeX4CResetControls();
+            mydebug("correction: " + vector3d);
+            if(vector3d.y != 0.0D || vector3d.z != 0.0D)
+            {
+                pos.getAbs(Or);
+                Or.transform(vector3d);
+                spd.add(vector3d);
+                float f2 = (float)spd.length();
+                float f3 = f1 / f2;
+                spd.scale(f3);
+                setSpeed(spd);
+            }
+        }
+        if(!com.maddox.il2.engine.Actor.isValid(getOwner()) || !(getOwner() instanceof com.maddox.il2.objects.air.Aircraft))
+        {
+            doExplosionAir();
+            postDestroy();
+            collide(false);
+            drawing(false);
+            return true;
+        } else
+        {
+            return true;
+        }
+    }
+
+    public RocketRazon()
+    {
+        first = true;
+        isMaster = false;
+        fm = null;
+        tStart = 0L;
+        prevd = 1000F;
+    }
+
+    public RocketRazon(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i, com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Orient orient, float f)
+    {
+        first = true;
+        isMaster = false;
+        fm = null;
+        tStart = 0L;
+        prevd = 1000F;
+        net = new Mirror(this, netchannel, i);
+        pos.setAbs(point3d, orient);
+        pos.reset();
+        pos.setBase(actor, null, true);
+        doStart(-1F);
+        v.set(1.0D, 0.0D, 0.0D);
+        orient.transform(v);
+        v.scale(f);
+        setSpeed(v);
+        collide(false);
+    }
+
+    public void start(float f)
+    {
+        com.maddox.il2.engine.Actor actor = pos.base();
+        if(com.maddox.il2.engine.Actor.isValid(actor) && (actor instanceof com.maddox.il2.objects.air.Aircraft))
+        {
+            if(actor.isNetMirror())
+            {
+                destroy();
+                return;
+            }
+            net = new Master(this);
+        }
+        doStart(f);
+    }
+
+    private void doStart(float f)
+    {
+        super.start(-1F);
+        fm = ((com.maddox.il2.objects.air.Aircraft)getOwner()).FM;
+        if(fm instanceof com.maddox.il2.ai.air.Maneuver)
+        {
+            maneuver = (com.maddox.il2.ai.air.Maneuver)fm;
+            target = maneuver.target_ground;
+        }
+        tStart = com.maddox.rts.Time.current();
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            fl1 = com.maddox.il2.engine.Eff3DActor.New(this, findHook("_NavLightR"), null, 1.0F, "3DO/Effects/Fireworks/FlareWhite1.eff", -1F);
+            if(fl1 != null)
+            {
+                mydebug("setIntesity()");
+                com.maddox.il2.engine.Eff3DActor.setIntesity(fl1, 0.1F);
+            }
+        }
+        pos.getAbs(p, or);
+        or.setYPR(or.getYaw(), or.getPitch(), 0.0F);
+        pos.setAbs(p, or);
+        if(getOwner() != null && (getOwner() instanceof com.maddox.il2.objects.air.TypeGuidedBombCarrier))
+        {
+            com.maddox.il2.objects.air.TypeGuidedBombCarrier typeguidedbombcarrier = (com.maddox.il2.objects.air.TypeGuidedBombCarrier)(com.maddox.il2.objects.air.TypeGuidedBombCarrier)getOwner();
+            if(!typeguidedbombcarrier.typeGuidedBombCisMasterAlive())
+            {
+                isMaster = true;
+                typeguidedbombcarrier.typeGuidedBombCsetMasterAlive(true);
+            }
+        }
+        if(getOwner() == com.maddox.il2.ai.World.getPlayerAircraft())
+            lastBombAlive = name();
+        getSpeed(spd);
+        pos.getAbs(p, or);
+        com.maddox.JGP.Vector3d vector3d = new Vector3d(0.0D, 0.0D, 0.0D);
+        mydebug("BombDispersion!");
+        mydebug("Speed BEFORE = " + spd.x + " " + spd.y + " " + spd.z + " ");
+        vector3d.x += com.maddox.il2.ai.World.Rnd().nextFloat_Dome(-5F, 5F);
+        vector3d.y += com.maddox.il2.ai.World.Rnd().nextFloat_Dome(-2.2F, 2.2F);
+        mydebug("error: " + vector3d);
+        or.transform(vector3d);
+        spd.add(vector3d);
         setSpeed(spd);
-      }
-
+        getSpeed(spd);
+        mydebug("Speed AFTER  = " + spd.x + " " + spd.y + " " + spd.z + " ");
     }
 
-    if ((!Actor.isValid(getOwner())) || (!(getOwner() instanceof Aircraft)))
+    public void destroy()
     {
-      doExplosionAir();
-      postDestroy();
-      collide(false);
-      drawing(false);
-      return true;
+        if(isNet() && isNetMirror())
+            doExplosionAir();
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+            com.maddox.il2.engine.Eff3DActor.finish(fl1);
+        endMaster();
+        super.destroy();
     }
 
-    return true;
-  }
-
-  public RocketRazon()
-  {
-    this.fm = null;
-    this.tStart = 0L;
-    this.prevd = 1000.0F;
-  }
-
-  public RocketRazon(Actor paramActor, NetChannel paramNetChannel, int paramInt, Point3d paramPoint3d, Orient paramOrient, float paramFloat)
-  {
-    this.fm = null;
-    this.tStart = 0L;
-    this.prevd = 1000.0F;
-    this.net = new Mirror(this, paramNetChannel, paramInt);
-    this.pos.setAbs(paramPoint3d, paramOrient);
-    this.pos.reset();
-    this.pos.setBase(paramActor, null, true);
-    doStart(-1.0F);
-    v.set(1.0D, 0.0D, 0.0D);
-    paramOrient.transform(v);
-    v.scale(paramFloat);
-    setSpeed(v);
-    collide(false);
-  }
-
-  public void start(float paramFloat)
-  {
-    Actor localActor = this.pos.base();
-    if ((Actor.isValid(localActor)) && ((localActor instanceof Aircraft)))
+    protected void doExplosionAir()
     {
-      if (localActor.isNetMirror())
-      {
-        destroy();
-        return;
-      }
-      this.net = new Master(this);
+        pos.getTime(com.maddox.rts.Time.current(), p);
+        com.maddox.il2.ai.MsgExplosion.send(null, null, p, getOwner(), 45F, 2.0F, 1, 550F);
+        super.doExplosionAir();
     }
-    doStart(paramFloat);
-  }
 
-  private void doStart(float paramFloat)
-  {
-    super.start(-1.0F);
-    this.fm = ((Aircraft)getOwner()).FM;
-    if ((this.fm instanceof Maneuver))
+    public com.maddox.rts.NetMsgSpawn netReplicate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
     {
-      this.maneuver = ((Maneuver)this.fm);
-      this.target = this.maneuver.target_ground;
+        com.maddox.rts.NetMsgSpawn netmsgspawn = super.netReplicate(netchannel);
+        netmsgspawn.writeNetObj(getOwner().net);
+        com.maddox.JGP.Point3d point3d = pos.getAbsPoint();
+        netmsgspawn.writeFloat((float)point3d.x);
+        netmsgspawn.writeFloat((float)point3d.y);
+        netmsgspawn.writeFloat((float)point3d.z);
+        com.maddox.il2.engine.Orient orient = pos.getAbsOrient();
+        netmsgspawn.writeFloat(orient.azimut());
+        netmsgspawn.writeFloat(orient.tangage());
+        float f = (float)getSpeed(null);
+        netmsgspawn.writeFloat(f);
+        return netmsgspawn;
     }
 
-    this.tStart = Time.current();
-    if (Config.isUSE_RENDER())
+    protected void mydebug(java.lang.String s)
     {
-      this.fl1 = Eff3DActor.New(this, findHook("_NavLightR"), null, 1.0F, "3DO/Effects/Fireworks/FlareWhite1.eff", -1.0F);
-
-      if (this.fl1 != null)
-      {
-        mydebug("setIntesity()");
-        Eff3DActor.setIntesity(this.fl1, 0.1F);
-      }
     }
-    this.pos.getAbs(p, or);
-    or.setYPR(or.getYaw(), or.getPitch(), 0.0F);
-    this.pos.setAbs(p, or);
 
-    if ((getOwner() != null) && ((getOwner() instanceof TypeGuidedBombCarrier)))
+    static java.lang.Class _mthclass$(java.lang.String s)
     {
-      localObject = (TypeGuidedBombCarrier)(TypeGuidedBombCarrier)getOwner();
-      if (!((TypeGuidedBombCarrier)localObject).typeGuidedBombCisMasterAlive())
-      {
-        this.isMaster = true;
-        ((TypeGuidedBombCarrier)localObject).typeGuidedBombCsetMasterAlive(true);
-      }
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
     }
 
-    if (getOwner() == World.getPlayerAircraft())
+    private com.maddox.il2.fm.FlightModel fm;
+    private com.maddox.il2.ai.air.Maneuver maneuver;
+    private com.maddox.il2.engine.Actor target;
+    private com.maddox.il2.engine.Eff3DActor fl1;
+    private com.maddox.il2.engine.Eff3DActor fl2;
+    private static com.maddox.il2.engine.Orient or = new Orient();
+    private static com.maddox.JGP.Point3d p = new Point3d();
+    private static com.maddox.JGP.Point3d pT = new Point3d();
+    private static com.maddox.JGP.Vector3d v = new Vector3d();
+    private static com.maddox.JGP.Vector3d pOld = new Vector3d();
+    private static com.maddox.JGP.Vector3d pNew = new Vector3d();
+    private static com.maddox.il2.engine.Actor hunted = null;
+    private long tStart;
+    private float prevd;
+    private static double azimuthControlScaleFact = 0.90000000000000002D;
+    private static double tangageControlScaleFact = 0.90000000000000002D;
+    private boolean first;
+    public static java.lang.String lastBombAlive = "NONE";
+    public boolean isMaster;
+
+    static 
     {
-      lastBombAlive = name();
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.RocketRazon.class;
+        com.maddox.rts.Property.set(class1, "mesh", "3do/arms/Razon/mono.sim");
+        com.maddox.rts.Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
+        com.maddox.rts.Property.set(class1, "emitLen", 50F);
+        com.maddox.rts.Property.set(class1, "emitMax", 0.5F);
+        com.maddox.rts.Property.set(class1, "timeLife", 1000F);
+        com.maddox.rts.Property.set(class1, "timeFire", 12F);
+        com.maddox.rts.Property.set(class1, "force", 2.0F);
+        com.maddox.rts.Property.set(class1, "massaEnd", 250F);
+        com.maddox.rts.Property.set(class1, "radius", 50F);
+        com.maddox.rts.Property.set(class1, "power", 125F);
+        com.maddox.rts.Property.set(class1, "powerType", 0);
+        com.maddox.rts.Property.set(class1, "kalibr", 0.32F);
+        com.maddox.rts.Property.set(class1, "massa", 250F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.bomb_mid");
+        com.maddox.rts.Spawn.add(class1, new SPAWN());
     }
 
-    getSpeed(spd);
-    this.pos.getAbs(p, or);
-    Object localObject = new Vector3d(0.0D, 0.0D, 0.0D);
-
-    mydebug("BombDispersion!");
-
-    mydebug("Speed BEFORE = " + spd.x + " " + spd.y + " " + spd.z + " ");
-    localObject.x += World.Rnd().nextFloat_Dome(-5.0F, 5.0F);
-    localObject.y += World.Rnd().nextFloat_Dome(-2.2F, 2.2F);
-
-    mydebug("error: " + localObject);
-
-    or.transform((Tuple3d)localObject);
-    spd.add((Tuple3d)localObject);
-    setSpeed(spd);
-
-    getSpeed(spd);
-    mydebug("Speed AFTER  = " + spd.x + " " + spd.y + " " + spd.z + " ");
-  }
-
-  public void destroy()
-  {
-    if ((isNet()) && (isNetMirror()))
-      doExplosionAir();
-    if (Config.isUSE_RENDER())
-    {
-      Eff3DActor.finish(this.fl1);
-    }
-    endMaster();
-    super.destroy();
-  }
-
-  protected void doExplosionAir()
-  {
-    this.pos.getTime(Time.current(), p);
-    MsgExplosion.send(null, null, p, getOwner(), 45.0F, 2.0F, 1, 550.0F);
-    super.doExplosionAir();
-  }
-
-  public NetMsgSpawn netReplicate(NetChannel paramNetChannel)
-    throws IOException
-  {
-    NetMsgSpawn localNetMsgSpawn = super.netReplicate(paramNetChannel);
-    localNetMsgSpawn.writeNetObj(getOwner().net);
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    localNetMsgSpawn.writeFloat((float)localPoint3d.x);
-    localNetMsgSpawn.writeFloat((float)localPoint3d.y);
-    localNetMsgSpawn.writeFloat((float)localPoint3d.z);
-    Orient localOrient = this.pos.getAbsOrient();
-    localNetMsgSpawn.writeFloat(localOrient.azimut());
-    localNetMsgSpawn.writeFloat(localOrient.tangage());
-    float f = (float)getSpeed(null);
-    localNetMsgSpawn.writeFloat(f);
-    return localNetMsgSpawn;
-  }
-
-  protected void mydebug(String paramString)
-  {
-  }
-
-  static
-  {
-    Class localClass = RocketRazon.class;
-
-    Property.set(localClass, "mesh", "3do/arms/Razon/mono.sim");
-
-    Property.set(localClass, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
-    Property.set(localClass, "emitLen", 50.0F);
-    Property.set(localClass, "emitMax", 0.5F);
-    Property.set(localClass, "timeLife", 1000.0F);
-    Property.set(localClass, "timeFire", 12.0F);
-    Property.set(localClass, "force", 2.0F);
-    Property.set(localClass, "massaEnd", 250.0F);
-    Property.set(localClass, "radius", 50.0F);
-    Property.set(localClass, "power", 125.0F);
-    Property.set(localClass, "powerType", 0);
-    Property.set(localClass, "kalibr", 0.32F);
-    Property.set(localClass, "massa", 250.0F);
-    Property.set(localClass, "sound", "weapon.bomb_mid");
-
-    Spawn.add(localClass, new SPAWN());
-  }
-
-  class Master extends ActorNet
-    implements NetUpdate
-  {
-    NetMsgFiltered out;
-
-    public void msgNetNewChannel(NetChannel paramNetChannel)
-    {
-      if (!Actor.isValid(actor()))
-        return;
-      if (paramNetChannel.isMirrored(this))
-        return;
-      try
-      {
-        if (paramNetChannel.userState == 0)
-        {
-          NetMsgSpawn localNetMsgSpawn = actor().netReplicate(paramNetChannel);
-          if (localNetMsgSpawn != null)
-          {
-            postTo(paramNetChannel, localNetMsgSpawn);
-            actor().netFirstUpdate(paramNetChannel);
-          }
-        }
-      }
-      catch (Exception localException)
-      {
-        NetObj.printDebug(localException);
-      }
-    }
-
-    public boolean netInput(NetMsgInput paramNetMsgInput)
-      throws IOException
-    {
-      return false;
-    }
-
-    public void netUpdate()
-    {
-      try
-      {
-        this.out.unLockAndClear();
-
-        RocketRazon.this.getSpeed(RocketRazon.v);
-        this.out.writeFloat((float)RocketRazon.v.x);
-        this.out.writeFloat((float)RocketRazon.v.y);
-        this.out.writeFloat((float)RocketRazon.v.z);
-
-        RocketRazon.this.mydebug("WRITE DATA: " + RocketRazon.v);
-
-        post(Time.current(), this.out);
-      }
-      catch (Exception localException)
-      {
-        NetObj.printDebug(localException);
-      }
-    }
-
-    public Master(Actor arg2)
-    {
-      super();
-      this.out = new NetMsgFiltered();
-    }
-  }
-
-  class Mirror extends ActorNet
-  {
-    NetMsgFiltered out;
-
-    public void msgNetNewChannel(NetChannel paramNetChannel)
-    {
-      if (!Actor.isValid(actor()))
-        return;
-      if (paramNetChannel.isMirrored(this))
-        return;
-      try
-      {
-        if (paramNetChannel.userState == 0)
-        {
-          NetMsgSpawn localNetMsgSpawn = actor().netReplicate(paramNetChannel);
-          if (localNetMsgSpawn != null)
-          {
-            postTo(paramNetChannel, localNetMsgSpawn);
-            actor().netFirstUpdate(paramNetChannel);
-          }
-        }
-      }
-      catch (Exception localException)
-      {
-        NetObj.printDebug(localException);
-      }
-    }
-
-    public boolean netInput(NetMsgInput paramNetMsgInput)
-      throws IOException
-    {
-      if (paramNetMsgInput.isGuaranted())
-        return false;
-      if (isMirrored())
-      {
-        this.out.unLockAndSet(paramNetMsgInput, 0);
-        postReal(Message.currentTime(true), this.out);
-      }
-
-      RocketRazon.v.x = paramNetMsgInput.readFloat();
-      RocketRazon.v.y = paramNetMsgInput.readFloat();
-      RocketRazon.v.z = paramNetMsgInput.readFloat();
-
-      RocketRazon.this.mydebug("READ DATA: " + RocketRazon.v);
-
-      RocketRazon.this.setSpeed(RocketRazon.v);
-      return true;
-    }
-
-    public Mirror(Actor paramNetChannel, NetChannel paramInt, int arg4)
-    {
-      super(paramInt, i);
-      this.out = new NetMsgFiltered();
-    }
-  }
-
-  static class SPAWN
-    implements NetSpawn
-  {
-    public void netSpawn(int paramInt, NetMsgInput paramNetMsgInput)
-    {
-      NetObj localNetObj = paramNetMsgInput.readNetObj();
-      if (localNetObj == null)
-        return;
-      try
-      {
-        Actor localActor = (Actor)localNetObj.superObj();
-        Point3d localPoint3d = new Point3d(paramNetMsgInput.readFloat(), paramNetMsgInput.readFloat(), paramNetMsgInput.readFloat());
-        Orient localOrient = new Orient(paramNetMsgInput.readFloat(), paramNetMsgInput.readFloat(), 0.0F);
-        float f = paramNetMsgInput.readFloat();
-        RocketRazon localRocketRazon = new RocketRazon(localActor, paramNetMsgInput.channel(), paramInt, localPoint3d, localOrient, f);
-      }
-      catch (Exception localException)
-      {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-    }
-  }
 }

@@ -1,456 +1,630 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GWindowEditBox.java
+
 package com.maddox.gwindow;
 
 import java.util.ArrayList;
 
-public class GWindowEditBox extends GWindowDialogControl
-  implements GWindowCellEdit
+// Referenced classes of package com.maddox.gwindow:
+//            GWindowDialogControl, GWindowCellEdit, GWindowRoot, GCanvas, 
+//            GFont, GWindowLookAndFeel
+
+public class GWindowEditBox extends com.maddox.gwindow.GWindowDialogControl
+    implements com.maddox.gwindow.GWindowCellEdit
 {
-  public StringBuffer value = new StringBuffer();
-  public int maxLength = 255;
-  public boolean bCanEdit = true;
-  public boolean bCanEditTab = true;
-  public boolean bNumericOnly = false;
-  public boolean bNumericFloat = false;
-  public boolean bPassword = false;
-  public boolean bSelectOnFocus = true;
-  public boolean bDelayedNotify = false;
 
-  public float offsetX = 0.0F;
-
-  public boolean bAllSelected = false;
-  public int caretOffset = 0;
-  public boolean bShowCaret = false;
-  public float caretTimeout = 0.0F;
-
-  public boolean bControlDown = false;
-  public boolean bShiftDown = false;
-  public boolean bChangePending = false;
-
-  public boolean bHistory = false;
-  public ArrayList historyList;
-  public int historyCur = 0;
-
-  public void setHistory(boolean paramBoolean)
-  {
-    this.bHistory = paramBoolean;
-    if ((this.bHistory) && (this.historyList == null)) {
-      this.historyList = new ArrayList();
-    }
-    else if ((!this.bHistory) && (this.historyList != null))
-      this.historyList = null;
-  }
-
-  public void setEnable(boolean paramBoolean)
-  {
-    super.setEnable(paramBoolean);
-    if (!this.bEnable) {
-      this.bControlDown = false;
-      this.bShiftDown = false;
-      this.bShowCaret = false;
-      this.bAllSelected = false;
-      this.bChangePending = false;
-      this.caretOffset = 0;
-    }
-  }
-
-  public void setEditable(boolean paramBoolean) {
-    this.bCanEdit = paramBoolean;
-  }
-
-  public void setValue(String paramString) {
-    setValue(paramString, true);
-  }
-
-  public void setValue(String paramString, boolean paramBoolean) {
-    this.value.delete(0, this.value.length());
-    this.value.append(paramString);
-    if (this.caretOffset > this.value.length())
-      this.caretOffset = this.value.length();
-    if (paramBoolean)
-      if (this.bDelayedNotify) this.bChangePending = true; else
-        notify(2, 0);
-  }
-
-  public void setCellEditValue(Object paramObject)
-  {
-    setValue(paramObject.toString(), false);
-  }
-
-  public Object getCellEditValue() {
-    return getValue();
-  }
-
-  public void clear() {
-    clear(true);
-  }
-
-  public void clear(boolean paramBoolean) {
-    this.caretOffset = 0;
-    this.value.delete(0, this.value.length());
-    this.bAllSelected = false;
-    if (paramBoolean)
-      if (this.bDelayedNotify) this.bChangePending = true; else
-        notify(2, 0);
-  }
-
-  public void selectAll()
-  {
-    if ((this.bCanEdit) && (this.value.length() > 0)) {
-      this.caretOffset = this.value.length();
-      this.bAllSelected = true;
-    }
-  }
-
-  public int getFirstChar() {
-    if (this.value.length() > 0)
-      return this.value.charAt(0);
-    return -1;
-  }
-
-  public String getValue() {
-    return this.value.toString();
-  }
-
-  public void insert(String paramString) {
-    for (int i = 0; i < paramString.length(); i++)
-      insert(paramString.charAt(i));
-  }
-
-  public boolean insert(char paramChar) {
-    if (this.value.length() >= this.maxLength)
-      return false;
-    this.value.insert(this.caretOffset, paramChar);
-    this.caretOffset += 1;
-    if (this.bDelayedNotify) this.bChangePending = true; else
-      notify(2, 0);
-    return true;
-  }
-
-  protected void startShowCaret() {
-    this.caretTimeout = 0.3F;
-    this.bShowCaret = true;
-  }
-
-  public boolean backspace() {
-    if (this.caretOffset == 0) return false;
-    this.value.delete(this.caretOffset - 1, this.caretOffset);
-    this.caretOffset -= 1;
-    if (this.bDelayedNotify) this.bChangePending = true; else
-      notify(2, 0);
-    return true;
-  }
-
-  public boolean delete() {
-    if (this.caretOffset == this.value.length()) return false;
-    this.value.delete(this.caretOffset, this.caretOffset + 1);
-    if (this.bDelayedNotify) this.bChangePending = true; else
-      notify(2, 0);
-    return true;
-  }
-
-  public boolean wordLeft()
-  {
-    int i;
-    while (this.caretOffset > 0) {
-      i = this.value.charAt(this.caretOffset - 1);
-      if ((i != 32) && (i != 9))
-        break;
-      this.caretOffset -= 1;
-    }
-    while (this.caretOffset > 0) {
-      i = this.value.charAt(this.caretOffset - 1);
-      if ((i == 32) || (i == 9))
-        break;
-      this.caretOffset -= 1;
-    }
-    startShowCaret();
-    return true;
-  }
-
-  public boolean moveLeft() {
-    if (this.caretOffset == 0) return false;
-    this.caretOffset -= 1;
-    startShowCaret();
-    return true;
-  }
-
-  public boolean moveRight() {
-    if (this.caretOffset == this.value.length()) return false;
-    this.caretOffset += 1;
-    startShowCaret();
-    return true;
-  }
-
-  public boolean wordRight()
-  {
-    int i;
-    while (this.caretOffset < this.value.length()) {
-      i = this.value.charAt(this.caretOffset);
-      if ((i != 32) && (i != 9))
-        break;
-      this.caretOffset += 1;
-    }
-    while (this.caretOffset < this.value.length()) {
-      i = this.value.charAt(this.caretOffset);
-      if ((i == 32) || (i == 9))
-        break;
-      this.caretOffset += 1;
-    }
-    startShowCaret();
-    return true;
-  }
-
-  public boolean moveHome() {
-    this.caretOffset = 0;
-    startShowCaret();
-    return true;
-  }
-
-  public boolean moveEnd() {
-    this.caretOffset = this.value.length();
-    startShowCaret();
-    return true;
-  }
-
-  public void editCopy() {
-    if ((this.bAllSelected) || (!this.bCanEdit))
-      this.root.C.copyToClipboard(this.value.toString());
-  }
-
-  public void editPaste() {
-    if (this.bCanEdit) {
-      if (this.bAllSelected)
-        clear();
-      insert(this.root.C.pasteFromClipboard());
-    }
-  }
-
-  public void editCut() {
-    if (this.bCanEdit) {
-      if (this.bAllSelected) {
-        this.root.C.copyToClipboard(this.value.toString());
-        this.bAllSelected = false;
-        clear();
-      }
-    }
-    else editCopy();
-  }
-
-  public void keyboardChar(char paramChar)
-  {
-    if ((this.bEnable) && (this.bCanEdit) && (!this.bControlDown)) {
-      if ((paramChar == '\t') && (!this.bCanEditTab))
-        return;
-      if (this.bAllSelected)
-        clear();
-      this.bAllSelected = false;
-      if (this.bNumericOnly) {
-        if (Character.isDigit(paramChar))
-          insert(paramChar);
-        else if ((paramChar == '-') && (this.value.length() == 0))
-          insert(paramChar);
-      } else if ((Character.isLetterOrDigit(paramChar)) || ((paramChar >= ' ') && (paramChar < '')) || (paramChar == '\t'))
-      {
-        insert(paramChar);
-      }
-    }
-  }
-
-  public void keyboardKey(int paramInt, boolean paramBoolean)
-  {
-    if (!this.bEnable) {
-      super.keyboardKey(paramInt, paramBoolean);
-      return;
-    }
-    if (!paramBoolean) {
-      switch (paramInt) {
-      case 9:
-        if (!this.bCanEditTab) break;
-      case 8:
-      case 35:
-      case 36:
-      case 37:
-      case 39:
-      case 127:
-        if (!this.bCanEdit) break; return;
-      case 17:
-        this.bControlDown = false;
-        break;
-      case 16:
-        this.bShiftDown = false;
-        break;
-      case 38:
-      case 40:
-        if ((!this.bCanEdit) || (!this.bHistory)) break; return;
-      case 46:
-        if ((!this.bCanEdit) || (!this.bNumericFloat)) break; return;
-      }
-
-      super.keyboardKey(paramInt, paramBoolean);
-      return;
-    }
-    int i;
-    switch (paramInt) {
-    case 9:
-      if ((!this.bCanEdit) || (this.bCanEditTab)) break;
-      return;
-    case 17:
-      this.bControlDown = true;
-      break;
-    case 16:
-      this.bShiftDown = true;
-      break;
-    case 10:
-      if ((!this.bCanEdit) || 
-        (!this.bHistory) || (this.value.length() <= 0)) break;
-      this.historyList.add(0, this.value.toString()); break;
-    case 39:
-      this.bAllSelected = false;
-      if (!this.bCanEdit) break;
-      if (this.bControlDown) wordRight(); else
-        moveRight();
-      return;
-    case 37:
-      this.bAllSelected = false;
-      if (!this.bCanEdit) break;
-      if (this.bControlDown) wordLeft(); else
-        moveLeft();
-      return;
-    case 38:
-      if ((!this.bCanEdit) || (!this.bHistory)) break;
-      this.bAllSelected = false;
-      if (!this.historyList.isEmpty()) {
-        setValue((String)this.historyList.get(this.historyCur));
-        moveEnd();
-        i = this.historyList.size();
-        this.historyCur = ((this.historyCur + 1) % i);
-      }
-      return;
-    case 40:
-      if ((!this.bCanEdit) || (!this.bHistory)) break;
-      this.bAllSelected = false;
-      if (!this.historyList.isEmpty()) {
-        i = this.historyList.size();
-        this.historyCur = ((this.historyCur - 1 + i) % i);
-        setValue((String)this.historyList.get(this.historyCur));
-        moveEnd();
-      }
-      return;
-    case 36:
-      this.bAllSelected = false;
-      if (!this.bCanEdit) break;
-      moveHome();
-      return;
-    case 35:
-      this.bAllSelected = false;
-      if (!this.bCanEdit) break;
-      moveEnd();
-      return;
-    case 8:
-      if (this.bCanEdit) {
-        if (this.bAllSelected) clear(); else
-          backspace();
-        this.bAllSelected = false;
-        return;
-      }
-      this.bAllSelected = false;
-      break;
-    case 127:
-      if (this.bCanEdit) {
-        if (this.bAllSelected) clear(); else
-          delete();
-        this.bAllSelected = false;
-        return;
-      }
-      this.bAllSelected = false;
-      break;
-    case 46:
-      if ((!this.bCanEdit) || (!this.bNumericFloat)) break;
-      insert('.');
-      return;
-    default:
-      if (!this.bControlDown) break;
-      if (paramInt == 67) editCopy();
-      if (paramInt == 86) editPaste();
-      if (paramInt != 88) break; editCut();
+    public GWindowEditBox()
+    {
+        value = new StringBuffer();
+        maxLength = 255;
+        bCanEdit = true;
+        bCanEditTab = true;
+        bNumericOnly = false;
+        bNumericFloat = false;
+        bPassword = false;
+        bSelectOnFocus = true;
+        bDelayedNotify = false;
+        offsetX = 0.0F;
+        bAllSelected = false;
+        caretOffset = 0;
+        bShowCaret = false;
+        caretTimeout = 0.0F;
+        bControlDown = false;
+        bShiftDown = false;
+        bChangePending = false;
+        bHistory = false;
+        historyCur = 0;
     }
 
-    super.keyboardKey(paramInt, paramBoolean);
-  }
-
-  public void close(boolean paramBoolean) {
-    if ((this.bEnable) && (this.bChangePending)) {
-      this.bChangePending = false;
-      notify(2, 0);
+    public void setHistory(boolean flag)
+    {
+        bHistory = flag;
+        if(bHistory && historyList == null)
+            historyList = new ArrayList();
+        else
+        if(!bHistory && historyList != null)
+            historyList = null;
     }
-    super.close(paramBoolean);
-  }
 
-  public void keyFocusEnter() {
-    if ((this.bEnable) && (this.bSelectOnFocus))
-      selectAll();
-    super.keyFocusEnter();
-  }
-
-  public void keyFocusExit() {
-    if (this.bEnable) {
-      this.bAllSelected = false;
-      if (this.bChangePending) {
-        this.bChangePending = false;
-        notify(2, 0);
-      }
+    public void setEnable(boolean flag)
+    {
+        super.setEnable(flag);
+        if(!bEnable)
+        {
+            bControlDown = false;
+            bShiftDown = false;
+            bShowCaret = false;
+            bAllSelected = false;
+            bChangePending = false;
+            caretOffset = 0;
+        }
     }
-    this.bControlDown = false;
-    this.bShiftDown = false;
-    super.keyFocusExit();
-  }
 
-  public void mouseButton(int paramInt, boolean paramBoolean, float paramFloat1, float paramFloat2) {
-    super.mouseButton(paramInt, paramBoolean, paramFloat1, paramFloat2);
-    if ((!this.bEnable) || (!this.bCanEdit) || (paramInt != 0) || (!paramBoolean)) return;
-    paramFloat1 -= this.offsetX;
-    GFont localGFont = this.root.textFonts[this.font];
-    this.caretOffset = localGFont.len(getValue(), paramFloat1, true, false);
-    startShowCaret();
-    this.bAllSelected = false;
-  }
+    public void setEditable(boolean flag)
+    {
+        bCanEdit = flag;
+    }
 
-  public void mouseDoubleClick(int paramInt, float paramFloat1, float paramFloat2) {
-    super.mouseDoubleClick(paramInt, paramFloat1, paramFloat2);
-    if ((this.bEnable) && (paramInt == 0))
-      selectAll();
-  }
+    public void setValue(java.lang.String s)
+    {
+        setValue(s, true);
+    }
 
-  public boolean _notify(int paramInt1, int paramInt2) {
-    if (paramInt1 == 2) {
-      if (!this.bChangePending)
+    public void setValue(java.lang.String s, boolean flag)
+    {
+        value.delete(0, value.length());
+        value.append(s);
+        if(caretOffset > value.length())
+            caretOffset = value.length();
+        if(flag)
+            if(bDelayedNotify)
+                bChangePending = true;
+            else
+                notify(2, 0);
+    }
+
+    public void setCellEditValue(java.lang.Object obj)
+    {
+        setValue(obj.toString(), false);
+    }
+
+    public java.lang.Object getCellEditValue()
+    {
+        return getValue();
+    }
+
+    public void clear()
+    {
+        clear(true);
+    }
+
+    public void clear(boolean flag)
+    {
+        caretOffset = 0;
+        value.delete(0, value.length());
+        bAllSelected = false;
+        if(flag)
+            if(bDelayedNotify)
+                bChangePending = true;
+            else
+                notify(2, 0);
+    }
+
+    public void selectAll()
+    {
+        if(bCanEdit && value.length() > 0)
+        {
+            caretOffset = value.length();
+            bAllSelected = true;
+        }
+    }
+
+    public int getFirstChar()
+    {
+        if(value.length() > 0)
+            return value.charAt(0);
+        else
+            return -1;
+    }
+
+    public java.lang.String getValue()
+    {
+        return value.toString();
+    }
+
+    public void insert(java.lang.String s)
+    {
+        for(int i = 0; i < s.length(); i++)
+            insert(s.charAt(i));
+
+    }
+
+    public boolean insert(char c)
+    {
+        if(value.length() >= maxLength)
+            return false;
+        value.insert(caretOffset, c);
+        caretOffset++;
+        if(bDelayedNotify)
+            bChangePending = true;
+        else
+            notify(2, 0);
         return true;
-      this.bChangePending = false;
     }
-    return notify(paramInt1, paramInt2);
-  }
 
-  public void checkCaretTimeout() {
-    if ((!isKeyFocus()) || (!this.bCanEdit) || (!isActivated())) {
-      this.bShowCaret = false;
-      this.bAllSelected = false;
-      return;
+    protected void startShowCaret()
+    {
+        caretTimeout = 0.3F;
+        bShowCaret = true;
     }
-    float f = this.root.deltaTimeSec;
-    this.caretTimeout -= f;
-    if (this.caretTimeout <= 0.0F) {
-      this.bShowCaret = (!this.bShowCaret);
-      this.caretTimeout = 0.3F;
+
+    public boolean backspace()
+    {
+        if(caretOffset == 0)
+            return false;
+        value.delete(caretOffset - 1, caretOffset);
+        caretOffset--;
+        if(bDelayedNotify)
+            bChangePending = true;
+        else
+            notify(2, 0);
+        return true;
     }
-  }
 
-  public void render() {
-    lookAndFeel().render(this, this.offsetX);
-    checkCaretTimeout();
-  }
+    public boolean delete()
+    {
+        if(caretOffset == value.length())
+            return false;
+        value.delete(caretOffset, caretOffset + 1);
+        if(bDelayedNotify)
+            bChangePending = true;
+        else
+            notify(2, 0);
+        return true;
+    }
 
-  public void created() {
-    this.bEnableDoubleClick[0] = true;
-    super.created();
-  }
+    public boolean wordLeft()
+    {
+        do
+        {
+            if(caretOffset <= 0)
+                break;
+            char c = value.charAt(caretOffset - 1);
+            if(c != ' ' && c != '\t')
+                break;
+            caretOffset--;
+        } while(true);
+        do
+        {
+            if(caretOffset <= 0)
+                break;
+            char c1 = value.charAt(caretOffset - 1);
+            if(c1 == ' ' || c1 == '\t')
+                break;
+            caretOffset--;
+        } while(true);
+        startShowCaret();
+        return true;
+    }
+
+    public boolean moveLeft()
+    {
+        if(caretOffset == 0)
+        {
+            return false;
+        } else
+        {
+            caretOffset--;
+            startShowCaret();
+            return true;
+        }
+    }
+
+    public boolean moveRight()
+    {
+        if(caretOffset == value.length())
+        {
+            return false;
+        } else
+        {
+            caretOffset++;
+            startShowCaret();
+            return true;
+        }
+    }
+
+    public boolean wordRight()
+    {
+        do
+        {
+            if(caretOffset >= value.length())
+                break;
+            char c = value.charAt(caretOffset);
+            if(c != ' ' && c != '\t')
+                break;
+            caretOffset++;
+        } while(true);
+        do
+        {
+            if(caretOffset >= value.length())
+                break;
+            char c1 = value.charAt(caretOffset);
+            if(c1 == ' ' || c1 == '\t')
+                break;
+            caretOffset++;
+        } while(true);
+        startShowCaret();
+        return true;
+    }
+
+    public boolean moveHome()
+    {
+        caretOffset = 0;
+        startShowCaret();
+        return true;
+    }
+
+    public boolean moveEnd()
+    {
+        caretOffset = value.length();
+        startShowCaret();
+        return true;
+    }
+
+    public void editCopy()
+    {
+        if(bAllSelected || !bCanEdit)
+            root.C.copyToClipboard(value.toString());
+    }
+
+    public void editPaste()
+    {
+        if(bCanEdit)
+        {
+            if(bAllSelected)
+                clear();
+            insert(root.C.pasteFromClipboard());
+        }
+    }
+
+    public void editCut()
+    {
+        if(bCanEdit)
+        {
+            if(bAllSelected)
+            {
+                root.C.copyToClipboard(value.toString());
+                bAllSelected = false;
+                clear();
+            }
+        } else
+        {
+            editCopy();
+        }
+    }
+
+    public void keyboardChar(char c)
+    {
+        if(bEnable && bCanEdit && !bControlDown)
+        {
+            if(c == '\t' && !bCanEditTab)
+                return;
+            if(bAllSelected)
+                clear();
+            bAllSelected = false;
+            if(bNumericOnly)
+            {
+                if(java.lang.Character.isDigit(c))
+                    insert(c);
+                else
+                if(c == '-' && value.length() == 0)
+                    insert(c);
+            } else
+            if(java.lang.Character.isLetterOrDigit(c) || c >= ' ' && c < '\200' || c == '\t')
+                insert(c);
+        }
+    }
+
+    public void keyboardKey(int i, boolean flag)
+    {
+        if(!bEnable)
+        {
+            super.keyboardKey(i, flag);
+            return;
+        }
+        if(!flag)
+        {
+            switch(i)
+            {
+            default:
+                break;
+
+            case 9: // '\t'
+                if(!bCanEditTab)
+                    break;
+                // fall through
+
+            case 8: // '\b'
+            case 35: // '#'
+            case 36: // '$'
+            case 37: // '%'
+            case 39: // '\''
+            case 127: // '\177'
+                if(bCanEdit)
+                    return;
+                break;
+
+            case 17: // '\021'
+                bControlDown = false;
+                break;
+
+            case 16: // '\020'
+                bShiftDown = false;
+                break;
+
+            case 38: // '&'
+            case 40: // '('
+                if(bCanEdit && bHistory)
+                    return;
+                break;
+
+            case 46: // '.'
+                if(bCanEdit && bNumericFloat)
+                    return;
+                break;
+            }
+            super.keyboardKey(i, flag);
+            return;
+        }
+        switch(i)
+        {
+        case 9: // '\t'
+            if(bCanEdit && !bCanEditTab)
+                return;
+            break;
+
+        case 17: // '\021'
+            bControlDown = true;
+            break;
+
+        case 16: // '\020'
+            bShiftDown = true;
+            break;
+
+        case 10: // '\n'
+            if(bCanEdit && bHistory && value.length() > 0)
+                historyList.add(0, value.toString());
+            break;
+
+        case 39: // '\''
+            bAllSelected = false;
+            if(!bCanEdit)
+                break;
+            if(bControlDown)
+                wordRight();
+            else
+                moveRight();
+            return;
+
+        case 37: // '%'
+            bAllSelected = false;
+            if(!bCanEdit)
+                break;
+            if(bControlDown)
+                wordLeft();
+            else
+                moveLeft();
+            return;
+
+        case 38: // '&'
+            if(!bCanEdit || !bHistory)
+                break;
+            bAllSelected = false;
+            if(!historyList.isEmpty())
+            {
+                setValue((java.lang.String)historyList.get(historyCur));
+                moveEnd();
+                int j = historyList.size();
+                historyCur = (historyCur + 1) % j;
+            }
+            return;
+
+        case 40: // '('
+            if(!bCanEdit || !bHistory)
+                break;
+            bAllSelected = false;
+            if(!historyList.isEmpty())
+            {
+                int k = historyList.size();
+                historyCur = ((historyCur - 1) + k) % k;
+                setValue((java.lang.String)historyList.get(historyCur));
+                moveEnd();
+            }
+            return;
+
+        case 36: // '$'
+            bAllSelected = false;
+            if(bCanEdit)
+            {
+                moveHome();
+                return;
+            }
+            break;
+
+        case 35: // '#'
+            bAllSelected = false;
+            if(bCanEdit)
+            {
+                moveEnd();
+                return;
+            }
+            break;
+
+        case 8: // '\b'
+            if(bCanEdit)
+            {
+                if(bAllSelected)
+                    clear();
+                else
+                    backspace();
+                bAllSelected = false;
+                return;
+            }
+            bAllSelected = false;
+            break;
+
+        case 127: // '\177'
+            if(bCanEdit)
+            {
+                if(bAllSelected)
+                    clear();
+                else
+                    delete();
+                bAllSelected = false;
+                return;
+            }
+            bAllSelected = false;
+            break;
+
+        case 46: // '.'
+            if(bCanEdit && bNumericFloat)
+            {
+                insert('.');
+                return;
+            }
+            break;
+
+        default:
+            if(!bControlDown)
+                break;
+            if(i == 67)
+                editCopy();
+            if(i == 86)
+                editPaste();
+            if(i == 88)
+                editCut();
+            break;
+        }
+        super.keyboardKey(i, flag);
+    }
+
+    public void close(boolean flag)
+    {
+        if(bEnable && bChangePending)
+        {
+            bChangePending = false;
+            notify(2, 0);
+        }
+        super.close(flag);
+    }
+
+    public void keyFocusEnter()
+    {
+        if(bEnable && bSelectOnFocus)
+            selectAll();
+        super.keyFocusEnter();
+    }
+
+    public void keyFocusExit()
+    {
+        if(bEnable)
+        {
+            bAllSelected = false;
+            if(bChangePending)
+            {
+                bChangePending = false;
+                notify(2, 0);
+            }
+        }
+        bControlDown = false;
+        bShiftDown = false;
+        super.keyFocusExit();
+    }
+
+    public void mouseButton(int i, boolean flag, float f, float f1)
+    {
+        super.mouseButton(i, flag, f, f1);
+        if(!bEnable || !bCanEdit || i != 0 || !flag)
+        {
+            return;
+        } else
+        {
+            f -= offsetX;
+            com.maddox.gwindow.GFont gfont = root.textFonts[font];
+            caretOffset = gfont.len(getValue(), f, true, false);
+            startShowCaret();
+            bAllSelected = false;
+            return;
+        }
+    }
+
+    public void mouseDoubleClick(int i, float f, float f1)
+    {
+        super.mouseDoubleClick(i, f, f1);
+        if(bEnable && i == 0)
+            selectAll();
+    }
+
+    public boolean _notify(int i, int j)
+    {
+        if(i == 2)
+        {
+            if(!bChangePending)
+                return true;
+            bChangePending = false;
+        }
+        return notify(i, j);
+    }
+
+    public void checkCaretTimeout()
+    {
+        if(!isKeyFocus() || !bCanEdit || !isActivated())
+        {
+            bShowCaret = false;
+            bAllSelected = false;
+            return;
+        }
+        float f = root.deltaTimeSec;
+        caretTimeout -= f;
+        if(caretTimeout <= 0.0F)
+        {
+            bShowCaret = !bShowCaret;
+            caretTimeout = 0.3F;
+        }
+    }
+
+    public void render()
+    {
+        lookAndFeel().render(this, offsetX);
+        checkCaretTimeout();
+    }
+
+    public void created()
+    {
+        bEnableDoubleClick[0] = true;
+        super.created();
+    }
+
+    public java.lang.StringBuffer value;
+    public int maxLength;
+    public boolean bCanEdit;
+    public boolean bCanEditTab;
+    public boolean bNumericOnly;
+    public boolean bNumericFloat;
+    public boolean bPassword;
+    public boolean bSelectOnFocus;
+    public boolean bDelayedNotify;
+    public float offsetX;
+    public boolean bAllSelected;
+    public int caretOffset;
+    public boolean bShowCaret;
+    public float caretTimeout;
+    public boolean bControlDown;
+    public boolean bShiftDown;
+    public boolean bChangePending;
+    public boolean bHistory;
+    public java.util.ArrayList historyList;
+    public int historyCur;
 }

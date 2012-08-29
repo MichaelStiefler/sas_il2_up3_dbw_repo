@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIInfoName.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
@@ -5,22 +10,33 @@ import com.maddox.gwindow.GRegion;
 import com.maddox.il2.ai.UserCfg;
 import com.maddox.il2.ai.World;
 
-public class GUIInfoName extends GUIInfoTop
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIInfoTop
+
+public class GUIInfoName extends com.maddox.il2.gui.GUIInfoTop
 {
-  public static String nickName = null;
 
-  public void render() {
-    super.render();
-    setCanvasColor(GColor.Gray);
-    setCanvasFont(0);
-    UserCfg localUserCfg = World.cur().userCfg;
-    if (nickName != null)
-      draw(0.0F, 0.0F, this.win.dx - M(2.0F), this.win.dy, 2, nickName);
-    else
-      draw(0.0F, 0.0F, this.win.dx - M(2.0F), this.win.dy, 2, localUserCfg.name + " '" + localUserCfg.callsign + "' " + localUserCfg.surname);
-  }
+    public GUIInfoName()
+    {
+    }
 
-  public void setPosSize() {
-    set1024PosSize(300.0F, 0.0F, 724.0F, 32.0F);
-  }
+    public void render()
+    {
+        super.render();
+        setCanvasColor(com.maddox.gwindow.GColor.Gray);
+        setCanvasFont(0);
+        com.maddox.il2.ai.UserCfg usercfg = com.maddox.il2.ai.World.cur().userCfg;
+        if(nickName != null)
+            draw(0.0F, 0.0F, win.dx - M(2.0F), win.dy, 2, nickName);
+        else
+            draw(0.0F, 0.0F, win.dx - M(2.0F), win.dy, 2, usercfg.name + " '" + usercfg.callsign + "' " + usercfg.surname);
+    }
+
+    public void setPosSize()
+    {
+        set1024PosSize(300F, 0.0F, 724F, 32F);
+    }
+
+    public static java.lang.String nickName = null;
+
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CollideEnvXY.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.JGP.Point3d;
@@ -9,1491 +14,1856 @@ import com.maddox.util.HashMapXY16List;
 import java.io.PrintStream;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
-public class CollideEnvXY extends CollideEnv
+// Referenced classes of package com.maddox.il2.engine:
+//            CollideEnv, Actor, ActorMesh, CollisionInterface, 
+//            HierMesh, Engine, Landscape, MsgCollision, 
+//            ActorPos, MsgCollisionRequest, Mesh, EngineProfile, 
+//            BulletGeneric, MsgBulletCollision, ActorFilter, Accumulator
+
+public class CollideEnvXY extends com.maddox.il2.engine.CollideEnv
 {
-  public static final int SMALL_STEP = 32;
-  public static final int STEP = 96;
-  public static final float STEPF = 96.0F;
-  public static final float STEPF_2 = 48.0F;
-  public static float STATIC_HMAX = 50.0F;
-  private static final float MAX_ENEMY_DIST = 6000.0F;
-  private boolean bDoCollision = false;
-
-  private int[] indexLineX = new int[100];
-  private int[] indexLineY = new int[100];
-  private double boundXmin;
-  private double boundXmax;
-  private double boundYmin;
-  private double boundYmax;
-  private double boundZmin;
-  private double boundZmax;
-  private HashMapExt moved = new HashMapExt();
-  private HashMapExt current = new HashMapExt();
-  private Actor _bulletActor;
-  private String _bulletChunk;
-  private double _bulletTickOffset;
-  private boolean _bulletArcade;
-  private AbstractCollection _getSphereLst;
-  private Point3d _getSphereCenter;
-  private double _getSphereR;
-  private Point3d _getLineP0;
-  private Point3d _getLineP1 = new Point3d();
-  private double _getLineR2;
-  private double _getLineLen2;
-  private double _getLineDx;
-  private double _getLineDy;
-  private double _getLineDz;
-  private boolean _getLineBOnlySphere;
-  private double _getLineU;
-  private Actor _getLineA;
-  private Point3d _getLineRayHit = new Point3d();
-  private Point3d _getLineLandHit = new Point3d();
-  private Point3d _getFilteredCenter;
-  private ActorFilter _getFilteredFilter;
-  private double _getFilteredR;
-  private Actor _current;
-  private Point3d _currentP;
-  private double _currentCollisionR;
-  private Point3d _p;
-  private Point3d p0 = new Point3d();
-  private Vector3d normal = new Vector3d();
-  private HashMapXY16Hash mapXY = new HashMapXY16Hash(7);
-  private HashMapXY16List lstXY = new HashMapXY16List(7);
-  private CollideEnvXYIndex index = new CollideEnvXYIndex();
-
-  public boolean isDoCollision()
-  {
-    return this.bDoCollision;
-  }
-
-  public static final double intersectPointSphere(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, double paramDouble6, double paramDouble7)
-  {
-    double d = paramDouble7 * paramDouble7;
-    if (d >= (paramDouble1 - paramDouble4) * (paramDouble1 - paramDouble4) + (paramDouble2 - paramDouble5) * (paramDouble2 - paramDouble5) + (paramDouble3 - paramDouble6) * (paramDouble3 - paramDouble6)) return 0.0D;
-    return -1.0D;
-  }
-
-  public static final double intersectLineSphere(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, double paramDouble6, double paramDouble7, double paramDouble8, double paramDouble9, double paramDouble10)
-  {
-    double d1 = paramDouble10 * paramDouble10;
-    double d2 = paramDouble4 - paramDouble1;
-    double d3 = paramDouble5 - paramDouble2;
-    double d4 = paramDouble6 - paramDouble3;
-    double d5 = d2 * d2 + d3 * d3 + d4 * d4;
-    if (d5 < 1.0E-006D) {
-      if (d1 >= (paramDouble1 - paramDouble7) * (paramDouble1 - paramDouble7) + (paramDouble2 - paramDouble8) * (paramDouble2 - paramDouble8) + (paramDouble3 - paramDouble9) * (paramDouble3 - paramDouble9)) return 0.0D;
-      return -1.0D;
-    }
-    double d6 = ((paramDouble7 - paramDouble1) * d2 + (paramDouble8 - paramDouble2) * d3 + (paramDouble9 - paramDouble3) * d4) / d5;
-    if ((d6 >= 0.0D) && (d6 <= 1.0D)) {
-      d7 = paramDouble1 + d6 * d2;
-      d8 = paramDouble2 + d6 * d3;
-      double d9 = paramDouble3 + d6 * d4;
-      double d10 = (d7 - paramDouble7) * (d7 - paramDouble7) + (d8 - paramDouble8) * (d8 - paramDouble8) + (d9 - paramDouble9) * (d9 - paramDouble9);
-      double d11 = d1 - d10;
-      if (d11 < 0.0D)
-        return -1.0D;
-      d6 -= Math.sqrt(d11 / d5);
-      if (d6 < 0.0D) d6 = 0.0D;
-      return d6;
-    }
-    double d7 = (paramDouble4 - paramDouble7) * (paramDouble4 - paramDouble7) + (paramDouble5 - paramDouble8) * (paramDouble5 - paramDouble8) + (paramDouble6 - paramDouble9) * (paramDouble6 - paramDouble9);
-    double d8 = (paramDouble1 - paramDouble7) * (paramDouble1 - paramDouble7) + (paramDouble2 - paramDouble8) * (paramDouble2 - paramDouble8) + (paramDouble3 - paramDouble9) * (paramDouble3 - paramDouble9);
-    if ((d7 <= d1) || (d8 <= d1)) {
-      if (d7 < d8) return 1.0D;
-      return 0.0D;
-    }
-    return -1.0D;
-  }
-
-  private void collidePoint()
-  {
-    makeBoundBox(this._p.x, this._p.y, this._p.z);
-    int i = makeIndexLine(this._p);
-    Object localObject;
-    for (int j = 0; j < i; j++) {
-      HashMapExt localHashMapExt = this.mapXY.get(this.indexLineY[j], this.indexLineX[j]);
-      if (localHashMapExt != null) {
-        Map.Entry localEntry = localHashMapExt.nextEntry(null);
-        while (localEntry != null) {
-          localObject = (Actor)localEntry.getKey();
-          if ((this._current.getOwner() != localObject) && (Actor.isValid((Actor)localObject)) && (!this.current.containsKey(localObject)))
-            _collidePoint((Actor)localObject);
-          localEntry = localHashMapExt.nextEntry(localEntry);
-        }
-      }
-    }
-    double d1 = Engine.cur.land.Hmax(this._p.x, this._p.y);
-    if (this.boundZmin < d1 + STATIC_HMAX) {
-      for (int k = 0; k < i; k++) {
-        localObject = this.lstXY.get(this.indexLineY[k], this.indexLineX[k]);
-        if (localObject != null) {
-          int m = ((List)localObject).size();
-          for (int n = 0; n < m; n++) {
-            Actor localActor = (Actor)((List)localObject).get(n);
-            if ((this._current.getOwner() != localActor) && (Actor.isValid(localActor)) && (!this.current.containsKey(localActor))) {
-              _collidePoint(localActor);
-            }
-          }
-        }
-      }
-    }
-    if ((this._current.isCollideOnLand()) && (this._p.z - d1 <= 0.0D)) {
-      double d2 = this._p.z - Engine.cur.land.HQ(this._p.x, this._p.y);
-      if (d2 <= 0.0D) {
-        long l = Time.tick();
-        MsgCollision.post(l, this._current, Engine.actorLand(), "<edge>", "Body");
-      }
-    }
-  }
-
-  private void _collidePoint(Actor paramActor) {
-    double d1 = paramActor.collisionR();
-    if (d1 > 0.0D) {
-      Point3d localPoint3d = paramActor.pos.getAbsPoint();
-      double d2 = -1.0D;
-      int i = 1;
-      this.p0.set(this._p);
-      Object localObject;
-      if (paramActor.pos.isChanged()) {
-        localObject = paramActor.pos.getCurrentPoint();
-        if (collideBoundBox(((Point3d)localObject).x, ((Point3d)localObject).y, ((Point3d)localObject).z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1))
-          this.p0.x += localPoint3d.x - ((Point3d)localObject).x;
-        this.p0.y += localPoint3d.y - ((Point3d)localObject).y;
-        this.p0.z += localPoint3d.z - ((Point3d)localObject).z;
-        i = (this.p0.x - this._p.x) * (this.p0.x - this._p.x) + (this.p0.y - this._p.y) * (this.p0.y - this._p.y) + (this.p0.z - this._p.z) * (this.p0.z - this._p.z) < 1.0E-006D ? 1 : 0;
-
-        if (i != 0) {
-          d2 = intersectPointSphere(this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
-        }
-        else {
-          d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
-        }
-
-      }
-      else if (collideBoundBox(localPoint3d.x, localPoint3d.y, localPoint3d.z, d1)) {
-        d2 = intersectPointSphere(this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
-      }
-
-      if ((d2 >= 0.0D) && (MsgCollisionRequest.on(this._current, paramActor))) {
-        localObject = "Body";
-        if ((paramActor instanceof ActorMesh)) {
-          Mesh localMesh = ((ActorMesh)paramActor).mesh();
-          Loc localLoc = paramActor.pos.getAbs();
-          if (i != 0) d2 = localMesh.detectCollisionPoint(localLoc, this._p) != 0 ? 0.0D : -1.0D; else
-            d2 = localMesh.detectCollisionLine(localLoc, this.p0, this._p);
-          if (d2 >= 0.0D) localObject = Mesh.collisionChunk(0);
-        }
-        if (d2 >= 0.0D) {
-          long l = Time.tick() + ()(d2 * Time.tickLenFms());
-          if (l >= Time.tickNext()) l = Time.tickNext() - 1L;
-          MsgCollision.post2(l, this._current, paramActor, "<edge>", (String)localObject);
-        }
-      }
-    }
-    this.current.put(paramActor, null);
-  }
-
-  private void collideLine() {
-    this._currentP = this._current.pos.getCurrentPoint();
-    this._p = this._current.pos.getAbsPoint();
-    if ((this._currentP.x - this._p.x) * (this._currentP.x - this._p.x) + (this._currentP.y - this._p.y) * (this._currentP.y - this._p.y) + (this._currentP.z - this._p.z) * (this._currentP.z - this._p.z) < 1.0E-006D)
+    class CollideEnvXYIndex
     {
-      collidePoint();
-      return;
-    }
 
-    makeBoundBox(this._currentP.x, this._currentP.y, this._currentP.z, this._p.x, this._p.y, this._p.z);
-    int i = makeIndexLine(this._currentP, this._p);
-    if (i == 0)
-      System.out.println("CollideEnvXY.collideLine: " + this._current + " very big step moved actor - IGNORED !!!");
-    Object localObject;
-    for (int j = 0; j < i; j++) {
-      HashMapExt localHashMapExt = this.mapXY.get(this.indexLineY[j], this.indexLineX[j]);
-      if (localHashMapExt != null) {
-        Map.Entry localEntry = localHashMapExt.nextEntry(null);
-        while (localEntry != null) {
-          localObject = (Actor)localEntry.getKey();
-          if ((this._current.getOwner() != localObject) && (Actor.isValid((Actor)localObject)) && (!this.current.containsKey(localObject)))
-            _collideLine((Actor)localObject);
-          localEntry = localHashMapExt.nextEntry(localEntry);
-        }
-      }
-    }
-    double d1 = Engine.cur.land.Hmax(this._p.x, this._p.y);
-    if (this.boundZmin < d1 + STATIC_HMAX) {
-      for (int k = 0; k < i; k++) {
-        localObject = this.lstXY.get(this.indexLineY[k], this.indexLineX[k]);
-        if (localObject != null) {
-          int m = ((List)localObject).size();
-          for (int n = 0; n < m; n++) {
-            Actor localActor = (Actor)((List)localObject).get(n);
-            if ((this._current.getOwner() != localActor) && (Actor.isValid(localActor)) && (!this.current.containsKey(localActor))) {
-              _collideLine(localActor);
-            }
-          }
-        }
-      }
-    }
-    if ((this._current.isCollideOnLand()) && (this._p.z - d1 <= 0.0D)) {
-      double d2 = this._p.z - Engine.cur.land.HQ(this._p.x, this._p.y);
-      if (d2 <= 0.0D) {
-        long l = Time.tick();
-        double d3 = this._currentP.z - Engine.cur.land.HQ(this._currentP.x, this._currentP.y);
-        if (d3 > 0.0D) {
-          double d4 = 1.0D + d2 / (d3 - d2);
-          l += ()(d4 * Time.tickLenFms());
-          if (l >= Time.tickNext()) l = Time.tickNext() - 1L;
-        }
-        MsgCollision.post(l, this._current, Engine.actorLand(), "<edge>", "Body");
-      }
-    }
-  }
-
-  private void _collideLine(Actor paramActor) {
-    Engine.cur.profile.collideLineAll += 1;
-    double d1 = paramActor.collisionR();
-    if (d1 > 0.0D) {
-      Point3d localPoint3d = paramActor.pos.getAbsPoint();
-      double d2 = -1.0D;
-      int i = 0;
-      this.p0.set(this._currentP);
-      Object localObject;
-      if (paramActor.pos.isChanged()) {
-        localObject = paramActor.pos.getCurrentPoint();
-        if (collideBoundBox(((Point3d)localObject).x, ((Point3d)localObject).y, ((Point3d)localObject).z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1)) {
-          this.p0.x += localPoint3d.x - ((Point3d)localObject).x;
-          this.p0.y += localPoint3d.y - ((Point3d)localObject).y;
-          this.p0.z += localPoint3d.z - ((Point3d)localObject).z;
-          i = (this.p0.x - this._p.x) * (this.p0.x - this._p.x) + (this.p0.y - this._p.y) * (this.p0.y - this._p.y) + (this.p0.z - this._p.z) * (this.p0.z - this._p.z) < 1.0E-006D ? 1 : 0;
-
-          if (i != 0) {
-            d2 = intersectPointSphere(this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
-          }
-          else {
-            d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
-          }
-        }
-
-      }
-      else if (collideBoundBox(localPoint3d.x, localPoint3d.y, localPoint3d.z, d1)) {
-        d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
-      }
-
-      if (d2 >= 0.0D) {
-        Engine.cur.profile.collideLineSphere += 1;
-        if (MsgCollisionRequest.on(this._current, paramActor)) {
-          localObject = "Body";
-          if ((paramActor instanceof ActorMesh)) {
-            Mesh localMesh = ((ActorMesh)paramActor).mesh();
-            Loc localLoc = paramActor.pos.getAbs();
-            if (i != 0) d2 = localMesh.detectCollisionPoint(localLoc, this._p) != 0 ? 0.0D : -1.0D; else
-              d2 = localMesh.detectCollisionLine(localLoc, this.p0, this._p);
-            if (d2 >= 0.0D) localObject = Mesh.collisionChunk(0);
-          }
-          if (d2 >= 0.0D) {
-            Engine.cur.profile.collideLine += 1;
-            long l = Time.tick() + ()(d2 * Time.tickLenFms());
-            if (l >= Time.tickNext()) l = Time.tickNext() - 1L;
-            MsgCollision.post2(l, this._current, paramActor, "<edge>", (String)localObject);
-          }
-        }
-      }
-    }
-    this.current.put(paramActor, null);
-  }
-
-  private int makeIndexLine(Point3d paramPoint3d)
-  {
-    int i = (int)paramPoint3d.x / 96;
-    int j = (int)paramPoint3d.y / 96;
-    int k = 1;
-    if ((this.indexLineX == null) || (k > this.indexLineX.length)) {
-      this.indexLineX = new int[2 * k];
-      this.indexLineY = new int[2 * k];
-    }
-    this.indexLineX[0] = i;
-    this.indexLineY[0] = j;
-    return k;
-  }
-  private int makeIndexLine(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    int i = (int)paramPoint3d1.x / 96;
-    int j = (int)paramPoint3d1.y / 96;
-    int k = Math.abs((int)paramPoint3d2.x / 96 - i) + Math.abs((int)paramPoint3d2.y / 96 - j) + 1;
-
-    if (k > 100) {
-      return 0;
-    }
-    this.indexLineX[0] = i;
-    this.indexLineY[0] = j;
-    if (k > 1) {
-      int m = 1; if (paramPoint3d2.x < paramPoint3d1.x) m = -1;
-      int n = 1; if (paramPoint3d2.y < paramPoint3d1.y) n = -1;
-      double d1;
-      double d2;
-      int i1;
-      if (Math.abs(paramPoint3d2.x - paramPoint3d1.x) >= Math.abs(paramPoint3d2.y - paramPoint3d1.y)) {
-        d1 = Math.abs(paramPoint3d1.y % 96.0D);
-        d2 = 96.0D * (paramPoint3d2.y - paramPoint3d1.y) / Math.abs(paramPoint3d2.x - paramPoint3d1.x);
-        if (d2 >= 0.0D)
-          for (i1 = 1; i1 < k; i1++) {
-            if (d1 < 96.0D) { i += m; d1 += d2; } else {
-              j += n; d1 -= 96.0D;
-            }this.indexLineX[i1] = i; this.indexLineY[i1] = j;
-          }
-        else
-          for (i1 = 1; i1 < k; i1++) {
-            if (d1 > 0.0D) { i += m; d1 += d2; } else {
-              j += n; d1 += 96.0D;
-            }this.indexLineX[i1] = i; this.indexLineY[i1] = j;
-          }
-      }
-      else
-      {
-        d1 = Math.abs(paramPoint3d1.x % 96.0D);
-        d2 = 96.0D * (paramPoint3d2.x - paramPoint3d1.x) / Math.abs(paramPoint3d2.y - paramPoint3d1.y);
-        if (d2 >= 0.0D)
-          for (i1 = 1; i1 < k; i1++) {
-            if (d1 < 96.0D) { j += n; d1 += d2; } else {
-              i += m; d1 -= 96.0D;
-            }this.indexLineX[i1] = i; this.indexLineY[i1] = j;
-          }
-        else {
-          for (i1 = 1; i1 < k; i1++) {
-            if (d1 > 0.0D) { j += n; d1 += d2; } else {
-              i += m; d1 += 96.0D;
-            }this.indexLineX[i1] = i; this.indexLineY[i1] = j;
-          }
-        }
-      }
-    }
-
-    return k;
-  }
-
-  private void collideInterface() {
-    CollisionInterface localCollisionInterface = (CollisionInterface)this._current;
-    if (!localCollisionInterface.collision_isEnabled()) return;
-    this._currentP = this._current.pos.getCurrentPoint();
-    this._p = this._current.pos.getAbsPoint();
-    int i = (int)this._p.x / 96;
-    int j = (int)this._p.y / 96;
-    this._currentCollisionR = localCollisionInterface.collision_getCylinderR();
-    makeBoundBox2D(this._currentP.x, this._currentP.y, this._p.x, this._p.y, this._currentCollisionR);
-    HashMapExt localHashMapExt = this.mapXY.get(j, i);
-    if (localHashMapExt != null) {
-      Map.Entry localEntry = localHashMapExt.nextEntry(null);
-      while (localEntry != null) {
-        Actor localActor = (Actor)localEntry.getKey();
-        if ((Actor.isValid(localActor)) && (!this.current.containsKey(localActor))) {
-          double d1 = localActor.collisionR();
-          if (d1 > 0.0D) {
-            Point3d localPoint3d1 = localActor.pos.getAbsPoint();
-            double d2 = -1.0D;
-            if (localActor.pos.isChanged()) {
-              Point3d localPoint3d2 = localActor.pos.getCurrentPoint();
-              if ((collideBoundBox2D(localPoint3d2.x, localPoint3d2.y, localPoint3d1.x, localPoint3d1.y, d1)) && 
-                (MsgCollisionRequest.on(this._current, localActor))) {
-                localCollisionInterface.collision_processing(localActor);
-              }
-            }
-            else if ((collideBoundBox2D(localPoint3d1.x, localPoint3d1.y, d1)) && 
-              (MsgCollisionRequest.on(this._current, localActor))) {
-              localCollisionInterface.collision_processing(localActor);
-            }
-
-            this.current.put(localActor, null);
-          }
-        }
-        localEntry = localHashMapExt.nextEntry(localEntry);
-      }
-    }
-    this.current.clear();
-  }
-
-  private void collideSphere() {
-    this._currentP = this._current.pos.getCurrentPoint();
-    this._p = this._current.pos.getAbsPoint();
-    int i = (int)this._p.x / 96;
-    int j = (int)this._p.y / 96;
-    this._currentCollisionR = this._current.collisionR();
-    if (this._currentCollisionR <= 0.0D) return;
-    makeBoundBox(this._p.x, this._p.y, this._p.z, this._currentCollisionR);
-    Object localObject1;
-    Object localObject2;
-    if (this._currentCollisionR <= 32.0D) {
-      HashMapExt localHashMapExt = this.mapXY.get(j, i);
-      if (localHashMapExt != null) {
-        localObject1 = localHashMapExt.nextEntry(null);
-        while (localObject1 != null) {
-          localObject2 = (Actor)((Map.Entry)localObject1).getKey();
-          if ((Actor.isValid((Actor)localObject2)) && (!this.current.containsKey(localObject2)) && (!this.moved.containsKey(localObject2)))
-          {
-            _collideSphere((Actor)localObject2);
-          }localObject1 = localHashMapExt.nextEntry((Map.Entry)localObject1);
-        }
-      }
-    } else {
-      this.index.make(this._p, (float)this._currentCollisionR);
-      for (int k = 0; k < this.index.count; k++) {
-        localObject1 = this.mapXY.get(this.index.y[k], this.index.x[k]);
-        if (localObject1 != null) {
-          localObject2 = ((HashMapExt)localObject1).nextEntry(null);
-          while (localObject2 != null) {
-            Actor localActor1 = (Actor)((Map.Entry)localObject2).getKey();
-            if ((Actor.isValid(localActor1)) && (!this.current.containsKey(localActor1)) && (!this.moved.containsKey(localActor1)))
+        public void make(int i, int j)
+        {
+            int k = i % 3;
+            int l = i / 3;
+            int i1 = j % 3;
+            int j1 = j / 3;
+            x[0] = l;
+            y[0] = j1;
+            switch(i1)
             {
-              _collideSphere(localActor1);
-            }localObject2 = ((HashMapExt)localObject1).nextEntry((Map.Entry)localObject2);
-          }
-        }
-      }
-    }
-    double d1 = Engine.cur.land.Hmax(this._p.x, this._p.y);
-    if (this.boundZmin < d1 + STATIC_HMAX) {
-      localObject2 = this.lstXY.get(j, i);
-      if (localObject2 != null) {
-        int m = ((List)localObject2).size();
-        for (int n = 0; n < m; n++) {
-          Actor localActor2 = (Actor)((List)localObject2).get(n);
-          if ((Actor.isValid(localActor2)) && (!this.current.containsKey(localActor2)) && (!this.moved.containsKey(localActor2))) {
-            _collideSphere(localActor2);
-          }
-        }
-      }
-    }
-    if ((this._current.isCollideOnLand()) && (this._p.z - this._currentCollisionR - d1 <= 0.0D)) {
-      double d2 = this._p.z - this._currentCollisionR - Engine.cur.land.HQ(this._p.x, this._p.y);
-      if (d2 <= 0.0D) {
-        long l = Time.tick();
-        double d4;
-        if ((this._current instanceof ActorMesh)) {
-          Mesh localMesh = ((ActorMesh)this._current).mesh();
-          Loc localLoc = this._current.pos.getAbs();
-          d4 = Engine.cur.land.EQN(this._p.x, this._p.y, this.normal);
-          if (localMesh.detectCollisionPlane(localLoc, this.normal, d4) >= 0.0F)
-            MsgCollision.post(l, this._current, Engine.actorLand(), Mesh.collisionChunk(0), "Body");
-        } else {
-          double d3 = this._currentP.z - this._currentCollisionR - Engine.cur.land.HQ(this._currentP.x, this._currentP.y);
-          if (d3 > 0.0D) {
-            d4 = 1.0D + d2 / (d3 - d2);
-            l += ()(d4 * Time.tickLenFms());
-            if (l >= Time.tickNext()) l = Time.tickNext() - 1L;
-          }
-          MsgCollision.post(l, this._current, Engine.actorLand(), "Body", "Body");
-        }
-      }
-    }
-  }
+            default:
+                break;
 
-  private void _collideSphere(Actor paramActor) {
-    Engine.cur.profile.collideSphereAll += 1;
-    double d1 = paramActor.collisionR();
-    if (d1 > 0.0D) {
-      Point3d localPoint3d = paramActor.pos.getAbsPoint();
-      if (collideBoundBox(localPoint3d.x, localPoint3d.y, localPoint3d.z, d1)) {
-        double d2 = (this._currentCollisionR + d1) * (this._currentCollisionR + d1);
-        double d3 = (this._p.x - localPoint3d.x) * (this._p.x - localPoint3d.x) + (this._p.y - localPoint3d.y) * (this._p.y - localPoint3d.y) + (this._p.z - localPoint3d.z) * (this._p.z - localPoint3d.z);
-
-        if (d3 <= d2) {
-          Engine.cur.profile.collideSphereSphere += 1;
-          if (MsgCollisionRequest.on(this._current, paramActor)) {
-            long l = Time.tick();
-            if (((this._current instanceof ActorMesh)) && ((paramActor instanceof ActorMesh))) {
-              Loc localLoc1 = this._current.pos.getAbs();
-              Loc localLoc2 = paramActor.pos.getAbs();
-              Mesh localMesh1 = ((ActorMesh)this._current).mesh();
-              Mesh localMesh2 = ((ActorMesh)paramActor).mesh();
-              if ((localMesh1 instanceof HierMesh)) {
-                if ((localMesh2 instanceof HierMesh)) {
-                  if (0 != ((HierMesh)localMesh1).detectCollision(localLoc1, (HierMesh)localMesh2, localLoc2)) {
-                    Engine.cur.profile.collideSphere += 1;
-                    MsgCollision.post2(l, this._current, paramActor, Mesh.collisionChunk(0), Mesh.collisionChunk(1));
-                  }
-                }
-                else if (0 != ((HierMesh)localMesh1).detectCollision(localLoc1, localMesh2, localLoc2)) {
-                  Engine.cur.profile.collideSphere += 1;
-                  MsgCollision.post2(l, this._current, paramActor, Mesh.collisionChunk(0), Mesh.collisionChunk(1));
-                }
-              }
-              else if ((localMesh2 instanceof HierMesh)) {
-                if (0 != ((HierMesh)localMesh2).detectCollision(localLoc2, localMesh1, localLoc1)) {
-                  Engine.cur.profile.collideSphere += 1;
-                  MsgCollision.post2(l, paramActor, this._current, Mesh.collisionChunk(0), Mesh.collisionChunk(1));
-                }
-              }
-              else if (0 != localMesh1.detectCollision(localLoc1, localMesh2, localLoc2)) {
-                Engine.cur.profile.collideSphere += 1;
-                MsgCollision.post2(l, this._current, paramActor, Mesh.collisionChunk(0), Mesh.collisionChunk(1));
-              }
-            }
-            else {
-              if (paramActor.pos.isChanged()) {
-                localPoint3d = paramActor.pos.getCurrentPoint();
-              }
-              double d4 = (this._currentP.x - localPoint3d.x) * (this._currentP.x - localPoint3d.x) + (this._currentP.y - localPoint3d.y) * (this._currentP.y - localPoint3d.y) + (this._currentP.z - localPoint3d.z) * (this._currentP.z - localPoint3d.z);
-
-              if (d4 > d2) {
-                d2 = Math.sqrt(d2);
-                d3 = Math.sqrt(d3);
-                d4 = Math.sqrt(d4);
-
-                double d5 = 1.0D - (d2 - d3) / (d4 - d3);
-                l += ()(d5 * Time.tickLenFms());
-                if (l >= Time.tickNext()) l = Time.tickNext() - 1L;
-              }
-              Engine.cur.profile.collideSphere += 1;
-              MsgCollision.post2(l, this._current, paramActor, "Body", "Body");
-            }
-          }
-        }
-      }
-    }
-    this.current.put(paramActor, null);
-  }
-
-  private void makeBoundBox(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, double paramDouble6)
-  {
-    if (paramDouble1 < paramDouble4) { this.boundXmin = paramDouble1; this.boundXmax = paramDouble4; } else {
-      this.boundXmin = paramDouble4; this.boundXmax = paramDouble1;
-    }if (paramDouble2 < paramDouble5) { this.boundYmin = paramDouble2; this.boundYmax = paramDouble5; } else {
-      this.boundYmin = paramDouble5; this.boundYmax = paramDouble2;
-    }if (paramDouble3 < paramDouble6) { this.boundZmin = paramDouble3; this.boundZmax = paramDouble6; } else {
-      this.boundZmin = paramDouble6; this.boundZmax = paramDouble3;
-    }
-  }
-  private void makeBoundBox2D(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5) {
-    if (paramDouble1 < paramDouble3) { this.boundXmin = (paramDouble1 - paramDouble5); this.boundXmax = (paramDouble3 + paramDouble5); } else {
-      this.boundXmin = (paramDouble3 - paramDouble5); this.boundXmax = (paramDouble1 + paramDouble5);
-    }if (paramDouble2 < paramDouble4) { this.boundYmin = (paramDouble2 - paramDouble5); this.boundYmax = (paramDouble4 + paramDouble5); } else {
-      this.boundYmin = (paramDouble4 - paramDouble5); this.boundYmax = (paramDouble2 + paramDouble5);
-    }
-  }
-  private void makeBoundBox(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4) {
-    this.boundXmin = (paramDouble1 - paramDouble4);
-    this.boundXmax = (paramDouble1 + paramDouble4);
-    this.boundYmin = (paramDouble2 - paramDouble4);
-    this.boundYmax = (paramDouble2 + paramDouble4);
-    this.boundZmin = (paramDouble3 - paramDouble4);
-    this.boundZmax = (paramDouble3 + paramDouble4);
-  }
-  private void makeBoundBox(double paramDouble1, double paramDouble2, double paramDouble3) {
-    this.boundXmin = (this.boundXmax = paramDouble1);
-
-    this.boundYmin = (this.boundYmax = paramDouble2);
-
-    this.boundZmin = (this.boundZmax = paramDouble3);
-  }
-
-  private boolean collideBoundBox(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4) {
-    if (paramDouble3 + paramDouble4 < this.boundZmin) return false;
-    if (paramDouble3 - paramDouble4 > this.boundZmax) return false;
-    if (paramDouble1 + paramDouble4 < this.boundXmin) return false;
-    if (paramDouble1 - paramDouble4 > this.boundXmax) return false;
-    if (paramDouble2 + paramDouble4 < this.boundYmin) return false;
-    return paramDouble2 - paramDouble4 <= this.boundYmax;
-  }
-
-  private boolean collideBoundBox2D(double paramDouble1, double paramDouble2, double paramDouble3) {
-    if (paramDouble1 + paramDouble3 < this.boundXmin) return false;
-    if (paramDouble1 - paramDouble3 > this.boundXmax) return false;
-    if (paramDouble2 + paramDouble3 < this.boundYmin) return false;
-    return paramDouble2 - paramDouble3 <= this.boundYmax;
-  }
-
-  private boolean collideBoundBox(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, double paramDouble6, double paramDouble7) {
-    if (paramDouble3 < paramDouble6) {
-      if (paramDouble6 + paramDouble7 < this.boundZmin) return false;
-      if (paramDouble3 - paramDouble7 > this.boundZmax) return false; 
-    }
-    else {
-      if (paramDouble3 + paramDouble7 < this.boundZmin) return false;
-      if (paramDouble6 - paramDouble7 > this.boundZmax) return false;
-    }
-    if (paramDouble1 < paramDouble4) {
-      if (paramDouble4 + paramDouble7 < this.boundXmin) return false;
-      if (paramDouble1 - paramDouble7 > this.boundXmax) return false; 
-    }
-    else {
-      if (paramDouble1 + paramDouble7 < this.boundXmin) return false;
-      if (paramDouble4 - paramDouble7 > this.boundXmax) return false;
-    }
-    if (paramDouble2 < paramDouble5) {
-      if (paramDouble5 + paramDouble7 < this.boundYmin) return false;
-      if (paramDouble2 - paramDouble7 > this.boundYmax) return false; 
-    }
-    else {
-      if (paramDouble2 + paramDouble7 < this.boundYmin) return false;
-      if (paramDouble5 - paramDouble7 > this.boundYmax) return false;
-    }
-    return true;
-  }
-  private boolean collideBoundBox2D(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5) {
-    if (paramDouble1 < paramDouble3) {
-      if (paramDouble3 + paramDouble5 < this.boundXmin) return false;
-      if (paramDouble1 - paramDouble5 > this.boundXmax) return false; 
-    }
-    else {
-      if (paramDouble1 + paramDouble5 < this.boundXmin) return false;
-      if (paramDouble3 - paramDouble5 > this.boundXmax) return false;
-    }
-    if (paramDouble2 < paramDouble4) {
-      if (paramDouble4 + paramDouble5 < this.boundYmin) return false;
-      if (paramDouble2 - paramDouble5 > this.boundYmax) return false; 
-    }
-    else {
-      if (paramDouble2 + paramDouble5 < this.boundYmin) return false;
-      if (paramDouble4 - paramDouble5 > this.boundYmax) return false;
-    }
-    return true;
-  }
-
-  protected void doCollision(List paramList)
-  {
-    this.bDoCollision = true;
-    int i = paramList.size();
-    for (int j = 0; j < i; j++) {
-      this._current = ((Actor)paramList.get(j));
-      if (Actor.isValid(this._current)) {
-        if (this._current.isCollide()) {
-          if (this._current.isCollideAsPoint()) {
-            collideLine();
-          } else {
-            this.moved.put(this._current, null);
-            collideSphere();
-          }
-          this.current.clear();
-        } else if ((this._current instanceof CollisionInterface)) {
-          collideInterface();
-        }
-      }
-    }
-    this.moved.clear();
-    this._current = null;
-    this.bDoCollision = false;
-  }
-
-  private void _bulletCollide(Actor paramActor1, Actor paramActor2)
-  {
-    Engine.cur.profile.collideLineAll += 1;
-    double d1 = paramActor1.collisionR();
-    if (d1 > 0.0D) {
-      Point3d localPoint3d = paramActor1.pos.getAbsPoint();
-      double d2 = -1.0D;
-      int i = 0;
-      this.p0.set(this._currentP);
-      Object localObject;
-      if (paramActor1.pos.isChanged()) {
-        localObject = paramActor1.pos.getCurrentPoint();
-        if (collideBoundBox(((Point3d)localObject).x, ((Point3d)localObject).y, ((Point3d)localObject).z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1)) {
-          this.p0.x += localPoint3d.x - ((Point3d)localObject).x;
-          this.p0.y += localPoint3d.y - ((Point3d)localObject).y;
-          this.p0.z += localPoint3d.z - ((Point3d)localObject).z;
-          i = (this.p0.x - this._p.x) * (this.p0.x - this._p.x) + (this.p0.y - this._p.y) * (this.p0.y - this._p.y) + (this.p0.z - this._p.z) * (this.p0.z - this._p.z) < 1.0E-006D ? 1 : 0;
-
-          if (i != 0) {
-            d2 = intersectPointSphere(this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
-          }
-          else {
-            d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
-          }
-        }
-
-      }
-      else if (collideBoundBox(localPoint3d.x, localPoint3d.y, localPoint3d.z, d1)) {
-        d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1);
-      }
-
-      if (d2 >= 0.0D) {
-        Engine.cur.profile.collideLineSphere += 1;
-        localObject = "Body";
-        if ((paramActor1 instanceof ActorMesh)) {
-          Mesh localMesh = ((ActorMesh)paramActor1).mesh();
-          Loc localLoc = paramActor1.pos.getAbs();
-          if (i != 0) d2 = localMesh.detectCollisionPoint(localLoc, this._p) != 0 ? 0.0D : -1.0D; else
-            d2 = localMesh.detectCollisionLine(localLoc, this.p0, this._p);
-          if (d2 >= 0.0D) localObject = Mesh.collisionChunk(0);
-        }
-        if ((d2 >= 0.0D) && (d2 <= 1.0D)) {
-          Engine.cur.profile.collideLine += 1;
-          if ((this._bulletActor == null) || (d2 < this._bulletTickOffset)) {
-            this._bulletActor = paramActor1;
-            this._bulletTickOffset = d2;
-            this._bulletChunk = ((String)localObject);
-            this._bulletArcade = false;
-          }
-        }
-        else if ((this._bulletArcade) && (paramActor1.getArmy() != paramActor2.getArmy())) {
-          if (paramActor1.pos.isChanged()) {
-            if (i != 0) {
-              d2 = intersectPointSphere(this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1 / 2.0D);
-            }
-            else {
-              d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1 / 2.0D);
-            }
-          }
-          else {
-            d2 = intersectLineSphere(this.p0.x, this.p0.y, this.p0.z, this._p.x, this._p.y, this._p.z, localPoint3d.x, localPoint3d.y, localPoint3d.z, d1 / 2.0D);
-          }
-
-          if ((d2 >= 0.0D) && (d2 <= 1.0D)) {
-            Engine.cur.profile.collideLine += 1;
-            if ((this._bulletActor == null) || (d2 < this._bulletTickOffset)) {
-              this._bulletActor = paramActor1;
-              this._bulletTickOffset = d2;
-              this._bulletChunk = "Body";
-            }
-          }
-        }
-      }
-    }
-  }
-
-  private boolean bulletCollide(BulletGeneric paramBulletGeneric)
-  {
-    this._bulletArcade = ((paramBulletGeneric.flags & 0x40000000) != 0);
-    this._currentP = paramBulletGeneric.p0;
-    this._p = paramBulletGeneric.p1;
-    if ((this._currentP.x - this._p.x) * (this._currentP.x - this._p.x) + (this._currentP.y - this._p.y) * (this._currentP.y - this._p.y) + (this._currentP.z - this._p.z) * (this._currentP.z - this._p.z) < 1.0E-006D)
-    {
-      return false;
-    }
-    Actor localActor1 = paramBulletGeneric.gunOwnerBody();
-
-    makeBoundBox(this._currentP.x, this._currentP.y, this._currentP.z, this._p.x, this._p.y, this._p.z);
-    int i = makeIndexLine(this._currentP, this._p);
-    if (i == 0) {
-      System.out.println("CollideEnvXY.doBulletMoveAndCollision: " + paramBulletGeneric + " very big step moved bullet - IGNORED !!!");
-    }
-    double d1 = Engine.cur.land.Hmax(this._p.x, this._p.y);
-    this._bulletActor = null;
-    for (int j = 0; j < i; j++) {
-      HashMapExt localHashMapExt = this.mapXY.get(this.indexLineY[j], this.indexLineX[j]);
-      Object localObject;
-      if (localHashMapExt != null) {
-        localObject = localHashMapExt.nextEntry(null);
-        while (localObject != null) {
-          Actor localActor2 = (Actor)((Map.Entry)localObject).getKey();
-          if ((localActor1 != null) && (localActor1 != localActor2) && (Actor.isValid(localActor2)))
-            _bulletCollide(localActor2, localActor1);
-          localObject = localHashMapExt.nextEntry((Map.Entry)localObject);
-        }
-      }
-      if (this.boundZmin < d1 + STATIC_HMAX) {
-        localObject = this.lstXY.get(this.indexLineY[j], this.indexLineX[j]);
-        if (localObject != null) {
-          int k = ((List)localObject).size();
-          for (int m = 0; m < k; m++) {
-            Actor localActor3 = (Actor)((List)localObject).get(m);
-            if ((localActor1 != null) && (localActor1 != localActor3) && (Actor.isValid(localActor3)))
-              _bulletCollide(localActor3, localActor1);
-          }
-        }
-      }
-      if (this._bulletActor != null) {
-        break;
-      }
-    }
-    if (this._p.z - d1 <= 0.0D) {
-      double d2 = this._p.z - Engine.cur.land.HQ(this._p.x, this._p.y);
-      if (d2 <= 0.0D) {
-        double d3 = 0.0D;
-        double d4 = this._currentP.z - Engine.cur.land.HQ(this._currentP.x, this._currentP.y);
-        if (d4 > 0.0D) {
-          d3 = 1.0D + d2 / (d4 - d2);
-          if (d3 < 0.0D) d3 = 0.0D;
-          if (d3 > 1.0D) d3 = 1.0D;
-        }
-        if ((this._bulletActor == null) || (d3 < this._bulletTickOffset)) {
-          this._bulletActor = Engine.actorLand();
-          this._bulletTickOffset = d3;
-          this._bulletChunk = "Body";
-          this._bulletArcade = false;
-        }
-      }
-    }
-
-    if (this._bulletActor != null) {
-      if (((paramBulletGeneric.flags & 0x40000000) != 0) && (this._bulletArcade)) {
-        paramBulletGeneric.flags |= 8192;
-      }
-      long l = Time.tick() + ()(this._bulletTickOffset * Time.tickLenFms());
-      if (l >= Time.tickNext()) l = Time.tickNext() - 1L;
-      MsgBulletCollision.post(l, this._bulletTickOffset, this._bulletActor, this._bulletChunk, paramBulletGeneric);
-      return true;
-    }
-    return false;
-  }
-
-  protected void doBulletMoveAndCollision()
-  {
-    Object localObject = null;
-    BulletGeneric localBulletGeneric1 = Engine.cur.bulletList;
-    long l = Time.current();
-    float f = Time.tickLenFs();
-    while (localBulletGeneric1 != null) {
-      if (l < localBulletGeneric1.timeEnd) {
-        if (!localBulletGeneric1.bMoved) {
-          localBulletGeneric1.move(f);
-          localBulletGeneric1.flags &= -4097;
-        }
-        localBulletGeneric1.bMoved = false;
-      } else {
-        localBulletGeneric1.timeOut();
-        localBulletGeneric1.destroy();
-      }
-      if ((localBulletGeneric1.isDestroyed()) || (bulletCollide(localBulletGeneric1))) {
-        BulletGeneric localBulletGeneric2 = localBulletGeneric1;
-        localBulletGeneric1 = localBulletGeneric1.nextBullet;
-        if (localObject == null)
-          Engine.cur.bulletList = localBulletGeneric1;
-        else {
-          localObject.nextBullet = localBulletGeneric1;
-        }
-        localBulletGeneric2.nextBullet = null;
-        continue;
-      }localObject = localBulletGeneric1;
-      localBulletGeneric1 = localBulletGeneric1.nextBullet;
-    }
-
-    this._bulletActor = null;
-  }
-
-  public void getSphere(AbstractCollection paramAbstractCollection, Point3d paramPoint3d, double paramDouble)
-  {
-    int i = (int)(paramPoint3d.x - paramDouble) / 96;
-    int j = (int)(paramPoint3d.y - paramDouble) / 96;
-    int k = (int)(paramPoint3d.x + paramDouble) / 96;
-    int m = (int)(paramPoint3d.y + paramDouble) / 96;
-    this._getSphereLst = paramAbstractCollection;
-    this._getSphereCenter = paramPoint3d;
-    this._getSphereR = paramDouble;
-    for (int n = j; n <= m; n++) {
-      for (int i1 = i; i1 <= k; i1++) {
-        HashMapExt localHashMapExt = this.mapXY.get(n, i1);
-        if (localHashMapExt != null) {
-          localObject = localHashMapExt.nextEntry(null);
-          while (localObject != null) {
-            Actor localActor1 = (Actor)((Map.Entry)localObject).getKey();
-            if ((Actor.isValid(localActor1)) && (!this.current.containsKey(localActor1)))
-              _getSphere(localActor1);
-            localObject = localHashMapExt.nextEntry((Map.Entry)localObject);
-          }
-        }
-        Object localObject = this.lstXY.get(n, i1);
-        if (localObject != null) {
-          int i2 = ((List)localObject).size();
-          for (int i3 = 0; i3 < i2; i3++) {
-            Actor localActor2 = (Actor)((List)localObject).get(i3);
-            if ((Actor.isValid(localActor2)) && (!this.current.containsKey(localActor2)))
-              _getSphere(localActor2);
-          }
-        }
-      }
-    }
-    this.current.clear();
-  }
-
-  private void _getSphere(Actor paramActor)
-  {
-    this.current.put(paramActor, null);
-    double d1 = paramActor.collisionR();
-    Point3d localPoint3d = paramActor.pos.getAbsPoint();
-    double d2 = (this._getSphereR + d1) * (this._getSphereR + d1);
-    double d3 = (this._getSphereCenter.x - localPoint3d.x) * (this._getSphereCenter.x - localPoint3d.x) + (this._getSphereCenter.y - localPoint3d.y) * (this._getSphereCenter.y - localPoint3d.y) + (this._getSphereCenter.z - localPoint3d.z) * (this._getSphereCenter.z - localPoint3d.z);
-
-    if (d3 <= d2)
-      this._getSphereLst.add(paramActor);
-  }
-
-  public Actor getLine(Point3d paramPoint3d1, Point3d paramPoint3d2, boolean paramBoolean, Actor paramActor, Point3d paramPoint3d3)
-  {
-    if ((paramPoint3d1.x - paramPoint3d2.x) * (paramPoint3d1.x - paramPoint3d2.x) + (paramPoint3d1.y - paramPoint3d2.y) * (paramPoint3d1.y - paramPoint3d2.y) + (paramPoint3d1.z - paramPoint3d2.z) * (paramPoint3d1.z - paramPoint3d2.z) < 1.0E-006D)
-    {
-      return null;
-    }
-    this._getLineP1.set(paramPoint3d2); paramPoint3d2 = this._getLineP1;
-    this._getLineP0 = paramPoint3d1;
-    int i = 0;
-    while (true) {
-      i = makeIndexLine(paramPoint3d1, paramPoint3d2);
-      if (i > 0) break;
-      paramPoint3d2.interpolate(paramPoint3d1, paramPoint3d2, 0.5D);
-    }
-    if (Engine.cur.land.HQ(paramPoint3d1.x, paramPoint3d1.y) > paramPoint3d1.z) {
-      return null;
-    }
-    double d1 = paramPoint3d1.z;
-    double d2 = paramPoint3d2.z;
-    if (d1 > paramPoint3d2.z) { d1 = paramPoint3d2.z; d2 = paramPoint3d1.z; }
-    this._getLineDx = (paramPoint3d2.x - paramPoint3d1.x);
-    this._getLineDy = (paramPoint3d2.y - paramPoint3d1.y);
-    this._getLineDz = (paramPoint3d2.z - paramPoint3d1.z);
-    this._getLineLen2 = (this._getLineDx * this._getLineDx + this._getLineDy * this._getLineDy + this._getLineDz * this._getLineDz);
-
-    this._getLineBOnlySphere = paramBoolean;
-
-    for (int j = 0; j < i; j++) {
-      int k = this.indexLineX[j];
-      int m = this.indexLineY[j];
-      HashMapExt localHashMapExt = this.mapXY.get(m, k);
-      if (localHashMapExt != null) {
-        Map.Entry localEntry = localHashMapExt.nextEntry(null);
-        while (localEntry != null) {
-          Actor localActor1 = (Actor)localEntry.getKey();
-          if ((Actor.isValid(localActor1)) && (localActor1 != paramActor))
-            _getLineIntersect(localActor1);
-          localEntry = localHashMapExt.nextEntry(localEntry);
-        }
-      }
-      double d3 = Landscape.Hmax(k * 96 + 48.0F, m * 96 + 48.0F);
-      Object localObject;
-      if (d1 < d3 + STATIC_HMAX) {
-        localObject = this.lstXY.get(m, k);
-        if (localObject != null) {
-          int n = ((List)localObject).size();
-          for (int i1 = 0; i1 < n; i1++) {
-            Actor localActor2 = (Actor)((List)localObject).get(i1);
-            if ((Actor.isValid(localActor2)) && (localActor2 != paramActor)) {
-              _getLineIntersect(localActor2);
-            }
-          }
-        }
-      }
-      if (this._getLineA != null) {
-        localObject = this._getLineA; this._getLineA = null;
-        this._getLineP1.set(this._getLineRayHit);
-        Engine.land(); if (Landscape.rayHitHQ(paramPoint3d1, this._getLineP1, this._getLineLandHit)) break;
-        if (paramPoint3d3 != null)
-          paramPoint3d3.set(this._getLineRayHit);
-        return localObject;
-      }
-
-    }
-
-    Engine.land(); if (Landscape.rayHitHQ(paramPoint3d1, this._getLineP1, this._getLineLandHit)) {
-      if (paramPoint3d3 != null)
-        paramPoint3d3.set(this._getLineLandHit);
-      return Engine.actorLand();
-    }
-    return (Actor)null;
-  }
-  public Actor getLine(Point3d paramPoint3d1, Point3d paramPoint3d2, boolean paramBoolean, ActorFilter paramActorFilter, Point3d paramPoint3d3) {
-    if ((paramPoint3d1.x - paramPoint3d2.x) * (paramPoint3d1.x - paramPoint3d2.x) + (paramPoint3d1.y - paramPoint3d2.y) * (paramPoint3d1.y - paramPoint3d2.y) + (paramPoint3d1.z - paramPoint3d2.z) * (paramPoint3d1.z - paramPoint3d2.z) < 1.0E-006D)
-    {
-      return null;
-    }
-    this._getLineP1.set(paramPoint3d2); paramPoint3d2 = this._getLineP1;
-    this._getLineP0 = paramPoint3d1;
-    int i = 0;
-    while (true) {
-      i = makeIndexLine(paramPoint3d1, paramPoint3d2);
-      if (i > 0) break;
-      paramPoint3d2.interpolate(paramPoint3d1, paramPoint3d2, 0.5D);
-    }
-    if (Engine.cur.land.HQ(paramPoint3d1.x, paramPoint3d1.y) > paramPoint3d1.z) {
-      return null;
-    }
-    double d1 = paramPoint3d1.z;
-    double d2 = paramPoint3d2.z;
-    if (d1 > paramPoint3d2.z) { d1 = paramPoint3d2.z; d2 = paramPoint3d1.z; }
-    this._getLineDx = (paramPoint3d2.x - paramPoint3d1.x);
-    this._getLineDy = (paramPoint3d2.y - paramPoint3d1.y);
-    this._getLineDz = (paramPoint3d2.z - paramPoint3d1.z);
-    this._getLineLen2 = (this._getLineDx * this._getLineDx + this._getLineDy * this._getLineDy + this._getLineDz * this._getLineDz);
-
-    this._getLineBOnlySphere = paramBoolean;
-
-    for (int j = 0; j < i; j++) {
-      int k = this.indexLineX[j];
-      int m = this.indexLineY[j];
-      HashMapExt localHashMapExt = this.mapXY.get(m, k);
-      if (localHashMapExt != null) {
-        Map.Entry localEntry = localHashMapExt.nextEntry(null);
-        while (localEntry != null) {
-          Actor localActor1 = (Actor)localEntry.getKey();
-          if ((Actor.isValid(localActor1)) && (paramActorFilter.isUse(localActor1, 0.0D)))
-            _getLineIntersect(localActor1);
-          localEntry = localHashMapExt.nextEntry(localEntry);
-        }
-      }
-      double d3 = Landscape.Hmax(k * 96 + 48.0F, m * 96 + 48.0F);
-      Object localObject;
-      if (d1 < d3 + STATIC_HMAX) {
-        localObject = this.lstXY.get(m, k);
-        if (localObject != null) {
-          int n = ((List)localObject).size();
-          for (int i1 = 0; i1 < n; i1++) {
-            Actor localActor2 = (Actor)((List)localObject).get(i1);
-            if ((Actor.isValid(localActor2)) && (paramActorFilter.isUse(localActor2, 0.0D))) {
-              _getLineIntersect(localActor2);
-            }
-          }
-        }
-      }
-      if (this._getLineA != null) {
-        localObject = this._getLineA; this._getLineA = null;
-        this._getLineP1.set(this._getLineRayHit);
-        if (paramActorFilter.isUse(Engine.actorLand(), 0.0D)) { Engine.land(); if (Landscape.rayHitHQ(paramPoint3d1, this._getLineP1, this._getLineLandHit)) break; }
-        if (paramPoint3d3 != null)
-          paramPoint3d3.set(this._getLineRayHit);
-        return localObject;
-      }
-
-    }
-
-    if (paramActorFilter.isUse(Engine.actorLand(), 0.0D)) { Engine.land(); if (Landscape.rayHitHQ(paramPoint3d1, this._getLineP1, this._getLineLandHit)) {
-        if (paramPoint3d3 != null)
-          paramPoint3d3.set(this._getLineLandHit);
-        return Engine.actorLand();
-      } }
-    return (Actor)null;
-  }
-
-  private void _getLineIntersect(Actor paramActor)
-  {
-    Point3d localPoint3d = paramActor.pos.getAbsPoint();
-    double d1 = paramActor.collisionR();
-    double d2 = d1 * d1;
-    double d3 = ((localPoint3d.x - this._getLineP0.x) * this._getLineDx + (localPoint3d.y - this._getLineP0.y) * this._getLineDy + (localPoint3d.z - this._getLineP0.z) * this._getLineDz) / this._getLineLen2;
-    double d4;
-    double d5;
-    if ((d3 >= 0.0D) && (d3 <= 1.0D)) {
-      d4 = this._getLineP0.x + d3 * this._getLineDx;
-      d5 = this._getLineP0.y + d3 * this._getLineDy;
-      double d6 = this._getLineP0.z + d3 * this._getLineDz;
-      double d7 = (d4 - localPoint3d.x) * (d4 - localPoint3d.x) + (d5 - localPoint3d.y) * (d5 - localPoint3d.y) + (d6 - localPoint3d.z) * (d6 - localPoint3d.z);
-
-      double d8 = d2 - d7;
-      if (d8 < 0.0D) {
-        d3 = -1.0D;
-      } else {
-        d3 -= Math.sqrt(d8 / this._getLineLen2);
-        if (d3 < 0.0D) d3 = 0.0D; 
-      }
-    }
-    else {
-      d4 = (this._getLineP1.x - localPoint3d.x) * (this._getLineP1.x - localPoint3d.x) + (this._getLineP1.y - localPoint3d.y) * (this._getLineP1.y - localPoint3d.y) + (this._getLineP1.z - localPoint3d.z) * (this._getLineP1.z - localPoint3d.z);
-
-      d5 = (this._getLineP0.x - localPoint3d.x) * (this._getLineP0.x - localPoint3d.x) + (this._getLineP0.y - localPoint3d.y) * (this._getLineP0.y - localPoint3d.y) + (this._getLineP0.z - localPoint3d.z) * (this._getLineP0.z - localPoint3d.z);
-
-      if ((d4 <= d2) || (d5 <= d2)) {
-        if (d4 < d5) d3 = 1.0D; else
-          d3 = 0.0D;
-      }
-      else d3 = -1.0D;
-    }
-
-    if (d3 < 0.0D) return;
-    if ((!this._getLineBOnlySphere) && ((paramActor instanceof ActorMesh))) {
-      Mesh localMesh = ((ActorMesh)paramActor).mesh();
-      Loc localLoc = paramActor.pos.getAbs();
-      d3 = localMesh.detectCollisionLine(localLoc, this._getLineP0, this._getLineP1);
-      if (d3 < 0.0D)
-        return;
-    }
-    if ((this._getLineA != null) && (d3 > this._getLineU)) return;
-    this._getLineA = paramActor;
-    this._getLineU = d3;
-    this._getLineRayHit.interpolate(this._getLineP0, this._getLineP1, d3);
-  }
-
-  public void getFiltered(AbstractCollection paramAbstractCollection, Point3d paramPoint3d, double paramDouble, ActorFilter paramActorFilter)
-  {
-    int i = (int)(paramPoint3d.x - paramDouble) / 96;
-    int j = (int)(paramPoint3d.y - paramDouble) / 96;
-    int k = (int)(paramPoint3d.x + paramDouble) / 96;
-    int m = (int)(paramPoint3d.y + paramDouble) / 96;
-    this._getFilteredCenter = paramPoint3d;
-    this._getFilteredFilter = paramActorFilter;
-    this._getFilteredR = paramDouble;
-    for (int n = j; n <= m; n++) {
-      for (int i1 = i; i1 <= k; i1++) {
-        HashMapExt localHashMapExt = this.mapXY.get(n, i1);
-        if (localHashMapExt != null) {
-          localObject = localHashMapExt.nextEntry(null);
-          while (localObject != null) {
-            Actor localActor1 = (Actor)((Map.Entry)localObject).getKey();
-            if ((Actor.isValid(localActor1)) && (!this.current.containsKey(localActor1)) && (!this.moved.containsKey(localActor1)))
-              _getFiltered(localActor1);
-            localObject = localHashMapExt.nextEntry((Map.Entry)localObject);
-          }
-        }
-        Object localObject = this.lstXY.get(n, i1);
-        if (localObject != null) {
-          int i2 = ((List)localObject).size();
-          for (int i3 = 0; i3 < i2; i3++) {
-            Actor localActor2 = (Actor)((List)localObject).get(i3);
-            if ((Actor.isValid(localActor2)) && (!this.current.containsKey(localActor2)) && (!this.moved.containsKey(localActor2)))
-              _getFiltered(localActor2);
-          }
-        }
-      }
-    }
-    if (paramAbstractCollection != null) {
-      Map.Entry localEntry = this.current.nextEntry(null);
-      while (localEntry != null) {
-        paramAbstractCollection.add(localEntry.getKey());
-        localEntry = this.current.nextEntry(localEntry);
-      }
-    }
-    this.current.clear();
-    this.moved.clear();
-  }
-
-  private void _getFiltered(Actor paramActor)
-  {
-    double d1 = paramActor.collisionR();
-    Point3d localPoint3d = paramActor.pos.getAbsPoint();
-    double d2 = (this._getFilteredR + d1) * (this._getFilteredR + d1);
-    double d3 = (this._getFilteredCenter.x - localPoint3d.x) * (this._getFilteredCenter.x - localPoint3d.x) + (this._getFilteredCenter.y - localPoint3d.y) * (this._getFilteredCenter.y - localPoint3d.y) + (this._getFilteredCenter.z - localPoint3d.z) * (this._getFilteredCenter.z - localPoint3d.z);
-
-    if ((d3 <= d2) && (this._getFilteredFilter.isUse(paramActor, d3)))
-      this.current.put(paramActor, null);
-    else
-      this.moved.put(paramActor, null);
-  }
-
-  public void getNearestEnemies(Point3d paramPoint3d, double paramDouble, int paramInt, Accumulator paramAccumulator)
-  {
-    if (paramDouble >= 6000.0D) {
-      paramDouble = 6000.0D;
-    }
-
-    int i = (int)(paramPoint3d.x - paramDouble) / 96;
-    int j = (int)(paramPoint3d.y - paramDouble) / 96;
-    int k = (int)(paramPoint3d.x + paramDouble) / 96;
-    int m = (int)(paramPoint3d.y + paramDouble) / 96;
-    for (int n = j; n <= m; n++) {
-      for (int i1 = i; i1 <= k; i1++) {
-        HashMapExt localHashMapExt = this.mapXY.get(n, i1);
-        int i3;
-        double d4;
-        if (localHashMapExt != null) {
-          localObject = localHashMapExt.nextEntry(null);
-          while (localObject != null) {
-            Actor localActor1 = (Actor)((Map.Entry)localObject).getKey();
-            i3 = localActor1.getArmy();
-            if ((i3 != 0) && (i3 != paramInt) && (localActor1.isAlive()) && (!this.current.containsKey(localActor1)))
-            {
-              this.current.put(localActor1, null);
-              double d1 = localActor1.collisionR();
-              Point3d localPoint3d1 = localActor1.pos.getAbsPoint();
-              double d3 = (paramDouble + d1) * (paramDouble + d1);
-              d4 = (paramPoint3d.x - localPoint3d1.x) * (paramPoint3d.x - localPoint3d1.x) + (paramPoint3d.y - localPoint3d1.y) * (paramPoint3d.y - localPoint3d1.y) + (paramPoint3d.z - localPoint3d1.z) * (paramPoint3d.z - localPoint3d1.z);
-
-              if ((d4 <= d3) && 
-                (!paramAccumulator.add(localActor1, d4))) {
-                this.current.clear();
-                return;
-              }
-            }
-
-            localObject = localHashMapExt.nextEntry((Map.Entry)localObject);
-          }
-        }
-
-        Object localObject = this.lstXY.get(n, i1);
-        if (localObject != null) {
-          int i2 = ((List)localObject).size();
-          for (i3 = 0; i3 < i2; i3++) {
-            Actor localActor2 = (Actor)((List)localObject).get(i3);
-            int i4 = localActor2.getArmy();
-            if ((i4 == 0) || (i4 == paramInt) || (!localActor2.isAlive()) || (this.current.containsKey(localActor2)))
-            {
-              continue;
-            }
-            this.current.put(localActor2, null);
-            double d2 = localActor2.collisionR();
-            Point3d localPoint3d2 = localActor2.pos.getAbsPoint();
-            d4 = (paramDouble + d2) * (paramDouble + d2);
-            double d5 = (paramPoint3d.x - localPoint3d2.x) * (paramPoint3d.x - localPoint3d2.x) + (paramPoint3d.y - localPoint3d2.y) * (paramPoint3d.y - localPoint3d2.y) + (paramPoint3d.z - localPoint3d2.z) * (paramPoint3d.z - localPoint3d2.z);
-
-            if ((d5 > d4) || 
-              (paramAccumulator.add(localActor2, d5))) continue;
-            this.current.clear();
-            return;
-          }
-        }
-
-      }
-
-    }
-
-    this.current.clear();
-  }
-
-  public void getNearestEnemiesCyl(Point3d paramPoint3d, double paramDouble1, double paramDouble2, double paramDouble3, int paramInt, Accumulator paramAccumulator)
-  {
-    if (paramDouble1 >= 6000.0D) {
-      paramDouble1 = 6000.0D;
-    }
-
-    int i = (int)(paramPoint3d.x - paramDouble1) / 96;
-    int j = (int)(paramPoint3d.y - paramDouble1) / 96;
-    int k = (int)(paramPoint3d.x + paramDouble1) / 96;
-    int m = (int)(paramPoint3d.y + paramDouble1) / 96;
-    for (int n = j; n <= m; n++) {
-      for (int i1 = i; i1 <= k; i1++) {
-        HashMapExt localHashMapExt = this.mapXY.get(n, i1);
-        int i3;
-        double d4;
-        double d5;
-        if (localHashMapExt != null) {
-          localObject = localHashMapExt.nextEntry(null);
-          while (localObject != null) {
-            Actor localActor1 = (Actor)((Map.Entry)localObject).getKey();
-            i3 = localActor1.getArmy();
-            if ((i3 != 0) && (i3 != paramInt) && (localActor1.isAlive()) && (!this.current.containsKey(localActor1)))
-            {
-              this.current.put(localActor1, null);
-              double d1 = localActor1.collisionR();
-              Point3d localPoint3d1 = localActor1.pos.getAbsPoint();
-              double d3 = (paramDouble1 + d1) * (paramDouble1 + d1);
-              d4 = (paramPoint3d.x - localPoint3d1.x) * (paramPoint3d.x - localPoint3d1.x) + (paramPoint3d.y - localPoint3d1.y) * (paramPoint3d.y - localPoint3d1.y);
-
-              if (d4 <= d3) {
-                d5 = localPoint3d1.z - paramPoint3d.z;
-                if ((d5 - d1 <= paramDouble3) && (d5 + d1 >= paramDouble2))
+            case 0: // '\0'
+                switch(k)
                 {
-                  if (!paramAccumulator.add(localActor1, d4 + d5 * d5)) {
-                    this.current.clear();
-                    return;
-                  }
+                case 0: // '\0'
+                    x[1] = l - 1;
+                    y[1] = j1;
+                    x[2] = l - 1;
+                    y[2] = j1 - 1;
+                    x[3] = l;
+                    y[3] = j1 - 1;
+                    count = 4;
+                    break;
+
+                case 1: // '\001'
+                    x[1] = l;
+                    y[1] = j1 - 1;
+                    count = 2;
+                    break;
+
+                case 2: // '\002'
+                    x[1] = l + 1;
+                    y[1] = j1;
+                    x[2] = l + 1;
+                    y[2] = j1 - 1;
+                    x[3] = l;
+                    y[3] = j1 - 1;
+                    count = 4;
+                    break;
                 }
-              }
+                break;
+
+            case 1: // '\001'
+                switch(k)
+                {
+                case 0: // '\0'
+                    x[1] = l - 1;
+                    y[1] = j1;
+                    count = 2;
+                    break;
+
+                case 1: // '\001'
+                    count = 1;
+                    break;
+
+                case 2: // '\002'
+                    x[1] = l + 1;
+                    y[1] = j1;
+                    count = 2;
+                    break;
+                }
+                break;
+
+            case 2: // '\002'
+                switch(k)
+                {
+                case 0: // '\0'
+                    x[1] = l - 1;
+                    y[1] = j1;
+                    x[2] = l - 1;
+                    y[2] = j1 + 1;
+                    x[3] = l;
+                    y[3] = j1 + 1;
+                    count = 4;
+                    break;
+
+                case 1: // '\001'
+                    x[1] = l;
+                    y[1] = j1 + 1;
+                    count = 2;
+                    break;
+
+                case 2: // '\002'
+                    x[1] = l + 1;
+                    y[1] = j1;
+                    x[2] = l + 1;
+                    y[2] = j1 + 1;
+                    x[3] = l;
+                    y[3] = j1 + 1;
+                    count = 4;
+                    break;
+                }
+                break;
             }
-            localObject = localHashMapExt.nextEntry((Map.Entry)localObject);
-          }
         }
 
-        Object localObject = this.lstXY.get(n, i1);
-        if (localObject != null) {
-          int i2 = ((List)localObject).size();
-          for (i3 = 0; i3 < i2; i3++) {
-            Actor localActor2 = (Actor)((List)localObject).get(i3);
-            int i4 = localActor2.getArmy();
-            if ((i4 == 0) || (i4 == paramInt) || (!localActor2.isAlive()) || (this.current.containsKey(localActor2)))
+        public void make(com.maddox.JGP.Point3d point3d, float f)
+        {
+            int i = (int)((point3d.x - (double)f - 96D) / 96D);
+            int j = (int)((point3d.x + (double)f + 96D) / 96D);
+            int k = (int)((point3d.y - (double)f - 96D) / 96D);
+            int l = (int)((point3d.y + (double)f + 96D) / 96D);
+            int i1 = (j - i) + 1;
+            int j1 = (l - k) + 1;
+            count = i1 * j1;
+            if(count > x.length)
             {
-              continue;
+                x = new int[count];
+                y = new int[count];
             }
-            this.current.put(localActor2, null);
-            double d2 = localActor2.collisionR();
-            Point3d localPoint3d2 = localActor2.pos.getAbsPoint();
-            d4 = (paramDouble1 + d2) * (paramDouble1 + d2);
-            d5 = (paramPoint3d.x - localPoint3d2.x) * (paramPoint3d.x - localPoint3d2.x) + (paramPoint3d.y - localPoint3d2.y) * (paramPoint3d.y - localPoint3d2.y);
-
-            if (d5 <= d4) {
-              double d6 = localPoint3d2.z - paramPoint3d.z;
-              if ((d6 - d2 > paramDouble3) || (d6 + d2 < paramDouble2))
-                continue;
-              if (!paramAccumulator.add(localActor2, d5 + d6 * d6)) {
-                this.current.clear();
-                return;
-              }
+            int k1 = 0;
+            while(j1-- > 0) 
+            {
+                int l1 = i1;
+                int i2 = i;
+                while(l1-- > 0) 
+                {
+                    x[k1] = i2++;
+                    y[k1++] = k;
+                }
+                k++;
             }
-          }
         }
-      }
 
-    }
+        public int count;
+        public int x[];
+        public int y[];
 
-    this.current.clear();
-  }
-
-  protected void changedPos(Actor paramActor, Point3d paramPoint3d1, Point3d paramPoint3d2)
-  {
-    int i;
-    int j;
-    int k;
-    int m;
-    if (paramActor.collisionR() <= 32.0F) {
-      i = (int)paramPoint3d1.x / 32;
-      j = (int)paramPoint3d1.y / 32;
-      k = (int)paramPoint3d2.x / 32;
-      m = (int)paramPoint3d2.y / 32;
-      if ((i != k) || (j != m)) {
-        remove(paramActor, i, j);
-        add(paramActor, k, m);
-      }
-    } else {
-      i = (int)(paramPoint3d1.x / 96.0D);
-      j = (int)(paramPoint3d1.y / 96.0D);
-      k = (int)(paramPoint3d2.x / 96.0D);
-      m = (int)(paramPoint3d2.y / 96.0D);
-      if ((i != k) || (j != m)) {
-        this.index.make(paramPoint3d1, paramActor.collisionR());
-        for (int n = 0; n < this.index.count; n++)
-          this.mapXY.remove(this.index.y[n], this.index.x[n], paramActor);
-        this.index.make(paramPoint3d2, paramActor.collisionR());
-        for (n = 0; n < this.index.count; n++)
-          this.mapXY.put(this.index.y[n], this.index.x[n], paramActor, null);
-      }
-    }
-  }
-
-  protected void add(Actor paramActor)
-  {
-    if (paramActor.pos != null) {
-      Point3d localPoint3d = paramActor.pos.getCurrentPoint();
-      if (paramActor.collisionR() <= 32.0F) {
-        add(paramActor, (int)localPoint3d.x / 32, (int)localPoint3d.y / 32);
-      } else {
-        this.index.make(localPoint3d, paramActor.collisionR());
-        for (int i = 0; i < this.index.count; i++)
-          this.mapXY.put(this.index.y[i], this.index.x[i], paramActor, null); 
-      }
-    }
-  }
-
-  protected void add(Actor paramActor, int paramInt1, int paramInt2) {
-    this.index.make(paramInt1, paramInt2);
-    for (int i = 0; i < this.index.count; i++)
-      this.mapXY.put(this.index.y[i], this.index.x[i], paramActor, null);
-  }
-
-  protected void remove(Actor paramActor)
-  {
-    if (paramActor.pos != null) {
-      Point3d localPoint3d = paramActor.pos.getCurrentPoint();
-      if (paramActor.collisionR() <= 32.0F) {
-        remove(paramActor, (int)localPoint3d.x / 32, (int)localPoint3d.y / 32);
-      } else {
-        this.index.make(localPoint3d, paramActor.collisionR());
-        for (int i = 0; i < this.index.count; i++)
-          this.mapXY.remove(this.index.y[i], this.index.x[i], paramActor); 
-      }
-    }
-  }
-
-  private void remove(Actor paramActor, int paramInt1, int paramInt2) {
-    this.index.make(paramInt1, paramInt2);
-    for (int i = 0; i < this.index.count; i++)
-      this.mapXY.remove(this.index.y[i], this.index.x[i], paramActor);
-  }
-
-  protected void changedPosStatic(Actor paramActor, Point3d paramPoint3d1, Point3d paramPoint3d2)
-  {
-    removeStatic(paramActor);
-    addStatic(paramActor);
-  }
-
-  protected void addStatic(Actor paramActor) {
-    if (paramActor.pos != null) {
-      Point3d localPoint3d = paramActor.pos.getCurrentPoint();
-      this.index.make(localPoint3d, paramActor.collisionR());
-      for (int i = 0; i < this.index.count; i++)
-        this.lstXY.put(this.index.y[i], this.index.x[i], paramActor);
-    }
-  }
-
-  protected void removeStatic(Actor paramActor) {
-    if (paramActor.pos != null) {
-      Point3d localPoint3d = paramActor.pos.getCurrentPoint();
-      this.index.make(localPoint3d, paramActor.collisionR());
-      for (int i = 0; i < this.index.count; i++)
-        this.lstXY.remove(this.index.y[i], this.index.x[i], paramActor);
-    }
-  }
-
-  protected void resetGameClear() {
-    ArrayList localArrayList1 = new ArrayList();
-    ArrayList localArrayList2 = new ArrayList();
-    this.mapXY.allValues(localArrayList1);
-    Object localObject;
-    for (int i = 0; i < localArrayList1.size(); i++) {
-      localObject = (HashMapExt)localArrayList1.get(i);
-      localArrayList2.addAll(((HashMapExt)localObject).keySet());
-      Engine.destroyListGameActors(localArrayList2);
-    }
-    localArrayList1.clear();
-    this.lstXY.allValues(localArrayList1);
-    for (i = 0; i < localArrayList1.size(); i++) {
-      localObject = (ArrayList)localArrayList1.get(i);
-      localArrayList2.addAll((Collection)localObject);
-      Engine.destroyListGameActors(localArrayList2);
-    }
-    localArrayList1.clear();
-  }
-
-  protected void resetGameCreate() {
-    clear();
-  }
-
-  protected void clear() {
-    this.mapXY.clear();
-  }
-
-  class CollideEnvXYIndex
-  {
-    public int count;
-    public int[] x = new int[4];
-    public int[] y = new int[4];
-
-    CollideEnvXYIndex() {  }
-
-    public void make(int paramInt1, int paramInt2) { int i = paramInt1 % 3;
-      int j = paramInt1 / 3;
-      int k = paramInt2 % 3;
-      int m = paramInt2 / 3;
-      this.x[0] = j;
-      this.y[0] = m;
-      switch (k) { case 0:
-        switch (i) { case 0:
-          this.x[1] = (j - 1); this.y[1] = m; this.x[2] = (j - 1); this.y[2] = (m - 1); this.x[3] = j; this.y[3] = (m - 1); this.count = 4; break;
-        case 1:
-          this.x[1] = j; this.y[1] = (m - 1); this.count = 2; break;
-        case 2:
-          this.x[1] = (j + 1); this.y[1] = m; this.x[2] = (j + 1); this.y[2] = (m - 1); this.x[3] = j; this.y[3] = (m - 1); this.count = 4;
+        CollideEnvXYIndex()
+        {
+            x = new int[4];
+            y = new int[4];
         }
-        break;
-      case 1:
-        switch (i) { case 0:
-          this.x[1] = (j - 1); this.y[1] = m; this.count = 2; break;
-        case 1:
-          this.count = 1; break;
-        case 2:
-          this.x[1] = (j + 1); this.y[1] = m; this.count = 2;
-        }
-        break;
-      case 2:
-        switch (i) { case 0:
-          this.x[1] = (j - 1); this.y[1] = m; this.x[2] = (j - 1); this.y[2] = (m + 1); this.x[3] = j; this.y[3] = (m + 1); this.count = 4; break;
-        case 1:
-          this.x[1] = j; this.y[1] = (m + 1); this.count = 2; break;
-        case 2:
-          this.x[1] = (j + 1); this.y[1] = m; this.x[2] = (j + 1); this.y[2] = (m + 1); this.x[3] = j; this.y[3] = (m + 1); this.count = 4;
-        }
-      }
     }
 
-    public void make(Point3d paramPoint3d, float paramFloat)
+
+    public boolean isDoCollision()
     {
-      int i = (int)((paramPoint3d.x - paramFloat - 96.0D) / 96.0D);
-      int j = (int)((paramPoint3d.x + paramFloat + 96.0D) / 96.0D);
-      int k = (int)((paramPoint3d.y - paramFloat - 96.0D) / 96.0D);
-      int m = (int)((paramPoint3d.y + paramFloat + 96.0D) / 96.0D);
-      int n = j - i + 1;
-      int i1 = m - k + 1;
-      this.count = (n * i1);
-      if (this.count > this.x.length) {
-        this.x = new int[this.count];
-        this.y = new int[this.count];
-      }
-      int i2 = 0;
-      while (i1-- > 0) {
-        int i3 = n;
-        int i4 = i;
-        while (i3-- > 0) {
-          this.x[i2] = (i4++);
-          this.y[(i2++)] = k;
-        }
-        k++;
-      }
+        return bDoCollision;
     }
-  }
+
+    public static final double intersectPointSphere(double d, double d1, double d2, double d3, 
+            double d4, double d5, double d6)
+    {
+        double d7 = d6 * d6;
+        return d7 < (d - d3) * (d - d3) + (d1 - d4) * (d1 - d4) + (d2 - d5) * (d2 - d5) ? -1D : 0.0D;
+    }
+
+    public static final double intersectLineSphere(double d, double d1, double d2, double d3, 
+            double d4, double d5, double d6, double d7, double d8, double d9)
+    {
+        double d10 = d9 * d9;
+        double d11 = d3 - d;
+        double d12 = d4 - d1;
+        double d13 = d5 - d2;
+        double d14 = d11 * d11 + d12 * d12 + d13 * d13;
+        if(d14 < 9.9999999999999995E-007D)
+            return d10 < (d - d6) * (d - d6) + (d1 - d7) * (d1 - d7) + (d2 - d8) * (d2 - d8) ? -1D : 0.0D;
+        double d15 = ((d6 - d) * d11 + (d7 - d1) * d12 + (d8 - d2) * d13) / d14;
+        if(d15 >= 0.0D && d15 <= 1.0D)
+        {
+            double d16 = d + d15 * d11;
+            double d18 = d1 + d15 * d12;
+            double d20 = d2 + d15 * d13;
+            double d21 = (d16 - d6) * (d16 - d6) + (d18 - d7) * (d18 - d7) + (d20 - d8) * (d20 - d8);
+            double d22 = d10 - d21;
+            if(d22 < 0.0D)
+                return -1D;
+            d15 -= java.lang.Math.sqrt(d22 / d14);
+            if(d15 < 0.0D)
+                d15 = 0.0D;
+            return d15;
+        }
+        double d17 = (d3 - d6) * (d3 - d6) + (d4 - d7) * (d4 - d7) + (d5 - d8) * (d5 - d8);
+        double d19 = (d - d6) * (d - d6) + (d1 - d7) * (d1 - d7) + (d2 - d8) * (d2 - d8);
+        if(d17 <= d10 || d19 <= d10)
+            return d17 >= d19 ? 0.0D : 1.0D;
+        else
+            return -1D;
+    }
+
+    private void collidePoint()
+    {
+        makeBoundBox(_p.x, _p.y, _p.z);
+        int i = makeIndexLine(_p);
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.util.HashMapExt hashmapext = mapXY.get(indexLineY[j], indexLineX[j]);
+            if(hashmapext == null)
+                continue;
+            for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+            {
+                com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry.getKey();
+                if(_current.getOwner() != actor && com.maddox.il2.engine.Actor.isValid(actor) && !current.containsKey(actor))
+                    _collidePoint(actor);
+            }
+
+        }
+
+        double d = com.maddox.il2.engine.Engine.cur.land.Hmax(_p.x, _p.y);
+        if(boundZmin < d + (double)STATIC_HMAX)
+        {
+            for(int k = 0; k < i; k++)
+            {
+                java.util.List list = lstXY.get(indexLineY[k], indexLineX[k]);
+                if(list == null)
+                    continue;
+                int l = list.size();
+                for(int i1 = 0; i1 < l; i1++)
+                {
+                    com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)list.get(i1);
+                    if(_current.getOwner() != actor1 && com.maddox.il2.engine.Actor.isValid(actor1) && !current.containsKey(actor1))
+                        _collidePoint(actor1);
+                }
+
+            }
+
+        }
+        if(_current.isCollideOnLand() && _p.z - d <= 0.0D)
+        {
+            double d1 = _p.z - com.maddox.il2.engine.Engine.cur.land.HQ(_p.x, _p.y);
+            if(d1 <= 0.0D)
+            {
+                long l1 = com.maddox.rts.Time.tick();
+                com.maddox.il2.engine.MsgCollision.post(l1, _current, com.maddox.il2.engine.Engine.actorLand(), "<edge>", "Body");
+            }
+        }
+    }
+
+    private void _collidePoint(com.maddox.il2.engine.Actor actor)
+    {
+        double d = actor.collisionR();
+        if(d > 0.0D)
+        {
+            com.maddox.JGP.Point3d point3d = actor.pos.getAbsPoint();
+            double d1 = -1D;
+            boolean flag = true;
+            p0.set(_p);
+            if(actor.pos.isChanged())
+            {
+                com.maddox.JGP.Point3d point3d1 = actor.pos.getCurrentPoint();
+                if(collideBoundBox(point3d1.x, point3d1.y, point3d1.z, point3d.x, point3d.y, point3d.z, d))
+                    p0.x += point3d.x - point3d1.x;
+                p0.y += point3d.y - point3d1.y;
+                p0.z += point3d.z - point3d1.z;
+                flag = (p0.x - _p.x) * (p0.x - _p.x) + (p0.y - _p.y) * (p0.y - _p.y) + (p0.z - _p.z) * (p0.z - _p.z) < 9.9999999999999995E-007D;
+                if(flag)
+                    d1 = com.maddox.il2.engine.CollideEnvXY.intersectPointSphere(_p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d);
+                else
+                    d1 = com.maddox.il2.engine.CollideEnvXY.intersectLineSphere(p0.x, p0.y, p0.z, _p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d);
+            } else
+            if(collideBoundBox(point3d.x, point3d.y, point3d.z, d))
+                d1 = com.maddox.il2.engine.CollideEnvXY.intersectPointSphere(_p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d);
+            if(d1 >= 0.0D && com.maddox.il2.engine.MsgCollisionRequest.on(_current, actor))
+            {
+                java.lang.String s = "Body";
+                if(actor instanceof com.maddox.il2.engine.ActorMesh)
+                {
+                    com.maddox.il2.engine.Mesh mesh = ((com.maddox.il2.engine.ActorMesh)actor).mesh();
+                    com.maddox.il2.engine.Loc loc = actor.pos.getAbs();
+                    if(flag)
+                        d1 = mesh.detectCollisionPoint(loc, _p) == 0 ? -1D : 0.0D;
+                    else
+                        d1 = mesh.detectCollisionLine(loc, p0, _p);
+                    if(d1 >= 0.0D)
+                        s = com.maddox.il2.engine.Mesh.collisionChunk(0);
+                }
+                if(d1 >= 0.0D)
+                {
+                    long l = com.maddox.rts.Time.tick() + (long)(d1 * (double)com.maddox.rts.Time.tickLenFms());
+                    if(l >= com.maddox.rts.Time.tickNext())
+                        l = com.maddox.rts.Time.tickNext() - 1L;
+                    com.maddox.il2.engine.MsgCollision.post2(l, _current, actor, "<edge>", s);
+                }
+            }
+        }
+        current.put(actor, null);
+    }
+
+    private void collideLine()
+    {
+        _currentP = _current.pos.getCurrentPoint();
+        _p = _current.pos.getAbsPoint();
+        if((_currentP.x - _p.x) * (_currentP.x - _p.x) + (_currentP.y - _p.y) * (_currentP.y - _p.y) + (_currentP.z - _p.z) * (_currentP.z - _p.z) < 9.9999999999999995E-007D)
+        {
+            collidePoint();
+            return;
+        }
+        makeBoundBox(_currentP.x, _currentP.y, _currentP.z, _p.x, _p.y, _p.z);
+        int i = makeIndexLine(_currentP, _p);
+        if(i == 0)
+            java.lang.System.out.println("CollideEnvXY.collideLine: " + _current + " very big step moved actor - IGNORED !!!");
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.util.HashMapExt hashmapext = mapXY.get(indexLineY[j], indexLineX[j]);
+            if(hashmapext == null)
+                continue;
+            for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+            {
+                com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry.getKey();
+                if(_current.getOwner() != actor && com.maddox.il2.engine.Actor.isValid(actor) && !current.containsKey(actor))
+                    _collideLine(actor);
+            }
+
+        }
+
+        double d = com.maddox.il2.engine.Engine.cur.land.Hmax(_p.x, _p.y);
+        if(boundZmin < d + (double)STATIC_HMAX)
+        {
+            for(int k = 0; k < i; k++)
+            {
+                java.util.List list = lstXY.get(indexLineY[k], indexLineX[k]);
+                if(list == null)
+                    continue;
+                int l = list.size();
+                for(int i1 = 0; i1 < l; i1++)
+                {
+                    com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)list.get(i1);
+                    if(_current.getOwner() != actor1 && com.maddox.il2.engine.Actor.isValid(actor1) && !current.containsKey(actor1))
+                        _collideLine(actor1);
+                }
+
+            }
+
+        }
+        if(_current.isCollideOnLand() && _p.z - d <= 0.0D)
+        {
+            double d1 = _p.z - com.maddox.il2.engine.Engine.cur.land.HQ(_p.x, _p.y);
+            if(d1 <= 0.0D)
+            {
+                long l1 = com.maddox.rts.Time.tick();
+                double d2 = _currentP.z - com.maddox.il2.engine.Engine.cur.land.HQ(_currentP.x, _currentP.y);
+                if(d2 > 0.0D)
+                {
+                    double d3 = 1.0D + d1 / (d2 - d1);
+                    l1 += (long)(d3 * (double)com.maddox.rts.Time.tickLenFms());
+                    if(l1 >= com.maddox.rts.Time.tickNext())
+                        l1 = com.maddox.rts.Time.tickNext() - 1L;
+                }
+                com.maddox.il2.engine.MsgCollision.post(l1, _current, com.maddox.il2.engine.Engine.actorLand(), "<edge>", "Body");
+            }
+        }
+    }
+
+    private void _collideLine(com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.il2.engine.Engine.cur.profile.collideLineAll++;
+        double d = actor.collisionR();
+        if(d > 0.0D)
+        {
+            com.maddox.JGP.Point3d point3d = actor.pos.getAbsPoint();
+            double d1 = -1D;
+            boolean flag = false;
+            p0.set(_currentP);
+            if(actor.pos.isChanged())
+            {
+                com.maddox.JGP.Point3d point3d1 = actor.pos.getCurrentPoint();
+                if(collideBoundBox(point3d1.x, point3d1.y, point3d1.z, point3d.x, point3d.y, point3d.z, d))
+                {
+                    p0.x += point3d.x - point3d1.x;
+                    p0.y += point3d.y - point3d1.y;
+                    p0.z += point3d.z - point3d1.z;
+                    flag = (p0.x - _p.x) * (p0.x - _p.x) + (p0.y - _p.y) * (p0.y - _p.y) + (p0.z - _p.z) * (p0.z - _p.z) < 9.9999999999999995E-007D;
+                    if(flag)
+                        d1 = com.maddox.il2.engine.CollideEnvXY.intersectPointSphere(_p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d);
+                    else
+                        d1 = com.maddox.il2.engine.CollideEnvXY.intersectLineSphere(p0.x, p0.y, p0.z, _p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d);
+                }
+            } else
+            if(collideBoundBox(point3d.x, point3d.y, point3d.z, d))
+                d1 = com.maddox.il2.engine.CollideEnvXY.intersectLineSphere(p0.x, p0.y, p0.z, _p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d);
+            if(d1 >= 0.0D)
+            {
+                com.maddox.il2.engine.Engine.cur.profile.collideLineSphere++;
+                if(com.maddox.il2.engine.MsgCollisionRequest.on(_current, actor))
+                {
+                    java.lang.String s = "Body";
+                    if(actor instanceof com.maddox.il2.engine.ActorMesh)
+                    {
+                        com.maddox.il2.engine.Mesh mesh = ((com.maddox.il2.engine.ActorMesh)actor).mesh();
+                        com.maddox.il2.engine.Loc loc = actor.pos.getAbs();
+                        if(flag)
+                            d1 = mesh.detectCollisionPoint(loc, _p) == 0 ? -1D : 0.0D;
+                        else
+                            d1 = mesh.detectCollisionLine(loc, p0, _p);
+                        if(d1 >= 0.0D)
+                            s = com.maddox.il2.engine.Mesh.collisionChunk(0);
+                    }
+                    if(d1 >= 0.0D)
+                    {
+                        com.maddox.il2.engine.Engine.cur.profile.collideLine++;
+                        long l = com.maddox.rts.Time.tick() + (long)(d1 * (double)com.maddox.rts.Time.tickLenFms());
+                        if(l >= com.maddox.rts.Time.tickNext())
+                            l = com.maddox.rts.Time.tickNext() - 1L;
+                        com.maddox.il2.engine.MsgCollision.post2(l, _current, actor, "<edge>", s);
+                    }
+                }
+            }
+        }
+        current.put(actor, null);
+    }
+
+    private int makeIndexLine(com.maddox.JGP.Point3d point3d)
+    {
+        int i = (int)point3d.x / 96;
+        int j = (int)point3d.y / 96;
+        int k = 1;
+        if(indexLineX == null || k > indexLineX.length)
+        {
+            indexLineX = new int[2 * k];
+            indexLineY = new int[2 * k];
+        }
+        indexLineX[0] = i;
+        indexLineY[0] = j;
+        return k;
+    }
+
+    private int makeIndexLine(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        int i = (int)point3d.x / 96;
+        int j = (int)point3d.y / 96;
+        int k = java.lang.Math.abs((int)point3d1.x / 96 - i) + java.lang.Math.abs((int)point3d1.y / 96 - j) + 1;
+        if(k > 100)
+            return 0;
+        indexLineX[0] = i;
+        indexLineY[0] = j;
+        if(k > 1)
+        {
+            byte byte0 = 1;
+            if(point3d1.x < point3d.x)
+                byte0 = -1;
+            byte byte1 = 1;
+            if(point3d1.y < point3d.y)
+                byte1 = -1;
+            if(java.lang.Math.abs(point3d1.x - point3d.x) >= java.lang.Math.abs(point3d1.y - point3d.y))
+            {
+                double d = java.lang.Math.abs(point3d.y % 96D);
+                double d2 = (96D * (point3d1.y - point3d.y)) / java.lang.Math.abs(point3d1.x - point3d.x);
+                if(d2 >= 0.0D)
+                {
+                    for(int l = 1; l < k; l++)
+                    {
+                        if(d < 96D)
+                        {
+                            i += byte0;
+                            d += d2;
+                        } else
+                        {
+                            j += byte1;
+                            d -= 96D;
+                        }
+                        indexLineX[l] = i;
+                        indexLineY[l] = j;
+                    }
+
+                } else
+                {
+                    for(int i1 = 1; i1 < k; i1++)
+                    {
+                        if(d > 0.0D)
+                        {
+                            i += byte0;
+                            d += d2;
+                        } else
+                        {
+                            j += byte1;
+                            d += 96D;
+                        }
+                        indexLineX[i1] = i;
+                        indexLineY[i1] = j;
+                    }
+
+                }
+            } else
+            {
+                double d1 = java.lang.Math.abs(point3d.x % 96D);
+                double d3 = (96D * (point3d1.x - point3d.x)) / java.lang.Math.abs(point3d1.y - point3d.y);
+                if(d3 >= 0.0D)
+                {
+                    for(int j1 = 1; j1 < k; j1++)
+                    {
+                        if(d1 < 96D)
+                        {
+                            j += byte1;
+                            d1 += d3;
+                        } else
+                        {
+                            i += byte0;
+                            d1 -= 96D;
+                        }
+                        indexLineX[j1] = i;
+                        indexLineY[j1] = j;
+                    }
+
+                } else
+                {
+                    for(int k1 = 1; k1 < k; k1++)
+                    {
+                        if(d1 > 0.0D)
+                        {
+                            j += byte1;
+                            d1 += d3;
+                        } else
+                        {
+                            i += byte0;
+                            d1 += 96D;
+                        }
+                        indexLineX[k1] = i;
+                        indexLineY[k1] = j;
+                    }
+
+                }
+            }
+        }
+        return k;
+    }
+
+    private void collideInterface()
+    {
+        com.maddox.il2.engine.CollisionInterface collisioninterface = (com.maddox.il2.engine.CollisionInterface)_current;
+        if(!collisioninterface.collision_isEnabled())
+            return;
+        _currentP = _current.pos.getCurrentPoint();
+        _p = _current.pos.getAbsPoint();
+        int i = (int)_p.x / 96;
+        int j = (int)_p.y / 96;
+        _currentCollisionR = collisioninterface.collision_getCylinderR();
+        makeBoundBox2D(_currentP.x, _currentP.y, _p.x, _p.y, _currentCollisionR);
+        com.maddox.util.HashMapExt hashmapext = mapXY.get(j, i);
+        if(hashmapext != null)
+        {
+            for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+            {
+                com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry.getKey();
+                if(!com.maddox.il2.engine.Actor.isValid(actor) || current.containsKey(actor))
+                    continue;
+                double d = actor.collisionR();
+                if(d <= 0.0D)
+                    continue;
+                com.maddox.JGP.Point3d point3d = actor.pos.getAbsPoint();
+                double d1 = -1D;
+                if(actor.pos.isChanged())
+                {
+                    com.maddox.JGP.Point3d point3d1 = actor.pos.getCurrentPoint();
+                    if(collideBoundBox2D(point3d1.x, point3d1.y, point3d.x, point3d.y, d) && com.maddox.il2.engine.MsgCollisionRequest.on(_current, actor))
+                        collisioninterface.collision_processing(actor);
+                } else
+                if(collideBoundBox2D(point3d.x, point3d.y, d) && com.maddox.il2.engine.MsgCollisionRequest.on(_current, actor))
+                    collisioninterface.collision_processing(actor);
+                current.put(actor, null);
+            }
+
+        }
+        current.clear();
+    }
+
+    private void collideSphere()
+    {
+        _currentP = _current.pos.getCurrentPoint();
+        _p = _current.pos.getAbsPoint();
+        int i = (int)_p.x / 96;
+        int j = (int)_p.y / 96;
+        _currentCollisionR = _current.collisionR();
+        if(_currentCollisionR <= 0.0D)
+            return;
+        makeBoundBox(_p.x, _p.y, _p.z, _currentCollisionR);
+        if(_currentCollisionR <= 32D)
+        {
+            com.maddox.util.HashMapExt hashmapext = mapXY.get(j, i);
+            if(hashmapext != null)
+            {
+                for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+                {
+                    com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry.getKey();
+                    if(com.maddox.il2.engine.Actor.isValid(actor) && !current.containsKey(actor) && !moved.containsKey(actor))
+                        _collideSphere(actor);
+                }
+
+            }
+        } else
+        {
+            index.make(_p, (float)_currentCollisionR);
+            for(int k = 0; k < index.count; k++)
+            {
+                com.maddox.util.HashMapExt hashmapext1 = mapXY.get(index.y[k], index.x[k]);
+                if(hashmapext1 == null)
+                    continue;
+                for(java.util.Map.Entry entry1 = hashmapext1.nextEntry(null); entry1 != null; entry1 = hashmapext1.nextEntry(entry1))
+                {
+                    com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)entry1.getKey();
+                    if(com.maddox.il2.engine.Actor.isValid(actor1) && !current.containsKey(actor1) && !moved.containsKey(actor1))
+                        _collideSphere(actor1);
+                }
+
+            }
+
+        }
+        double d = com.maddox.il2.engine.Engine.cur.land.Hmax(_p.x, _p.y);
+        if(boundZmin < d + (double)STATIC_HMAX)
+        {
+            java.util.List list = lstXY.get(j, i);
+            if(list != null)
+            {
+                int l = list.size();
+                for(int i1 = 0; i1 < l; i1++)
+                {
+                    com.maddox.il2.engine.Actor actor2 = (com.maddox.il2.engine.Actor)list.get(i1);
+                    if(com.maddox.il2.engine.Actor.isValid(actor2) && !current.containsKey(actor2) && !moved.containsKey(actor2))
+                        _collideSphere(actor2);
+                }
+
+            }
+        }
+        if(_current.isCollideOnLand() && _p.z - _currentCollisionR - d <= 0.0D)
+        {
+            double d1 = _p.z - _currentCollisionR - com.maddox.il2.engine.Engine.cur.land.HQ(_p.x, _p.y);
+            if(d1 <= 0.0D)
+            {
+                long l1 = com.maddox.rts.Time.tick();
+                if(_current instanceof com.maddox.il2.engine.ActorMesh)
+                {
+                    com.maddox.il2.engine.Mesh mesh = ((com.maddox.il2.engine.ActorMesh)_current).mesh();
+                    com.maddox.il2.engine.Loc loc = _current.pos.getAbs();
+                    double d3 = com.maddox.il2.engine.Engine.cur.land.EQN(_p.x, _p.y, normal);
+                    if(mesh.detectCollisionPlane(loc, normal, d3) >= 0.0F)
+                        com.maddox.il2.engine.MsgCollision.post(l1, _current, com.maddox.il2.engine.Engine.actorLand(), com.maddox.il2.engine.Mesh.collisionChunk(0), "Body");
+                } else
+                {
+                    double d2 = _currentP.z - _currentCollisionR - com.maddox.il2.engine.Engine.cur.land.HQ(_currentP.x, _currentP.y);
+                    if(d2 > 0.0D)
+                    {
+                        double d4 = 1.0D + d1 / (d2 - d1);
+                        l1 += (long)(d4 * (double)com.maddox.rts.Time.tickLenFms());
+                        if(l1 >= com.maddox.rts.Time.tickNext())
+                            l1 = com.maddox.rts.Time.tickNext() - 1L;
+                    }
+                    com.maddox.il2.engine.MsgCollision.post(l1, _current, com.maddox.il2.engine.Engine.actorLand(), "Body", "Body");
+                }
+            }
+        }
+    }
+
+    private void _collideSphere(com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.il2.engine.Engine.cur.profile.collideSphereAll++;
+        double d = actor.collisionR();
+        if(d > 0.0D)
+        {
+            com.maddox.JGP.Point3d point3d = actor.pos.getAbsPoint();
+            if(collideBoundBox(point3d.x, point3d.y, point3d.z, d))
+            {
+                double d1 = (_currentCollisionR + d) * (_currentCollisionR + d);
+                double d2 = (_p.x - point3d.x) * (_p.x - point3d.x) + (_p.y - point3d.y) * (_p.y - point3d.y) + (_p.z - point3d.z) * (_p.z - point3d.z);
+                if(d2 <= d1)
+                {
+                    com.maddox.il2.engine.Engine.cur.profile.collideSphereSphere++;
+                    if(com.maddox.il2.engine.MsgCollisionRequest.on(_current, actor))
+                    {
+                        long l = com.maddox.rts.Time.tick();
+                        if((_current instanceof com.maddox.il2.engine.ActorMesh) && (actor instanceof com.maddox.il2.engine.ActorMesh))
+                        {
+                            com.maddox.il2.engine.Loc loc = _current.pos.getAbs();
+                            com.maddox.il2.engine.Loc loc1 = actor.pos.getAbs();
+                            com.maddox.il2.engine.Mesh mesh = ((com.maddox.il2.engine.ActorMesh)_current).mesh();
+                            com.maddox.il2.engine.Mesh mesh1 = ((com.maddox.il2.engine.ActorMesh)actor).mesh();
+                            if(mesh instanceof com.maddox.il2.engine.HierMesh)
+                            {
+                                if(mesh1 instanceof com.maddox.il2.engine.HierMesh)
+                                {
+                                    if(0 != ((com.maddox.il2.engine.HierMesh)mesh).detectCollision(loc, (com.maddox.il2.engine.HierMesh)mesh1, loc1))
+                                    {
+                                        com.maddox.il2.engine.Engine.cur.profile.collideSphere++;
+                                        com.maddox.il2.engine.MsgCollision.post2(l, _current, actor, com.maddox.il2.engine.Mesh.collisionChunk(0), com.maddox.il2.engine.Mesh.collisionChunk(1));
+                                    }
+                                } else
+                                if(0 != ((com.maddox.il2.engine.HierMesh)mesh).detectCollision(loc, mesh1, loc1))
+                                {
+                                    com.maddox.il2.engine.Engine.cur.profile.collideSphere++;
+                                    com.maddox.il2.engine.MsgCollision.post2(l, _current, actor, com.maddox.il2.engine.Mesh.collisionChunk(0), com.maddox.il2.engine.Mesh.collisionChunk(1));
+                                }
+                            } else
+                            if(mesh1 instanceof com.maddox.il2.engine.HierMesh)
+                            {
+                                if(0 != ((com.maddox.il2.engine.HierMesh)mesh1).detectCollision(loc1, mesh, loc))
+                                {
+                                    com.maddox.il2.engine.Engine.cur.profile.collideSphere++;
+                                    com.maddox.il2.engine.MsgCollision.post2(l, actor, _current, com.maddox.il2.engine.Mesh.collisionChunk(0), com.maddox.il2.engine.Mesh.collisionChunk(1));
+                                }
+                            } else
+                            if(0 != mesh.detectCollision(loc, mesh1, loc1))
+                            {
+                                com.maddox.il2.engine.Engine.cur.profile.collideSphere++;
+                                com.maddox.il2.engine.MsgCollision.post2(l, _current, actor, com.maddox.il2.engine.Mesh.collisionChunk(0), com.maddox.il2.engine.Mesh.collisionChunk(1));
+                            }
+                        } else
+                        {
+                            if(actor.pos.isChanged())
+                                point3d = actor.pos.getCurrentPoint();
+                            double d3 = (_currentP.x - point3d.x) * (_currentP.x - point3d.x) + (_currentP.y - point3d.y) * (_currentP.y - point3d.y) + (_currentP.z - point3d.z) * (_currentP.z - point3d.z);
+                            if(d3 > d1)
+                            {
+                                d1 = java.lang.Math.sqrt(d1);
+                                d2 = java.lang.Math.sqrt(d2);
+                                d3 = java.lang.Math.sqrt(d3);
+                                double d4 = 1.0D - (d1 - d2) / (d3 - d2);
+                                l += (long)(d4 * (double)com.maddox.rts.Time.tickLenFms());
+                                if(l >= com.maddox.rts.Time.tickNext())
+                                    l = com.maddox.rts.Time.tickNext() - 1L;
+                            }
+                            com.maddox.il2.engine.Engine.cur.profile.collideSphere++;
+                            com.maddox.il2.engine.MsgCollision.post2(l, _current, actor, "Body", "Body");
+                        }
+                    }
+                }
+            }
+        }
+        current.put(actor, null);
+    }
+
+    private void makeBoundBox(double d, double d1, double d2, double d3, double d4, double d5)
+    {
+        if(d < d3)
+        {
+            boundXmin = d;
+            boundXmax = d3;
+        } else
+        {
+            boundXmin = d3;
+            boundXmax = d;
+        }
+        if(d1 < d4)
+        {
+            boundYmin = d1;
+            boundYmax = d4;
+        } else
+        {
+            boundYmin = d4;
+            boundYmax = d1;
+        }
+        if(d2 < d5)
+        {
+            boundZmin = d2;
+            boundZmax = d5;
+        } else
+        {
+            boundZmin = d5;
+            boundZmax = d2;
+        }
+    }
+
+    private void makeBoundBox2D(double d, double d1, double d2, double d3, double d4)
+    {
+        if(d < d2)
+        {
+            boundXmin = d - d4;
+            boundXmax = d2 + d4;
+        } else
+        {
+            boundXmin = d2 - d4;
+            boundXmax = d + d4;
+        }
+        if(d1 < d3)
+        {
+            boundYmin = d1 - d4;
+            boundYmax = d3 + d4;
+        } else
+        {
+            boundYmin = d3 - d4;
+            boundYmax = d1 + d4;
+        }
+    }
+
+    private void makeBoundBox(double d, double d1, double d2, double d3)
+    {
+        boundXmin = d - d3;
+        boundXmax = d + d3;
+        boundYmin = d1 - d3;
+        boundYmax = d1 + d3;
+        boundZmin = d2 - d3;
+        boundZmax = d2 + d3;
+    }
+
+    private void makeBoundBox(double d, double d1, double d2)
+    {
+        boundXmin = boundXmax = d;
+        boundYmin = boundYmax = d1;
+        boundZmin = boundZmax = d2;
+    }
+
+    private boolean collideBoundBox(double d, double d1, double d2, double d3)
+    {
+        if(d2 + d3 < boundZmin)
+            return false;
+        if(d2 - d3 > boundZmax)
+            return false;
+        if(d + d3 < boundXmin)
+            return false;
+        if(d - d3 > boundXmax)
+            return false;
+        if(d1 + d3 < boundYmin)
+            return false;
+        return d1 - d3 <= boundYmax;
+    }
+
+    private boolean collideBoundBox2D(double d, double d1, double d2)
+    {
+        if(d + d2 < boundXmin)
+            return false;
+        if(d - d2 > boundXmax)
+            return false;
+        if(d1 + d2 < boundYmin)
+            return false;
+        return d1 - d2 <= boundYmax;
+    }
+
+    private boolean collideBoundBox(double d, double d1, double d2, double d3, double d4, double d5, double d6)
+    {
+        if(d2 < d5)
+        {
+            if(d5 + d6 < boundZmin)
+                return false;
+            if(d2 - d6 > boundZmax)
+                return false;
+        } else
+        {
+            if(d2 + d6 < boundZmin)
+                return false;
+            if(d5 - d6 > boundZmax)
+                return false;
+        }
+        if(d < d3)
+        {
+            if(d3 + d6 < boundXmin)
+                return false;
+            if(d - d6 > boundXmax)
+                return false;
+        } else
+        {
+            if(d + d6 < boundXmin)
+                return false;
+            if(d3 - d6 > boundXmax)
+                return false;
+        }
+        if(d1 < d4)
+        {
+            if(d4 + d6 < boundYmin)
+                return false;
+            if(d1 - d6 > boundYmax)
+                return false;
+        } else
+        {
+            if(d1 + d6 < boundYmin)
+                return false;
+            if(d4 - d6 > boundYmax)
+                return false;
+        }
+        return true;
+    }
+
+    private boolean collideBoundBox2D(double d, double d1, double d2, double d3, double d4)
+    {
+        if(d < d2)
+        {
+            if(d2 + d4 < boundXmin)
+                return false;
+            if(d - d4 > boundXmax)
+                return false;
+        } else
+        {
+            if(d + d4 < boundXmin)
+                return false;
+            if(d2 - d4 > boundXmax)
+                return false;
+        }
+        if(d1 < d3)
+        {
+            if(d3 + d4 < boundYmin)
+                return false;
+            if(d1 - d4 > boundYmax)
+                return false;
+        } else
+        {
+            if(d1 + d4 < boundYmin)
+                return false;
+            if(d3 - d4 > boundYmax)
+                return false;
+        }
+        return true;
+    }
+
+    protected void doCollision(java.util.List list)
+    {
+        bDoCollision = true;
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            _current = (com.maddox.il2.engine.Actor)list.get(j);
+            if(!com.maddox.il2.engine.Actor.isValid(_current))
+                continue;
+            if(_current.isCollide())
+            {
+                if(_current.isCollideAsPoint())
+                {
+                    collideLine();
+                } else
+                {
+                    moved.put(_current, null);
+                    collideSphere();
+                }
+                current.clear();
+                continue;
+            }
+            if(_current instanceof com.maddox.il2.engine.CollisionInterface)
+                collideInterface();
+        }
+
+        moved.clear();
+        _current = null;
+        bDoCollision = false;
+    }
+
+    private void _bulletCollide(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        com.maddox.il2.engine.Engine.cur.profile.collideLineAll++;
+        double d = actor.collisionR();
+        if(d > 0.0D)
+        {
+            com.maddox.JGP.Point3d point3d = actor.pos.getAbsPoint();
+            double d1 = -1D;
+            boolean flag = false;
+            p0.set(_currentP);
+            if(actor.pos.isChanged())
+            {
+                com.maddox.JGP.Point3d point3d1 = actor.pos.getCurrentPoint();
+                if(collideBoundBox(point3d1.x, point3d1.y, point3d1.z, point3d.x, point3d.y, point3d.z, d))
+                {
+                    p0.x += point3d.x - point3d1.x;
+                    p0.y += point3d.y - point3d1.y;
+                    p0.z += point3d.z - point3d1.z;
+                    flag = (p0.x - _p.x) * (p0.x - _p.x) + (p0.y - _p.y) * (p0.y - _p.y) + (p0.z - _p.z) * (p0.z - _p.z) < 9.9999999999999995E-007D;
+                    if(flag)
+                        d1 = com.maddox.il2.engine.CollideEnvXY.intersectPointSphere(_p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d);
+                    else
+                        d1 = com.maddox.il2.engine.CollideEnvXY.intersectLineSphere(p0.x, p0.y, p0.z, _p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d);
+                }
+            } else
+            if(collideBoundBox(point3d.x, point3d.y, point3d.z, d))
+                d1 = com.maddox.il2.engine.CollideEnvXY.intersectLineSphere(p0.x, p0.y, p0.z, _p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d);
+            if(d1 >= 0.0D)
+            {
+                com.maddox.il2.engine.Engine.cur.profile.collideLineSphere++;
+                java.lang.String s = "Body";
+                if(actor instanceof com.maddox.il2.engine.ActorMesh)
+                {
+                    com.maddox.il2.engine.Mesh mesh = ((com.maddox.il2.engine.ActorMesh)actor).mesh();
+                    com.maddox.il2.engine.Loc loc = actor.pos.getAbs();
+                    if(flag)
+                        d1 = mesh.detectCollisionPoint(loc, _p) == 0 ? -1D : 0.0D;
+                    else
+                        d1 = mesh.detectCollisionLine(loc, p0, _p);
+                    if(d1 >= 0.0D)
+                        s = com.maddox.il2.engine.Mesh.collisionChunk(0);
+                }
+                if(d1 >= 0.0D && d1 <= 1.0D)
+                {
+                    com.maddox.il2.engine.Engine.cur.profile.collideLine++;
+                    if(_bulletActor == null || d1 < _bulletTickOffset)
+                    {
+                        _bulletActor = actor;
+                        _bulletTickOffset = d1;
+                        _bulletChunk = s;
+                        _bulletArcade = false;
+                    }
+                } else
+                if(_bulletArcade && actor.getArmy() != actor1.getArmy())
+                {
+                    double d2;
+                    if(actor.pos.isChanged())
+                    {
+                        if(flag)
+                            d2 = com.maddox.il2.engine.CollideEnvXY.intersectPointSphere(_p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d / 2D);
+                        else
+                            d2 = com.maddox.il2.engine.CollideEnvXY.intersectLineSphere(p0.x, p0.y, p0.z, _p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d / 2D);
+                    } else
+                    {
+                        d2 = com.maddox.il2.engine.CollideEnvXY.intersectLineSphere(p0.x, p0.y, p0.z, _p.x, _p.y, _p.z, point3d.x, point3d.y, point3d.z, d / 2D);
+                    }
+                    if(d2 >= 0.0D && d2 <= 1.0D)
+                    {
+                        com.maddox.il2.engine.Engine.cur.profile.collideLine++;
+                        if(_bulletActor == null || d2 < _bulletTickOffset)
+                        {
+                            _bulletActor = actor;
+                            _bulletTickOffset = d2;
+                            _bulletChunk = "Body";
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean bulletCollide(com.maddox.il2.engine.BulletGeneric bulletgeneric)
+    {
+        _bulletArcade = (bulletgeneric.flags & 0x40000000) != 0;
+        _currentP = bulletgeneric.p0;
+        _p = bulletgeneric.p1;
+        if((_currentP.x - _p.x) * (_currentP.x - _p.x) + (_currentP.y - _p.y) * (_currentP.y - _p.y) + (_currentP.z - _p.z) * (_currentP.z - _p.z) < 9.9999999999999995E-007D)
+            return false;
+        com.maddox.il2.engine.Actor actor = bulletgeneric.gunOwnerBody();
+        makeBoundBox(_currentP.x, _currentP.y, _currentP.z, _p.x, _p.y, _p.z);
+        int i = makeIndexLine(_currentP, _p);
+        if(i == 0)
+            java.lang.System.out.println("CollideEnvXY.doBulletMoveAndCollision: " + bulletgeneric + " very big step moved bullet - IGNORED !!!");
+        double d = com.maddox.il2.engine.Engine.cur.land.Hmax(_p.x, _p.y);
+        _bulletActor = null;
+        int j = 0;
+        do
+        {
+            if(j >= i)
+                break;
+            com.maddox.util.HashMapExt hashmapext = mapXY.get(indexLineY[j], indexLineX[j]);
+            if(hashmapext != null)
+            {
+                for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+                {
+                    com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)entry.getKey();
+                    if(actor != null && actor != actor1 && com.maddox.il2.engine.Actor.isValid(actor1))
+                        _bulletCollide(actor1, actor);
+                }
+
+            }
+            if(boundZmin < d + (double)STATIC_HMAX)
+            {
+                java.util.List list = lstXY.get(indexLineY[j], indexLineX[j]);
+                if(list != null)
+                {
+                    int k = list.size();
+                    for(int i1 = 0; i1 < k; i1++)
+                    {
+                        com.maddox.il2.engine.Actor actor2 = (com.maddox.il2.engine.Actor)list.get(i1);
+                        if(actor != null && actor != actor2 && com.maddox.il2.engine.Actor.isValid(actor2))
+                            _bulletCollide(actor2, actor);
+                    }
+
+                }
+            }
+            if(_bulletActor != null)
+                break;
+            j++;
+        } while(true);
+        if(_p.z - d <= 0.0D)
+        {
+            double d1 = _p.z - com.maddox.il2.engine.Engine.cur.land.HQ(_p.x, _p.y);
+            if(d1 <= 0.0D)
+            {
+                double d2 = 0.0D;
+                double d3 = _currentP.z - com.maddox.il2.engine.Engine.cur.land.HQ(_currentP.x, _currentP.y);
+                if(d3 > 0.0D)
+                {
+                    d2 = 1.0D + d1 / (d3 - d1);
+                    if(d2 < 0.0D)
+                        d2 = 0.0D;
+                    if(d2 > 1.0D)
+                        d2 = 1.0D;
+                }
+                if(_bulletActor == null || d2 < _bulletTickOffset)
+                {
+                    _bulletActor = com.maddox.il2.engine.Engine.actorLand();
+                    _bulletTickOffset = d2;
+                    _bulletChunk = "Body";
+                    _bulletArcade = false;
+                }
+            }
+        }
+        if(_bulletActor != null)
+        {
+            if((bulletgeneric.flags & 0x40000000) != 0 && _bulletArcade)
+                bulletgeneric.flags |= 0x2000;
+            long l = com.maddox.rts.Time.tick() + (long)(_bulletTickOffset * (double)com.maddox.rts.Time.tickLenFms());
+            if(l >= com.maddox.rts.Time.tickNext())
+                l = com.maddox.rts.Time.tickNext() - 1L;
+            com.maddox.il2.engine.MsgBulletCollision.post(l, _bulletTickOffset, _bulletActor, _bulletChunk, bulletgeneric);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    protected void doBulletMoveAndCollision()
+    {
+        com.maddox.il2.engine.BulletGeneric bulletgeneric = null;
+        com.maddox.il2.engine.BulletGeneric bulletgeneric1 = com.maddox.il2.engine.Engine.cur.bulletList;
+        long l = com.maddox.rts.Time.current();
+        float f = com.maddox.rts.Time.tickLenFs();
+        while(bulletgeneric1 != null) 
+        {
+            if(l < bulletgeneric1.timeEnd)
+            {
+                if(!bulletgeneric1.bMoved)
+                {
+                    bulletgeneric1.move(f);
+                    bulletgeneric1.flags &= 0xffffefff;
+                }
+                bulletgeneric1.bMoved = false;
+            } else
+            {
+                bulletgeneric1.timeOut();
+                bulletgeneric1.destroy();
+            }
+            if(bulletgeneric1.isDestroyed() || bulletCollide(bulletgeneric1))
+            {
+                com.maddox.il2.engine.BulletGeneric bulletgeneric2 = bulletgeneric1;
+                bulletgeneric1 = bulletgeneric1.nextBullet;
+                if(bulletgeneric == null)
+                    com.maddox.il2.engine.Engine.cur.bulletList = bulletgeneric1;
+                else
+                    bulletgeneric.nextBullet = bulletgeneric1;
+                bulletgeneric2.nextBullet = null;
+            } else
+            {
+                bulletgeneric = bulletgeneric1;
+                bulletgeneric1 = bulletgeneric1.nextBullet;
+            }
+        }
+        _bulletActor = null;
+    }
+
+    public void getSphere(java.util.AbstractCollection abstractcollection, com.maddox.JGP.Point3d point3d, double d)
+    {
+        int i = (int)(point3d.x - d) / 96;
+        int j = (int)(point3d.y - d) / 96;
+        int k = (int)(point3d.x + d) / 96;
+        int l = (int)(point3d.y + d) / 96;
+        _getSphereLst = abstractcollection;
+        _getSphereCenter = point3d;
+        _getSphereR = d;
+        for(int i1 = j; i1 <= l; i1++)
+        {
+            for(int j1 = i; j1 <= k; j1++)
+            {
+                com.maddox.util.HashMapExt hashmapext = mapXY.get(i1, j1);
+                if(hashmapext != null)
+                {
+                    for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+                    {
+                        com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry.getKey();
+                        if(com.maddox.il2.engine.Actor.isValid(actor) && !current.containsKey(actor))
+                            _getSphere(actor);
+                    }
+
+                }
+                java.util.List list = lstXY.get(i1, j1);
+                if(list == null)
+                    continue;
+                int k1 = list.size();
+                for(int l1 = 0; l1 < k1; l1++)
+                {
+                    com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)list.get(l1);
+                    if(com.maddox.il2.engine.Actor.isValid(actor1) && !current.containsKey(actor1))
+                        _getSphere(actor1);
+                }
+
+            }
+
+        }
+
+        current.clear();
+    }
+
+    private void _getSphere(com.maddox.il2.engine.Actor actor)
+    {
+        current.put(actor, null);
+        double d = actor.collisionR();
+        com.maddox.JGP.Point3d point3d = actor.pos.getAbsPoint();
+        double d1 = (_getSphereR + d) * (_getSphereR + d);
+        double d2 = (_getSphereCenter.x - point3d.x) * (_getSphereCenter.x - point3d.x) + (_getSphereCenter.y - point3d.y) * (_getSphereCenter.y - point3d.y) + (_getSphereCenter.z - point3d.z) * (_getSphereCenter.z - point3d.z);
+        if(d2 <= d1)
+            _getSphereLst.add(actor);
+    }
+
+    public com.maddox.il2.engine.Actor getLine(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, boolean flag, com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d2)
+    {
+        if((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z) < 9.9999999999999995E-007D)
+            return null;
+        _getLineP1.set(point3d1);
+        point3d1 = _getLineP1;
+        _getLineP0 = point3d;
+        int i = 0;
+        do
+        {
+            i = makeIndexLine(point3d, point3d1);
+            if(i > 0)
+                break;
+            point3d1.interpolate(point3d, point3d1, 0.5D);
+        } while(true);
+        if(com.maddox.il2.engine.Engine.cur.land.HQ(point3d.x, point3d.y) > point3d.z)
+            return null;
+        double d = point3d.z;
+        double d1 = point3d1.z;
+        if(d > point3d1.z)
+        {
+            d = point3d1.z;
+            double d2 = point3d.z;
+        }
+        _getLineDx = point3d1.x - point3d.x;
+        _getLineDy = point3d1.y - point3d.y;
+        _getLineDz = point3d1.z - point3d.z;
+        _getLineLen2 = _getLineDx * _getLineDx + _getLineDy * _getLineDy + _getLineDz * _getLineDz;
+        _getLineBOnlySphere = flag;
+        int j = 0;
+        do
+        {
+            if(j >= i)
+                break;
+            int k = indexLineX[j];
+            int l = indexLineY[j];
+            com.maddox.util.HashMapExt hashmapext = mapXY.get(l, k);
+            if(hashmapext != null)
+            {
+                for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+                {
+                    com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)entry.getKey();
+                    if(com.maddox.il2.engine.Actor.isValid(actor1) && actor1 != actor)
+                        _getLineIntersect(actor1);
+                }
+
+            }
+            com.maddox.il2.engine.Landscape _tmp = com.maddox.il2.engine.Engine.cur.land;
+            double d3 = com.maddox.il2.engine.Landscape.Hmax((float)(k * 96) + 48F, (float)(l * 96) + 48F);
+            if(d < d3 + (double)STATIC_HMAX)
+            {
+                java.util.List list = lstXY.get(l, k);
+                if(list != null)
+                {
+                    int i1 = list.size();
+                    for(int j1 = 0; j1 < i1; j1++)
+                    {
+                        com.maddox.il2.engine.Actor actor3 = (com.maddox.il2.engine.Actor)list.get(j1);
+                        if(com.maddox.il2.engine.Actor.isValid(actor3) && actor3 != actor)
+                            _getLineIntersect(actor3);
+                    }
+
+                }
+            }
+            if(_getLineA != null)
+            {
+                com.maddox.il2.engine.Actor actor2 = _getLineA;
+                _getLineA = null;
+                _getLineP1.set(_getLineRayHit);
+                com.maddox.il2.engine.Engine.land();
+                if(!com.maddox.il2.engine.Landscape.rayHitHQ(point3d, _getLineP1, _getLineLandHit))
+                {
+                    if(point3d2 != null)
+                        point3d2.set(_getLineRayHit);
+                    return actor2;
+                }
+                break;
+            }
+            j++;
+        } while(true);
+        com.maddox.il2.engine.Engine.land();
+        if(com.maddox.il2.engine.Landscape.rayHitHQ(point3d, _getLineP1, _getLineLandHit))
+        {
+            if(point3d2 != null)
+                point3d2.set(_getLineLandHit);
+            return com.maddox.il2.engine.Engine.actorLand();
+        } else
+        {
+            return null;
+        }
+    }
+
+    public com.maddox.il2.engine.Actor getLine(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, boolean flag, com.maddox.il2.engine.ActorFilter actorfilter, com.maddox.JGP.Point3d point3d2)
+    {
+        if((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z) < 9.9999999999999995E-007D)
+            return null;
+        _getLineP1.set(point3d1);
+        point3d1 = _getLineP1;
+        _getLineP0 = point3d;
+        int i = 0;
+        do
+        {
+            i = makeIndexLine(point3d, point3d1);
+            if(i > 0)
+                break;
+            point3d1.interpolate(point3d, point3d1, 0.5D);
+        } while(true);
+        if(com.maddox.il2.engine.Engine.cur.land.HQ(point3d.x, point3d.y) > point3d.z)
+            return null;
+        double d = point3d.z;
+        double d1 = point3d1.z;
+        if(d > point3d1.z)
+        {
+            d = point3d1.z;
+            double d2 = point3d.z;
+        }
+        _getLineDx = point3d1.x - point3d.x;
+        _getLineDy = point3d1.y - point3d.y;
+        _getLineDz = point3d1.z - point3d.z;
+        _getLineLen2 = _getLineDx * _getLineDx + _getLineDy * _getLineDy + _getLineDz * _getLineDz;
+        _getLineBOnlySphere = flag;
+        int j = 0;
+        do
+        {
+            if(j >= i)
+                break;
+            int k = indexLineX[j];
+            int l = indexLineY[j];
+            com.maddox.util.HashMapExt hashmapext = mapXY.get(l, k);
+            if(hashmapext != null)
+            {
+                for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+                {
+                    com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry.getKey();
+                    if(com.maddox.il2.engine.Actor.isValid(actor) && actorfilter.isUse(actor, 0.0D))
+                        _getLineIntersect(actor);
+                }
+
+            }
+            com.maddox.il2.engine.Landscape _tmp = com.maddox.il2.engine.Engine.cur.land;
+            double d3 = com.maddox.il2.engine.Landscape.Hmax((float)(k * 96) + 48F, (float)(l * 96) + 48F);
+            if(d < d3 + (double)STATIC_HMAX)
+            {
+                java.util.List list = lstXY.get(l, k);
+                if(list != null)
+                {
+                    int i1 = list.size();
+                    for(int j1 = 0; j1 < i1; j1++)
+                    {
+                        com.maddox.il2.engine.Actor actor2 = (com.maddox.il2.engine.Actor)list.get(j1);
+                        if(com.maddox.il2.engine.Actor.isValid(actor2) && actorfilter.isUse(actor2, 0.0D))
+                            _getLineIntersect(actor2);
+                    }
+
+                }
+            }
+            if(_getLineA != null)
+            {
+                com.maddox.il2.engine.Actor actor1 = _getLineA;
+                _getLineA = null;
+                _getLineP1.set(_getLineRayHit);
+                if(actorfilter.isUse(com.maddox.il2.engine.Engine.actorLand(), 0.0D))
+                {
+                    com.maddox.il2.engine.Engine.land();
+                    if(com.maddox.il2.engine.Landscape.rayHitHQ(point3d, _getLineP1, _getLineLandHit))
+                        break;
+                }
+                if(point3d2 != null)
+                    point3d2.set(_getLineRayHit);
+                return actor1;
+            }
+            j++;
+        } while(true);
+        if(actorfilter.isUse(com.maddox.il2.engine.Engine.actorLand(), 0.0D))
+        {
+            com.maddox.il2.engine.Engine.land();
+            if(com.maddox.il2.engine.Landscape.rayHitHQ(point3d, _getLineP1, _getLineLandHit))
+            {
+                if(point3d2 != null)
+                    point3d2.set(_getLineLandHit);
+                return com.maddox.il2.engine.Engine.actorLand();
+            }
+        }
+        return null;
+    }
+
+    private void _getLineIntersect(com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.JGP.Point3d point3d = actor.pos.getAbsPoint();
+        double d = actor.collisionR();
+        double d1 = d * d;
+        double d2 = ((point3d.x - _getLineP0.x) * _getLineDx + (point3d.y - _getLineP0.y) * _getLineDy + (point3d.z - _getLineP0.z) * _getLineDz) / _getLineLen2;
+        if(d2 >= 0.0D && d2 <= 1.0D)
+        {
+            double d3 = _getLineP0.x + d2 * _getLineDx;
+            double d5 = _getLineP0.y + d2 * _getLineDy;
+            double d7 = _getLineP0.z + d2 * _getLineDz;
+            double d8 = (d3 - point3d.x) * (d3 - point3d.x) + (d5 - point3d.y) * (d5 - point3d.y) + (d7 - point3d.z) * (d7 - point3d.z);
+            double d9 = d1 - d8;
+            if(d9 < 0.0D)
+            {
+                d2 = -1D;
+            } else
+            {
+                d2 -= java.lang.Math.sqrt(d9 / _getLineLen2);
+                if(d2 < 0.0D)
+                    d2 = 0.0D;
+            }
+        } else
+        {
+            double d4 = (_getLineP1.x - point3d.x) * (_getLineP1.x - point3d.x) + (_getLineP1.y - point3d.y) * (_getLineP1.y - point3d.y) + (_getLineP1.z - point3d.z) * (_getLineP1.z - point3d.z);
+            double d6 = (_getLineP0.x - point3d.x) * (_getLineP0.x - point3d.x) + (_getLineP0.y - point3d.y) * (_getLineP0.y - point3d.y) + (_getLineP0.z - point3d.z) * (_getLineP0.z - point3d.z);
+            if(d4 <= d1 || d6 <= d1)
+            {
+                if(d4 < d6)
+                    d2 = 1.0D;
+                else
+                    d2 = 0.0D;
+            } else
+            {
+                d2 = -1D;
+            }
+        }
+        if(d2 < 0.0D)
+            return;
+        if(!_getLineBOnlySphere && (actor instanceof com.maddox.il2.engine.ActorMesh))
+        {
+            com.maddox.il2.engine.Mesh mesh = ((com.maddox.il2.engine.ActorMesh)actor).mesh();
+            com.maddox.il2.engine.Loc loc = actor.pos.getAbs();
+            d2 = mesh.detectCollisionLine(loc, _getLineP0, _getLineP1);
+            if(d2 < 0.0D)
+                return;
+        }
+        if(_getLineA != null && d2 > _getLineU)
+        {
+            return;
+        } else
+        {
+            _getLineA = actor;
+            _getLineU = d2;
+            _getLineRayHit.interpolate(_getLineP0, _getLineP1, d2);
+            return;
+        }
+    }
+
+    public void getFiltered(java.util.AbstractCollection abstractcollection, com.maddox.JGP.Point3d point3d, double d, com.maddox.il2.engine.ActorFilter actorfilter)
+    {
+        int i = (int)(point3d.x - d) / 96;
+        int j = (int)(point3d.y - d) / 96;
+        int k = (int)(point3d.x + d) / 96;
+        int l = (int)(point3d.y + d) / 96;
+        _getFilteredCenter = point3d;
+        _getFilteredFilter = actorfilter;
+        _getFilteredR = d;
+        for(int i1 = j; i1 <= l; i1++)
+        {
+            for(int j1 = i; j1 <= k; j1++)
+            {
+                com.maddox.util.HashMapExt hashmapext = mapXY.get(i1, j1);
+                if(hashmapext != null)
+                {
+                    for(java.util.Map.Entry entry1 = hashmapext.nextEntry(null); entry1 != null; entry1 = hashmapext.nextEntry(entry1))
+                    {
+                        com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry1.getKey();
+                        if(com.maddox.il2.engine.Actor.isValid(actor) && !current.containsKey(actor) && !moved.containsKey(actor))
+                            _getFiltered(actor);
+                    }
+
+                }
+                java.util.List list = lstXY.get(i1, j1);
+                if(list == null)
+                    continue;
+                int k1 = list.size();
+                for(int l1 = 0; l1 < k1; l1++)
+                {
+                    com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)list.get(l1);
+                    if(com.maddox.il2.engine.Actor.isValid(actor1) && !current.containsKey(actor1) && !moved.containsKey(actor1))
+                        _getFiltered(actor1);
+                }
+
+            }
+
+        }
+
+        if(abstractcollection != null)
+        {
+            for(java.util.Map.Entry entry = current.nextEntry(null); entry != null; entry = current.nextEntry(entry))
+                abstractcollection.add(entry.getKey());
+
+        }
+        current.clear();
+        moved.clear();
+    }
+
+    private void _getFiltered(com.maddox.il2.engine.Actor actor)
+    {
+        double d = actor.collisionR();
+        com.maddox.JGP.Point3d point3d = actor.pos.getAbsPoint();
+        double d1 = (_getFilteredR + d) * (_getFilteredR + d);
+        double d2 = (_getFilteredCenter.x - point3d.x) * (_getFilteredCenter.x - point3d.x) + (_getFilteredCenter.y - point3d.y) * (_getFilteredCenter.y - point3d.y) + (_getFilteredCenter.z - point3d.z) * (_getFilteredCenter.z - point3d.z);
+        if(d2 <= d1 && _getFilteredFilter.isUse(actor, d2))
+            current.put(actor, null);
+        else
+            moved.put(actor, null);
+    }
+
+    public void getNearestEnemies(com.maddox.JGP.Point3d point3d, double d, int i, com.maddox.il2.engine.Accumulator accumulator)
+    {
+        if(d >= 6000D)
+            d = 6000D;
+        int j = (int)(point3d.x - d) / 96;
+        int k = (int)(point3d.y - d) / 96;
+        int l = (int)(point3d.x + d) / 96;
+        int i1 = (int)(point3d.y + d) / 96;
+        for(int j1 = k; j1 <= i1; j1++)
+        {
+            for(int k1 = j; k1 <= l; k1++)
+            {
+                com.maddox.util.HashMapExt hashmapext = mapXY.get(j1, k1);
+                if(hashmapext != null)
+                {
+                    for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+                    {
+                        com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry.getKey();
+                        int i2 = actor.getArmy();
+                        if(i2 == 0 || i2 == i || !actor.isAlive() || current.containsKey(actor))
+                            continue;
+                        current.put(actor, null);
+                        double d1 = actor.collisionR();
+                        com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+                        double d3 = (d + d1) * (d + d1);
+                        double d4 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z);
+                        if(d4 <= d3 && !accumulator.add(actor, d4))
+                        {
+                            current.clear();
+                            return;
+                        }
+                    }
+
+                }
+                java.util.List list = lstXY.get(j1, k1);
+                if(list == null)
+                    continue;
+                int l1 = list.size();
+                for(int j2 = 0; j2 < l1; j2++)
+                {
+                    com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)list.get(j2);
+                    int k2 = actor1.getArmy();
+                    if(k2 == 0 || k2 == i || !actor1.isAlive() || current.containsKey(actor1))
+                        continue;
+                    current.put(actor1, null);
+                    double d2 = actor1.collisionR();
+                    com.maddox.JGP.Point3d point3d2 = actor1.pos.getAbsPoint();
+                    double d5 = (d + d2) * (d + d2);
+                    double d6 = (point3d.x - point3d2.x) * (point3d.x - point3d2.x) + (point3d.y - point3d2.y) * (point3d.y - point3d2.y) + (point3d.z - point3d2.z) * (point3d.z - point3d2.z);
+                    if(d6 <= d5 && !accumulator.add(actor1, d6))
+                    {
+                        current.clear();
+                        return;
+                    }
+                }
+
+            }
+
+        }
+
+        current.clear();
+    }
+
+    public void getNearestEnemiesCyl(com.maddox.JGP.Point3d point3d, double d, double d1, double d2, 
+            int i, com.maddox.il2.engine.Accumulator accumulator)
+    {
+        if(d >= 6000D)
+            d = 6000D;
+        int j = (int)(point3d.x - d) / 96;
+        int k = (int)(point3d.y - d) / 96;
+        int l = (int)(point3d.x + d) / 96;
+        int i1 = (int)(point3d.y + d) / 96;
+        for(int j1 = k; j1 <= i1; j1++)
+        {
+            for(int k1 = j; k1 <= l; k1++)
+            {
+                com.maddox.util.HashMapExt hashmapext = mapXY.get(j1, k1);
+                if(hashmapext != null)
+                {
+                    for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+                    {
+                        com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)entry.getKey();
+                        int i2 = actor.getArmy();
+                        if(i2 == 0 || i2 == i || !actor.isAlive() || current.containsKey(actor))
+                            continue;
+                        current.put(actor, null);
+                        double d3 = actor.collisionR();
+                        com.maddox.JGP.Point3d point3d1 = actor.pos.getAbsPoint();
+                        double d5 = (d + d3) * (d + d3);
+                        double d6 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y);
+                        if(d6 > d5)
+                            continue;
+                        double d8 = point3d1.z - point3d.z;
+                        if(d8 - d3 <= d2 && d8 + d3 >= d1 && !accumulator.add(actor, d6 + d8 * d8))
+                        {
+                            current.clear();
+                            return;
+                        }
+                    }
+
+                }
+                java.util.List list = lstXY.get(j1, k1);
+                if(list == null)
+                    continue;
+                int l1 = list.size();
+                for(int j2 = 0; j2 < l1; j2++)
+                {
+                    com.maddox.il2.engine.Actor actor1 = (com.maddox.il2.engine.Actor)list.get(j2);
+                    int k2 = actor1.getArmy();
+                    if(k2 == 0 || k2 == i || !actor1.isAlive() || current.containsKey(actor1))
+                        continue;
+                    current.put(actor1, null);
+                    double d4 = actor1.collisionR();
+                    com.maddox.JGP.Point3d point3d2 = actor1.pos.getAbsPoint();
+                    double d7 = (d + d4) * (d + d4);
+                    double d9 = (point3d.x - point3d2.x) * (point3d.x - point3d2.x) + (point3d.y - point3d2.y) * (point3d.y - point3d2.y);
+                    if(d9 > d7)
+                        continue;
+                    double d10 = point3d2.z - point3d.z;
+                    if(d10 - d4 <= d2 && d10 + d4 >= d1 && !accumulator.add(actor1, d9 + d10 * d10))
+                    {
+                        current.clear();
+                        return;
+                    }
+                }
+
+            }
+
+        }
+
+        current.clear();
+    }
+
+    protected void changedPos(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        if(actor.collisionR() <= 32F)
+        {
+            int i = (int)point3d.x / 32;
+            int k = (int)point3d.y / 32;
+            int i1 = (int)point3d1.x / 32;
+            int k1 = (int)point3d1.y / 32;
+            if(i != i1 || k != k1)
+            {
+                remove(actor, i, k);
+                add(actor, i1, k1);
+            }
+        } else
+        {
+            int j = (int)(point3d.x / 96D);
+            int l = (int)(point3d.y / 96D);
+            int j1 = (int)(point3d1.x / 96D);
+            int l1 = (int)(point3d1.y / 96D);
+            if(j != j1 || l != l1)
+            {
+                index.make(point3d, actor.collisionR());
+                for(int i2 = 0; i2 < index.count; i2++)
+                    mapXY.remove(index.y[i2], index.x[i2], actor);
+
+                index.make(point3d1, actor.collisionR());
+                for(int j2 = 0; j2 < index.count; j2++)
+                    mapXY.put(index.y[j2], index.x[j2], actor, null);
+
+            }
+        }
+    }
+
+    protected void add(com.maddox.il2.engine.Actor actor)
+    {
+        if(actor.pos != null)
+        {
+            com.maddox.JGP.Point3d point3d = actor.pos.getCurrentPoint();
+            if(actor.collisionR() <= 32F)
+            {
+                add(actor, (int)point3d.x / 32, (int)point3d.y / 32);
+            } else
+            {
+                index.make(point3d, actor.collisionR());
+                for(int i = 0; i < index.count; i++)
+                    mapXY.put(index.y[i], index.x[i], actor, null);
+
+            }
+        }
+    }
+
+    protected void add(com.maddox.il2.engine.Actor actor, int i, int j)
+    {
+        index.make(i, j);
+        for(int k = 0; k < index.count; k++)
+            mapXY.put(index.y[k], index.x[k], actor, null);
+
+    }
+
+    protected void remove(com.maddox.il2.engine.Actor actor)
+    {
+        if(actor.pos != null)
+        {
+            com.maddox.JGP.Point3d point3d = actor.pos.getCurrentPoint();
+            if(actor.collisionR() <= 32F)
+            {
+                remove(actor, (int)point3d.x / 32, (int)point3d.y / 32);
+            } else
+            {
+                index.make(point3d, actor.collisionR());
+                for(int i = 0; i < index.count; i++)
+                    mapXY.remove(index.y[i], index.x[i], actor);
+
+            }
+        }
+    }
+
+    private void remove(com.maddox.il2.engine.Actor actor, int i, int j)
+    {
+        index.make(i, j);
+        for(int k = 0; k < index.count; k++)
+            mapXY.remove(index.y[k], index.x[k], actor);
+
+    }
+
+    protected void changedPosStatic(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        removeStatic(actor);
+        addStatic(actor);
+    }
+
+    protected void addStatic(com.maddox.il2.engine.Actor actor)
+    {
+        if(actor.pos != null)
+        {
+            com.maddox.JGP.Point3d point3d = actor.pos.getCurrentPoint();
+            index.make(point3d, actor.collisionR());
+            for(int i = 0; i < index.count; i++)
+                lstXY.put(index.y[i], index.x[i], actor);
+
+        }
+    }
+
+    protected void removeStatic(com.maddox.il2.engine.Actor actor)
+    {
+        if(actor.pos != null)
+        {
+            com.maddox.JGP.Point3d point3d = actor.pos.getCurrentPoint();
+            index.make(point3d, actor.collisionR());
+            for(int i = 0; i < index.count; i++)
+                lstXY.remove(index.y[i], index.x[i], actor);
+
+        }
+    }
+
+    protected void resetGameClear()
+    {
+        java.util.ArrayList arraylist = new ArrayList();
+        java.util.ArrayList arraylist1 = new ArrayList();
+        mapXY.allValues(arraylist);
+        for(int i = 0; i < arraylist.size(); i++)
+        {
+            com.maddox.util.HashMapExt hashmapext = (com.maddox.util.HashMapExt)arraylist.get(i);
+            arraylist1.addAll(hashmapext.keySet());
+            com.maddox.il2.engine.Engine.destroyListGameActors(arraylist1);
+        }
+
+        arraylist.clear();
+        lstXY.allValues(arraylist);
+        for(int j = 0; j < arraylist.size(); j++)
+        {
+            java.util.ArrayList arraylist2 = (java.util.ArrayList)arraylist.get(j);
+            arraylist1.addAll(arraylist2);
+            com.maddox.il2.engine.Engine.destroyListGameActors(arraylist1);
+        }
+
+        arraylist.clear();
+    }
+
+    protected void resetGameCreate()
+    {
+        clear();
+    }
+
+    protected void clear()
+    {
+        mapXY.clear();
+    }
+
+    protected CollideEnvXY()
+    {
+        bDoCollision = false;
+        indexLineX = new int[100];
+        indexLineY = new int[100];
+        moved = new HashMapExt();
+        current = new HashMapExt();
+        _getLineP1 = new Point3d();
+        _getLineRayHit = new Point3d();
+        _getLineLandHit = new Point3d();
+        p0 = new Point3d();
+        normal = new Vector3d();
+        mapXY = new HashMapXY16Hash(7);
+        lstXY = new HashMapXY16List(7);
+        index = new CollideEnvXYIndex();
+    }
+
+    public static final int SMALL_STEP = 32;
+    public static final int STEP = 96;
+    public static final float STEPF = 96F;
+    public static final float STEPF_2 = 48F;
+    public static float STATIC_HMAX = 50F;
+    private static final float MAX_ENEMY_DIST = 6000F;
+    private boolean bDoCollision;
+    private int indexLineX[];
+    private int indexLineY[];
+    private double boundXmin;
+    private double boundXmax;
+    private double boundYmin;
+    private double boundYmax;
+    private double boundZmin;
+    private double boundZmax;
+    private com.maddox.util.HashMapExt moved;
+    private com.maddox.util.HashMapExt current;
+    private com.maddox.il2.engine.Actor _bulletActor;
+    private java.lang.String _bulletChunk;
+    private double _bulletTickOffset;
+    private boolean _bulletArcade;
+    private java.util.AbstractCollection _getSphereLst;
+    private com.maddox.JGP.Point3d _getSphereCenter;
+    private double _getSphereR;
+    private com.maddox.JGP.Point3d _getLineP0;
+    private com.maddox.JGP.Point3d _getLineP1;
+    private double _getLineR2;
+    private double _getLineLen2;
+    private double _getLineDx;
+    private double _getLineDy;
+    private double _getLineDz;
+    private boolean _getLineBOnlySphere;
+    private double _getLineU;
+    private com.maddox.il2.engine.Actor _getLineA;
+    private com.maddox.JGP.Point3d _getLineRayHit;
+    private com.maddox.JGP.Point3d _getLineLandHit;
+    private com.maddox.JGP.Point3d _getFilteredCenter;
+    private com.maddox.il2.engine.ActorFilter _getFilteredFilter;
+    private double _getFilteredR;
+    private com.maddox.il2.engine.Actor _current;
+    private com.maddox.JGP.Point3d _currentP;
+    private double _currentCollisionR;
+    private com.maddox.JGP.Point3d _p;
+    private com.maddox.JGP.Point3d p0;
+    private com.maddox.JGP.Vector3d normal;
+    private com.maddox.util.HashMapXY16Hash mapXY;
+    private com.maddox.util.HashMapXY16List lstXY;
+    private com.maddox.il2.engine.CollideEnvXYIndex index;
+
 }

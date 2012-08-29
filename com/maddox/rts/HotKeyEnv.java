@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HotKeyEnv.java
+
 package com.maddox.rts;
 
 import com.maddox.util.HashMapExt;
@@ -7,461 +12,538 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.StringTokenizer;
+
+// Referenced classes of package com.maddox.rts:
+//            HotKeyCmd, HotKeyCmdEnv, HotKeyCmdMouseMove, HotKeyCmdMove, 
+//            HotKeyCmdRedirect, HotKeyCmdTrackIRAngles, RTSConf, HotKeyEnvs, 
+//            VK, IniFile, Time, HotKeyCmdEnvs, 
+//            Mouse
 
 public class HotKeyEnv
 {
-  public static final String DEFAULT = "default";
-  private static ArrayList removed = new ArrayList();
-  private String name;
-  private boolean bEnabled = true;
-  private HashMapInt keys;
-  private HotKeyCmdEnv hotKeyCmdEnv;
 
-  public final String name()
-  {
-    return this.name;
-  }
-
-  public final boolean isEnabled()
-  {
-    return this.bEnabled;
-  }
-
-  public static boolean isEnabled(String paramString)
-  {
-    HotKeyEnv localHotKeyEnv = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.envs.get(paramString);
-    if (localHotKeyEnv == null) return false;
-    return localHotKeyEnv.bEnabled;
-  }
-
-  public final void enable(boolean paramBoolean)
-  {
-    this.bEnabled = paramBoolean;
-  }
-
-  public static void enable(String paramString, boolean paramBoolean)
-  {
-    HotKeyEnv localHotKeyEnv = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.envs.get(paramString);
-    if (localHotKeyEnv == null) return;
-    localHotKeyEnv.bEnabled = paramBoolean;
-  }
-  private int hotKeys(int paramInt1, int paramInt2) {
-    return (paramInt1 & 0xFFFF) << 16 | paramInt2 & 0xFFFF;
-  }
-
-  public void add(int paramInt1, int paramInt2, String paramString) {
-    this.keys.put(hotKeys(paramInt1, paramInt2), paramString);
-  }
-
-  public static void addHotKey(int paramInt1, int paramInt2, String paramString)
-  {
-    RTSConf.cur.hotKeyEnvs.cur.add(paramInt1, paramInt2, paramString);
-  }
-
-  public static void addHotKey(String paramString1, int paramInt1, int paramInt2, String paramString2)
-  {
-    HotKeyEnv localHotKeyEnv = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.envs.get(paramString1);
-    if (localHotKeyEnv == null)
-      localHotKeyEnv = new HotKeyEnv(paramString1);
-    localHotKeyEnv.add(paramInt1, paramInt2, paramString2);
-  }
-
-  public void remove(int paramInt1, int paramInt2)
-  {
-    this.keys.remove(hotKeys(paramInt1, paramInt2));
-  }
-
-  public void remove(String paramString)
-  {
-    if (paramString == null) return;
-    int i = 1;
-    while (i != 0) {
-      i = 0;
-      HashMapIntEntry localHashMapIntEntry = this.keys.nextEntry(null);
-      while (localHashMapIntEntry != null) {
-        int j = localHashMapIntEntry.getKey();
-        int k = j >> 16 & 0xFFFF;
-        int m = j & 0xFFFF;
-        String str = (String)localHashMapIntEntry.getValue();
-        if (paramString.equals(str)) {
-          remove(k, m);
-          i = 1;
-          break;
-        }
-        localHashMapIntEntry = this.keys.nextEntry(localHashMapIntEntry);
-      }
+    public final java.lang.String name()
+    {
+        return name;
     }
-  }
 
-  public int find(String paramString) {
-    HashMapIntEntry localHashMapIntEntry = this.keys.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      String str = (String)localHashMapIntEntry.getValue();
-      if (paramString.equals(str)) {
-        int i = localHashMapIntEntry.getKey();
-        return i;
-      }
-      localHashMapIntEntry = this.keys.nextEntry(localHashMapIntEntry);
+    public final boolean isEnabled()
+    {
+        return bEnabled;
     }
-    return 0;
-  }
 
-  public String get(int paramInt1, int paramInt2)
-  {
-    return (String)this.keys.get(hotKeys(paramInt1, paramInt2));
-  }
-
-  public final HashMapInt all()
-  {
-    return this.keys;
-  }
-
-  public static final void setCurrentEnv(String paramString)
-  {
-    HotKeyEnv localHotKeyEnv = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.envs.get(paramString);
-    if (localHotKeyEnv == null)
-      localHotKeyEnv = new HotKeyEnv(paramString);
-    RTSConf.cur.hotKeyEnvs.cur = localHotKeyEnv;
-  }
-
-  public static final HotKeyEnv currentEnv()
-  {
-    return RTSConf.cur.hotKeyEnvs.cur;
-  }
-
-  public static final List allEnv()
-  {
-    return RTSConf.cur.hotKeyEnvs.lst;
-  }
-
-  public static final HotKeyEnv env(String paramString)
-  {
-    return (HotKeyEnv)RTSConf.cur.hotKeyEnvs.envs.get(paramString);
-  }
-
-  public static String key2Text(int paramInt) {
-    if (paramInt >= 601) {
-      return "User" + (paramInt - 601);
-    }
-    return VK.getKeyText(paramInt);
-  }
-
-  public static int text2Key(String paramString) {
-    if (paramString.startsWith("User")) {
-      String str = paramString.substring("User".length());
-      return Integer.parseInt(str) + 601;
-    }
-    return VK.getKeyFromText(paramString);
-  }
-
-  public static void fromIni(String paramString1, IniFile paramIniFile, String paramString2)
-  {
-    String[] arrayOfString = paramIniFile.getVariables(paramString2);
-    setCurrentEnv(paramString1);
-    if (arrayOfString == null)
-      return;
-    for (int i = 0; i < arrayOfString.length; i++) {
-      StringTokenizer localStringTokenizer = new StringTokenizer(arrayOfString[i]);
-      String str1 = paramIniFile.getValue(paramString2, arrayOfString[i]);
-      if ((str1.length() <= 0) || 
-        (!localStringTokenizer.hasMoreTokens())) continue;
-      String str2 = localStringTokenizer.nextToken();
-      int j = text2Key(str2);
-      if (j == 0) {
-        System.err.println("INI: HotKey '" + arrayOfString[i] + "' is unknown");
-      }
-      else if (localStringTokenizer.hasMoreTokens()) {
-        String str3 = localStringTokenizer.nextToken();
-        int k = text2Key(str3);
-        if (k == 0)
-          System.err.println("INI: HotKey '" + arrayOfString[i] + "' is unknown");
+    public static boolean isEnabled(java.lang.String s)
+    {
+        com.maddox.rts.HotKeyEnv hotkeyenv = (com.maddox.rts.HotKeyEnv)com.maddox.rts.RTSConf.cur.hotKeyEnvs.envs.get(s);
+        if(hotkeyenv == null)
+            return false;
         else
-          addHotKey(j, k, str1);
-      }
-      else {
-        addHotKey(0, j, str1);
-      }
+            return hotkeyenv.bEnabled;
     }
-  }
 
-  public static void toIni(String paramString1, IniFile paramIniFile, String paramString2)
-  {
-    HotKeyEnv localHotKeyEnv = env(paramString1);
-    if (localHotKeyEnv == null) {
-      System.err.println("INI: HotKey environment '" + paramString1 + "' not present");
-      return;
+    public final void enable(boolean flag)
+    {
+        bEnabled = flag;
     }
-    HashMapIntEntry localHashMapIntEntry = localHotKeyEnv.keys.nextEntry(null);
-    while (localHashMapIntEntry != null) {
-      int i = localHashMapIntEntry.getKey();
-      int j = i >> 16 & 0xFFFF;
-      int k = i & 0xFFFF;
-      String str = (String)localHashMapIntEntry.getValue();
-      if (k >= 601)
-      {
-        paramIniFile.setValue(paramString2, "User" + (k - 601), str);
-      }
-      else if (j != 0) paramIniFile.setValue(paramString2, key2Text(j) + " " + key2Text(k), str); else {
-        paramIniFile.setValue(paramString2, key2Text(k), str);
-      }
-      localHashMapIntEntry = localHotKeyEnv.keys.nextEntry(localHashMapIntEntry);
-    }
-  }
 
-  public static void tick(boolean paramBoolean)
-  {
-    HashMapExt localHashMapExt = RTSConf.cur.hotKeyEnvs.active;
-    Map.Entry localEntry = localHashMapExt.nextEntry(null);
-    while (localEntry != null) {
-      HotKeyCmd localHotKeyCmd = (HotKeyCmd)localEntry.getKey();
-      if (localHotKeyCmd.isTickInTime(paramBoolean))
-        localHotKeyCmd.play();
-      localEntry = localHashMapExt.nextEntry(localEntry);
-    }
-  }
-
-  private final boolean startCmd(boolean paramBoolean, int paramInt1, int paramInt2) {
-    HashMapExt localHashMapExt = RTSConf.cur.hotKeyEnvs.active;
-    int i = hotKeys(paramInt1, paramInt2);
-    String str = (String)this.keys.get(i);
-    if (str != null) {
-      HotKeyCmd localHotKeyCmd = this.hotKeyCmdEnv.get(str);
-      if ((localHotKeyCmd != null) && (!localHotKeyCmd.isActive()) && (localHotKeyCmd.isEnabled()) && (localHotKeyCmd.isRealTime() == paramBoolean) && ((!Time.isPaused()) || (!localHotKeyCmd.isDisableIfTimePaused())))
-      {
-        localHashMapExt.put(localHotKeyCmd, null);
-        RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmd, true, true);
-        localHotKeyCmd.start(paramInt1, paramInt2);
-        RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmd, true, false);
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public static final void keyPress(boolean paramBoolean1, int paramInt, boolean paramBoolean2)
-  {
-    int i = paramBoolean1 ? 1 : 0;
-    HashMapInt localHashMapInt = RTSConf.cur.hotKeyEnvs.keyState[i];
-    HashMapExt localHashMapExt = RTSConf.cur.hotKeyEnvs.active;
-    boolean bool = localHashMapInt.containsKey(paramInt);
-    Object localObject;
-    if ((paramBoolean2) && (!bool)) {
-      localHashMapInt.put(paramInt, null);
-      int j = 0;
-      HashMapIntEntry localHashMapIntEntry1;
-      for (int k = 0; k < RTSConf.cur.hotKeyEnvs.lst.size(); k++) {
-        localObject = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.lst.get(k);
-        if ((((HotKeyEnv)localObject).bEnabled) && (((HotKeyEnv)localObject).hotKeyCmdEnv.isEnabled())) {
-          localHashMapIntEntry1 = localHashMapInt.nextEntry(null);
-          while (localHashMapIntEntry1 != null) {
-            HashMapIntEntry localHashMapIntEntry2 = localHashMapInt.nextEntry(localHashMapIntEntry1);
-            while (localHashMapIntEntry2 != null) {
-              if ((((HotKeyEnv)localObject).startCmd(paramBoolean1, localHashMapIntEntry1.getKey(), localHashMapIntEntry2.getKey())) || (((HotKeyEnv)localObject).startCmd(paramBoolean1, localHashMapIntEntry2.getKey(), localHashMapIntEntry1.getKey())))
-              {
-                j = 1;
-              }localHashMapIntEntry2 = localHashMapInt.nextEntry(localHashMapIntEntry2);
-            }
-            localHashMapIntEntry1 = localHashMapInt.nextEntry(localHashMapIntEntry1);
-          }
-        }
-      }
-      if (j == 0) {
-        for (k = 0; k < RTSConf.cur.hotKeyEnvs.lst.size(); k++) {
-          localObject = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.lst.get(k);
-          if ((((HotKeyEnv)localObject).bEnabled) && (((HotKeyEnv)localObject).hotKeyCmdEnv.isEnabled())) {
-            localHashMapIntEntry1 = localHashMapInt.nextEntry(null);
-            while (localHashMapIntEntry1 != null) {
-              ((HotKeyEnv)localObject).startCmd(paramBoolean1, 0, localHashMapIntEntry1.getKey());
-              localHashMapIntEntry1 = localHashMapInt.nextEntry(localHashMapIntEntry1);
-            }
-          }
-        }
-      }
-    }
-    else if ((!paramBoolean2) && (bool)) {
-      Map.Entry localEntry = localHashMapExt.nextEntry(null);
-      while (localEntry != null) {
-        HotKeyCmd localHotKeyCmd = (HotKeyCmd)localEntry.getKey();
-        if (((localHotKeyCmd.modifierKey == paramInt) || (localHotKeyCmd.key == paramInt)) && (localHotKeyCmd.isRealTime() == paramBoolean1))
-          removed.add(localHotKeyCmd);
-        localEntry = localHashMapExt.nextEntry(localEntry);
-      }
-      for (int m = 0; m < removed.size(); m++) {
-        localObject = (HotKeyCmd)removed.get(m);
-        localHashMapExt.remove(localObject);
-        RTSConf.cur.hotKeyCmdEnvs.post((HotKeyCmd)localObject, false, true);
-        ((HotKeyCmd)localObject).stop();
-        RTSConf.cur.hotKeyCmdEnvs.post((HotKeyCmd)localObject, false, false);
-      }
-      removed.clear();
-      localHashMapInt.remove(paramInt);
-    }
-  }
-
-  public static final void keyPress(boolean paramBoolean1, int paramInt1, int paramInt2, boolean paramBoolean2) {
-    int i = paramBoolean1 ? 1 : 0;
-    HashMapInt localHashMapInt = RTSConf.cur.hotKeyEnvs.keyState[i];
-    HashMapExt localHashMapExt = RTSConf.cur.hotKeyEnvs.active;
-    int j = paramInt1 | paramInt2 << 16;
-    boolean bool = localHashMapInt.containsKey(j);
-    Object localObject;
-    if ((paramBoolean2) && (!bool)) {
-      localHashMapInt.put(j, null);
-      for (int k = 0; k < RTSConf.cur.hotKeyEnvs.lst.size(); k++) {
-        localObject = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.lst.get(k);
-        if ((((HotKeyEnv)localObject).bEnabled) && (((HotKeyEnv)localObject).hotKeyCmdEnv.isEnabled())) {
-          ((HotKeyEnv)localObject).startCmd(paramBoolean1, paramInt1, paramInt2);
-          ((HotKeyEnv)localObject).startCmd(paramBoolean1, paramInt2, paramInt1);
-        }
-      }
-    }
-    else if ((!paramBoolean2) && (bool)) {
-      Map.Entry localEntry = localHashMapExt.nextEntry(null);
-      while (localEntry != null) {
-        localObject = (HotKeyCmd)localEntry.getKey();
-        if (((((HotKeyCmd)localObject).modifierKey == paramInt1) && (((HotKeyCmd)localObject).key == paramInt2)) || ((((HotKeyCmd)localObject).modifierKey == paramInt2) && (((HotKeyCmd)localObject).key == paramInt1) && (((HotKeyCmd)localObject).isRealTime() == paramBoolean1)))
+    public static void enable(java.lang.String s, boolean flag)
+    {
+        com.maddox.rts.HotKeyEnv hotkeyenv = (com.maddox.rts.HotKeyEnv)com.maddox.rts.RTSConf.cur.hotKeyEnvs.envs.get(s);
+        if(hotkeyenv == null)
         {
-          removed.add(localObject);
-        }localEntry = localHashMapExt.nextEntry(localEntry);
-      }
-      for (int m = 0; m < removed.size(); m++) {
-        HotKeyCmd localHotKeyCmd = (HotKeyCmd)removed.get(m);
-        localHashMapExt.remove(localHotKeyCmd);
-        RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmd, false, true);
-        localHotKeyCmd.stop();
-        RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmd, false, false);
-      }
-      removed.clear();
-      localHashMapInt.remove(j);
-    }
-  }
-
-  public static final void mouseMove(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3)
-  {
-    for (int i = 0; i < RTSConf.cur.hotKeyCmdEnvs.lst.size(); i++) {
-      HotKeyCmdEnv localHotKeyCmdEnv = (HotKeyCmdEnv)RTSConf.cur.hotKeyCmdEnvs.lst.get(i);
-      if ((localHotKeyCmdEnv.isEnabled()) && (localHotKeyCmdEnv.hotKeyEnv().bEnabled)) {
-        HashMapExt localHashMapExt = localHotKeyCmdEnv.all();
-        Map.Entry localEntry = localHashMapExt.nextEntry(null);
-        while (localEntry != null) {
-          HotKeyCmd localHotKeyCmd = (HotKeyCmd)localEntry.getValue();
-          if (((localHotKeyCmd instanceof HotKeyCmdMouseMove)) && (localHotKeyCmd.isEnabled()) && (localHotKeyCmd.isRealTime() == paramBoolean) && ((!Time.isPaused()) || (!localHotKeyCmd.isDisableIfTimePaused())))
-          {
-            HotKeyCmdMouseMove localHotKeyCmdMouseMove = (HotKeyCmdMouseMove)localHotKeyCmd;
-            localHotKeyCmdMouseMove.setMove(paramInt1, paramInt2, paramInt3);
-            if (Mouse.adapter().isInvert())
-              localHotKeyCmdMouseMove.prepareInvert();
-            RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmdMouseMove, true, true);
-            localHotKeyCmdMouseMove.doMove();
-            RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmdMouseMove, true, false);
-          }
-          localEntry = localHashMapExt.nextEntry(localEntry);
-        }
-      }
-    }
-  }
-
-  private final void doCmdMove(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3) {
-    int i = hotKeys(paramInt1, paramInt2);
-    String str = (String)this.keys.get(i);
-    if (str != null) {
-      HotKeyCmd localHotKeyCmd = this.hotKeyCmdEnv.get(str);
-      if ((localHotKeyCmd != null) && ((localHotKeyCmd instanceof HotKeyCmdMove)) && (localHotKeyCmd.isEnabled()) && (localHotKeyCmd.isRealTime() == paramBoolean) && ((!Time.isPaused()) || (!localHotKeyCmd.isDisableIfTimePaused())))
-      {
-        ((HotKeyCmdMove)localHotKeyCmd).setMove(paramInt3);
-        RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmd, true, true);
-        localHotKeyCmd.start(paramInt1, paramInt2);
-        RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmd, true, false);
-        RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmd, false, true);
-        localHotKeyCmd.stop();
-        RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmd, false, false);
-      }
-    }
-  }
-
-  public static final void joyMove(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3)
-  {
-    for (int i = 0; i < RTSConf.cur.hotKeyEnvs.lst.size(); i++) {
-      HotKeyEnv localHotKeyEnv = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.lst.get(i);
-      if ((localHotKeyEnv.bEnabled) && (localHotKeyEnv.hotKeyCmdEnv.isEnabled())) {
-        localHotKeyEnv.doCmdMove(paramBoolean, paramInt1, paramInt2, paramInt3);
-        localHotKeyEnv.doCmdMove(paramBoolean, paramInt2, paramInt1, paramInt3);
-      }
-    }
-  }
-
-  public static final void mouseAbsMove(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3)
-  {
-    if (paramInt3 == 0) return;
-    for (int i = 0; i < RTSConf.cur.hotKeyEnvs.lst.size(); i++) {
-      HotKeyEnv localHotKeyEnv = (HotKeyEnv)RTSConf.cur.hotKeyEnvs.lst.get(i);
-      if ((localHotKeyEnv.bEnabled) && (localHotKeyEnv.hotKeyCmdEnv.isEnabled())) {
-        localHotKeyEnv.doCmdMove(paramBoolean, 530, 0, paramInt3);
-        localHotKeyEnv.doCmdMove(paramBoolean, 0, 530, paramInt3);
-      }
-    }
-  }
-
-  public static final void keyRedirect(boolean paramBoolean, int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6, int paramInt7, int paramInt8, int paramInt9) {
-    for (int i = 0; i < RTSConf.cur.hotKeyCmdEnvs.lst.size(); i++) {
-      HotKeyCmdEnv localHotKeyCmdEnv = (HotKeyCmdEnv)RTSConf.cur.hotKeyCmdEnvs.lst.get(i);
-
-      HashMapExt localHashMapExt = localHotKeyCmdEnv.all();
-      Map.Entry localEntry = localHashMapExt.nextEntry(null);
-      while (localEntry != null) {
-        HotKeyCmd localHotKeyCmd = (HotKeyCmd)localEntry.getValue();
-        if (((localHotKeyCmd instanceof HotKeyCmdRedirect)) && (localHotKeyCmd.isEnabled()) && (localHotKeyCmd.isRealTime() == paramBoolean) && ((!Time.isPaused()) || (!localHotKeyCmd.isDisableIfTimePaused())))
+            return;
+        } else
         {
-          HotKeyCmdRedirect localHotKeyCmdRedirect = (HotKeyCmdRedirect)localHotKeyCmd;
-          if (paramInt1 == localHotKeyCmdRedirect.idRedirect()) {
-            localHotKeyCmdRedirect.setRedirect(paramInt2, paramInt3, paramInt4, paramInt5, paramInt6, paramInt7, paramInt8, paramInt9);
-            RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmdRedirect, true, true);
-            localHotKeyCmdRedirect.doRedirect();
-            RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmdRedirect, true, false);
-          }
+            hotkeyenv.bEnabled = flag;
+            return;
         }
-        localEntry = localHashMapExt.nextEntry(localEntry);
-      }
     }
-  }
 
-  public static final void trackIRAngles(boolean paramBoolean, float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    for (int i = 0; i < RTSConf.cur.hotKeyCmdEnvs.lst.size(); i++) {
-      HotKeyCmdEnv localHotKeyCmdEnv = (HotKeyCmdEnv)RTSConf.cur.hotKeyCmdEnvs.lst.get(i);
-      if ((localHotKeyCmdEnv.isEnabled()) && (localHotKeyCmdEnv.hotKeyEnv().bEnabled)) {
-        HashMapExt localHashMapExt = localHotKeyCmdEnv.all();
-        Map.Entry localEntry = localHashMapExt.nextEntry(null);
-        while (localEntry != null) {
-          HotKeyCmd localHotKeyCmd = (HotKeyCmd)localEntry.getValue();
-          if (((localHotKeyCmd instanceof HotKeyCmdTrackIRAngles)) && (localHotKeyCmd.isEnabled()) && (localHotKeyCmd.isRealTime() == paramBoolean) && ((!Time.isPaused()) || (!localHotKeyCmd.isDisableIfTimePaused())))
-          {
-            HotKeyCmdTrackIRAngles localHotKeyCmdTrackIRAngles = (HotKeyCmdTrackIRAngles)localHotKeyCmd;
-            localHotKeyCmdTrackIRAngles.setAngles(paramFloat1, paramFloat2, paramFloat3);
-            RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmdTrackIRAngles, true, true);
-            localHotKeyCmdTrackIRAngles.doAngles();
-            RTSConf.cur.hotKeyCmdEnvs.post(localHotKeyCmdTrackIRAngles, true, false);
-          }
-          localEntry = localHashMapExt.nextEntry(localEntry);
+    private int hotKeys(int i, int j)
+    {
+        return (i & 0xffff) << 16 | j & 0xffff;
+    }
+
+    public void add(int i, int j, java.lang.String s)
+    {
+        keys.put(hotKeys(i, j), s);
+    }
+
+    public static void addHotKey(int i, int j, java.lang.String s)
+    {
+        com.maddox.rts.RTSConf.cur.hotKeyEnvs.cur.add(i, j, s);
+    }
+
+    public static void addHotKey(java.lang.String s, int i, int j, java.lang.String s1)
+    {
+        com.maddox.rts.HotKeyEnv hotkeyenv = (com.maddox.rts.HotKeyEnv)com.maddox.rts.RTSConf.cur.hotKeyEnvs.envs.get(s);
+        if(hotkeyenv == null)
+            hotkeyenv = new HotKeyEnv(s);
+        hotkeyenv.add(i, j, s1);
+    }
+
+    public void remove(int i, int j)
+    {
+        keys.remove(hotKeys(i, j));
+    }
+
+    public void remove(java.lang.String s)
+    {
+        if(s == null)
+            return;
+        boolean flag = true;
+label0:
+        do
+        {
+            if(flag)
+            {
+                flag = false;
+                com.maddox.util.HashMapIntEntry hashmapintentry = keys.nextEntry(null);
+                do
+                {
+                    if(hashmapintentry == null)
+                        continue label0;
+                    int i = hashmapintentry.getKey();
+                    int j = i >> 16 & 0xffff;
+                    int k = i & 0xffff;
+                    java.lang.String s1 = (java.lang.String)hashmapintentry.getValue();
+                    if(s.equals(s1))
+                    {
+                        remove(j, k);
+                        flag = true;
+                        continue label0;
+                    }
+                    hashmapintentry = keys.nextEntry(hashmapintentry);
+                } while(true);
+            }
+            return;
+        } while(true);
+    }
+
+    public int find(java.lang.String s)
+    {
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = keys.nextEntry(null); hashmapintentry != null; hashmapintentry = keys.nextEntry(hashmapintentry))
+        {
+            java.lang.String s1 = (java.lang.String)hashmapintentry.getValue();
+            if(s.equals(s1))
+            {
+                int i = hashmapintentry.getKey();
+                return i;
+            }
         }
-      }
+
+        return 0;
     }
-  }
 
-  public HotKeyCmdEnv hotKeyCmdEnv()
-  {
-    return this.hotKeyCmdEnv;
-  }
-  protected HotKeyEnv(String paramString) {
-    this.name = paramString;
-    this.keys = new HashMapInt();
-    RTSConf.cur.hotKeyEnvs.envs.put(paramString, this);
-    RTSConf.cur.hotKeyEnvs.lst.add(this);
+    public java.lang.String get(int i, int j)
+    {
+        return (java.lang.String)keys.get(hotKeys(i, j));
+    }
 
-    this.hotKeyCmdEnv = ((HotKeyCmdEnv)RTSConf.cur.hotKeyCmdEnvs.envs.get(paramString));
-    if (this.hotKeyCmdEnv == null)
-      this.hotKeyCmdEnv = new HotKeyCmdEnv(paramString);
-  }
+    public final com.maddox.util.HashMapInt all()
+    {
+        return keys;
+    }
+
+    public static final void setCurrentEnv(java.lang.String s)
+    {
+        com.maddox.rts.HotKeyEnv hotkeyenv = (com.maddox.rts.HotKeyEnv)com.maddox.rts.RTSConf.cur.hotKeyEnvs.envs.get(s);
+        if(hotkeyenv == null)
+            hotkeyenv = new HotKeyEnv(s);
+        com.maddox.rts.RTSConf.cur.hotKeyEnvs.cur = hotkeyenv;
+    }
+
+    public static final com.maddox.rts.HotKeyEnv currentEnv()
+    {
+        return com.maddox.rts.RTSConf.cur.hotKeyEnvs.cur;
+    }
+
+    public static final java.util.List allEnv()
+    {
+        return com.maddox.rts.RTSConf.cur.hotKeyEnvs.lst;
+    }
+
+    public static final com.maddox.rts.HotKeyEnv env(java.lang.String s)
+    {
+        return (com.maddox.rts.HotKeyEnv)com.maddox.rts.RTSConf.cur.hotKeyEnvs.envs.get(s);
+    }
+
+    public static java.lang.String key2Text(int i)
+    {
+        if(i >= 601)
+            return "User" + (i - 601);
+        else
+            return com.maddox.rts.VK.getKeyText(i);
+    }
+
+    public static int text2Key(java.lang.String s)
+    {
+        if(s.startsWith("User"))
+        {
+            java.lang.String s1 = s.substring("User".length());
+            return java.lang.Integer.parseInt(s1) + 601;
+        } else
+        {
+            return com.maddox.rts.VK.getKeyFromText(s);
+        }
+    }
+
+    public static void fromIni(java.lang.String s, com.maddox.rts.IniFile inifile, java.lang.String s1)
+    {
+        java.lang.String as[] = inifile.getVariables(s1);
+        com.maddox.rts.HotKeyEnv.setCurrentEnv(s);
+        if(as == null)
+            return;
+        for(int i = 0; i < as.length; i++)
+        {
+            java.util.StringTokenizer stringtokenizer = new StringTokenizer(as[i]);
+            java.lang.String s2 = inifile.getValue(s1, as[i]);
+            if(s2.length() <= 0 || !stringtokenizer.hasMoreTokens())
+                continue;
+            java.lang.String s3 = stringtokenizer.nextToken();
+            int j = com.maddox.rts.HotKeyEnv.text2Key(s3);
+            if(j == 0)
+            {
+                java.lang.System.err.println("INI: HotKey '" + as[i] + "' is unknown");
+                continue;
+            }
+            if(stringtokenizer.hasMoreTokens())
+            {
+                java.lang.String s4 = stringtokenizer.nextToken();
+                int k = com.maddox.rts.HotKeyEnv.text2Key(s4);
+                if(k == 0)
+                    java.lang.System.err.println("INI: HotKey '" + as[i] + "' is unknown");
+                else
+                    com.maddox.rts.HotKeyEnv.addHotKey(j, k, s2);
+            } else
+            {
+                com.maddox.rts.HotKeyEnv.addHotKey(0, j, s2);
+            }
+        }
+
+    }
+
+    public static void toIni(java.lang.String s, com.maddox.rts.IniFile inifile, java.lang.String s1)
+    {
+        com.maddox.rts.HotKeyEnv hotkeyenv = com.maddox.rts.HotKeyEnv.env(s);
+        if(hotkeyenv == null)
+        {
+            java.lang.System.err.println("INI: HotKey environment '" + s + "' not present");
+            return;
+        }
+        for(com.maddox.util.HashMapIntEntry hashmapintentry = hotkeyenv.keys.nextEntry(null); hashmapintentry != null; hashmapintentry = hotkeyenv.keys.nextEntry(hashmapintentry))
+        {
+            int i = hashmapintentry.getKey();
+            int j = i >> 16 & 0xffff;
+            int k = i & 0xffff;
+            java.lang.String s2 = (java.lang.String)hashmapintentry.getValue();
+            if(k >= 601)
+            {
+                inifile.setValue(s1, "User" + (k - 601), s2);
+                continue;
+            }
+            if(j != 0)
+                inifile.setValue(s1, com.maddox.rts.HotKeyEnv.key2Text(j) + " " + com.maddox.rts.HotKeyEnv.key2Text(k), s2);
+            else
+                inifile.setValue(s1, com.maddox.rts.HotKeyEnv.key2Text(k), s2);
+        }
+
+    }
+
+    public static void tick(boolean flag)
+    {
+        com.maddox.util.HashMapExt hashmapext = com.maddox.rts.RTSConf.cur.hotKeyEnvs.active;
+        for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+        {
+            com.maddox.rts.HotKeyCmd hotkeycmd = (com.maddox.rts.HotKeyCmd)entry.getKey();
+            if(hotkeycmd.isTickInTime(flag))
+                hotkeycmd.play();
+        }
+
+    }
+
+    private final boolean startCmd(boolean flag, int i, int j)
+    {
+        com.maddox.util.HashMapExt hashmapext = com.maddox.rts.RTSConf.cur.hotKeyEnvs.active;
+        int k = hotKeys(i, j);
+        java.lang.String s = (java.lang.String)keys.get(k);
+        if(s != null)
+        {
+            com.maddox.rts.HotKeyCmd hotkeycmd = hotKeyCmdEnv.get(s);
+            if(hotkeycmd != null && !hotkeycmd.isActive() && hotkeycmd.isEnabled() && hotkeycmd.isRealTime() == flag && (!com.maddox.rts.Time.isPaused() || !hotkeycmd.isDisableIfTimePaused()))
+            {
+                hashmapext.put(hotkeycmd, null);
+                com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmd, true, true);
+                hotkeycmd.start(i, j);
+                com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmd, true, false);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static final void keyPress(boolean flag, int i, boolean flag1)
+    {
+        int j = flag ? 1 : 0;
+        com.maddox.util.HashMapInt hashmapint = com.maddox.rts.RTSConf.cur.hotKeyEnvs.keyState[j];
+        com.maddox.util.HashMapExt hashmapext = com.maddox.rts.RTSConf.cur.hotKeyEnvs.active;
+        boolean flag2 = hashmapint.containsKey(i);
+        if(flag1 && !flag2)
+        {
+            hashmapint.put(i, null);
+            boolean flag3 = false;
+label0:
+            for(int k = 0; k < com.maddox.rts.RTSConf.cur.hotKeyEnvs.lst.size(); k++)
+            {
+                com.maddox.rts.HotKeyEnv hotkeyenv = (com.maddox.rts.HotKeyEnv)com.maddox.rts.RTSConf.cur.hotKeyEnvs.lst.get(k);
+                if(!hotkeyenv.bEnabled || !hotkeyenv.hotKeyCmdEnv.isEnabled())
+                    continue;
+                com.maddox.util.HashMapIntEntry hashmapintentry = hashmapint.nextEntry(null);
+                do
+                {
+                    if(hashmapintentry == null)
+                        continue label0;
+                    for(com.maddox.util.HashMapIntEntry hashmapintentry2 = hashmapint.nextEntry(hashmapintentry); hashmapintentry2 != null; hashmapintentry2 = hashmapint.nextEntry(hashmapintentry2))
+                        if(hotkeyenv.startCmd(flag, hashmapintentry.getKey(), hashmapintentry2.getKey()) || hotkeyenv.startCmd(flag, hashmapintentry2.getKey(), hashmapintentry.getKey()))
+                            flag3 = true;
+
+                    hashmapintentry = hashmapint.nextEntry(hashmapintentry);
+                } while(true);
+            }
+
+            if(!flag3)
+            {
+                for(int l = 0; l < com.maddox.rts.RTSConf.cur.hotKeyEnvs.lst.size(); l++)
+                {
+                    com.maddox.rts.HotKeyEnv hotkeyenv1 = (com.maddox.rts.HotKeyEnv)com.maddox.rts.RTSConf.cur.hotKeyEnvs.lst.get(l);
+                    if(hotkeyenv1.bEnabled && hotkeyenv1.hotKeyCmdEnv.isEnabled())
+                    {
+                        for(com.maddox.util.HashMapIntEntry hashmapintentry1 = hashmapint.nextEntry(null); hashmapintentry1 != null; hashmapintentry1 = hashmapint.nextEntry(hashmapintentry1))
+                            hotkeyenv1.startCmd(flag, 0, hashmapintentry1.getKey());
+
+                    }
+                }
+
+            }
+        } else
+        if(!flag1 && flag2)
+        {
+            for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+            {
+                com.maddox.rts.HotKeyCmd hotkeycmd = (com.maddox.rts.HotKeyCmd)entry.getKey();
+                if((hotkeycmd.modifierKey == i || hotkeycmd.key == i) && hotkeycmd.isRealTime() == flag)
+                    removed.add(hotkeycmd);
+            }
+
+            for(int i1 = 0; i1 < removed.size(); i1++)
+            {
+                com.maddox.rts.HotKeyCmd hotkeycmd1 = (com.maddox.rts.HotKeyCmd)removed.get(i1);
+                hashmapext.remove(hotkeycmd1);
+                com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmd1, false, true);
+                hotkeycmd1.stop();
+                com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmd1, false, false);
+            }
+
+            removed.clear();
+            hashmapint.remove(i);
+        }
+    }
+
+    public static final void keyPress(boolean flag, int i, int j, boolean flag1)
+    {
+        int k = flag ? 1 : 0;
+        com.maddox.util.HashMapInt hashmapint = com.maddox.rts.RTSConf.cur.hotKeyEnvs.keyState[k];
+        com.maddox.util.HashMapExt hashmapext = com.maddox.rts.RTSConf.cur.hotKeyEnvs.active;
+        int l = i | j << 16;
+        boolean flag2 = hashmapint.containsKey(l);
+        if(flag1 && !flag2)
+        {
+            hashmapint.put(l, null);
+            for(int i1 = 0; i1 < com.maddox.rts.RTSConf.cur.hotKeyEnvs.lst.size(); i1++)
+            {
+                com.maddox.rts.HotKeyEnv hotkeyenv = (com.maddox.rts.HotKeyEnv)com.maddox.rts.RTSConf.cur.hotKeyEnvs.lst.get(i1);
+                if(hotkeyenv.bEnabled && hotkeyenv.hotKeyCmdEnv.isEnabled())
+                {
+                    hotkeyenv.startCmd(flag, i, j);
+                    hotkeyenv.startCmd(flag, j, i);
+                }
+            }
+
+        } else
+        if(!flag1 && flag2)
+        {
+            for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+            {
+                com.maddox.rts.HotKeyCmd hotkeycmd = (com.maddox.rts.HotKeyCmd)entry.getKey();
+                if((hotkeycmd.modifierKey == i && hotkeycmd.key == j || hotkeycmd.modifierKey == j && hotkeycmd.key == i) && hotkeycmd.isRealTime() == flag)
+                    removed.add(hotkeycmd);
+            }
+
+            for(int j1 = 0; j1 < removed.size(); j1++)
+            {
+                com.maddox.rts.HotKeyCmd hotkeycmd1 = (com.maddox.rts.HotKeyCmd)removed.get(j1);
+                hashmapext.remove(hotkeycmd1);
+                com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmd1, false, true);
+                hotkeycmd1.stop();
+                com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmd1, false, false);
+            }
+
+            removed.clear();
+            hashmapint.remove(l);
+        }
+    }
+
+    public static final void mouseMove(boolean flag, int i, int j, int k)
+    {
+        for(int l = 0; l < com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.lst.size(); l++)
+        {
+            com.maddox.rts.HotKeyCmdEnv hotkeycmdenv = (com.maddox.rts.HotKeyCmdEnv)com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.lst.get(l);
+            if(!hotkeycmdenv.isEnabled() || !hotkeycmdenv.hotKeyEnv().bEnabled)
+                continue;
+            com.maddox.util.HashMapExt hashmapext = hotkeycmdenv.all();
+            for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+            {
+                com.maddox.rts.HotKeyCmd hotkeycmd = (com.maddox.rts.HotKeyCmd)entry.getValue();
+                if(!(hotkeycmd instanceof com.maddox.rts.HotKeyCmdMouseMove) || !hotkeycmd.isEnabled() || hotkeycmd.isRealTime() != flag || com.maddox.rts.Time.isPaused() && hotkeycmd.isDisableIfTimePaused())
+                    continue;
+                com.maddox.rts.HotKeyCmdMouseMove hotkeycmdmousemove = (com.maddox.rts.HotKeyCmdMouseMove)hotkeycmd;
+                hotkeycmdmousemove.setMove(i, j, k);
+                if(com.maddox.rts.Mouse.adapter().isInvert())
+                    hotkeycmdmousemove.prepareInvert();
+                com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmdmousemove, true, true);
+                hotkeycmdmousemove.doMove();
+                com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmdmousemove, true, false);
+            }
+
+        }
+
+    }
+
+    private final void doCmdMove(boolean flag, int i, int j, int k)
+    {
+        int l = hotKeys(i, j);
+        java.lang.String s = (java.lang.String)keys.get(l);
+        if(s != null)
+        {
+            com.maddox.rts.HotKeyCmd hotkeycmd = hotKeyCmdEnv.get(s);
+            if(hotkeycmd != null && (hotkeycmd instanceof com.maddox.rts.HotKeyCmdMove) && hotkeycmd.isEnabled() && hotkeycmd.isRealTime() == flag && (!com.maddox.rts.Time.isPaused() || !hotkeycmd.isDisableIfTimePaused()))
+            {
+                ((com.maddox.rts.HotKeyCmdMove)hotkeycmd).setMove(k);
+                com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmd, true, true);
+                hotkeycmd.start(i, j);
+                com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmd, true, false);
+                com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmd, false, true);
+                hotkeycmd.stop();
+                com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmd, false, false);
+            }
+        }
+    }
+
+    public static final void joyMove(boolean flag, int i, int j, int k)
+    {
+        for(int l = 0; l < com.maddox.rts.RTSConf.cur.hotKeyEnvs.lst.size(); l++)
+        {
+            com.maddox.rts.HotKeyEnv hotkeyenv = (com.maddox.rts.HotKeyEnv)com.maddox.rts.RTSConf.cur.hotKeyEnvs.lst.get(l);
+            if(hotkeyenv.bEnabled && hotkeyenv.hotKeyCmdEnv.isEnabled())
+            {
+                hotkeyenv.doCmdMove(flag, i, j, k);
+                hotkeyenv.doCmdMove(flag, j, i, k);
+            }
+        }
+
+    }
+
+    public static final void mouseAbsMove(boolean flag, int i, int j, int k)
+    {
+        if(k == 0)
+            return;
+        for(int l = 0; l < com.maddox.rts.RTSConf.cur.hotKeyEnvs.lst.size(); l++)
+        {
+            com.maddox.rts.HotKeyEnv hotkeyenv = (com.maddox.rts.HotKeyEnv)com.maddox.rts.RTSConf.cur.hotKeyEnvs.lst.get(l);
+            if(hotkeyenv.bEnabled && hotkeyenv.hotKeyCmdEnv.isEnabled())
+            {
+                hotkeyenv.doCmdMove(flag, 530, 0, k);
+                hotkeyenv.doCmdMove(flag, 0, 530, k);
+            }
+        }
+
+    }
+
+    public static final void keyRedirect(boolean flag, int i, int j, int k, int l, int i1, int j1, int k1, 
+            int l1, int i2)
+    {
+        for(int j2 = 0; j2 < com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.lst.size(); j2++)
+        {
+            com.maddox.rts.HotKeyCmdEnv hotkeycmdenv = (com.maddox.rts.HotKeyCmdEnv)com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.lst.get(j2);
+            com.maddox.util.HashMapExt hashmapext = hotkeycmdenv.all();
+            for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+            {
+                com.maddox.rts.HotKeyCmd hotkeycmd = (com.maddox.rts.HotKeyCmd)entry.getValue();
+                if(!(hotkeycmd instanceof com.maddox.rts.HotKeyCmdRedirect) || !hotkeycmd.isEnabled() || hotkeycmd.isRealTime() != flag || com.maddox.rts.Time.isPaused() && hotkeycmd.isDisableIfTimePaused())
+                    continue;
+                com.maddox.rts.HotKeyCmdRedirect hotkeycmdredirect = (com.maddox.rts.HotKeyCmdRedirect)hotkeycmd;
+                if(i == hotkeycmdredirect.idRedirect())
+                {
+                    hotkeycmdredirect.setRedirect(j, k, l, i1, j1, k1, l1, i2);
+                    com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmdredirect, true, true);
+                    hotkeycmdredirect.doRedirect();
+                    com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmdredirect, true, false);
+                }
+            }
+
+        }
+
+    }
+
+    public static final void trackIRAngles(boolean flag, float f, float f1, float f2)
+    {
+        for(int i = 0; i < com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.lst.size(); i++)
+        {
+            com.maddox.rts.HotKeyCmdEnv hotkeycmdenv = (com.maddox.rts.HotKeyCmdEnv)com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.lst.get(i);
+            if(!hotkeycmdenv.isEnabled() || !hotkeycmdenv.hotKeyEnv().bEnabled)
+                continue;
+            com.maddox.util.HashMapExt hashmapext = hotkeycmdenv.all();
+            for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+            {
+                com.maddox.rts.HotKeyCmd hotkeycmd = (com.maddox.rts.HotKeyCmd)entry.getValue();
+                if((hotkeycmd instanceof com.maddox.rts.HotKeyCmdTrackIRAngles) && hotkeycmd.isEnabled() && hotkeycmd.isRealTime() == flag && (!com.maddox.rts.Time.isPaused() || !hotkeycmd.isDisableIfTimePaused()))
+                {
+                    com.maddox.rts.HotKeyCmdTrackIRAngles hotkeycmdtrackirangles = (com.maddox.rts.HotKeyCmdTrackIRAngles)hotkeycmd;
+                    hotkeycmdtrackirangles.setAngles(f, f1, f2);
+                    com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmdtrackirangles, true, true);
+                    hotkeycmdtrackirangles.doAngles();
+                    com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.post(hotkeycmdtrackirangles, true, false);
+                }
+            }
+
+        }
+
+    }
+
+    public com.maddox.rts.HotKeyCmdEnv hotKeyCmdEnv()
+    {
+        return hotKeyCmdEnv;
+    }
+
+    protected HotKeyEnv(java.lang.String s)
+    {
+        bEnabled = true;
+        name = s;
+        keys = new HashMapInt();
+        com.maddox.rts.RTSConf.cur.hotKeyEnvs.envs.put(s, this);
+        com.maddox.rts.RTSConf.cur.hotKeyEnvs.lst.add(this);
+        hotKeyCmdEnv = (com.maddox.rts.HotKeyCmdEnv)com.maddox.rts.RTSConf.cur.hotKeyCmdEnvs.envs.get(s);
+        if(hotKeyCmdEnv == null)
+            hotKeyCmdEnv = new HotKeyCmdEnv(s);
+    }
+
+    public static final java.lang.String DEFAULT = "default";
+    private static java.util.ArrayList removed = new ArrayList();
+    private java.lang.String name;
+    private boolean bEnabled;
+    private com.maddox.util.HashMapInt keys;
+    private com.maddox.rts.HotKeyCmdEnv hotKeyCmdEnv;
+
 }

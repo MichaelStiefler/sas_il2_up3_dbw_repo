@@ -1,83 +1,93 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RangeRandom.java
+
 package com.maddox.il2.ai;
 
 import java.util.Random;
 
-public class RangeRandom extends Random
+public class RangeRandom extends java.util.Random
 {
-  private int countAccess = 0;
 
-  public RangeRandom(long paramLong)
-  {
-    super(paramLong);
-  }
-
-  public RangeRandom()
-  {
-    super(1L);
-  }
-
-  public int nextInt(int paramInt1, int paramInt2)
-  {
-    int i = paramInt2 - paramInt1;
-    if (i < 0) i = -i;
-    return paramInt1 + nextInt(i + 1);
-  }
-
-  public long nextLong(long paramLong1, long paramLong2)
-  {
-    long l = paramLong2 - paramLong1;
-    if (l < 0L) l = -l;
-    return paramLong1 + nextLong() % (l + 1L);
-  }
-
-  public double nextDouble(double paramDouble1, double paramDouble2) {
-    return paramDouble1 + (paramDouble2 - paramDouble1) * nextDouble();
-  }
-
-  public float nextFloat(float paramFloat1, float paramFloat2)
-  {
-    return paramFloat1 + (paramFloat2 - paramFloat1) * nextFloat();
-  }
-
-  public float nextFloat_Dome(float paramFloat1, float paramFloat2)
-  {
-    float f1 = nextFloat();
-    float f2 = nextFloat();
-    float f3 = nextFloat();
-    float f4 = (f1 + f2 + f3) * 0.3333333F;
-    return paramFloat1 + (paramFloat2 - paramFloat1) * f4;
-  }
-
-  public float nextFloat_DomeInv(float paramFloat1, float paramFloat2)
-  {
-    float f1 = nextFloat();
-    float f2 = nextFloat();
-    float f3 = nextFloat();
-    float f4 = (f1 + f2 + f3) * 0.3333333F;
-    if (f4 >= 0.5F)
-      f4 -= 0.5F;
-    else {
-      f4 += 0.5F;
+    public RangeRandom(long l)
+    {
+        super(l);
+        countAccess = 0;
     }
-    return paramFloat1 + (paramFloat2 - paramFloat1) * f4;
-  }
 
-  public float nextFloat_Fade(float paramFloat1, float paramFloat2)
-  {
-    float f1 = nextFloat();
-    float f2 = nextFloat();
-    float f3 = f1 * f2;
-    return paramFloat1 + (paramFloat2 - paramFloat1) * f3;
-  }
+    public RangeRandom()
+    {
+        super(1L);
+        countAccess = 0;
+    }
 
-  public int countAccess()
-  {
-    return this.countAccess;
-  }
+    public int nextInt(int i, int j)
+    {
+        int k = j - i;
+        if(k < 0)
+            k = -k;
+        return i + nextInt(k + 1);
+    }
 
-  protected synchronized int next(int paramInt)
-  {
-    this.countAccess += 1;
-    return super.next(paramInt);
-  }
+    public long nextLong(long l, long l1)
+    {
+        long l2 = l1 - l;
+        if(l2 < 0L)
+            l2 = -l2;
+        return l + nextLong() % (l2 + 1L);
+    }
+
+    public double nextDouble(double d, double d1)
+    {
+        return d + (d1 - d) * nextDouble();
+    }
+
+    public float nextFloat(float f, float f1)
+    {
+        return f + (f1 - f) * nextFloat();
+    }
+
+    public float nextFloat_Dome(float f, float f1)
+    {
+        float f2 = nextFloat();
+        float f3 = nextFloat();
+        float f4 = nextFloat();
+        float f5 = (f2 + f3 + f4) * 0.3333333F;
+        return f + (f1 - f) * f5;
+    }
+
+    public float nextFloat_DomeInv(float f, float f1)
+    {
+        float f2 = nextFloat();
+        float f3 = nextFloat();
+        float f4 = nextFloat();
+        float f5 = (f2 + f3 + f4) * 0.3333333F;
+        if(f5 >= 0.5F)
+            f5 -= 0.5F;
+        else
+            f5 += 0.5F;
+        return f + (f1 - f) * f5;
+    }
+
+    public float nextFloat_Fade(float f, float f1)
+    {
+        float f2 = nextFloat();
+        float f3 = nextFloat();
+        float f4 = f2 * f3;
+        return f + (f1 - f) * f4;
+    }
+
+    public int countAccess()
+    {
+        return countAccess;
+    }
+
+    protected synchronized int next(int i)
+    {
+        countAccess++;
+        return super.next(i);
+    }
+
+    private int countAccess;
 }

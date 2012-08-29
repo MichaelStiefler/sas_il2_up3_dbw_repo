@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RocketryGeneric.java
+
 package com.maddox.il2.objects.vehicles.artillery;
 
 import com.maddox.JGP.Geom;
@@ -41,7 +46,6 @@ import com.maddox.rts.NetChannelInStream;
 import com.maddox.rts.NetMsgFiltered;
 import com.maddox.rts.NetMsgGuaranted;
 import com.maddox.rts.NetMsgInput;
-import com.maddox.rts.NetObj;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.rts.Time;
@@ -51,1542 +55,1393 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RocketryGeneric extends ActorMesh
-  implements MsgCollisionListener, MsgExplosionListener, MsgShotListener, Prey
+// Referenced classes of package com.maddox.il2.objects.vehicles.artillery:
+//            RocketryRocket
+
+public class RocketryGeneric extends com.maddox.il2.engine.ActorMesh
+    implements com.maddox.il2.engine.MsgCollisionListener, com.maddox.il2.ai.MsgExplosionListener, com.maddox.il2.ai.MsgShotListener, com.maddox.il2.ai.ground.Prey
 {
-  private static HashMap rocketryMap = new HashMap();
-
-  RocketryProperties prop = null;
-
-  MeshesNames meshNames = null;
-
-  private Point3d targetPos = null;
-
-  private Point3d begPos_wagon = new Point3d();
-  private Point3d endPos_wagon = new Point3d();
-  private Point3d begPos_rocket = new Point3d();
-  private Point3d endPos_rocket = new Point3d();
-
-  private int launchIntervalS = 0;
-
-  private ArrayList rs = new ArrayList();
-  private int nextFreeIdR;
-  private float damage = 0.0F;
-
-  private long actionTimeMS = 0L;
-  private int countRockets;
-  private static RangeRandom rndSeed = new RangeRandom();
-
-  private final boolean Corpse()
-  {
-    return this.damage >= 1.0F;
-  }
-
-  public Object getSwitchListener(Message paramMessage)
-  {
-    return this;
-  }
-
-  public boolean isStaticPos()
-  {
-    return true;
-  }
-
-  public static final float RndF(float paramFloat1, float paramFloat2) {
-    return World.Rnd().nextFloat(paramFloat1, paramFloat2);
-  }
-
-  public static final int RndI(int paramInt1, int paramInt2) {
-    return World.Rnd().nextInt(paramInt1, paramInt2);
-  }
-
-  private static final long SecsToTicks(float paramFloat) {
-    long l = ()(0.5D + paramFloat / Time.tickLenFs());
-    return l < 1L ? 1L : l;
-  }
-
-  public void msgCollision(Actor paramActor, String paramString1, String paramString2)
-  {
-    if (Corpse()) {
-      return;
-    }
-    if (!Actor.isValid(paramActor)) {
-      return;
-    }
-    if ((paramActor.net != null) && (paramActor.net.isMirror())) {
-      return;
-    }
-    if ((paramActor instanceof Wreckage)) {
-      return;
-    }
-
-    if (!(paramActor instanceof Aircraft)) {
-      return;
-    }
-    if (paramActor.getSpeed(null) < 28.0D) {
-      return;
-    }
-    if ((paramString2 != null) && (
-      (paramString2.startsWith("Wing")) || (paramString2.startsWith("Stab")) || (paramString2.startsWith("Arone")) || (paramString2.startsWith("Vator")) || (paramString2.startsWith("Keel")) || (paramString2.startsWith("Rudder")) || (paramString2.startsWith("Pilot"))))
+    class Mirror extends com.maddox.il2.engine.ActorNet
     {
-      return;
-    }
 
-    if (isNetMirror())
-      sendRampDamage_Mirror(1.0F, paramActor);
-    else
-      handleDamageRamp_Both(1.0F, paramActor, true);
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    paramShot.bodyMaterial = 2;
-
-    if (Corpse()) {
-      return;
-    }
-
-    if (paramShot.power <= 0.0F) {
-      return;
-    }
-
-    if ((isNetMirror()) && 
-      (paramShot.isMirage())) {
-      return;
-    }
-
-    float f1 = paramShot.power;
-    if (paramShot.powerType == 1) {
-      f1 = paramShot.power / 2.4E-007F;
-    }
-
-    f1 *= RndF(1.0F, 1.1F);
-
-    if (f1 < this.prop.stre.SHOT_MIN_ENERGY)
-    {
-      return;
-    }
-
-    float f2 = f1 / this.prop.stre.SHOT_MAX_ENERGY;
-    if (isNetMirror())
-      sendRampDamage_Mirror(f2, paramShot.initiator);
-    else
-      handleDamageRamp_Both(f2, paramShot.initiator, true);
-  }
-
-  public void msgExplosion(Explosion paramExplosion)
-  {
-    if (Corpse()) {
-      return;
-    }
-
-    if ((isNetMirror()) && 
-      (paramExplosion.isMirage())) {
-      return;
-    }
-
-    float f1 = paramExplosion.power;
-
-    if ((paramExplosion.powerType == 2) && (paramExplosion.chunkName != null)) {
-      f1 *= 4.0F;
-    }
-
-    float f2 = -1.0F;
-    float f3;
-    if (paramExplosion.chunkName != null) {
-      f3 = f1;
-
-      f3 *= RndF(1.0F, 1.1F);
-
-      if (f3 >= this.prop.stre.EXPLHIT_MIN_TNT)
-      {
-        f2 = f3 / this.prop.stre.EXPLHIT_MAX_TNT;
-      }
-
-    }
-
-    if (f2 < 0.0F) {
-      f3 = paramExplosion.receivedTNT_1meter(this);
-
-      f3 *= RndF(1.0F, 1.1F);
-
-      if (f3 >= this.prop.stre.EXPLNEAR_MIN_TNT)
-      {
-        f2 = f3 / this.prop.stre.EXPLNEAR_MAX_TNT;
-      }
-    }
-
-    if (f2 > 0.0F)
-      if (isNetMirror())
-        sendRampDamage_Mirror(f2, paramExplosion.initiator);
-      else
-        handleDamageRamp_Both(f2, paramExplosion.initiator, true);
-  }
-
-  private static void getHookOffset(Mesh paramMesh, String paramString, boolean paramBoolean, Point3d paramPoint3d)
-  {
-    int i = paramMesh.hookFind(paramString);
-    if (i == -1) {
-      if (paramBoolean) {
-        System.out.println("Rocketry: Hook [" + paramString + "] not found");
-        throw new RuntimeException("Can't work");
-      }
-      paramPoint3d.set(0.0D, 0.0D, 0.0D);
-    }
-    Matrix4d localMatrix4d = new Matrix4d();
-    paramMesh.hookMatrix(i, localMatrix4d);
-    paramPoint3d.set(localMatrix4d.m03, localMatrix4d.m13, localMatrix4d.m23);
-  }
-
-  TrajSeg[] _computeFallTrajectory_(int paramInt, Point3d paramPoint3d, Vector3d paramVector3d)
-  {
-    TrajSeg[] arrayOfTrajSeg = new TrajSeg[1];
-
-    for (int i = 0; i < arrayOfTrajSeg.length; i++) {
-      arrayOfTrajSeg[i] = new TrajSeg();
-    }
-
-    arrayOfTrajSeg[0].pos0.set(paramPoint3d);
-    arrayOfTrajSeg[0].v0.set(paramVector3d);
-    arrayOfTrajSeg[0].a.set(0.0D, 0.0D, -3.0D);
-    arrayOfTrajSeg[0].t0 = 0.0D;
-    arrayOfTrajSeg[0].t = 500.0D;
-
-    return arrayOfTrajSeg;
-  }
-
-  TrajSeg[] _computeWagonTrajectory_(int paramInt)
-  {
-    rndSeed.setSeed(paramInt);
-
-    Vector2d localVector2d = new Vector2d();
-
-    localVector2d.set(this.endPos_wagon.x - this.begPos_wagon.x, this.endPos_wagon.y - this.begPos_wagon.y);
-    localVector2d.normalize();
-
-    TrajSeg[] arrayOfTrajSeg = new TrajSeg[2];
-
-    for (int i = 0; i < arrayOfTrajSeg.length; i++) {
-      arrayOfTrajSeg[i] = new TrajSeg();
-    }
-
-    Vector3d localVector3d = new Vector3d();
-
-    float f = this.prop.TAKEOFF_SPEED;
-
-    localVector3d.sub(this.endPos_wagon, this.begPos_wagon);
-    double d1 = localVector3d.length();
-    localVector3d.scale(1.0D / d1);
-
-    arrayOfTrajSeg[0].v0.set(0.0D, 0.0D, 0.0D);
-    arrayOfTrajSeg[0].pos0.set(this.begPos_wagon);
-
-    arrayOfTrajSeg[0].t = (2.0D * d1 / (0.0D + f));
-    arrayOfTrajSeg[0].a.set(localVector3d);
-    arrayOfTrajSeg[0].a.scale(f / arrayOfTrajSeg[0].t);
-
-    f = this.prop.TAKEOFF_SPEED * rndSeed.nextFloat(0.85F, 0.97F);
-
-    double d2 = localVector3d.z * d1;
-    double d3 = Math.sqrt(d1 * d1 - d2 * d2);
-    arrayOfTrajSeg[1].v0.set(d3, 0.0D, d2);
-    arrayOfTrajSeg[1].v0.normalize();
-    arrayOfTrajSeg[1].v0.scale(f);
-
-    arrayOfTrajSeg[1].pos0.set(0.0D, 0.0D, this.endPos_wagon.z);
-
-    arrayOfTrajSeg[1].t = (30.0D + 2.0D * (arrayOfTrajSeg[1].v0.z / 9.800000000000001D));
-    arrayOfTrajSeg[1].a.set(0.0D, 0.0D, -9.800000000000001D);
-
-    for (int j = 0; j <= 1; j++) {
-      if (arrayOfTrajSeg[j].t <= 0.0D) {
-        return null;
-      }
-
-    }
-
-    arrayOfTrajSeg[0].t0 = 0.0D;
-    for (j = 1; j <= 1; j++) {
-      arrayOfTrajSeg[j].t0 = (arrayOfTrajSeg[(j - 1)].t0 + arrayOfTrajSeg[(j - 1)].t);
-    }
-
-    for (j = 1; j <= 1; j++) {
-      arrayOfTrajSeg[j].pos0.set(localVector2d.x * arrayOfTrajSeg[j].pos0.x, localVector2d.y * arrayOfTrajSeg[j].pos0.x, arrayOfTrajSeg[j].pos0.z);
-      arrayOfTrajSeg[j].pos0.add(this.endPos_wagon.x, this.endPos_wagon.y, 0.0D);
-      arrayOfTrajSeg[j].v0.set(localVector2d.x * arrayOfTrajSeg[j].v0.x, localVector2d.y * arrayOfTrajSeg[j].v0.x, arrayOfTrajSeg[j].v0.z);
-      arrayOfTrajSeg[j].a.set(localVector2d.x * arrayOfTrajSeg[j].a.x, localVector2d.y * arrayOfTrajSeg[j].a.x, arrayOfTrajSeg[j].a.z);
-    }
-
-    return arrayOfTrajSeg;
-  }
-
-  private TrajSeg[] _computeAirTrajectory_(int paramInt)
-  {
-    rndSeed.setSeed(paramInt);
-
-    Point3d localPoint3d1 = new Point3d();
-    localPoint3d1.set(this.targetPos);
-
-    float f1 = rndSeed.nextFloat(0.0F, 359.98999F);
-    float f2 = rndSeed.nextFloat(0.0F, this.prop.MAX_ERR_HIT_DISTANCE);
-    localPoint3d1.add(Geom.cosDeg(f1) * f2, Geom.sinDeg(f1) * f2, 0.0D);
-
-    double d1 = this.prop.FLY_HEIGHT + rndSeed.nextFloat(-this.prop.MAX_ERR_HEIGHT, this.prop.MAX_ERR_HEIGHT);
-
-    Point3d localPoint3d2 = new Point3d();
-    localPoint3d2.set(this.pos.getAbsPoint());
-    localPoint3d2.z = d1;
-
-    Object localObject = new Point2d(localPoint3d1.x, localPoint3d1.y);
-    Point2d localPoint2d = new Point2d(localPoint3d2.x, localPoint3d2.y);
-    double d2 = ((Point2d)localObject).distance(localPoint2d);
-
-    localObject = new Vector2d();
-
-    ((Vector2d)localObject).set(localPoint3d1.x - localPoint3d2.x, localPoint3d1.y - localPoint3d2.y);
-    ((Vector2d)localObject).normalize();
-
-    float f3 = this.prop.MAX_SPEED;
-
-    TrajSeg[] arrayOfTrajSeg = new TrajSeg[3];
-
-    for (int i = 0; i < arrayOfTrajSeg.length; i++) {
-      arrayOfTrajSeg[i] = new TrajSeg();
-    }
-
-    arrayOfTrajSeg[0].v0.set(f3, 0.0D, 0.0D);
-    arrayOfTrajSeg[1].v0.set(f3, 0.0D, 0.0D);
-    arrayOfTrajSeg[2].v0.set(f3 * Geom.cosDeg(this.prop.HIT_ANGLE), 0.0D, -f3 * Geom.sinDeg(this.prop.HIT_ANGLE));
-
-    arrayOfTrajSeg[0].pos0.set(0.0D, 0.0D, d1);
-
-    arrayOfTrajSeg[2].pos0.set(d2, 0.0D, localPoint3d1.z);
-
-    arrayOfTrajSeg[1].t = (2.0D * (arrayOfTrajSeg[2].pos0.z - d1) / (arrayOfTrajSeg[1].v0.z + arrayOfTrajSeg[2].v0.z));
-
-    arrayOfTrajSeg[1].pos0.set(arrayOfTrajSeg[2].pos0.x - 0.5D * (arrayOfTrajSeg[1].v0.x + arrayOfTrajSeg[2].v0.x) * arrayOfTrajSeg[1].t, 0.0D, d1);
-
-    arrayOfTrajSeg[2].t = 100.0D;
-
-    arrayOfTrajSeg[0].t = (2.0D * (arrayOfTrajSeg[1].pos0.x - arrayOfTrajSeg[0].pos0.x) / (arrayOfTrajSeg[0].v0.x + arrayOfTrajSeg[1].v0.x));
-
-    for (i = 0; i <= 2; i++) {
-      if (arrayOfTrajSeg[i].t <= 0.0D) {
-        return null;
-      }
-
-    }
-
-    arrayOfTrajSeg[0].a.set(0.0D, 0.0D, 0.0D);
-    for (i = 1; i <= 1; i++) {
-      arrayOfTrajSeg[i].a.sub(arrayOfTrajSeg[(i + 1)].v0, arrayOfTrajSeg[i].v0);
-      arrayOfTrajSeg[i].a.scale(1.0D / arrayOfTrajSeg[i].t);
-    }
-    arrayOfTrajSeg[2].a.set(0.0D, 0.0D, 0.0D);
-
-    arrayOfTrajSeg[0].t0 = 0.0D;
-    for (i = 1; i <= 2; i++) {
-      arrayOfTrajSeg[i].t0 = (arrayOfTrajSeg[(i - 1)].t0 + arrayOfTrajSeg[(i - 1)].t);
-    }
-
-    for (i = 0; i <= 2; i++) {
-      arrayOfTrajSeg[i].pos0.set(((Vector2d)localObject).x * arrayOfTrajSeg[i].pos0.x, ((Vector2d)localObject).y * arrayOfTrajSeg[i].pos0.x, arrayOfTrajSeg[i].pos0.z);
-      arrayOfTrajSeg[i].pos0.add(localPoint3d2.x, localPoint3d2.y, 0.0D);
-      arrayOfTrajSeg[i].v0.set(((Vector2d)localObject).x * arrayOfTrajSeg[i].v0.x, ((Vector2d)localObject).y * arrayOfTrajSeg[i].v0.x, arrayOfTrajSeg[i].v0.z);
-      arrayOfTrajSeg[i].a.set(((Vector2d)localObject).x * arrayOfTrajSeg[i].a.x, ((Vector2d)localObject).y * arrayOfTrajSeg[i].a.x, arrayOfTrajSeg[i].a.z);
-    }
-
-    return (TrajSeg)arrayOfTrajSeg;
-  }
-
-  private TrajSeg[] _computeRampTrajectory_(int paramInt, boolean paramBoolean)
-  {
-    rndSeed.setSeed(paramInt);
-
-    Point3d localPoint3d = new Point3d();
-    localPoint3d.set(this.targetPos);
-
-    float f1 = rndSeed.nextFloat(0.0F, 359.98999F);
-    float f2 = rndSeed.nextFloat(0.0F, this.prop.MAX_ERR_HIT_DISTANCE);
-    localPoint3d.add(Geom.cosDeg(f1) * f2, Geom.sinDeg(f1) * f2, 0.0D);
-
-    Object localObject = new Point2d(localPoint3d.x, localPoint3d.y);
-    Point2d localPoint2d = new Point2d(this.endPos_rocket.x, this.endPos_rocket.y);
-    double d1 = ((Point2d)localObject).distance(localPoint2d);
-
-    localObject = new Vector2d();
-
-    ((Vector2d)localObject).set(localPoint3d.x - this.endPos_rocket.x, localPoint3d.y - this.endPos_rocket.y);
-    ((Vector2d)localObject).normalize();
-
-    float f3 = paramBoolean ? 0.5F : 1.0F;
-    double d2 = f3 * this.prop.FLY_HEIGHT + f3 * rndSeed.nextFloat(-this.prop.MAX_ERR_HEIGHT, this.prop.MAX_ERR_HEIGHT);
-
-    float f4 = paramBoolean ? this.prop.TAKEOFF_SPEED + 1.0F : this.prop.MAX_SPEED;
-
-    TrajSeg[] arrayOfTrajSeg = new TrajSeg[6];
-
-    for (int i = 0; i < arrayOfTrajSeg.length; i++) {
-      arrayOfTrajSeg[i] = new TrajSeg();
-    }
-
-    Vector3d localVector3d = new Vector3d();
-
-    localVector3d.sub(this.endPos_rocket, this.begPos_rocket);
-    double d3 = localVector3d.length();
-    localVector3d.scale(1.0D / d3);
-
-    arrayOfTrajSeg[0].v0.set(0.0D, 0.0D, 0.0D);
-    arrayOfTrajSeg[0].pos0.set(this.begPos_rocket);
-
-    arrayOfTrajSeg[0].t = (2.0D * d3 / (0.0D + this.prop.TAKEOFF_SPEED));
-    arrayOfTrajSeg[0].a.set(localVector3d);
-    arrayOfTrajSeg[0].a.scale(this.prop.TAKEOFF_SPEED / arrayOfTrajSeg[0].t);
-
-    double d4 = localVector3d.z * d3;
-    double d5 = Math.sqrt(d3 * d3 - d4 * d4);
-    arrayOfTrajSeg[1].v0.set(d5, 0.0D, d4);
-    arrayOfTrajSeg[1].v0.normalize();
-    arrayOfTrajSeg[1].v0.scale(this.prop.TAKEOFF_SPEED);
-
-    arrayOfTrajSeg[2].v0.set(this.prop.TAKEOFF_SPEED, 0.0D, 0.0D);
-    arrayOfTrajSeg[3].v0.set(f4, 0.0D, 0.0D);
-    arrayOfTrajSeg[4].v0.set(f4, 0.0D, 0.0D);
-    arrayOfTrajSeg[5].v0.set(f4 * Geom.cosDeg(this.prop.HIT_ANGLE), 0.0D, -f4 * Geom.sinDeg(this.prop.HIT_ANGLE));
-
-    arrayOfTrajSeg[1].pos0.set(0.0D, 0.0D, this.endPos_rocket.z);
-
-    arrayOfTrajSeg[1].t = (2.0D * (d2 - arrayOfTrajSeg[1].pos0.z) / (arrayOfTrajSeg[1].v0.z + 0.0D));
-
-    arrayOfTrajSeg[2].pos0.set(arrayOfTrajSeg[1].pos0.x + 0.5D * (arrayOfTrajSeg[1].v0.x + arrayOfTrajSeg[2].v0.x) * arrayOfTrajSeg[1].t, 0.0D, d2);
-    arrayOfTrajSeg[2].t = this.prop.SPEEDUP_TIME;
-
-    arrayOfTrajSeg[3].pos0.set(arrayOfTrajSeg[2].pos0.x + 0.5D * (arrayOfTrajSeg[2].v0.x + arrayOfTrajSeg[3].v0.x) * arrayOfTrajSeg[2].t, 0.0D, d2);
-
-    arrayOfTrajSeg[5].pos0.set(d1, 0.0D, localPoint3d.z);
-
-    arrayOfTrajSeg[4].t = (2.0D * (arrayOfTrajSeg[5].pos0.z - d2) / (arrayOfTrajSeg[4].v0.z + arrayOfTrajSeg[5].v0.z));
-
-    arrayOfTrajSeg[4].pos0.set(arrayOfTrajSeg[5].pos0.x - 0.5D * (arrayOfTrajSeg[4].v0.x + arrayOfTrajSeg[5].v0.x) * arrayOfTrajSeg[4].t, 0.0D, d2);
-
-    arrayOfTrajSeg[5].t = 100.0D;
-
-    arrayOfTrajSeg[3].t = (2.0D * (arrayOfTrajSeg[4].pos0.x - arrayOfTrajSeg[3].pos0.x) / (arrayOfTrajSeg[3].v0.x + arrayOfTrajSeg[4].v0.x));
-
-    for (int j = 0; j <= 5; j++) {
-      if (arrayOfTrajSeg[j].t <= 0.0D) {
-        return null;
-      }
-
-    }
-
-    for (j = 1; j <= 4; j++) {
-      arrayOfTrajSeg[j].a.sub(arrayOfTrajSeg[(j + 1)].v0, arrayOfTrajSeg[j].v0);
-      arrayOfTrajSeg[j].a.scale(1.0D / arrayOfTrajSeg[j].t);
-    }
-    arrayOfTrajSeg[5].a.set(0.0D, 0.0D, 0.0D);
-
-    arrayOfTrajSeg[0].t0 = 0.0D;
-    for (j = 1; j <= 5; j++) {
-      arrayOfTrajSeg[j].t0 = (arrayOfTrajSeg[(j - 1)].t0 + arrayOfTrajSeg[(j - 1)].t);
-    }
-
-    for (j = 1; j <= 5; j++) {
-      arrayOfTrajSeg[j].pos0.set(((Vector2d)localObject).x * arrayOfTrajSeg[j].pos0.x, ((Vector2d)localObject).y * arrayOfTrajSeg[j].pos0.x, arrayOfTrajSeg[j].pos0.z);
-      arrayOfTrajSeg[j].pos0.add(this.endPos_rocket.x, this.endPos_rocket.y, 0.0D);
-      arrayOfTrajSeg[j].v0.set(((Vector2d)localObject).x * arrayOfTrajSeg[j].v0.x, ((Vector2d)localObject).y * arrayOfTrajSeg[j].v0.x, arrayOfTrajSeg[j].v0.z);
-      arrayOfTrajSeg[j].a.set(((Vector2d)localObject).x * arrayOfTrajSeg[j].a.x, ((Vector2d)localObject).y * arrayOfTrajSeg[j].a.x, arrayOfTrajSeg[j].a.z);
-    }
-
-    return (TrajSeg)arrayOfTrajSeg;
-  }
-
-  private TrajSeg[] computeNormalTrajectory(int paramInt)
-  {
-    TrajSeg[] arrayOfTrajSeg = null;
-
-    if (this.prop.air) {
-      arrayOfTrajSeg = _computeAirTrajectory_(paramInt);
-    } else {
-      arrayOfTrajSeg = _computeRampTrajectory_(paramInt, false);
-      if (arrayOfTrajSeg == null) {
-        arrayOfTrajSeg = _computeRampTrajectory_(paramInt, true);
-      }
-    }
-
-    return arrayOfTrajSeg;
-  }
-
-  private RocketryGeneric(RocketryProperties paramRocketryProperties, MeshesNames paramMeshesNames, String paramString, int paramInt1, NetChannel paramNetChannel, int paramInt2, double paramDouble1, double paramDouble2, float paramFloat1, Point2d paramPoint2d, float paramFloat2, float paramFloat3, int paramInt3)
-  {
-    super(paramMeshesNames.ramp);
-    this.prop = paramRocketryProperties;
-    this.meshNames = paramMeshesNames;
-
-    this.countRockets = paramInt3;
-    if ((this.countRockets == 0) || (paramPoint2d == null)) {
-      this.countRockets = 0;
-      paramPoint2d = null;
-      this.targetPos = null;
-    }
-    else {
-      this.targetPos = new Point3d();
-      this.targetPos.set(paramPoint2d.x, paramPoint2d.y, Engine.land().HQ(paramPoint2d.x, paramPoint2d.y));
-    }
-
-    setName(paramString);
-    setArmy(paramInt1);
-
-    Point3d localPoint3d = new Point3d();
-    if (this.prop.air) {
-      localPoint3d.set(paramDouble1, paramDouble2, this.prop.FLY_HEIGHT);
-    } else {
-      localPoint3d.set(paramDouble1, paramDouble2, Engine.land().HQ(paramDouble1, paramDouble2));
-      localObject = new Point3d();
-      getHookOffset(mesh(), "Ground_Level", false, (Point3d)localObject);
-      localPoint3d.z -= ((Point3d)localObject).z;
-    }
-
-    Object localObject = new Orient();
-    if (this.targetPos == null) {
-      ((Orient)localObject).set(paramFloat1, 0.0F, 0.0F);
-    }
-    else {
-      Vector3d localVector3d = new Vector3d();
-      localVector3d.sub(this.targetPos, localPoint3d);
-      localVector3d.z = 0.0D;
-      ((Orient)localObject).setAT0(localVector3d);
-    }
-
-    this.pos.setAbs(localPoint3d, (Orient)localObject);
-    this.pos.reset();
-
-    if (this.prop.air) {
-      collide(false);
-      drawing(false);
-    } else {
-      collide(true);
-      drawing(true);
-    }
-
-    if (this.prop.air) {
-      this.begPos_wagon = null;
-      this.endPos_wagon = null;
-      this.begPos_rocket = null;
-      this.endPos_rocket = null;
-    } else {
-      getHookOffset(mesh(), "_begWagon", true, this.begPos_wagon);
-      this.pos.getAbs().transform(this.begPos_wagon);
-      getHookOffset(mesh(), "_endWagon", true, this.endPos_wagon);
-      this.pos.getAbs().transform(this.endPos_wagon);
-
-      getHookOffset(mesh(), "_begRocket", true, this.begPos_rocket);
-      this.pos.getAbs().transform(this.begPos_rocket);
-      getHookOffset(mesh(), "_endRocket", true, this.endPos_rocket);
-      this.pos.getAbs().transform(this.endPos_rocket);
-    }
-
-    int i = (int)(paramFloat2 * 60.0F + 0.5F);
-    if (i < 0) {
-      i = 0;
-    }
-    if (i > 14400) {
-      i = 14400;
-    }
-
-    this.launchIntervalS = (int)(paramFloat3 * 60.0F + 0.5F);
-    if (this.launchIntervalS < 180) {
-      this.launchIntervalS = 180;
-    }
-    if (this.launchIntervalS > 14400) {
-      this.launchIntervalS = 14400;
-    }
-
-    this.damage = 0.0F;
-    this.actionTimeMS = 9223372036854775807L;
-
-    createNetObject(paramNetChannel, paramInt2);
-
-    if (this.targetPos != null) {
-      if (isNetMaster()) {
-        long l = 1000L * i - 1000L * this.launchIntervalS / 2L;
-        if (l <= 0L)
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
         {
-          prepareLaunch_Master(i);
+            char c = (char)netmsginput.readByte();
+            if(netmsginput.isGuaranted())
+                switch(c)
+                {
+                case 97: // 'a'
+                case 98: // 'b'
+                case 101: // 'e'
+                case 102: // 'f'
+                case 108: // 'l'
+                case 114: // 'r'
+                case 120: // 'x'
+                    if(!isMaster())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted(netmsginput, 1);
+                        postTo(masterChannel(), netmsgguaranted);
+                    }
+                    return true;
+
+                case 65: // 'A'
+                case 66: // 'B'
+                case 68: // 'D'
+                case 69: // 'E'
+                case 70: // 'F'
+                case 76: // 'L'
+                case 82: // 'R'
+                case 88: // 'X'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted1 = new NetMsgGuaranted(netmsginput, 1);
+                        post(netmsgguaranted1);
+                    }
+                    int i = netmsginput.readUnsignedByte();
+                    int i1 = netmsginput.readUnsignedShort();
+                    com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                    com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                    if(c != 'D')
+                        handleRocketCommand_Both(c, i, i1, actor, false);
+                    else
+                        handleDamageRamp_Both(1.0F, actor, false);
+                    return true;
+
+                case 80: // 'P'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted2 = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted2);
+                    }
+                    int j = netmsginput.readUnsignedShort();
+                    int j1 = netmsginput.readUnsignedByte();
+                    int l1 = netmsginput.readUnsignedShort();
+                    handlePrepareLaunchCommand_Mirror(j, j1, l1);
+                    return true;
+
+                case 83: // 'S'
+                    if(isMirrored())
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted3 = new NetMsgGuaranted(netmsginput, 0);
+                        post(netmsgguaranted3);
+                    }
+                    int k = netmsginput.readUnsignedByte();
+                    handleRespawnCommand_Mirror(k);
+                    return true;
+
+                case 73: // 'I'
+                    boolean flag = netmsginput.readByte() != 0;
+                    int k1 = netmsginput.readUnsignedByte();
+                    int i2 = netmsginput.readUnsignedByte();
+                    if(i2 > 10)
+                        i2 = 10;
+                    com.maddox.il2.objects.vehicles.artillery.RocketInGame arocketingame[] = new com.maddox.il2.objects.vehicles.artillery.RocketInGame[i2];
+                    for(int j2 = 0; j2 < i2; j2++)
+                    {
+                        arocketingame[j2] = new RocketInGame();
+                        arocketingame[j2].idR = netmsginput.readUnsignedByte();
+                        arocketingame[j2].timeAfterStartS = netmsginput.readFloat();
+                        arocketingame[j2].randseed = netmsginput.readUnsignedShort();
+                    }
+
+                    handleInitCommand_Mirror(flag, k1, arocketingame);
+                    return true;
+
+                case 67: // 'C'
+                case 71: // 'G'
+                case 72: // 'H'
+                case 74: // 'J'
+                case 75: // 'K'
+                case 77: // 'M'
+                case 78: // 'N'
+                case 79: // 'O'
+                case 81: // 'Q'
+                case 84: // 'T'
+                case 85: // 'U'
+                case 86: // 'V'
+                case 87: // 'W'
+                case 89: // 'Y'
+                case 90: // 'Z'
+                case 91: // '['
+                case 92: // '\\'
+                case 93: // ']'
+                case 94: // '^'
+                case 95: // '_'
+                case 96: // '`'
+                case 99: // 'c'
+                case 100: // 'd'
+                case 103: // 'g'
+                case 104: // 'h'
+                case 105: // 'i'
+                case 106: // 'j'
+                case 107: // 'k'
+                case 109: // 'm'
+                case 110: // 'n'
+                case 111: // 'o'
+                case 112: // 'p'
+                case 113: // 'q'
+                case 115: // 's'
+                case 116: // 't'
+                case 117: // 'u'
+                case 118: // 'v'
+                case 119: // 'w'
+                default:
+                    return false;
+                }
+            switch(c)
+            {
+            case 45: // '-'
+                if(!com.maddox.il2.net.NetMissionTrack.isPlaying())
+                {
+                    out.unLockAndSet(netmsginput, 1);
+                    out.setIncludeTime(false);
+                    postRealTo(com.maddox.rts.Message.currentRealTime(), net.masterChannel(), out);
+                }
+                return true;
+
+            case 89: // 'Y'
+                if(isMirrored())
+                {
+                    out.unLockAndSet(netmsginput, 0);
+                    out.setIncludeTime(true);
+                    postReal(com.maddox.rts.Message.currentRealTime(), out);
+                }
+                long l = (long)((double)netmsginput.readFloat() * 1000D);
+                long l2 = com.maddox.rts.Message.currentGameTime() + l;
+                int k2 = netmsginput.readUnsignedByte();
+                handleSyncLaunchCommand_Mirror(l2, k2);
+                return true;
+            }
+            return false;
         }
+
+        com.maddox.rts.NetMsgFiltered out;
+
+        public Mirror(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(actor, netchannel, i);
+            out = new NetMsgFiltered();
+        }
+    }
+
+    class Master extends com.maddox.il2.engine.ActorNet
+    {
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            char c = (char)netmsginput.readByte();
+            if(netmsginput.isGuaranted())
+                switch(c)
+                {
+                case 97: // 'a'
+                case 98: // 'b'
+                case 101: // 'e'
+                case 102: // 'f'
+                case 108: // 'l'
+                case 114: // 'r'
+                case 120: // 'x'
+                    int i = netmsginput.readUnsignedByte();
+                    int j = netmsginput.readUnsignedShort();
+                    com.maddox.rts.NetObj netobj1 = netmsginput.readNetObj();
+                    com.maddox.il2.engine.Actor actor1 = netobj1 != null ? ((com.maddox.il2.engine.ActorNet)netobj1).actor() : null;
+                    handleRocketCommand_Both(c, i, j, actor1, true);
+                    return true;
+
+                case 99: // 'c'
+                case 100: // 'd'
+                case 103: // 'g'
+                case 104: // 'h'
+                case 105: // 'i'
+                case 106: // 'j'
+                case 107: // 'k'
+                case 109: // 'm'
+                case 110: // 'n'
+                case 111: // 'o'
+                case 112: // 'p'
+                case 113: // 'q'
+                case 115: // 's'
+                case 116: // 't'
+                case 117: // 'u'
+                case 118: // 'v'
+                case 119: // 'w'
+                default:
+                    return false;
+                }
+            if(c != '-')
+            {
+                return false;
+            } else
+            {
+                float f = (float)netmsginput.readUnsignedShort() / 65000F;
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                com.maddox.il2.engine.Actor actor = netobj != null ? ((com.maddox.il2.engine.ActorNet)netobj).actor() : null;
+                handleDamageRamp_Both(f, actor, true);
+                return true;
+            }
+        }
+
+        public Master(com.maddox.il2.engine.Actor actor)
+        {
+            super(actor);
+        }
+    }
+
+    class Move extends com.maddox.il2.engine.Interpolate
+    {
+
+        public boolean tick()
+        {
+            if(com.maddox.rts.Time.current() < actionTimeMS)
+                return true;
+            if(damage >= 1.0F)
+            {
+                if(!com.maddox.il2.game.Mission.isDeathmatch())
+                    return false;
+                if(!isNetMaster())
+                {
+                    actionTimeMS = com.maddox.rts.Time.current() + 0x1869fL;
+                    return true;
+                } else
+                {
+                    damage = 0.0F;
+                    actionTimeMS = com.maddox.rts.Time.current() + (1000L * (long)launchIntervalS) / 2L;
+                    setMesh(meshNames.ramp);
+                    setDiedFlag(false);
+                    sendRespawn_Master();
+                    return true;
+                }
+            }
+            if(isNetMaster())
+                prepareLaunch_Master(launchIntervalS / 2);
+            else
+                actionTimeMS = com.maddox.rts.Time.current() + 0x1869fL;
+            return true;
+        }
+
+        Move()
+        {
+        }
+    }
+
+    public static class RocketInGame
+    {
+
+        public int idR;
+        public float timeAfterStartS;
+        public int randseed;
+
+        public RocketInGame()
+        {
+        }
+    }
+
+    public static class TrajSeg
+    {
+
+        public double t0;
+        public double t;
+        public com.maddox.JGP.Point3d pos0;
+        public com.maddox.JGP.Vector3d v0;
+        public com.maddox.JGP.Vector3d a;
+
+        public TrajSeg()
+        {
+            pos0 = new Point3d();
+            v0 = new Vector3d();
+            a = new Vector3d();
+        }
+    }
+
+    public static class RocketryProperties
+    {
+
+        public java.lang.String name;
+        public com.maddox.il2.objects.vehicles.artillery.MeshesNames summerNames;
+        public com.maddox.il2.objects.vehicles.artillery.MeshesNames desertNames;
+        public com.maddox.il2.objects.vehicles.artillery.MeshesNames winterNames;
+        public java.lang.String soundName;
+        public boolean air;
+        public float MASS_FULL;
+        public float MASS_TNT;
+        public float EXPLOSION_RADIUS;
+        public float TAKEOFF_SPEED;
+        public float MAX_SPEED;
+        public float SPEEDUP_TIME;
+        public float FLY_HEIGHT;
+        public float HIT_ANGLE;
+        public float MAX_ERR_HEIGHT;
+        public float MAX_ERR_HIT_DISTANCE;
+        public com.maddox.il2.ai.StrengthProperties stre;
+        public float DMG_WARHEAD_MM;
+        public float DMG_WARHEAD_PROB;
+        public float DMG_FUEL_MM;
+        public float DMG_FUEL_PROB;
+        public float DMG_ENGINE_MM;
+        public float DMG_ENGINE_PROB;
+        public float DMG_WING_MM;
+        public float DMG_WING_PROB;
+        public float DMG_WARHEAD_TNT;
+        public float DMG_WING_TNT;
+
+        public RocketryProperties()
+        {
+            name = null;
+            summerNames = new MeshesNames();
+            desertNames = new MeshesNames();
+            winterNames = new MeshesNames();
+            soundName = null;
+            air = false;
+            MASS_FULL = 200F;
+            MASS_TNT = 100F;
+            EXPLOSION_RADIUS = 500F;
+            TAKEOFF_SPEED = 1.0F;
+            MAX_SPEED = 1.0F;
+            SPEEDUP_TIME = 1.0F;
+            FLY_HEIGHT = 1.0F;
+            HIT_ANGLE = 30F;
+            MAX_ERR_HEIGHT = 0.0F;
+            MAX_ERR_HIT_DISTANCE = 0.0F;
+            stre = new StrengthProperties();
+            DMG_WARHEAD_MM = 0.0F;
+            DMG_WARHEAD_PROB = 0.0F;
+            DMG_FUEL_MM = 0.0F;
+            DMG_FUEL_PROB = 0.0F;
+            DMG_ENGINE_MM = 0.0F;
+            DMG_ENGINE_PROB = 0.0F;
+            DMG_WING_MM = 0.0F;
+            DMG_WING_PROB = 0.0F;
+            DMG_WARHEAD_TNT = 0.0F;
+            DMG_WING_TNT = 0.0F;
+        }
+    }
+
+    public static class MeshesNames
+    {
+
+        public void setNull()
+        {
+            ramp = null;
+            ramp_d = null;
+            wagon = null;
+            rocket = null;
+        }
+
+        public java.lang.String ramp;
+        public java.lang.String ramp_d;
+        public java.lang.String wagon;
+        public java.lang.String rocket;
+
+        public MeshesNames()
+        {
+        }
+    }
+
+
+    private final boolean Corpse()
+    {
+        return damage >= 1.0F;
+    }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    public boolean isStaticPos()
+    {
+        return true;
+    }
+
+    public static final float RndF(float f, float f1)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextFloat(f, f1);
+    }
+
+    public static final int RndI(int i, int j)
+    {
+        return com.maddox.il2.ai.World.Rnd().nextInt(i, j);
+    }
+
+    private static final long SecsToTicks(float f)
+    {
+        long l = (long)(0.5D + (double)(f / com.maddox.rts.Time.tickLenFs()));
+        return l >= 1L ? l : 1L;
+    }
+
+    public void msgCollision(com.maddox.il2.engine.Actor actor, java.lang.String s, java.lang.String s1)
+    {
+        if(Corpse())
+            return;
+        if(!com.maddox.il2.engine.Actor.isValid(actor))
+            return;
+        if(actor.net != null && actor.net.isMirror())
+            return;
+        if(actor instanceof com.maddox.il2.objects.Wreckage)
+            return;
+        if(!(actor instanceof com.maddox.il2.objects.air.Aircraft))
+            return;
+        if(actor.getSpeed(null) < 28D)
+            return;
+        if(s1 != null && (s1.startsWith("Wing") || s1.startsWith("Stab") || s1.startsWith("Arone") || s1.startsWith("Vator") || s1.startsWith("Keel") || s1.startsWith("Rudder") || s1.startsWith("Pilot")))
+            return;
+        if(isNetMirror())
+            sendRampDamage_Mirror(1.0F, actor);
         else
-          this.actionTimeMS = (Time.current() + l);
-      }
-      else
-      {
-        this.actionTimeMS = 9223372036854775807L;
-      }
-
+            handleDamageRamp_Both(1.0F, actor, true);
     }
 
-    if (!interpEnd("move"))
-      interpPut(new Move(), "move", Time.current(), null);
-  }
-
-  public int HitbyMask()
-  {
-    return -2;
-  }
-
-  public int chooseBulletType(BulletProperties[] paramArrayOfBulletProperties)
-  {
-    if (Corpse()) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties.length == 1) {
-      return 0;
-    }
-
-    if (paramArrayOfBulletProperties.length <= 0) {
-      return -1;
-    }
-
-    if (paramArrayOfBulletProperties[0].power <= 0.0F)
+    public void msgShot(com.maddox.il2.ai.Shot shot)
     {
-      return 0;
+        shot.bodyMaterial = 2;
+        if(Corpse())
+            return;
+        if(shot.power <= 0.0F)
+            return;
+        if(isNetMirror() && shot.isMirage())
+            return;
+        float f = shot.power;
+        if(shot.powerType == 1)
+            f = shot.power / 2.4E-007F;
+        f *= com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.RndF(1.0F, 1.1F);
+        if(f < prop.stre.SHOT_MIN_ENERGY)
+            return;
+        float f1 = f / prop.stre.SHOT_MAX_ENERGY;
+        if(isNetMirror())
+            sendRampDamage_Mirror(f1, shot.initiator);
+        else
+            handleDamageRamp_Both(f1, shot.initiator, true);
     }
-    if (paramArrayOfBulletProperties[1].power <= 0.0F)
+
+    public void msgExplosion(com.maddox.il2.ai.Explosion explosion)
     {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].cumulativePower > 0.0F)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].cumulativePower > 0.0F)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 1)
-    {
-      return 0;
-    }
-    if (paramArrayOfBulletProperties[1].powerType == 1)
-    {
-      return 1;
-    }
-
-    if (paramArrayOfBulletProperties[0].powerType == 0)
-    {
-      return 1;
-    }
-
-    return 0;
-  }
-
-  public int chooseShotpoint(BulletProperties paramBulletProperties) {
-    if (Corpse()) {
-      return -1;
-    }
-    return 0;
-  }
-
-  public boolean getShotpointOffset(int paramInt, Point3d paramPoint3d) {
-    if (Corpse()) {
-      return false;
-    }
-
-    if (paramInt != 0) {
-      return false;
-    }
-
-    if (paramPoint3d != null) {
-      paramPoint3d.set(0.0D, 0.0D, 0.0D);
-    }
-    return true;
-  }
-
-  private RocketryRocket findMyRocket(int paramInt)
-  {
-    for (int i = 0; i < this.rs.size(); i++) {
-      if (((RocketryRocket)this.rs.get(i)).idR == paramInt) {
-        return (RocketryRocket)this.rs.get(i);
-      }
-    }
-    return null;
-  }
-
-  void forgetRocket(RocketryRocket paramRocketryRocket)
-  {
-    for (int i = 0; i < this.rs.size(); i++)
-      if ((RocketryRocket)this.rs.get(i) == paramRocketryRocket) {
-        this.rs.remove(i);
-        return;
-      }
-  }
-
-  private void killWrongRockets(int paramInt)
-  {
-    for (int i = 0; i < this.rs.size(); i++) {
-      int j = ((RocketryRocket)this.rs.get(i)).idR;
-      int k = (byte)(j - paramInt);
-      if ((k >= 0) && (k <= 20)) {
-        ((RocketryRocket)this.rs.get(i)).silentDeath();
-        this.rs.remove(i);
-        i--;
-      }
-    }
-  }
-
-  private void sendRampDamage_Mirror(float paramFloat, Actor paramActor)
-  {
-    if (!isNetMirror()) {
-      return;
-    }
-
-    if ((this.net.masterChannel() instanceof NetChannelInStream)) {
-      return;
-    }
-
-    int i = (int)(paramFloat * 65000.0F);
-    if (i <= 0) {
-      return;
-    }
-    if (i > 65000) {
-      i = 65000;
-    }
-
-    try
-    {
-      NetMsgFiltered localNetMsgFiltered = new NetMsgFiltered();
-      localNetMsgFiltered.writeByte(45);
-      localNetMsgFiltered.writeShort(i);
-      localNetMsgFiltered.writeNetObj(paramActor == null ? null : paramActor.net);
-      localNetMsgFiltered.setIncludeTime(false);
-      this.net.postTo(Time.current(), this.net.masterChannel(), localNetMsgFiltered);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void sendRespawn_Master()
-  {
-    if (!this.net.isMirrored()) {
-      return;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(83);
-      localNetMsgGuaranted.writeByte(this.nextFreeIdR);
-      this.net.post(localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void prepareLaunch_Master(int paramInt)
-  {
-    if (this.countRockets <= 0) {
-      this.countRockets = 0;
-      this.actionTimeMS = 9223372036854775807L;
-      return;
-    }
-
-    long l1 = Time.current();
-
-    int i = RndI(0, 65535);
-    int j = this.nextFreeIdR;
-    this.nextFreeIdR = (this.nextFreeIdR + 1 & 0xFF);
-    long l2 = l1 + 1000L * paramInt;
-
-    this.actionTimeMS = (l2 + 1000L * this.launchIntervalS / 2L);
-
-    killWrongRockets(j);
-
-    TrajSeg[] arrayOfTrajSeg = computeNormalTrajectory(i);
-    if (arrayOfTrajSeg == null)
-    {
-      return;
-    }
-
-    RocketryRocket localRocketryRocket = new RocketryRocket(this, this.meshNames.rocket, j, i, l2, l1, arrayOfTrajSeg);
-
-    if (localRocketryRocket.isDamaged())
-    {
-      localRocketryRocket.silentDeath();
-      return;
-    }
-
-    Main.cur().mission.getClass();
-
-    Object localObject = new ZutiPadObject(localRocketryRocket, Main.cur().mission.zutiRadar_RefreshInterval > 0);
-    ((ZutiPadObject)localObject).type = 3;
-
-    GUI.pad.zutiPadObjects.put(new Integer(((ZutiPadObject)localObject).hashCode()), localObject);
-
-    this.rs.add(localRocketryRocket);
-    if (this.countRockets < 1000) {
-      this.countRockets -= 1;
-    }
-
-    if (!this.net.isMirrored()) {
-      return;
-    }
-
-    localObject = new NetMsgGuaranted();
-    try {
-      ((NetMsgGuaranted)localObject).writeByte(80);
-      ((NetMsgGuaranted)localObject).writeShort(paramInt);
-      ((NetMsgGuaranted)localObject).writeByte(j);
-      ((NetMsgGuaranted)localObject).writeShort(i);
-      this.net.post((NetMsgGuaranted)localObject);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void handleInitCommand_Mirror(boolean paramBoolean, int paramInt, RocketInGame[] paramArrayOfRocketInGame)
-  {
-    for (int i = 0; i < this.rs.size(); i++) {
-      ((RocketryRocket)this.rs.get(i)).silentDeath();
-    }
-    this.rs.clear();
-
-    this.damage = (paramBoolean ? 0.0F : 1.0F);
-
-    setMesh(paramBoolean ? this.meshNames.ramp : this.meshNames.ramp_d);
-
-    if (this.targetPos == null) {
-      return;
-    }
-
-    long l = Time.current();
-    for (int j = 0; j < paramArrayOfRocketInGame.length; j++) {
-      TrajSeg[] arrayOfTrajSeg = computeNormalTrajectory(paramArrayOfRocketInGame[j].randseed);
-      if (arrayOfTrajSeg == null)
-      {
-        continue;
-      }
-      RocketryRocket localRocketryRocket = new RocketryRocket(this, this.meshNames.rocket, paramArrayOfRocketInGame[j].idR, paramArrayOfRocketInGame[j].randseed, l - ()(1000.0D * paramArrayOfRocketInGame[j].timeAfterStartS), l, arrayOfTrajSeg);
-
-      if (localRocketryRocket.isDamaged()) {
-        localRocketryRocket.silentDeath();
-      }
-      else
-      {
-        if (GUI.pad != null) { Main.cur().mission.getClass();
-
-          ZutiPadObject localZutiPadObject = new ZutiPadObject(localRocketryRocket, Main.cur().mission.zutiRadar_RefreshInterval > 0);
-          localZutiPadObject.type = 3;
-
-          GUI.pad.zutiPadObjects.put(new Integer(localZutiPadObject.hashCode()), localZutiPadObject);
-        }
-
-        this.rs.add(localRocketryRocket);
-      }
-    }
-  }
-
-  private void handleRespawnCommand_Mirror(int paramInt)
-  {
-    killWrongRockets(paramInt);
-
-    this.actionTimeMS = (Time.current() + 99999L);
-    if (this.damage >= 1.0F) {
-      this.damage = 0.0F;
-      setMesh(this.meshNames.ramp);
-      setDiedFlag(false);
-    } else {
-      this.damage = 0.0F;
-    }
-  }
-
-  private void handlePrepareLaunchCommand_Mirror(int paramInt1, int paramInt2, int paramInt3)
-  {
-    killWrongRockets(paramInt2);
-
-    if (this.targetPos == null) {
-      return;
-    }
-
-    long l = Time.current();
-    TrajSeg[] arrayOfTrajSeg = computeNormalTrajectory(paramInt3);
-    if (arrayOfTrajSeg == null)
-    {
-      return;
-    }
-
-    RocketryRocket localRocketryRocket = new RocketryRocket(this, this.meshNames.rocket, paramInt2, paramInt3, l + paramInt1 * 1000, l, arrayOfTrajSeg);
-
-    if (localRocketryRocket.isDamaged())
-      localRocketryRocket.silentDeath();
-    else
-      this.rs.add(localRocketryRocket);
-  }
-
-  private void handleSyncLaunchCommand_Mirror(long paramLong, int paramInt)
-  {
-    killWrongRockets(paramInt + 1 & 0xFF);
-
-    if (this.targetPos == null) {
-      return;
-    }
-
-    RocketryRocket localRocketryRocket = findMyRocket(paramInt);
-    if (localRocketryRocket != null)
-      localRocketryRocket.changeLaunchTimeIfCan(paramLong);
-  }
-
-  public void sendRocketStateChange(RocketryRocket paramRocketryRocket, char paramChar, Actor paramActor)
-  {
-    boolean bool = isNetMaster();
-
-    int i = RndI(0, 65535);
-
-    if (bool) {
-      handleRocketCommand_Both(paramChar, paramRocketryRocket.idR, i, paramActor, true);
-      return;
-    }
-
-    if (!isNetMirror()) {
-      return;
-    }
-
-    if ((this.net.masterChannel() instanceof NetChannelInStream)) {
-      return;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(Character.toLowerCase(paramChar));
-      localNetMsgGuaranted.writeByte(paramRocketryRocket.idR);
-      localNetMsgGuaranted.writeShort(i);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.postTo(this.net.masterChannel(), localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void handleRocketCommand_Both(char paramChar, int paramInt1, int paramInt2, Actor paramActor, boolean paramBoolean)
-  {
-    if (this.targetPos == null) {
-      return;
-    }
-
-    RocketryRocket localRocketryRocket = findMyRocket(paramInt1);
-    if (localRocketryRocket == null) {
-      return;
-    }
-
-    paramChar = localRocketryRocket.handleCommand(paramChar, paramInt2, paramActor);
-    if ((paramChar == 0) || (!paramBoolean) || (!this.net.isMirrored())) {
-      return;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(Character.toUpperCase(paramChar));
-      localNetMsgGuaranted.writeByte(paramInt1);
-      localNetMsgGuaranted.writeShort(paramInt2);
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void handleDamageRamp_Both(float paramFloat, Actor paramActor, boolean paramBoolean)
-  {
-    if (this.prop.air) {
-      return;
-    }
-    if (paramFloat <= 0.0F) {
-      return;
-    }
-
-    if (this.damage >= 1.0F)
-    {
-      return;
-    }
-
-    this.damage += paramFloat;
-    if (this.damage >= 1.0F)
-      this.damage = 1.0F;
-    else {
-      return;
-    }
-
-    World.onActorDied(this, paramActor);
-
-    setMesh(this.meshNames.ramp_d);
-    this.actionTimeMS = Time.current();
-    if (Mission.isDeathmatch()) {
-      this.actionTimeMS += SecsToTicks(Mission.respawnTime("Artillery") * RndF(1.0F, 1.2F));
-    }
-
-    for (int i = 0; i < this.rs.size(); i++) {
-      RocketryRocket localRocketryRocket = (RocketryRocket)this.rs.get(i);
-      int j = localRocketryRocket.idR;
-      if (localRocketryRocket.isOnRamp()) {
-        handleRocketCommand_Both('X', j, RndI(0, 65535), paramActor, paramBoolean);
-        i = 0;
-      }
-
-    }
-
-    Explosions.ExplodeBridge(this.begPos_wagon, this.endPos_wagon, 1.2F);
-
-    if ((!paramBoolean) || (!this.net.isMirrored())) {
-      return;
-    }
-
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-    try {
-      localNetMsgGuaranted.writeByte(68);
-      localNetMsgGuaranted.writeByte(this.nextFreeIdR);
-      localNetMsgGuaranted.writeShort(RndI(0, 65535));
-      localNetMsgGuaranted.writeNetObj(paramActor == null ? null : paramActor.net);
-      this.net.post(localNetMsgGuaranted);
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-    }
-  }
-
-  private void createNetObject(NetChannel paramNetChannel, int paramInt)
-  {
-    if (paramNetChannel == null)
-    {
-      this.net = new Master(this);
-    }
-    else
-      this.net = new Mirror(this, paramNetChannel, paramInt);
-  }
-
-  public void netFirstUpdate(NetChannel paramNetChannel)
-    throws IOException
-  {
-    NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-
-    localNetMsgGuaranted.writeByte(73);
-
-    localNetMsgGuaranted.writeByte(this.damage >= 1.0F ? 0 : 1);
-    localNetMsgGuaranted.writeByte(this.nextFreeIdR);
-
-    int i = 0;
-    RocketryRocket localRocketryRocket;
-    for (int j = 0; j < this.rs.size(); j++) {
-      localRocketryRocket = (RocketryRocket)this.rs.get(j);
-      if (!localRocketryRocket.isDamaged()) {
-        i++;
-      }
-
-    }
-
-    if (i > 10) {
-      i = 10;
-    }
-    localNetMsgGuaranted.writeByte(i);
-    for (j = this.rs.size() - 1; j >= 0; j--) {
-      localRocketryRocket = (RocketryRocket)this.rs.get(j);
-      if (!localRocketryRocket.isDamaged()) {
-        localNetMsgGuaranted.writeByte(localRocketryRocket.idR);
-        float f = (float)((Time.current() - localRocketryRocket.timeOfStartMS) * 0.001D);
-        localNetMsgGuaranted.writeFloat(f);
-        localNetMsgGuaranted.writeShort(localRocketryRocket.randseed);
-        i--; if (i <= 0) {
-          break;
-        }
-      }
-    }
-    this.net.postTo(paramNetChannel, localNetMsgGuaranted);
-  }
-
-  public static RocketryGeneric New(String paramString1, String paramString2, NetChannel paramNetChannel, int paramInt1, int paramInt2, double paramDouble1, double paramDouble2, float paramFloat1, float paramFloat2, int paramInt3, float paramFloat3, Point2d paramPoint2d)
-  {
-    RocketryProperties localRocketryProperties = (RocketryProperties)rocketryMap.get(paramString2);
-    if (localRocketryProperties == null) {
-      System.out.println("***** Rocketry: Unknown type [" + paramString2 + "]");
-      return null;
-    }
-
-    MeshesNames localMeshesNames = null;
-    switch (World.cur().camouflage) {
-    case 1:
-      localMeshesNames = localRocketryProperties.winterNames;
-      break;
-    case 2:
-      localMeshesNames = localRocketryProperties.desertNames;
-      break;
-    default:
-      localMeshesNames = localRocketryProperties.summerNames;
-    }
-
-    return new RocketryGeneric(localRocketryProperties, localMeshesNames, paramString1, paramInt2, paramNetChannel, paramInt1, paramDouble1, paramDouble2, paramFloat1, paramPoint2d, paramFloat2, paramFloat3, paramInt3);
-  }
-
-  public static final float KmHourToMSec(float paramFloat)
-  {
-    return paramFloat / 3.6F;
-  }
-
-  private static float getF(SectFile paramSectFile, String paramString1, String paramString2, float paramFloat1, float paramFloat2)
-  {
-    float f = paramSectFile.get(paramString1, paramString2, -9865.3447F);
-    if ((f == -9865.3447F) || (f < paramFloat1) || (f > paramFloat2)) {
-      if (f == -9865.3447F) {
-        System.out.println("Rocketry: Parameter [" + paramString1 + "]:<" + paramString2 + "> " + "not found");
-      }
-      else {
-        System.out.println("Rocketry: Value of [" + paramString1 + "]:<" + paramString2 + "> (" + f + ")" + " is out of range (" + paramFloat1 + ";" + paramFloat2 + ")");
-      }
-
-      throw new RuntimeException("Can't set property");
-    }
-    return f;
-  }
-
-  private static String getS(SectFile paramSectFile, String paramString1, String paramString2) {
-    String str = paramSectFile.get(paramString1, paramString2);
-    if ((str == null) || (str.length() <= 0)) {
-      System.out.print("Rocketry: Parameter [" + paramString1 + "]:<" + paramString2 + "> ");
-      System.out.println(str == null ? "not found" : "is empty");
-      throw new RuntimeException("Can't set property");
-    }
-    return str;
-  }
-
-  private static String getS(SectFile paramSectFile, String paramString1, String paramString2, String paramString3) {
-    String str = paramSectFile.get(paramString1, paramString2);
-    if ((str == null) || (str.length() <= 0)) {
-      return paramString3;
-    }
-    return str;
-  }
-
-  public static void PreLoad(String paramString)
-  {
-    Property.set(RocketryGeneric.class, "iconName", "icons/objV1.mat");
-
-    rocketryMap = new HashMap();
-
-    SectFile localSectFile = new SectFile(paramString, 0);
-    int i = localSectFile.sections();
-
-    for (int j = 0; j < i; j++) {
-      RocketryProperties localRocketryProperties = new RocketryProperties();
-      localRocketryProperties.name = localSectFile.sectionName(j);
-
-      localRocketryProperties.summerNames.setNull();
-      localRocketryProperties.desertNames.setNull();
-      localRocketryProperties.winterNames.setNull();
-
-      localRocketryProperties.summerNames.ramp = getS(localSectFile, localRocketryProperties.name, "MeshSummer_ramp", "");
-      if (localRocketryProperties.summerNames.ramp == "")
-      {
-        localRocketryProperties.air = true;
-        localRocketryProperties.summerNames.ramp = "3do/primitive/coord/mono.sim";
-        localRocketryProperties.summerNames.ramp_d = localRocketryProperties.summerNames.ramp;
-        localRocketryProperties.desertNames = localRocketryProperties.summerNames;
-        localRocketryProperties.winterNames = localRocketryProperties.summerNames;
-      }
-      else {
-        localRocketryProperties.air = false;
-        localRocketryProperties.desertNames.ramp = getS(localSectFile, localRocketryProperties.name, "MeshDesert_ramp", localRocketryProperties.summerNames.ramp);
-        localRocketryProperties.winterNames.ramp = getS(localSectFile, localRocketryProperties.name, "MeshWinter_ramp", localRocketryProperties.summerNames.ramp);
-        localRocketryProperties.summerNames.ramp_d = getS(localSectFile, localRocketryProperties.name, "MeshSummerDamage_ramp");
-        localRocketryProperties.desertNames.ramp_d = getS(localSectFile, localRocketryProperties.name, "MeshDesertDamage_ramp", localRocketryProperties.summerNames.ramp_d);
-        localRocketryProperties.winterNames.ramp_d = getS(localSectFile, localRocketryProperties.name, "MeshWinterDamage_ramp", localRocketryProperties.summerNames.ramp_d);
-
-        localRocketryProperties.summerNames.wagon = getS(localSectFile, localRocketryProperties.name, "MeshSummer_wagon");
-        localRocketryProperties.desertNames.wagon = getS(localSectFile, localRocketryProperties.name, "MeshDesert_wagon", localRocketryProperties.summerNames.wagon);
-        localRocketryProperties.winterNames.wagon = getS(localSectFile, localRocketryProperties.name, "MeshWinter_wagon", localRocketryProperties.summerNames.wagon);
-      }
-
-      localRocketryProperties.summerNames.rocket = getS(localSectFile, localRocketryProperties.name, "MeshSummer_rocket");
-      localRocketryProperties.desertNames.rocket = getS(localSectFile, localRocketryProperties.name, "MeshDesert_rocket", localRocketryProperties.summerNames.rocket);
-      localRocketryProperties.winterNames.rocket = getS(localSectFile, localRocketryProperties.name, "MeshWinter_rocket", localRocketryProperties.summerNames.rocket);
-
-      localRocketryProperties.soundName = getS(localSectFile, localRocketryProperties.name, "SoundMove");
-
-      localRocketryProperties.MASS_FULL = getF(localSectFile, localRocketryProperties.name, "MassFull", 0.5F, 100000.0F);
-      localRocketryProperties.MASS_TNT = getF(localSectFile, localRocketryProperties.name, "MassTNT", 0.0F, 10000000.0F);
-      localRocketryProperties.EXPLOSION_RADIUS = getF(localSectFile, localRocketryProperties.name, "ExplosionRadius", 0.01F, 100000.0F);
-
-      if (!localRocketryProperties.air) {
-        localRocketryProperties.TAKEOFF_SPEED = getF(localSectFile, localRocketryProperties.name, "TakeoffSpeed", 1.0F, 3000.0F);
-        localRocketryProperties.TAKEOFF_SPEED = KmHourToMSec(localRocketryProperties.TAKEOFF_SPEED);
-      }
-      localRocketryProperties.MAX_SPEED = getF(localSectFile, localRocketryProperties.name, "MaxSpeed", localRocketryProperties.TAKEOFF_SPEED, 3000.0F);
-      localRocketryProperties.MAX_SPEED = KmHourToMSec(localRocketryProperties.MAX_SPEED);
-      if (!localRocketryProperties.air) {
-        localRocketryProperties.SPEEDUP_TIME = getF(localSectFile, localRocketryProperties.name, "SpeedupTime", 1.0F, 10000.0F);
-      }
-      localRocketryProperties.FLY_HEIGHT = getF(localSectFile, localRocketryProperties.name, "FlyHeight", 100.0F, 15000.0F);
-      localRocketryProperties.HIT_ANGLE = getF(localSectFile, localRocketryProperties.name, "HitAngle", 5.0F, 89.0F);
-
-      localRocketryProperties.MAX_ERR_HEIGHT = getF(localSectFile, localRocketryProperties.name, "MaxErrHeight", 0.0F, 2000.0F);
-      localRocketryProperties.MAX_ERR_HIT_DISTANCE = getF(localSectFile, localRocketryProperties.name, "MaxErrHitDistance", 0.0F, 10000.0F);
-
-      if ((!localRocketryProperties.air) && 
-        (!localRocketryProperties.stre.read("Rocketry", localSectFile, null, localRocketryProperties.name))) {
-        throw new RuntimeException("Can't register Rocketry data");
-      }
-
-      localRocketryProperties.DMG_WARHEAD_MM = getF(localSectFile, localRocketryProperties.name, "DmgWarhead_mm", 0.0F, 2000.0F);
-      localRocketryProperties.DMG_WARHEAD_PROB = getF(localSectFile, localRocketryProperties.name, "DmgWarhead_prob", 0.0F, 1.0F);
-
-      localRocketryProperties.DMG_FUEL_MM = getF(localSectFile, localRocketryProperties.name, "DmgFuel_mm", 0.0F, 2000.0F);
-      localRocketryProperties.DMG_FUEL_PROB = getF(localSectFile, localRocketryProperties.name, "DmgFuel_prob", 0.0F, 1.0F);
-
-      localRocketryProperties.DMG_ENGINE_MM = getF(localSectFile, localRocketryProperties.name, "DmgEngine_mm", 0.0F, 2000.0F);
-      localRocketryProperties.DMG_ENGINE_PROB = getF(localSectFile, localRocketryProperties.name, "DmgEngine_prob", 0.0F, 1.0F);
-
-      localRocketryProperties.DMG_WING_MM = getF(localSectFile, localRocketryProperties.name, "DmgWing_mm", 0.0F, 2000.0F);
-      localRocketryProperties.DMG_WING_PROB = getF(localSectFile, localRocketryProperties.name, "DmgWing_prob", 0.0F, 1.0F);
-
-      localRocketryProperties.DMG_WARHEAD_TNT = getF(localSectFile, localRocketryProperties.name, "DmgWarhead_tnt", 0.0F, 1000000.0F);
-      localRocketryProperties.DMG_WING_TNT = getF(localSectFile, localRocketryProperties.name, "DmgWing_tnt", 0.0F, 1000000.0F);
-
-      rocketryMap.put(localRocketryProperties.name, localRocketryProperties);
-    }
-  }
-
-  class Mirror extends ActorNet
-  {
-    NetMsgFiltered out = new NetMsgFiltered();
-
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      char c = (char)paramNetMsgInput.readByte();
-      int i1;
-      if (paramNetMsgInput.isGuaranted())
-      {
-        NetMsgGuaranted localNetMsgGuaranted1;
-        int m;
-        Object localObject;
-        int n;
-        int k;
-        switch (c)
+        if(Corpse())
+            return;
+        if(isNetMirror() && explosion.isMirage())
+            return;
+        float f = explosion.power;
+        com.maddox.il2.ai.Explosion _tmp = explosion;
+        if(explosion.powerType == 2 && explosion.chunkName != null)
+            f *= 4F;
+        float f1 = -1F;
+        if(explosion.chunkName != null)
         {
-        case 'a':
-        case 'b':
-        case 'e':
-        case 'f':
-        case 'l':
-        case 'r':
-        case 'x':
-          if (!isMaster()) {
-            localNetMsgGuaranted1 = new NetMsgGuaranted(paramNetMsgInput, 1);
-            postTo(masterChannel(), localNetMsgGuaranted1);
-          }
-          return true;
-        case 'A':
-        case 'B':
-        case 'D':
-        case 'E':
-        case 'F':
-        case 'L':
-        case 'R':
-        case 'X':
-          if (isMirrored()) {
-            localNetMsgGuaranted1 = new NetMsgGuaranted(paramNetMsgInput, 1);
-            post(localNetMsgGuaranted1);
-          }
-
-          int i = paramNetMsgInput.readUnsignedByte();
-          m = paramNetMsgInput.readUnsignedShort();
-          NetObj localNetObj = paramNetMsgInput.readNetObj();
-          localObject = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-          if (c != 'D')
-            RocketryGeneric.this.handleRocketCommand_Both(c, i, m, (Actor)localObject, false);
-          else {
-            RocketryGeneric.this.handleDamageRamp_Both(1.0F, (Actor)localObject, false);
-          }
-
-          return true;
-        case 'P':
-          if (isMirrored()) {
-            NetMsgGuaranted localNetMsgGuaranted2 = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post(localNetMsgGuaranted2);
-          }
-
-          int j = paramNetMsgInput.readUnsignedShort();
-          m = paramNetMsgInput.readUnsignedByte();
-          n = paramNetMsgInput.readUnsignedShort();
-          RocketryGeneric.this.handlePrepareLaunchCommand_Mirror(j, m, n);
-
-          return true;
-        case 'S':
-          if (isMirrored()) {
-            NetMsgGuaranted localNetMsgGuaranted3 = new NetMsgGuaranted(paramNetMsgInput, 0);
-            post(localNetMsgGuaranted3);
-          }
-
-          k = paramNetMsgInput.readUnsignedByte();
-          RocketryGeneric.this.handleRespawnCommand_Mirror(k);
-
-          return true;
-        case 'I':
-          k = paramNetMsgInput.readByte() != 0 ? 1 : 0;
-          m = paramNetMsgInput.readUnsignedByte();
-          n = paramNetMsgInput.readUnsignedByte();
-          if (n > 10) {
-            n = 10;
-          }
-          localObject = new RocketryGeneric.RocketInGame[n];
-          for (i1 = 0; i1 < n; i1++) {
-            localObject[i1] = new RocketryGeneric.RocketInGame();
-            localObject[i1].idR = paramNetMsgInput.readUnsignedByte();
-            localObject[i1].timeAfterStartS = paramNetMsgInput.readFloat();
-            localObject[i1].randseed = paramNetMsgInput.readUnsignedShort();
-          }
-          RocketryGeneric.this.handleInitCommand_Mirror(k, m, localObject);
-
-          return true;
-        case 'C':
-        case 'G':
-        case 'H':
-        case 'J':
-        case 'K':
-        case 'M':
-        case 'N':
-        case 'O':
-        case 'Q':
-        case 'T':
-        case 'U':
-        case 'V':
-        case 'W':
-        case 'Y':
-        case 'Z':
-        case '[':
-        case '\\':
-        case ']':
-        case '^':
-        case '_':
-        case '`':
-        case 'c':
-        case 'd':
-        case 'g':
-        case 'h':
-        case 'i':
-        case 'j':
-        case 'k':
-        case 'm':
-        case 'n':
-        case 'o':
-        case 'p':
-        case 'q':
-        case 's':
-        case 't':
-        case 'u':
-        case 'v':
-        case 'w': } return false;
-      }
-
-      switch (c)
-      {
-      case '-':
-        if (!NetMissionTrack.isPlaying()) {
-          this.out.unLockAndSet(paramNetMsgInput, 1);
-          this.out.setIncludeTime(false);
-          postRealTo(Message.currentRealTime(), RocketryGeneric.this.net.masterChannel(), this.out);
+            float f2 = f;
+            f2 *= com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.RndF(1.0F, 1.1F);
+            if(f2 >= prop.stre.EXPLHIT_MIN_TNT)
+                f1 = f2 / prop.stre.EXPLHIT_MAX_TNT;
         }
-        return true;
-      case 'Y':
-        if (isMirrored()) {
-          this.out.unLockAndSet(paramNetMsgInput, 0);
-          this.out.setIncludeTime(true);
-          postReal(Message.currentRealTime(), this.out);
-        }
-
-        long l1 = ()(paramNetMsgInput.readFloat() * 1000.0D);
-        long l2 = Message.currentGameTime() + l1;
-        i1 = paramNetMsgInput.readUnsignedByte();
-        RocketryGeneric.this.handleSyncLaunchCommand_Mirror(l2, i1);
-
-        return true;
-      }
-      return false;
-    }
-
-    public Mirror(Actor paramNetChannel, NetChannel paramInt, int arg4)
-    {
-      super(paramInt, i);
-    }
-  }
-
-  class Master extends ActorNet
-  {
-    public Master(Actor arg2)
-    {
-      super();
-    }
-
-    public boolean netInput(NetMsgInput paramNetMsgInput) throws IOException {
-      char c = (char)paramNetMsgInput.readByte();
-      if (paramNetMsgInput.isGuaranted()) {
-        switch (c)
+        if(f1 < 0.0F)
         {
-        case 'a':
-        case 'b':
-        case 'e':
-        case 'f':
-        case 'l':
-        case 'r':
-        case 'x':
-          int i = paramNetMsgInput.readUnsignedByte();
-          int j = paramNetMsgInput.readUnsignedShort();
-          localObject = paramNetMsgInput.readNetObj();
-          Actor localActor = localObject == null ? null : ((ActorNet)localObject).actor();
-          RocketryGeneric.this.handleRocketCommand_Both(c, i, j, localActor, true);
-
-          return true;
-        case 'c':
-        case 'd':
-        case 'g':
-        case 'h':
-        case 'i':
-        case 'j':
-        case 'k':
-        case 'm':
-        case 'n':
-        case 'o':
-        case 'p':
-        case 'q':
-        case 's':
-        case 't':
-        case 'u':
-        case 'v':
-        case 'w': } return false;
-      }
-
-      if (c != '-') {
-        return false;
-      }
-      float f = paramNetMsgInput.readUnsignedShort() / 65000.0F;
-      NetObj localNetObj = paramNetMsgInput.readNetObj();
-      Object localObject = localNetObj == null ? null : ((ActorNet)localNetObj).actor();
-      RocketryGeneric.this.handleDamageRamp_Both(f, (Actor)localObject, true);
-      return true;
-    }
-  }
-
-  class Move extends Interpolate
-  {
-    Move()
-    {
-    }
-
-    public boolean tick()
-    {
-      if (Time.current() < RocketryGeneric.this.actionTimeMS) {
-        return true;
-      }
-
-      if (RocketryGeneric.this.damage >= 1.0F) {
-        if (!Mission.isDeathmatch()) {
-          return false;
+            float f3 = explosion.receivedTNT_1meter(this);
+            f3 *= com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.RndF(1.0F, 1.1F);
+            if(f3 >= prop.stre.EXPLNEAR_MIN_TNT)
+                f1 = f3 / prop.stre.EXPLNEAR_MAX_TNT;
         }
-        if (!RocketryGeneric.this.isNetMaster()) {
-          RocketryGeneric.access$002(RocketryGeneric.this, Time.current() + 99999L);
-          return true;
+        if(f1 > 0.0F)
+            if(isNetMirror())
+                sendRampDamage_Mirror(f1, explosion.initiator);
+            else
+                handleDamageRamp_Both(f1, explosion.initiator, true);
+    }
+
+    private static void getHookOffset(com.maddox.il2.engine.Mesh mesh, java.lang.String s, boolean flag, com.maddox.JGP.Point3d point3d)
+    {
+        int i = mesh.hookFind(s);
+        if(i == -1)
+        {
+            if(flag)
+            {
+                java.lang.System.out.println("Rocketry: Hook [" + s + "] not found");
+                throw new RuntimeException("Can't work");
+            }
+            point3d.set(0.0D, 0.0D, 0.0D);
+        }
+        com.maddox.JGP.Matrix4d matrix4d = new Matrix4d();
+        mesh.hookMatrix(i, matrix4d);
+        point3d.set(matrix4d.m03, matrix4d.m13, matrix4d.m23);
+    }
+
+    com.maddox.il2.objects.vehicles.artillery.TrajSeg[] _computeFallTrajectory_(int i, com.maddox.JGP.Point3d point3d, com.maddox.JGP.Vector3d vector3d)
+    {
+        com.maddox.il2.objects.vehicles.artillery.TrajSeg atrajseg[] = new com.maddox.il2.objects.vehicles.artillery.TrajSeg[1];
+        for(int j = 0; j < atrajseg.length; j++)
+            atrajseg[j] = new TrajSeg();
+
+        atrajseg[0].pos0.set(point3d);
+        atrajseg[0].v0.set(vector3d);
+        atrajseg[0].a.set(0.0D, 0.0D, -3D);
+        atrajseg[0].t0 = 0.0D;
+        atrajseg[0].t = 500D;
+        return atrajseg;
+    }
+
+    com.maddox.il2.objects.vehicles.artillery.TrajSeg[] _computeWagonTrajectory_(int i)
+    {
+        rndSeed.setSeed(i);
+        com.maddox.JGP.Vector2d vector2d = new Vector2d();
+        vector2d.set(endPos_wagon.x - begPos_wagon.x, endPos_wagon.y - begPos_wagon.y);
+        vector2d.normalize();
+        com.maddox.il2.objects.vehicles.artillery.TrajSeg atrajseg[] = new com.maddox.il2.objects.vehicles.artillery.TrajSeg[2];
+        for(int j = 0; j < atrajseg.length; j++)
+            atrajseg[j] = new TrajSeg();
+
+        com.maddox.JGP.Vector3d vector3d = new Vector3d();
+        float f = prop.TAKEOFF_SPEED;
+        vector3d.sub(endPos_wagon, begPos_wagon);
+        double d = vector3d.length();
+        vector3d.scale(1.0D / d);
+        atrajseg[0].v0.set(0.0D, 0.0D, 0.0D);
+        atrajseg[0].pos0.set(begPos_wagon);
+        atrajseg[0].t = (2D * d) / (0.0D + (double)f);
+        atrajseg[0].a.set(vector3d);
+        atrajseg[0].a.scale((double)f / atrajseg[0].t);
+        f = prop.TAKEOFF_SPEED * rndSeed.nextFloat(0.85F, 0.97F);
+        double d1 = vector3d.z * d;
+        double d2 = java.lang.Math.sqrt(d * d - d1 * d1);
+        atrajseg[1].v0.set(d2, 0.0D, d1);
+        atrajseg[1].v0.normalize();
+        atrajseg[1].v0.scale(f);
+        atrajseg[1].pos0.set(0.0D, 0.0D, endPos_wagon.z);
+        atrajseg[1].t = 30D + 2D * (atrajseg[1].v0.z / 9.8000000000000007D);
+        atrajseg[1].a.set(0.0D, 0.0D, -9.8000000000000007D);
+        for(int k = 0; k <= 1; k++)
+            if(atrajseg[k].t <= 0.0D)
+                return null;
+
+        atrajseg[0].t0 = 0.0D;
+        for(int l = 1; l <= 1; l++)
+            atrajseg[l].t0 = atrajseg[l - 1].t0 + atrajseg[l - 1].t;
+
+        for(int i1 = 1; i1 <= 1; i1++)
+        {
+            atrajseg[i1].pos0.set(vector2d.x * atrajseg[i1].pos0.x, vector2d.y * atrajseg[i1].pos0.x, atrajseg[i1].pos0.z);
+            atrajseg[i1].pos0.add(endPos_wagon.x, endPos_wagon.y, 0.0D);
+            atrajseg[i1].v0.set(vector2d.x * atrajseg[i1].v0.x, vector2d.y * atrajseg[i1].v0.x, atrajseg[i1].v0.z);
+            atrajseg[i1].a.set(vector2d.x * atrajseg[i1].a.x, vector2d.y * atrajseg[i1].a.x, atrajseg[i1].a.z);
         }
 
-        RocketryGeneric.access$102(RocketryGeneric.this, 0.0F);
-        RocketryGeneric.access$002(RocketryGeneric.this, Time.current() + 1000L * RocketryGeneric.this.launchIntervalS / 2L);
-        RocketryGeneric.this.setMesh(RocketryGeneric.this.meshNames.ramp);
-        RocketryGeneric.this.setDiedFlag(false);
-        RocketryGeneric.this.sendRespawn_Master();
-        return true;
-      }
-
-      if (RocketryGeneric.this.isNetMaster()) {
-        RocketryGeneric.this.prepareLaunch_Master(RocketryGeneric.this.launchIntervalS / 2);
-      }
-      else {
-        RocketryGeneric.access$002(RocketryGeneric.this, Time.current() + 99999L);
-      }
-      return true;
+        return atrajseg;
     }
-  }
 
-  public static class RocketInGame
-  {
-    public int idR;
-    public float timeAfterStartS;
-    public int randseed;
-  }
-
-  public static class TrajSeg
-  {
-    public double t0;
-    public double t;
-    public Point3d pos0 = new Point3d();
-    public Vector3d v0 = new Vector3d();
-    public Vector3d a = new Vector3d();
-  }
-
-  public static class RocketryProperties
-  {
-    public String name = null;
-
-    public RocketryGeneric.MeshesNames summerNames = new RocketryGeneric.MeshesNames();
-    public RocketryGeneric.MeshesNames desertNames = new RocketryGeneric.MeshesNames();
-    public RocketryGeneric.MeshesNames winterNames = new RocketryGeneric.MeshesNames();
-
-    public String soundName = null;
-
-    public boolean air = false;
-
-    public float MASS_FULL = 200.0F;
-    public float MASS_TNT = 100.0F;
-    public float EXPLOSION_RADIUS = 500.0F;
-
-    public float TAKEOFF_SPEED = 1.0F;
-    public float MAX_SPEED = 1.0F;
-    public float SPEEDUP_TIME = 1.0F;
-    public float FLY_HEIGHT = 1.0F;
-    public float HIT_ANGLE = 30.0F;
-
-    public float MAX_ERR_HEIGHT = 0.0F;
-    public float MAX_ERR_HIT_DISTANCE = 0.0F;
-
-    public StrengthProperties stre = new StrengthProperties();
-
-    public float DMG_WARHEAD_MM = 0.0F;
-    public float DMG_WARHEAD_PROB = 0.0F;
-
-    public float DMG_FUEL_MM = 0.0F;
-    public float DMG_FUEL_PROB = 0.0F;
-
-    public float DMG_ENGINE_MM = 0.0F;
-    public float DMG_ENGINE_PROB = 0.0F;
-
-    public float DMG_WING_MM = 0.0F;
-    public float DMG_WING_PROB = 0.0F;
-
-    public float DMG_WARHEAD_TNT = 0.0F;
-    public float DMG_WING_TNT = 0.0F;
-  }
-
-  public static class MeshesNames
-  {
-    public String ramp;
-    public String ramp_d;
-    public String wagon;
-    public String rocket;
-
-    public void setNull()
+    private com.maddox.il2.objects.vehicles.artillery.TrajSeg[] _computeAirTrajectory_(int i)
     {
-      this.ramp = null;
-      this.ramp_d = null;
-      this.wagon = null;
-      this.rocket = null;
+        rndSeed.setSeed(i);
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        point3d.set(targetPos);
+        double d = rndSeed.nextFloat(0.0F, 359.99F);
+        float f = rndSeed.nextFloat(0.0F, prop.MAX_ERR_HIT_DISTANCE);
+        point3d.add(com.maddox.JGP.Geom.cosDeg(d) * f, com.maddox.JGP.Geom.sinDeg(d) * f, 0.0D);
+        d = prop.FLY_HEIGHT + rndSeed.nextFloat(-prop.MAX_ERR_HEIGHT, prop.MAX_ERR_HEIGHT);
+        com.maddox.JGP.Point3d point3d1 = new Point3d();
+        point3d1.set(pos.getAbsPoint());
+        point3d1.z = d;
+        java.lang.Object obj = new Point2d(point3d.x, point3d.y);
+        com.maddox.JGP.Point2d point2d = new Point2d(point3d1.x, point3d1.y);
+        double d1 = ((com.maddox.JGP.Point2d) (obj)).distance(point2d);
+        obj = new Vector2d();
+        ((com.maddox.JGP.Vector2d) (obj)).set(point3d.x - point3d1.x, point3d.y - point3d1.y);
+        ((com.maddox.JGP.Vector2d) (obj)).normalize();
+        float f1 = prop.MAX_SPEED;
+        com.maddox.il2.objects.vehicles.artillery.TrajSeg atrajseg[] = new com.maddox.il2.objects.vehicles.artillery.TrajSeg[3];
+        for(int j = 0; j < atrajseg.length; j++)
+            atrajseg[j] = new TrajSeg();
+
+        atrajseg[0].v0.set(f1, 0.0D, 0.0D);
+        atrajseg[1].v0.set(f1, 0.0D, 0.0D);
+        atrajseg[2].v0.set(f1 * com.maddox.JGP.Geom.cosDeg(prop.HIT_ANGLE), 0.0D, -f1 * com.maddox.JGP.Geom.sinDeg(prop.HIT_ANGLE));
+        atrajseg[0].pos0.set(0.0D, 0.0D, d);
+        atrajseg[2].pos0.set(d1, 0.0D, point3d.z);
+        atrajseg[1].t = (2D * (atrajseg[2].pos0.z - d)) / (atrajseg[1].v0.z + atrajseg[2].v0.z);
+        atrajseg[1].pos0.set(atrajseg[2].pos0.x - 0.5D * (atrajseg[1].v0.x + atrajseg[2].v0.x) * atrajseg[1].t, 0.0D, d);
+        atrajseg[2].t = 100D;
+        atrajseg[0].t = (2D * (atrajseg[1].pos0.x - atrajseg[0].pos0.x)) / (atrajseg[0].v0.x + atrajseg[1].v0.x);
+        for(int k = 0; k <= 2; k++)
+            if(atrajseg[k].t <= 0.0D)
+                return null;
+
+        atrajseg[0].a.set(0.0D, 0.0D, 0.0D);
+        for(int l = 1; l <= 1; l++)
+        {
+            atrajseg[l].a.sub(atrajseg[l + 1].v0, atrajseg[l].v0);
+            atrajseg[l].a.scale(1.0D / atrajseg[l].t);
+        }
+
+        atrajseg[2].a.set(0.0D, 0.0D, 0.0D);
+        atrajseg[0].t0 = 0.0D;
+        for(int i1 = 1; i1 <= 2; i1++)
+            atrajseg[i1].t0 = atrajseg[i1 - 1].t0 + atrajseg[i1 - 1].t;
+
+        for(int j1 = 0; j1 <= 2; j1++)
+        {
+            atrajseg[j1].pos0.set(((com.maddox.JGP.Vector2d) (obj)).x * atrajseg[j1].pos0.x, ((com.maddox.JGP.Vector2d) (obj)).y * atrajseg[j1].pos0.x, atrajseg[j1].pos0.z);
+            atrajseg[j1].pos0.add(point3d1.x, point3d1.y, 0.0D);
+            atrajseg[j1].v0.set(((com.maddox.JGP.Vector2d) (obj)).x * atrajseg[j1].v0.x, ((com.maddox.JGP.Vector2d) (obj)).y * atrajseg[j1].v0.x, atrajseg[j1].v0.z);
+            atrajseg[j1].a.set(((com.maddox.JGP.Vector2d) (obj)).x * atrajseg[j1].a.x, ((com.maddox.JGP.Vector2d) (obj)).y * atrajseg[j1].a.x, atrajseg[j1].a.z);
+        }
+
+        return atrajseg;
     }
-  }
+
+    private com.maddox.il2.objects.vehicles.artillery.TrajSeg[] _computeRampTrajectory_(int i, boolean flag)
+    {
+        rndSeed.setSeed(i);
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        point3d.set(targetPos);
+        double d = rndSeed.nextFloat(0.0F, 359.99F);
+        float f = rndSeed.nextFloat(0.0F, prop.MAX_ERR_HIT_DISTANCE);
+        point3d.add(com.maddox.JGP.Geom.cosDeg(d) * f, com.maddox.JGP.Geom.sinDeg(d) * f, 0.0D);
+        java.lang.Object obj = new Point2d(point3d.x, point3d.y);
+        com.maddox.JGP.Point2d point2d = new Point2d(endPos_rocket.x, endPos_rocket.y);
+        d = ((com.maddox.JGP.Point2d) (obj)).distance(point2d);
+        obj = new Vector2d();
+        ((com.maddox.JGP.Vector2d) (obj)).set(point3d.x - endPos_rocket.x, point3d.y - endPos_rocket.y);
+        ((com.maddox.JGP.Vector2d) (obj)).normalize();
+        float f1 = flag ? 0.5F : 1.0F;
+        double d1 = f1 * prop.FLY_HEIGHT + f1 * rndSeed.nextFloat(-prop.MAX_ERR_HEIGHT, prop.MAX_ERR_HEIGHT);
+        float f2 = flag ? prop.TAKEOFF_SPEED + 1.0F : prop.MAX_SPEED;
+        com.maddox.il2.objects.vehicles.artillery.TrajSeg atrajseg[] = new com.maddox.il2.objects.vehicles.artillery.TrajSeg[6];
+        for(int j = 0; j < atrajseg.length; j++)
+            atrajseg[j] = new TrajSeg();
+
+        com.maddox.JGP.Vector3d vector3d = new Vector3d();
+        vector3d.sub(endPos_rocket, begPos_rocket);
+        double d2 = vector3d.length();
+        vector3d.scale(1.0D / d2);
+        atrajseg[0].v0.set(0.0D, 0.0D, 0.0D);
+        atrajseg[0].pos0.set(begPos_rocket);
+        atrajseg[0].t = (2D * d2) / (0.0D + (double)prop.TAKEOFF_SPEED);
+        atrajseg[0].a.set(vector3d);
+        atrajseg[0].a.scale((double)prop.TAKEOFF_SPEED / atrajseg[0].t);
+        double d3 = vector3d.z * d2;
+        double d4 = java.lang.Math.sqrt(d2 * d2 - d3 * d3);
+        atrajseg[1].v0.set(d4, 0.0D, d3);
+        atrajseg[1].v0.normalize();
+        atrajseg[1].v0.scale(prop.TAKEOFF_SPEED);
+        atrajseg[2].v0.set(prop.TAKEOFF_SPEED, 0.0D, 0.0D);
+        atrajseg[3].v0.set(f2, 0.0D, 0.0D);
+        atrajseg[4].v0.set(f2, 0.0D, 0.0D);
+        atrajseg[5].v0.set(f2 * com.maddox.JGP.Geom.cosDeg(prop.HIT_ANGLE), 0.0D, -f2 * com.maddox.JGP.Geom.sinDeg(prop.HIT_ANGLE));
+        atrajseg[1].pos0.set(0.0D, 0.0D, endPos_rocket.z);
+        atrajseg[1].t = (2D * (d1 - atrajseg[1].pos0.z)) / (atrajseg[1].v0.z + 0.0D);
+        atrajseg[2].pos0.set(atrajseg[1].pos0.x + 0.5D * (atrajseg[1].v0.x + atrajseg[2].v0.x) * atrajseg[1].t, 0.0D, d1);
+        atrajseg[2].t = flag ? 0.5D : prop.SPEEDUP_TIME;
+        atrajseg[3].pos0.set(atrajseg[2].pos0.x + 0.5D * (atrajseg[2].v0.x + atrajseg[3].v0.x) * atrajseg[2].t, 0.0D, d1);
+        atrajseg[5].pos0.set(d, 0.0D, point3d.z);
+        atrajseg[4].t = (2D * (atrajseg[5].pos0.z - d1)) / (atrajseg[4].v0.z + atrajseg[5].v0.z);
+        atrajseg[4].pos0.set(atrajseg[5].pos0.x - 0.5D * (atrajseg[4].v0.x + atrajseg[5].v0.x) * atrajseg[4].t, 0.0D, d1);
+        atrajseg[5].t = 100D;
+        atrajseg[3].t = (2D * (atrajseg[4].pos0.x - atrajseg[3].pos0.x)) / (atrajseg[3].v0.x + atrajseg[4].v0.x);
+        for(int k = 0; k <= 5; k++)
+            if(atrajseg[k].t <= 0.0D)
+                return null;
+
+        for(int l = 1; l <= 4; l++)
+        {
+            atrajseg[l].a.sub(atrajseg[l + 1].v0, atrajseg[l].v0);
+            atrajseg[l].a.scale(1.0D / atrajseg[l].t);
+        }
+
+        atrajseg[5].a.set(0.0D, 0.0D, 0.0D);
+        atrajseg[0].t0 = 0.0D;
+        for(int i1 = 1; i1 <= 5; i1++)
+            atrajseg[i1].t0 = atrajseg[i1 - 1].t0 + atrajseg[i1 - 1].t;
+
+        for(int j1 = 1; j1 <= 5; j1++)
+        {
+            atrajseg[j1].pos0.set(((com.maddox.JGP.Vector2d) (obj)).x * atrajseg[j1].pos0.x, ((com.maddox.JGP.Vector2d) (obj)).y * atrajseg[j1].pos0.x, atrajseg[j1].pos0.z);
+            atrajseg[j1].pos0.add(endPos_rocket.x, endPos_rocket.y, 0.0D);
+            atrajseg[j1].v0.set(((com.maddox.JGP.Vector2d) (obj)).x * atrajseg[j1].v0.x, ((com.maddox.JGP.Vector2d) (obj)).y * atrajseg[j1].v0.x, atrajseg[j1].v0.z);
+            atrajseg[j1].a.set(((com.maddox.JGP.Vector2d) (obj)).x * atrajseg[j1].a.x, ((com.maddox.JGP.Vector2d) (obj)).y * atrajseg[j1].a.x, atrajseg[j1].a.z);
+        }
+
+        return atrajseg;
+    }
+
+    private com.maddox.il2.objects.vehicles.artillery.TrajSeg[] computeNormalTrajectory(int i)
+    {
+        com.maddox.il2.objects.vehicles.artillery.TrajSeg atrajseg[] = null;
+        if(prop.air)
+        {
+            atrajseg = _computeAirTrajectory_(i);
+        } else
+        {
+            atrajseg = _computeRampTrajectory_(i, false);
+            if(atrajseg == null)
+                atrajseg = _computeRampTrajectory_(i, true);
+        }
+        return atrajseg;
+    }
+
+    private RocketryGeneric(com.maddox.il2.objects.vehicles.artillery.RocketryProperties rocketryproperties, com.maddox.il2.objects.vehicles.artillery.MeshesNames meshesnames, java.lang.String s, int i, com.maddox.rts.NetChannel netchannel, int j, double d, double d1, float f, com.maddox.JGP.Point2d point2d, float f1, float f2, 
+            int k)
+    {
+        super(meshesnames.ramp);
+        prop = null;
+        meshNames = null;
+        targetPos = null;
+        begPos_wagon = new Point3d();
+        endPos_wagon = new Point3d();
+        begPos_rocket = new Point3d();
+        endPos_rocket = new Point3d();
+        launchIntervalS = 0;
+        rs = new ArrayList();
+        damage = 0.0F;
+        actionTimeMS = 0L;
+        prop = rocketryproperties;
+        meshNames = meshesnames;
+        countRockets = k;
+        if(countRockets == 0 || point2d == null)
+        {
+            countRockets = 0;
+            point2d = null;
+            targetPos = null;
+        } else
+        {
+            targetPos = new Point3d();
+            targetPos.set(point2d.x, point2d.y, com.maddox.il2.engine.Engine.land().HQ(point2d.x, point2d.y));
+        }
+        setName(s);
+        setArmy(i);
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        if(prop.air)
+        {
+            point3d.set(d, d1, prop.FLY_HEIGHT);
+        } else
+        {
+            point3d.set(d, d1, com.maddox.il2.engine.Engine.land().HQ(d, d1));
+            com.maddox.JGP.Point3d point3d1 = new Point3d();
+            com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getHookOffset(mesh(), "Ground_Level", false, point3d1);
+            point3d.z -= point3d1.z;
+        }
+        com.maddox.il2.engine.Orient orient = new Orient();
+        if(targetPos == null)
+        {
+            orient.set(f, 0.0F, 0.0F);
+        } else
+        {
+            com.maddox.JGP.Vector3d vector3d = new Vector3d();
+            vector3d.sub(targetPos, point3d);
+            vector3d.z = 0.0D;
+            orient.setAT0(vector3d);
+        }
+        pos.setAbs(point3d, orient);
+        pos.reset();
+        if(prop.air)
+        {
+            collide(false);
+            drawing(false);
+        } else
+        {
+            collide(true);
+            drawing(true);
+        }
+        if(prop.air)
+        {
+            begPos_wagon = null;
+            endPos_wagon = null;
+            begPos_rocket = null;
+            endPos_rocket = null;
+        } else
+        {
+            com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getHookOffset(mesh(), "_begWagon", true, begPos_wagon);
+            pos.getAbs().transform(begPos_wagon);
+            com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getHookOffset(mesh(), "_endWagon", true, endPos_wagon);
+            pos.getAbs().transform(endPos_wagon);
+            com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getHookOffset(mesh(), "_begRocket", true, begPos_rocket);
+            pos.getAbs().transform(begPos_rocket);
+            com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getHookOffset(mesh(), "_endRocket", true, endPos_rocket);
+            pos.getAbs().transform(endPos_rocket);
+        }
+        int l = (int)(f1 * 60F + 0.5F);
+        if(l < 0)
+            l = 0;
+        if(l > 14400)
+            l = 14400;
+        launchIntervalS = (int)(f2 * 60F + 0.5F);
+        if(launchIntervalS < 180)
+            launchIntervalS = 180;
+        if(launchIntervalS > 14400)
+            launchIntervalS = 14400;
+        damage = 0.0F;
+        actionTimeMS = 0x7fffffffffffffffL;
+        createNetObject(netchannel, j);
+        if(targetPos != null)
+            if(isNetMaster())
+            {
+                long l1 = 1000L * (long)l - (1000L * (long)launchIntervalS) / 2L;
+                if(l1 <= 0L)
+                    prepareLaunch_Master(l);
+                else
+                    actionTimeMS = com.maddox.rts.Time.current() + l1;
+            } else
+            {
+                actionTimeMS = 0x7fffffffffffffffL;
+            }
+        if(!interpEnd("move"))
+            interpPut(new Move(), "move", com.maddox.rts.Time.current(), null);
+    }
+
+    public int HitbyMask()
+    {
+        return -2;
+    }
+
+    public int chooseBulletType(com.maddox.il2.engine.BulletProperties abulletproperties[])
+    {
+        if(Corpse())
+            return -1;
+        if(abulletproperties.length == 1)
+            return 0;
+        if(abulletproperties.length <= 0)
+            return -1;
+        if(abulletproperties[0].power <= 0.0F)
+            return 0;
+        if(abulletproperties[1].power <= 0.0F)
+            return 1;
+        if(abulletproperties[0].cumulativePower > 0.0F)
+            return 0;
+        if(abulletproperties[1].cumulativePower > 0.0F)
+            return 1;
+        if(abulletproperties[0].powerType == 1)
+            return 0;
+        if(abulletproperties[1].powerType == 1)
+            return 1;
+        return abulletproperties[0].powerType != 0 ? 0 : 1;
+    }
+
+    public int chooseShotpoint(com.maddox.il2.engine.BulletProperties bulletproperties)
+    {
+        return !Corpse() ? 0 : -1;
+    }
+
+    public boolean getShotpointOffset(int i, com.maddox.JGP.Point3d point3d)
+    {
+        if(Corpse())
+            return false;
+        if(i != 0)
+            return false;
+        if(point3d != null)
+            point3d.set(0.0D, 0.0D, 0.0D);
+        return true;
+    }
+
+    private com.maddox.il2.objects.vehicles.artillery.RocketryRocket findMyRocket(int i)
+    {
+        for(int j = 0; j < rs.size(); j++)
+            if(((com.maddox.il2.objects.vehicles.artillery.RocketryRocket)rs.get(j)).idR == i)
+                return (com.maddox.il2.objects.vehicles.artillery.RocketryRocket)rs.get(j);
+
+        return null;
+    }
+
+    void forgetRocket(com.maddox.il2.objects.vehicles.artillery.RocketryRocket rocketryrocket)
+    {
+        for(int i = 0; i < rs.size(); i++)
+            if((com.maddox.il2.objects.vehicles.artillery.RocketryRocket)rs.get(i) == rocketryrocket)
+            {
+                rs.remove(i);
+                return;
+            }
+
+    }
+
+    private void killWrongRockets(int i)
+    {
+        for(int j = 0; j < rs.size(); j++)
+        {
+            int k = ((com.maddox.il2.objects.vehicles.artillery.RocketryRocket)rs.get(j)).idR;
+            byte byte0 = (byte)(k - i);
+            if(byte0 >= 0 && byte0 <= 20)
+            {
+                ((com.maddox.il2.objects.vehicles.artillery.RocketryRocket)rs.get(j)).silentDeath();
+                rs.remove(j);
+                j--;
+            }
+        }
+
+    }
+
+    private void sendRampDamage_Mirror(float f, com.maddox.il2.engine.Actor actor)
+    {
+        if(!isNetMirror())
+            return;
+        if(net.masterChannel() instanceof com.maddox.rts.NetChannelInStream)
+            return;
+        int i = (int)(f * 65000F);
+        if(i <= 0)
+            return;
+        if(i > 65000)
+            i = 65000;
+        try
+        {
+            com.maddox.rts.NetMsgFiltered netmsgfiltered = new NetMsgFiltered();
+            netmsgfiltered.writeByte(45);
+            netmsgfiltered.writeShort(i);
+            netmsgfiltered.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            netmsgfiltered.setIncludeTime(false);
+            net.postTo(com.maddox.rts.Time.current(), net.masterChannel(), netmsgfiltered);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void sendRespawn_Master()
+    {
+        if(!net.isMirrored())
+            return;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(83);
+            netmsgguaranted.writeByte(nextFreeIdR);
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void prepareLaunch_Master(int i)
+    {
+        if(countRockets <= 0)
+        {
+            countRockets = 0;
+            actionTimeMS = 0x7fffffffffffffffL;
+            return;
+        }
+        long l = com.maddox.rts.Time.current();
+        int j = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.RndI(0, 65535);
+        int k = nextFreeIdR;
+        nextFreeIdR = nextFreeIdR + 1 & 0xff;
+        long l1 = l + 1000L * (long)i;
+        actionTimeMS = l1 + (1000L * (long)launchIntervalS) / 2L;
+        killWrongRockets(k);
+        com.maddox.il2.objects.vehicles.artillery.TrajSeg atrajseg[] = computeNormalTrajectory(j);
+        if(atrajseg == null)
+            return;
+        com.maddox.il2.objects.vehicles.artillery.RocketryRocket rocketryrocket = new RocketryRocket(this, meshNames.rocket, k, j, l1, l, atrajseg);
+        if(rocketryrocket.isDamaged())
+        {
+            rocketryrocket.silentDeath();
+            return;
+        }
+        com.maddox.il2.game.Main.cur().mission.getClass();
+        java.lang.Object obj = new ZutiPadObject(rocketryrocket, com.maddox.il2.game.Main.cur().mission.zutiRadar_RefreshInterval > 0);
+        obj.type = 3;
+        com.maddox.il2.gui.GUI.pad.zutiPadObjects.put(new Integer(((com.maddox.il2.game.ZutiPadObject) (obj)).hashCode()), obj);
+        rs.add(rocketryrocket);
+        if(countRockets < 1000)
+            countRockets--;
+        if(!net.isMirrored())
+            return;
+        obj = new NetMsgGuaranted();
+        try
+        {
+            ((com.maddox.rts.NetMsgGuaranted) (obj)).writeByte(80);
+            ((com.maddox.rts.NetMsgGuaranted) (obj)).writeShort(i);
+            ((com.maddox.rts.NetMsgGuaranted) (obj)).writeByte(k);
+            ((com.maddox.rts.NetMsgGuaranted) (obj)).writeShort(j);
+            net.post(((com.maddox.rts.NetMsgGuaranted) (obj)));
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void handleInitCommand_Mirror(boolean flag, int i, com.maddox.il2.objects.vehicles.artillery.RocketInGame arocketingame[])
+    {
+        for(int j = 0; j < rs.size(); j++)
+            ((com.maddox.il2.objects.vehicles.artillery.RocketryRocket)rs.get(j)).silentDeath();
+
+        rs.clear();
+        damage = flag ? 0.0F : 1.0F;
+        setMesh(flag ? meshNames.ramp : meshNames.ramp_d);
+        if(targetPos == null)
+            return;
+        long l = com.maddox.rts.Time.current();
+        for(int k = 0; k < arocketingame.length; k++)
+        {
+            com.maddox.il2.objects.vehicles.artillery.TrajSeg atrajseg[] = computeNormalTrajectory(arocketingame[k].randseed);
+            if(atrajseg == null)
+                continue;
+            com.maddox.il2.objects.vehicles.artillery.RocketryRocket rocketryrocket = new RocketryRocket(this, meshNames.rocket, arocketingame[k].idR, arocketingame[k].randseed, l - (long)(1000D * (double)arocketingame[k].timeAfterStartS), l, atrajseg);
+            if(rocketryrocket.isDamaged())
+            {
+                rocketryrocket.silentDeath();
+            } else
+            {
+                com.maddox.il2.game.Main.cur().mission.getClass();
+                com.maddox.il2.game.ZutiPadObject zutipadobject = new ZutiPadObject(rocketryrocket, com.maddox.il2.game.Main.cur().mission.zutiRadar_RefreshInterval > 0);
+                zutipadobject.type = 3;
+                com.maddox.il2.gui.GUI.pad.zutiPadObjects.put(new Integer(zutipadobject.hashCode()), zutipadobject);
+                rs.add(rocketryrocket);
+            }
+        }
+
+    }
+
+    private void handleRespawnCommand_Mirror(int i)
+    {
+        killWrongRockets(i);
+        actionTimeMS = com.maddox.rts.Time.current() + 0x1869fL;
+        if(damage >= 1.0F)
+        {
+            damage = 0.0F;
+            setMesh(meshNames.ramp);
+            setDiedFlag(false);
+        } else
+        {
+            damage = 0.0F;
+        }
+    }
+
+    private void handlePrepareLaunchCommand_Mirror(int i, int j, int k)
+    {
+        killWrongRockets(j);
+        if(targetPos == null)
+            return;
+        long l = com.maddox.rts.Time.current();
+        com.maddox.il2.objects.vehicles.artillery.TrajSeg atrajseg[] = computeNormalTrajectory(k);
+        if(atrajseg == null)
+            return;
+        com.maddox.il2.objects.vehicles.artillery.RocketryRocket rocketryrocket = new RocketryRocket(this, meshNames.rocket, j, k, l + (long)(i * 1000), l, atrajseg);
+        if(rocketryrocket.isDamaged())
+            rocketryrocket.silentDeath();
+        else
+            rs.add(rocketryrocket);
+    }
+
+    private void handleSyncLaunchCommand_Mirror(long l, int i)
+    {
+        killWrongRockets(i + 1 & 0xff);
+        if(targetPos == null)
+            return;
+        com.maddox.il2.objects.vehicles.artillery.RocketryRocket rocketryrocket = findMyRocket(i);
+        if(rocketryrocket != null)
+            rocketryrocket.changeLaunchTimeIfCan(l);
+    }
+
+    public void sendRocketStateChange(com.maddox.il2.objects.vehicles.artillery.RocketryRocket rocketryrocket, char c, com.maddox.il2.engine.Actor actor)
+    {
+        boolean flag = isNetMaster();
+        int i = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.RndI(0, 65535);
+        if(flag)
+        {
+            handleRocketCommand_Both(c, rocketryrocket.idR, i, actor, true);
+            return;
+        }
+        if(!isNetMirror())
+            return;
+        if(net.masterChannel() instanceof com.maddox.rts.NetChannelInStream)
+            return;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(java.lang.Character.toLowerCase(c));
+            netmsgguaranted.writeByte(rocketryrocket.idR);
+            netmsgguaranted.writeShort(i);
+            netmsgguaranted.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            net.postTo(net.masterChannel(), netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void handleRocketCommand_Both(char c, int i, int j, com.maddox.il2.engine.Actor actor, boolean flag)
+    {
+        if(targetPos == null)
+            return;
+        com.maddox.il2.objects.vehicles.artillery.RocketryRocket rocketryrocket = findMyRocket(i);
+        if(rocketryrocket == null)
+            return;
+        c = rocketryrocket.handleCommand(c, j, actor);
+        if(c == 0 || !flag || !net.isMirrored())
+            return;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(java.lang.Character.toUpperCase(c));
+            netmsgguaranted.writeByte(i);
+            netmsgguaranted.writeShort(j);
+            netmsgguaranted.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void handleDamageRamp_Both(float f, com.maddox.il2.engine.Actor actor, boolean flag)
+    {
+        if(prop.air)
+            return;
+        if(f <= 0.0F)
+            return;
+        if(damage >= 1.0F)
+            return;
+        damage += f;
+        if(damage >= 1.0F)
+            damage = 1.0F;
+        else
+            return;
+        com.maddox.il2.ai.World.onActorDied(this, actor);
+        setMesh(meshNames.ramp_d);
+        actionTimeMS = com.maddox.rts.Time.current();
+        if(com.maddox.il2.game.Mission.isDeathmatch())
+            actionTimeMS += com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.SecsToTicks(com.maddox.il2.game.Mission.respawnTime("Artillery") * com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.RndF(1.0F, 1.2F));
+        for(int i = 0; i < rs.size(); i++)
+        {
+            com.maddox.il2.objects.vehicles.artillery.RocketryRocket rocketryrocket = (com.maddox.il2.objects.vehicles.artillery.RocketryRocket)rs.get(i);
+            int j = rocketryrocket.idR;
+            if(rocketryrocket.isOnRamp())
+            {
+                handleRocketCommand_Both('X', j, com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.RndI(0, 65535), actor, flag);
+                i = 0;
+            }
+        }
+
+        com.maddox.il2.objects.effects.Explosions.ExplodeBridge(begPos_wagon, endPos_wagon, 1.2F);
+        if(!flag || !net.isMirrored())
+            return;
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        try
+        {
+            netmsgguaranted.writeByte(68);
+            netmsgguaranted.writeByte(nextFreeIdR);
+            netmsgguaranted.writeShort(com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.RndI(0, 65535));
+            netmsgguaranted.writeNetObj(actor != null ? ((com.maddox.rts.NetObj) (actor.net)) : null);
+            net.post(netmsgguaranted);
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void createNetObject(com.maddox.rts.NetChannel netchannel, int i)
+    {
+        if(netchannel == null)
+            net = new Master(this);
+        else
+            net = new Mirror(this, netchannel, i);
+    }
+
+    public void netFirstUpdate(com.maddox.rts.NetChannel netchannel)
+        throws java.io.IOException
+    {
+        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+        netmsgguaranted.writeByte(73);
+        netmsgguaranted.writeByte(damage < 1.0F ? 1 : 0);
+        netmsgguaranted.writeByte(nextFreeIdR);
+        int i = 0;
+        for(int j = 0; j < rs.size(); j++)
+        {
+            com.maddox.il2.objects.vehicles.artillery.RocketryRocket rocketryrocket = (com.maddox.il2.objects.vehicles.artillery.RocketryRocket)rs.get(j);
+            if(!rocketryrocket.isDamaged())
+                i++;
+        }
+
+        if(i > 10)
+            i = 10;
+        netmsgguaranted.writeByte(i);
+        for(int k = rs.size() - 1; k >= 0; k--)
+        {
+            com.maddox.il2.objects.vehicles.artillery.RocketryRocket rocketryrocket1 = (com.maddox.il2.objects.vehicles.artillery.RocketryRocket)rs.get(k);
+            if(rocketryrocket1.isDamaged())
+                continue;
+            netmsgguaranted.writeByte(rocketryrocket1.idR);
+            float f = (float)((double)(com.maddox.rts.Time.current() - rocketryrocket1.timeOfStartMS) * 0.001D);
+            netmsgguaranted.writeFloat(f);
+            netmsgguaranted.writeShort(rocketryrocket1.randseed);
+            if(--i <= 0)
+                break;
+        }
+
+        net.postTo(netchannel, netmsgguaranted);
+    }
+
+    public static com.maddox.il2.objects.vehicles.artillery.RocketryGeneric New(java.lang.String s, java.lang.String s1, com.maddox.rts.NetChannel netchannel, int i, int j, double d, double d1, float f, float f1, int k, float f2, com.maddox.JGP.Point2d point2d)
+    {
+        com.maddox.il2.objects.vehicles.artillery.RocketryProperties rocketryproperties = (com.maddox.il2.objects.vehicles.artillery.RocketryProperties)rocketryMap.get(s1);
+        if(rocketryproperties == null)
+        {
+            java.lang.System.out.println("***** Rocketry: Unknown type [" + s1 + "]");
+            return null;
+        }
+        com.maddox.il2.objects.vehicles.artillery.MeshesNames meshesnames = null;
+        switch(com.maddox.il2.ai.World.cur().camouflage)
+        {
+        case 1: // '\001'
+            meshesnames = rocketryproperties.winterNames;
+            break;
+
+        case 2: // '\002'
+            meshesnames = rocketryproperties.desertNames;
+            break;
+
+        default:
+            meshesnames = rocketryproperties.summerNames;
+            break;
+        }
+        return new RocketryGeneric(rocketryproperties, meshesnames, s, j, netchannel, i, d, d1, f, point2d, f1, f2, k);
+    }
+
+    public static final float KmHourToMSec(float f)
+    {
+        return f / 3.6F;
+    }
+
+    private static float getF(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, float f, float f1)
+    {
+        float f2 = sectfile.get(s, s1, -9865.345F);
+        if(f2 == -9865.345F || f2 < f || f2 > f1)
+        {
+            if(f2 == -9865.345F)
+                java.lang.System.out.println("Rocketry: Parameter [" + s + "]:<" + s1 + "> " + "not found");
+            else
+                java.lang.System.out.println("Rocketry: Value of [" + s + "]:<" + s1 + "> (" + f2 + ")" + " is out of range (" + f + ";" + f1 + ")");
+            throw new RuntimeException("Can't set property");
+        } else
+        {
+            return f2;
+        }
+    }
+
+    private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1)
+    {
+        java.lang.String s2 = sectfile.get(s, s1);
+        if(s2 == null || s2.length() <= 0)
+        {
+            java.lang.System.out.print("Rocketry: Parameter [" + s + "]:<" + s1 + "> ");
+            java.lang.System.out.println(s2 != null ? "is empty" : "not found");
+            throw new RuntimeException("Can't set property");
+        } else
+        {
+            return s2;
+        }
+    }
+
+    private static java.lang.String getS(com.maddox.rts.SectFile sectfile, java.lang.String s, java.lang.String s1, java.lang.String s2)
+    {
+        java.lang.String s3 = sectfile.get(s, s1);
+        if(s3 == null || s3.length() <= 0)
+            return s2;
+        else
+            return s3;
+    }
+
+    public static void PreLoad(java.lang.String s)
+    {
+        com.maddox.rts.Property.set(com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.class, "iconName", "icons/objV1.mat");
+        rocketryMap = new HashMap();
+        com.maddox.rts.SectFile sectfile = new SectFile(s, 0);
+        int i = sectfile.sections();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.objects.vehicles.artillery.RocketryProperties rocketryproperties = new RocketryProperties();
+            rocketryproperties.name = sectfile.sectionName(j);
+            rocketryproperties.summerNames.setNull();
+            rocketryproperties.desertNames.setNull();
+            rocketryproperties.winterNames.setNull();
+            rocketryproperties.summerNames.ramp = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "MeshSummer_ramp", "");
+            if(rocketryproperties.summerNames.ramp == "")
+            {
+                rocketryproperties.air = true;
+                rocketryproperties.summerNames.ramp = "3do/primitive/coord/mono.sim";
+                rocketryproperties.summerNames.ramp_d = rocketryproperties.summerNames.ramp;
+                rocketryproperties.desertNames = rocketryproperties.summerNames;
+                rocketryproperties.winterNames = rocketryproperties.summerNames;
+            } else
+            {
+                rocketryproperties.air = false;
+                rocketryproperties.desertNames.ramp = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "MeshDesert_ramp", rocketryproperties.summerNames.ramp);
+                rocketryproperties.winterNames.ramp = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "MeshWinter_ramp", rocketryproperties.summerNames.ramp);
+                rocketryproperties.summerNames.ramp_d = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "MeshSummerDamage_ramp");
+                rocketryproperties.desertNames.ramp_d = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "MeshDesertDamage_ramp", rocketryproperties.summerNames.ramp_d);
+                rocketryproperties.winterNames.ramp_d = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "MeshWinterDamage_ramp", rocketryproperties.summerNames.ramp_d);
+                rocketryproperties.summerNames.wagon = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "MeshSummer_wagon");
+                rocketryproperties.desertNames.wagon = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "MeshDesert_wagon", rocketryproperties.summerNames.wagon);
+                rocketryproperties.winterNames.wagon = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "MeshWinter_wagon", rocketryproperties.summerNames.wagon);
+            }
+            rocketryproperties.summerNames.rocket = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "MeshSummer_rocket");
+            rocketryproperties.desertNames.rocket = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "MeshDesert_rocket", rocketryproperties.summerNames.rocket);
+            rocketryproperties.winterNames.rocket = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "MeshWinter_rocket", rocketryproperties.summerNames.rocket);
+            rocketryproperties.soundName = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getS(sectfile, rocketryproperties.name, "SoundMove");
+            rocketryproperties.MASS_FULL = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "MassFull", 0.5F, 100000F);
+            rocketryproperties.MASS_TNT = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "MassTNT", 0.0F, 1E+007F);
+            rocketryproperties.EXPLOSION_RADIUS = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "ExplosionRadius", 0.01F, 100000F);
+            if(!rocketryproperties.air)
+            {
+                rocketryproperties.TAKEOFF_SPEED = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "TakeoffSpeed", 1.0F, 3000F);
+                rocketryproperties.TAKEOFF_SPEED = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.KmHourToMSec(rocketryproperties.TAKEOFF_SPEED);
+            }
+            rocketryproperties.MAX_SPEED = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "MaxSpeed", rocketryproperties.TAKEOFF_SPEED, 3000F);
+            rocketryproperties.MAX_SPEED = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.KmHourToMSec(rocketryproperties.MAX_SPEED);
+            if(!rocketryproperties.air)
+                rocketryproperties.SPEEDUP_TIME = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "SpeedupTime", 1.0F, 10000F);
+            rocketryproperties.FLY_HEIGHT = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "FlyHeight", 100F, 15000F);
+            rocketryproperties.HIT_ANGLE = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "HitAngle", 5F, 89F);
+            rocketryproperties.MAX_ERR_HEIGHT = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "MaxErrHeight", 0.0F, 2000F);
+            rocketryproperties.MAX_ERR_HIT_DISTANCE = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "MaxErrHitDistance", 0.0F, 10000F);
+            if(!rocketryproperties.air && !rocketryproperties.stre.read("Rocketry", sectfile, null, rocketryproperties.name))
+                throw new RuntimeException("Can't register Rocketry data");
+            rocketryproperties.DMG_WARHEAD_MM = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "DmgWarhead_mm", 0.0F, 2000F);
+            rocketryproperties.DMG_WARHEAD_PROB = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "DmgWarhead_prob", 0.0F, 1.0F);
+            rocketryproperties.DMG_FUEL_MM = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "DmgFuel_mm", 0.0F, 2000F);
+            rocketryproperties.DMG_FUEL_PROB = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "DmgFuel_prob", 0.0F, 1.0F);
+            rocketryproperties.DMG_ENGINE_MM = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "DmgEngine_mm", 0.0F, 2000F);
+            rocketryproperties.DMG_ENGINE_PROB = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "DmgEngine_prob", 0.0F, 1.0F);
+            rocketryproperties.DMG_WING_MM = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "DmgWing_mm", 0.0F, 2000F);
+            rocketryproperties.DMG_WING_PROB = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "DmgWing_prob", 0.0F, 1.0F);
+            rocketryproperties.DMG_WARHEAD_TNT = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "DmgWarhead_tnt", 0.0F, 1000000F);
+            rocketryproperties.DMG_WING_TNT = com.maddox.il2.objects.vehicles.artillery.RocketryGeneric.getF(sectfile, rocketryproperties.name, "DmgWing_tnt", 0.0F, 1000000F);
+            rocketryMap.put(rocketryproperties.name, rocketryproperties);
+        }
+
+    }
+
+    private static java.util.HashMap rocketryMap = new HashMap();
+    com.maddox.il2.objects.vehicles.artillery.RocketryProperties prop;
+    com.maddox.il2.objects.vehicles.artillery.MeshesNames meshNames;
+    private com.maddox.JGP.Point3d targetPos;
+    private com.maddox.JGP.Point3d begPos_wagon;
+    private com.maddox.JGP.Point3d endPos_wagon;
+    private com.maddox.JGP.Point3d begPos_rocket;
+    private com.maddox.JGP.Point3d endPos_rocket;
+    private int launchIntervalS;
+    private java.util.ArrayList rs;
+    private int nextFreeIdR;
+    private float damage;
+    private long actionTimeMS;
+    private int countRockets;
+    private static com.maddox.il2.ai.RangeRandom rndSeed = new RangeRandom();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

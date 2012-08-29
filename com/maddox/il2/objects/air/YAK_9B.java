@@ -1,110 +1,158 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   YAK_9B.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.EnginesInterface;
 import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Motor;
 import com.maddox.rts.Property;
 
-public class YAK_9B extends YAK
-  implements TypeBNZFighter, TypeStormovik
+// Referenced classes of package com.maddox.il2.objects.air:
+//            YAK, PaintSchemeFMPar05, TypeBNZFighter, TypeStormovik, 
+//            NetAircraft
+
+public class YAK_9B extends com.maddox.il2.objects.air.YAK
+    implements com.maddox.il2.objects.air.TypeBNZFighter, com.maddox.il2.objects.air.TypeStormovik
 {
-  public static void moveGear(HierMesh paramHierMesh, float paramFloat)
-  {
-    float f = Math.max(-paramFloat * 1500.0F, -80.0F);
-    paramHierMesh.chunkSetAngles("GearC3_D0", 0.0F, f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC4_D0", 0.0F, f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearC2_D0", 0.0F, 80.0F * paramFloat, 0.0F);
 
-    f = Math.max(-paramFloat * 1500.0F, -60.0F);
-    paramHierMesh.chunkSetAngles("GearL4_D0", 0.0F, f, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR4_D0", 0.0F, f, 0.0F);
+    public YAK_9B()
+    {
+    }
 
-    paramHierMesh.chunkSetAngles("GearL2_D0", 0.0F, 82.5F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR2_D0", 0.0F, 82.5F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearL3_D0", 0.0F, -85.0F * paramFloat, 0.0F);
-    paramHierMesh.chunkSetAngles("GearR3_D0", 0.0F, -85.0F * paramFloat, 0.0F);
-  }
-  protected void moveGear(float paramFloat) { moveGear(hierMesh(), paramFloat); }
+    public static void moveGear(com.maddox.il2.engine.HierMesh hiermesh, float f)
+    {
+        float f1 = java.lang.Math.max(-f * 1500F, -80F);
+        hiermesh.chunkSetAngles("GearC3_D0", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("GearC4_D0", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("GearC2_D0", 0.0F, 80F * f, 0.0F);
+        f1 = java.lang.Math.max(-f * 1500F, -60F);
+        hiermesh.chunkSetAngles("GearL4_D0", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("GearR4_D0", 0.0F, f1, 0.0F);
+        hiermesh.chunkSetAngles("GearL2_D0", 0.0F, 82.5F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR2_D0", 0.0F, 82.5F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearL3_D0", 0.0F, -85F * f, 0.0F);
+        hiermesh.chunkSetAngles("GearR3_D0", 0.0F, -85F * f, 0.0F);
+    }
 
-  public void moveSteering(float paramFloat)
-  {
-  }
+    protected void moveGear(float f)
+    {
+        com.maddox.il2.objects.air.YAK_9B.moveGear(hierMesh(), f);
+    }
 
-  protected void moveBayDoor(float paramFloat)
-  {
-    hierMesh().chunkSetAngles("Bay1_D0", 0.0F, -90.0F * paramFloat, 0.0F);
-    hierMesh().chunkSetAngles("Bay2_D0", 0.0F, -90.0F * paramFloat, 0.0F);
-  }
+    public void moveSteering(float f)
+    {
+    }
 
-  public void update(float paramFloat)
-  {
-    hierMesh().chunkSetAngles("Water_luk", 0.0F, 12.0F * this.FM.EI.engines[0].getControlRadiator(), 0.0F);
-    super.update(paramFloat);
+    protected void moveBayDoor(float f)
+    {
+        hierMesh().chunkSetAngles("Bay1_D0", 0.0F, -90F * f, 0.0F);
+        hierMesh().chunkSetAngles("Bay2_D0", 0.0F, -90F * f, 0.0F);
+    }
 
-    int i = 0;
-    if (this.FM.CT.Weapons[3] != null) {
-      for (int j = 0; j < this.FM.CT.Weapons[3].length; j++) {
-        if ((this.FM.CT.Weapons[3][j] != null) && (this.FM.CT.Weapons[3][j].haveBullets())) {
-          i++;
+    public void update(float f)
+    {
+        hierMesh().chunkSetAngles("Water_luk", 0.0F, 12F * FM.EI.engines[0].getControlRadiator(), 0.0F);
+        super.update(f);
+        int i = 0;
+        if(FM.CT.Weapons[3] != null)
+        {
+            for(int j = 0; j < FM.CT.Weapons[3].length; j++)
+                if(FM.CT.Weapons[3][j] != null && FM.CT.Weapons[3][j].haveBullets())
+                    i++;
+
         }
-      }
+        float f1 = 0.14F;
+        switch(i)
+        {
+        case 0: // '\0'
+        default:
+            FM.setGCenter(0.1F);
+            FM.setGC_Gear_Shift(0.0F);
+            break;
+
+        case 1: // '\001'
+            FM.setGCenter(0.1F - f1);
+            FM.setGC_Gear_Shift(0.0F + f1);
+            // fall through
+
+        case 2: // '\002'
+            FM.setGCenter(0.1F - 2.0F * f1);
+            FM.setGC_Gear_Shift(0.0F + 2.0F * f1);
+            break;
+
+        case 3: // '\003'
+            FM.setGCenter(0.1F - 3F * f1);
+            FM.setGC_Gear_Shift(0.0F + 3F * f1);
+            break;
+
+        case 4: // '\004'
+            FM.setGCenter(0.1F - 4F * f1);
+            FM.setGC_Gear_Shift(0.0F + 4F * f1);
+            break;
+        }
     }
-    float f = 0.14F;
-    switch (i) {
-    case 0:
-    default:
-      this.FM.setGCenter(0.1F);
-      this.FM.setGC_Gear_Shift(0.0F);
-      break;
-    case 1:
-      this.FM.setGCenter(0.1F - f);
-      this.FM.setGC_Gear_Shift(0.0F + f);
-    case 2:
-      this.FM.setGCenter(0.1F - 2.0F * f);
-      this.FM.setGC_Gear_Shift(0.0F + 2.0F * f);
-      break;
-    case 3:
-      this.FM.setGCenter(0.1F - 3.0F * f);
-      this.FM.setGC_Gear_Shift(0.0F + 3.0F * f);
-      break;
-    case 4:
-      this.FM.setGCenter(0.1F - 4.0F * f);
-      this.FM.setGC_Gear_Shift(0.0F + 4.0F * f);
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
     }
-  }
 
-  static
-  {
-    Class localClass = YAK_9B.class;
-    new NetAircraft.SPAWN(localClass);
-
-    Property.set(localClass, "iconFar_shortClassName", "Yak");
-    Property.set(localClass, "meshName", "3DO/Plane/Yak-9B(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar05());
-
-    Property.set(localClass, "yearService", 1944.0F);
-    Property.set(localClass, "yearExpired", 1952.8F);
-
-    Property.set(localClass, "FlightModel", "FlightModels/Yak-9B.fmd");
-    Property.set(localClass, "cockpitClass", CockpitYAK_9D.class);
-    Property.set(localClass, "LOSElevation", 0.6432F);
-
-    weaponTriggersRegister(localClass, new int[] { 0, 1, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9, 9, 9 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_CANNON01", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunUBsi 200", "MGunShVAKki 120", null, null, null, null, null, null, null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "2fab100", new String[] { "MGunUBsi 200", "MGunShVAKki 120", null, null, "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "3fab100", new String[] { "MGunUBsi 200", "MGunShVAKki 120", "BombGunFAB100 1", "BombGunNull 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "4fab100", new String[] { "MGunUBsi 200", "MGunShVAKki 120", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, null, null, null, null });
-
-    weaponsRegister(localClass, "2ptab", new String[] { "MGunUBsi 200", "MGunShVAKki 120", null, null, null, null, null, null, "BombGunPTAB25", "BombGunPTAB25", "PylonKMB", "PylonKMB", "PylonKMB", "PylonKMB" });
-
-    weaponsRegister(localClass, "4ptab", new String[] { "MGunUBsi 200", "MGunShVAKki 120", null, null, null, null, "BombGunPTAB25", "BombGunPTAB25", "BombGunPTAB25", "BombGunPTAB25", "PylonKMB", "PylonKMB", "PylonKMB", "PylonKMB" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.YAK_9B.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "Yak");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/Yak-9B(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar05());
+        com.maddox.rts.Property.set(class1, "yearService", 1944F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1952.8F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/Yak-9B.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitYAK_9D.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.6432F);
+        com.maddox.il2.objects.air.YAK_9B.weaponTriggersRegister(class1, new int[] {
+            0, 1, 3, 3, 3, 3, 3, 3, 3, 3, 
+            9, 9, 9, 9
+        });
+        com.maddox.il2.objects.air.YAK_9B.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_CANNON01", "_BombSpawn01", "_BombSpawn02", "_BombSpawn03", "_BombSpawn04", "_BombSpawn05", "_BombSpawn06", "_BombSpawn07", "_BombSpawn08", 
+            "_ExternalDev01", "_ExternalDev02", "_ExternalDev03", "_ExternalDev04"
+        });
+        com.maddox.il2.objects.air.YAK_9B.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunUBsi 200", "MGunShVAKki 120", null, null, null, null, null, null, null, null, 
+            null, null, null, null
+        });
+        com.maddox.il2.objects.air.YAK_9B.weaponsRegister(class1, "2fab100", new java.lang.String[] {
+            "MGunUBsi 200", "MGunShVAKki 120", null, null, "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, 
+            null, null, null, null
+        });
+        com.maddox.il2.objects.air.YAK_9B.weaponsRegister(class1, "3fab100", new java.lang.String[] {
+            "MGunUBsi 200", "MGunShVAKki 120", "BombGunFAB100 1", "BombGunNull 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, 
+            null, null, null, null
+        });
+        com.maddox.il2.objects.air.YAK_9B.weaponsRegister(class1, "4fab100", new java.lang.String[] {
+            "MGunUBsi 200", "MGunShVAKki 120", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", "BombGunFAB100 1", null, null, null, null, 
+            null, null, null, null
+        });
+        com.maddox.il2.objects.air.YAK_9B.weaponsRegister(class1, "2ptab", new java.lang.String[] {
+            "MGunUBsi 200", "MGunShVAKki 120", null, null, null, null, null, null, "BombGunPTAB25", "BombGunPTAB25", 
+            "PylonKMB", "PylonKMB", "PylonKMB", "PylonKMB"
+        });
+        com.maddox.il2.objects.air.YAK_9B.weaponsRegister(class1, "4ptab", new java.lang.String[] {
+            "MGunUBsi 200", "MGunShVAKki 120", null, null, null, null, "BombGunPTAB25", "BombGunPTAB25", "BombGunPTAB25", "BombGunPTAB25", 
+            "PylonKMB", "PylonKMB", "PylonKMB", "PylonKMB"
+        });
+        com.maddox.il2.objects.air.YAK_9B.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null
+        });
+    }
 }

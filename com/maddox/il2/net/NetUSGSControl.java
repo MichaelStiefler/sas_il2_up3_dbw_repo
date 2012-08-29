@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetUSGSControl.java
+
 package com.maddox.il2.net;
 
 import com.maddox.rts.NetControl;
@@ -8,48 +13,56 @@ import com.maddox.rts.NetObj;
 import java.util.List;
 
 public class NetUSGSControl
-  implements NetControlReal
+    implements com.maddox.rts.NetControlReal
 {
-  private NetControl control;
 
-  public void msgNewClient(NetObj paramNetObj, int paramInt1, String paramString, int paramInt2)
-  {
-    this.control.doRequest(paramNetObj, paramInt1, "NM");
-  }
-
-  public void msgAnswer(NetObj paramNetObj, int paramInt, String paramString)
-  {
-    if (paramString.indexOf("NM") >= 0) {
-      int i = paramString.indexOf('"', paramString.indexOf("NM"));
-      int j = paramString.lastIndexOf('"');
-      if ((i >= 0) && (i + 1 < j)) {
-        String str = paramString.substring(i + 1, j);
-        if (str.equals(NetEnv.host().shortName())) {
-          this.control.doNak(paramNetObj, paramInt, "user alredy connected");
-          return;
-        }
-        List localList = NetEnv.hosts();
-        for (int k = 0; k < localList.size(); k++) {
-          if (str.equals(((NetHost)localList.get(k)).shortName())) {
-            this.control.doNak(paramNetObj, paramInt, "user alredy connected");
-            return;
-          }
-        }
-        this.control.doAsk(paramNetObj, paramInt);
-        return;
-      }
+    public void msgNewClient(com.maddox.rts.NetObj netobj, int i, java.lang.String s, int j)
+    {
+        control.doRequest(netobj, i, "NM");
     }
-    this.control.doNak(paramNetObj, paramInt, "unknown user");
-  }
 
-  public void destroy() {
-    if (this.control != null) {
-      this.control.destroy();
-      this.control = null;
+    public void msgAnswer(com.maddox.rts.NetObj netobj, int i, java.lang.String s)
+    {
+        if(s.indexOf("NM") >= 0)
+        {
+            int j = s.indexOf('"', s.indexOf("NM"));
+            int k = s.lastIndexOf('"');
+            if(j >= 0 && j + 1 < k)
+            {
+                java.lang.String s1 = s.substring(j + 1, k);
+                if(s1.equals(com.maddox.rts.NetEnv.host().shortName()))
+                {
+                    control.doNak(netobj, i, "user alredy connected");
+                    return;
+                }
+                java.util.List list = com.maddox.rts.NetEnv.hosts();
+                for(int l = 0; l < list.size(); l++)
+                    if(s1.equals(((com.maddox.rts.NetHost)list.get(l)).shortName()))
+                    {
+                        control.doNak(netobj, i, "user alredy connected");
+                        return;
+                    }
+
+                control.doAsk(netobj, i);
+                return;
+            }
+        }
+        control.doNak(netobj, i, "unknown user");
     }
-  }
 
-  public NetUSGSControl() {
-    this.control = new NetControl(this);
-  }
+    public void destroy()
+    {
+        if(control != null)
+        {
+            control.destroy();
+            control = null;
+        }
+    }
+
+    public NetUSGSControl()
+    {
+        control = new NetControl(this);
+    }
+
+    private com.maddox.rts.NetControl control;
 }

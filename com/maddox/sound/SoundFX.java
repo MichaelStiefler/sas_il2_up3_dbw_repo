@@ -1,214 +1,249 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SoundFX.java
+
 package com.maddox.sound;
 
 import com.maddox.JGP.Point3d;
 import com.maddox.JGP.Point3f;
 import com.maddox.rts.Destroy;
 
-public class SoundFX extends AudioStream
-  implements Destroy
+// Referenced classes of package com.maddox.sound:
+//            AudioStream, SoundPreset, SoundList, Acoustics, 
+//            Sample, SamplePool
+
+public class SoundFX extends com.maddox.sound.AudioStream
+    implements com.maddox.rts.Destroy
 {
-  public static final int CAPS_POSITION = 1;
-  public static final int CAPS_VELOCITY = 2;
-  public static final int CAPS_OR_FRONT = 4;
-  public static final int CAPS_OR_TOP = 8;
-  public static final int CAPS_UPDATE = 16;
-  public static final int CAPS_MASK_3D = 7;
-  public static final int CAPS_RELOBJ = 256;
-  public static final int CAPS_RELIST = 512;
-  public static final int CAPS_MUSIC = 4096;
-  public static final int FLAG_INFINITE = 1;
-  public static final int FLAG_NUMADJ = 4096;
-  public static final int FLAG_UNDETUNE = 8192;
-  public static final int FLAG_PERMANENT = 16384;
-  public static final int FLAG_SEQ = 32768;
-  public static final int FLAG_PMAX = 65536;
-  protected SoundList list;
-  protected SoundFX prev;
-  protected SoundFX next;
 
-  public SoundFX(SoundPreset paramSoundPreset)
-  {
-    firstInit(paramSoundPreset);
-  }
-
-  public SoundFX(String paramString)
-  {
-    firstInit(SoundPreset.get(paramString));
-  }
-
-  protected void firstInit(SoundPreset paramSoundPreset)
-  {
-    this.list = null;
-    this.prev = (this.next = null);
-    this.handle = paramSoundPreset.createObject();
-  }
-
-  public SoundFX next()
-  {
-    return this.next;
-  }
-
-  public void insert(SoundList paramSoundList, boolean paramBoolean)
-  {
-    if (this.list == null) {
-      this.list = paramSoundList;
-      this.next = paramSoundList.first;
-      if (paramSoundList.first != null) paramSoundList.first.prev = this;
-      paramSoundList.first = this;
-      if (paramBoolean) jniSetAuto(this.handle);
+    public SoundFX(com.maddox.sound.SoundPreset soundpreset)
+    {
+        firstInit(soundpreset);
     }
-  }
 
-  public void remove()
-  {
-    if (this.list != null) {
-      if (this.list.first == this) this.list.first = this.next;
-      if (this.prev != null) this.prev.next = this.next;
-      if (this.next != null) this.next.prev = this.prev;
-      this.list = null;
-      this.prev = (this.next = null);
+    public SoundFX(java.lang.String s)
+    {
+        firstInit(com.maddox.sound.SoundPreset.get(s));
     }
-  }
 
-  public void setAcoustics(Acoustics paramAcoustics)
-  {
-    if ((this.handle != 0) && (paramAcoustics != null)) jniSetAcoustics(this.handle, paramAcoustics.handle);
-  }
-
-  public void setParent(SoundFX paramSoundFX)
-  {
-    if (this.handle != 0) jniSetParent(this.handle, paramSoundFX != null ? paramSoundFX.handle : 0);
-  }
-
-  public int getCurDelay()
-  {
-    return this.handle == 0 ? 0 : jniCurDelay(this.handle);
-  }
-
-  public void add(AudioStream paramAudioStream)
-  {
-    if (this.handle != 0) jniAdd(this.handle, paramAudioStream.handle);
-  }
-
-  public void remove(AudioStream paramAudioStream)
-  {
-    if (this.handle != 0) jniRemove(this.handle, paramAudioStream.handle);
-  }
-
-  public void clear()
-  {
-    if (this.handle != 0) jniClear(this.handle);
-  }
-
-  public void play(Sample paramSample)
-  {
-    if ((paramSample != null) && (this.handle != 0)) jniAddSample(this.handle, paramSample.handle, 0, 1.0F, 1.0F);
-  }
-
-  public void play(Sample paramSample, int paramInt, float paramFloat1, float paramFloat2)
-  {
-    if ((paramSample != null) && (this.handle != 0)) jniAddSample(this.handle, paramSample.handle, paramInt, paramFloat1, paramFloat2);
-  }
-
-  public void play(SamplePool paramSamplePool)
-  {
-    if ((paramSamplePool != null) && (this.handle != 0)) jniPlayPool(this.handle, paramSamplePool.handle, 0, 1.0F, 1.0F);
-  }
-
-  public void play(SamplePool paramSamplePool, int paramInt, float paramFloat1, float paramFloat2)
-  {
-    if ((paramSamplePool != null) && (this.handle != 0)) jniPlayPool(this.handle, paramSamplePool.handle, paramInt, paramFloat1, paramFloat2);
-  }
-
-  public void play(Point3d paramPoint3d)
-  {
-    if (this.handle != 0) {
-      jniSetPosition(this.handle, paramPoint3d.x, paramPoint3d.y, paramPoint3d.z);
-      jniPlay(this.handle, 0.0F, false);
+    protected void firstInit(com.maddox.sound.SoundPreset soundpreset)
+    {
+        list = null;
+        prev = next = null;
+        handle = soundpreset.createObject();
     }
-  }
 
-  public int getCaps()
-  {
-    return this.handle != 0 ? jniGetCaps(this.handle) : -1;
-  }
-
-  public void setPosition(double paramDouble1, double paramDouble2, double paramDouble3)
-  {
-    if (this.handle != 0) jniSetPosition(this.handle, paramDouble1, paramDouble2, paramDouble3);
-  }
-
-  public void setVelocity(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    if (this.handle != 0) jniSetVelocity(this.handle, paramFloat1, paramFloat2, paramFloat3);
-  }
-
-  public void setOrientation(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    if (this.handle != 0) jniSetOrientation(this.handle, paramFloat1, paramFloat2, paramFloat3);
-  }
-
-  public void setTop(float paramFloat1, float paramFloat2, float paramFloat3)
-  {
-    if (this.handle != 0) jniSetTop(this.handle, paramFloat1, paramFloat2, paramFloat3);
-  }
-
-  public void setPosition(Point3d paramPoint3d)
-  {
-    if (this.handle != 0) jniSetPosition(this.handle, paramPoint3d.x, paramPoint3d.y, paramPoint3d.z);
-  }
-
-  public void setPosition(Point3f paramPoint3f)
-  {
-    if (this.handle != 0) jniSetPosition(this.handle, paramPoint3f.x, paramPoint3f.y, paramPoint3f.z);
-  }
-
-  public void setUsrFlag(int paramInt)
-  {
-    if (this.handle != 0) jniSetUsrFlag(this.handle, paramInt);
-  }
-
-  public boolean isDestroyed()
-  {
-    return this.handle == 0;
-  }
-
-  public void destroy()
-  {
-    if (this.handle != 0) {
-      remove();
-      jniRelease(this.handle);
-      this.handle = 0;
+    public com.maddox.sound.SoundFX next()
+    {
+        return next;
     }
-  }
 
-  protected static native int jniGetCaps(int paramInt);
+    public void insert(com.maddox.sound.SoundList soundlist, boolean flag)
+    {
+        if(list == null)
+        {
+            list = soundlist;
+            next = soundlist.first;
+            if(soundlist.first != null)
+                soundlist.first.prev = this;
+            soundlist.first = this;
+            if(flag)
+                com.maddox.sound.SoundFX.jniSetAuto(handle);
+        }
+    }
 
-  protected static native void jniSetAuto(int paramInt);
+    public void remove()
+    {
+        if(list != null)
+        {
+            if(list.first == this)
+                list.first = next;
+            if(prev != null)
+                prev.next = next;
+            if(next != null)
+                next.prev = prev;
+            list = null;
+            prev = next = null;
+        }
+    }
 
-  protected static native void jniSetAcoustics(int paramInt1, int paramInt2);
+    public void setAcoustics(com.maddox.sound.Acoustics acoustics)
+    {
+        if(handle != 0 && acoustics != null)
+            com.maddox.sound.SoundFX.jniSetAcoustics(handle, acoustics.handle);
+    }
 
-  protected static native void jniSetParent(int paramInt1, int paramInt2);
+    public void setParent(com.maddox.sound.SoundFX soundfx)
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundFX.jniSetParent(handle, soundfx == null ? 0 : soundfx.handle);
+    }
 
-  protected static native void jniSetUsrFlag(int paramInt1, int paramInt2);
+    public int getCurDelay()
+    {
+        return handle != 0 ? com.maddox.sound.SoundFX.jniCurDelay(handle) : 0;
+    }
 
-  protected static native int jniAdd(int paramInt1, int paramInt2);
+    public void add(com.maddox.sound.AudioStream audiostream)
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundFX.jniAdd(handle, audiostream.handle);
+    }
 
-  protected static native int jniRemove(int paramInt1, int paramInt2);
+    public void remove(com.maddox.sound.AudioStream audiostream)
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundFX.jniRemove(handle, audiostream.handle);
+    }
 
-  protected static native int jniClear(int paramInt);
+    public void clear()
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundFX.jniClear(handle);
+    }
 
-  protected static native void jniAddSample(int paramInt1, int paramInt2, int paramInt3, float paramFloat1, float paramFloat2);
+    public void play(com.maddox.sound.Sample sample)
+    {
+        if(sample != null && handle != 0)
+            com.maddox.sound.SoundFX.jniAddSample(handle, sample.handle, 0, 1.0F, 1.0F);
+    }
 
-  protected static native void jniPlayPool(int paramInt1, int paramInt2, int paramInt3, float paramFloat1, float paramFloat2);
+    public void play(com.maddox.sound.Sample sample, int i, float f, float f1)
+    {
+        if(sample != null && handle != 0)
+            com.maddox.sound.SoundFX.jniAddSample(handle, sample.handle, i, f, f1);
+    }
 
-  protected static native int jniCurDelay(int paramInt);
+    public void play(com.maddox.sound.SamplePool samplepool)
+    {
+        if(samplepool != null && handle != 0)
+            com.maddox.sound.SoundFX.jniPlayPool(handle, samplepool.handle, 0, 1.0F, 1.0F);
+    }
 
-  protected static native void jniSetPosition(int paramInt, double paramDouble1, double paramDouble2, double paramDouble3);
+    public void play(com.maddox.sound.SamplePool samplepool, int i, float f, float f1)
+    {
+        if(samplepool != null && handle != 0)
+            com.maddox.sound.SoundFX.jniPlayPool(handle, samplepool.handle, i, f, f1);
+    }
 
-  protected static native void jniSetVelocity(int paramInt, float paramFloat1, float paramFloat2, float paramFloat3);
+    public void play(com.maddox.JGP.Point3d point3d)
+    {
+        if(handle != 0)
+        {
+            com.maddox.sound.SoundFX.jniSetPosition(handle, point3d.x, point3d.y, point3d.z);
+            com.maddox.sound.SoundFX.jniPlay(handle, 0.0F, false);
+        }
+    }
 
-  protected static native void jniSetOrientation(int paramInt, float paramFloat1, float paramFloat2, float paramFloat3);
+    public int getCaps()
+    {
+        return handle == 0 ? -1 : com.maddox.sound.SoundFX.jniGetCaps(handle);
+    }
 
-  protected static native void jniSetTop(int paramInt, float paramFloat1, float paramFloat2, float paramFloat3);
+    public void setPosition(double d, double d1, double d2)
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundFX.jniSetPosition(handle, d, d1, d2);
+    }
+
+    public void setVelocity(float f, float f1, float f2)
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundFX.jniSetVelocity(handle, f, f1, f2);
+    }
+
+    public void setOrientation(float f, float f1, float f2)
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundFX.jniSetOrientation(handle, f, f1, f2);
+    }
+
+    public void setTop(float f, float f1, float f2)
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundFX.jniSetTop(handle, f, f1, f2);
+    }
+
+    public void setPosition(com.maddox.JGP.Point3d point3d)
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundFX.jniSetPosition(handle, point3d.x, point3d.y, point3d.z);
+    }
+
+    public void setPosition(com.maddox.JGP.Point3f point3f)
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundFX.jniSetPosition(handle, point3f.x, point3f.y, point3f.z);
+    }
+
+    public void setUsrFlag(int i)
+    {
+        if(handle != 0)
+            com.maddox.sound.SoundFX.jniSetUsrFlag(handle, i);
+    }
+
+    public boolean isDestroyed()
+    {
+        return handle == 0;
+    }
+
+    public void destroy()
+    {
+        if(handle != 0)
+        {
+            remove();
+            com.maddox.sound.SoundFX.jniRelease(handle);
+            handle = 0;
+        }
+    }
+
+    protected static native int jniGetCaps(int i);
+
+    protected static native void jniSetAuto(int i);
+
+    protected static native void jniSetAcoustics(int i, int j);
+
+    protected static native void jniSetParent(int i, int j);
+
+    protected static native void jniSetUsrFlag(int i, int j);
+
+    protected static native int jniAdd(int i, int j);
+
+    protected static native int jniRemove(int i, int j);
+
+    protected static native int jniClear(int i);
+
+    protected static native void jniAddSample(int i, int j, int k, float f, float f1);
+
+    protected static native void jniPlayPool(int i, int j, int k, float f, float f1);
+
+    protected static native int jniCurDelay(int i);
+
+    protected static native void jniSetPosition(int i, double d, double d1, double d2);
+
+    protected static native void jniSetVelocity(int i, float f, float f1, float f2);
+
+    protected static native void jniSetOrientation(int i, float f, float f1, float f2);
+
+    protected static native void jniSetTop(int i, float f, float f1, float f2);
+
+    public static final int CAPS_POSITION = 1;
+    public static final int CAPS_VELOCITY = 2;
+    public static final int CAPS_OR_FRONT = 4;
+    public static final int CAPS_OR_TOP = 8;
+    public static final int CAPS_UPDATE = 16;
+    public static final int CAPS_MASK_3D = 7;
+    public static final int CAPS_RELOBJ = 256;
+    public static final int CAPS_RELIST = 512;
+    public static final int CAPS_MUSIC = 4096;
+    public static final int FLAG_INFINITE = 1;
+    public static final int FLAG_NUMADJ = 4096;
+    public static final int FLAG_UNDETUNE = 8192;
+    public static final int FLAG_PERMANENT = 16384;
+    public static final int FLAG_SEQ = 32768;
+    public static final int FLAG_PMAX = 0x10000;
+    protected com.maddox.sound.SoundList list;
+    protected com.maddox.sound.SoundFX prev;
+    protected com.maddox.sound.SoundFX next;
 }

@@ -1,7 +1,11 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUISetup3D1.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
-import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowComboControl;
 import com.maddox.gwindow.GWindowRoot;
@@ -18,331 +22,444 @@ import com.maddox.rts.CfgFlags;
 import com.maddox.rts.CfgInt;
 import com.maddox.rts.CfgTools;
 
-public class GUISetup3D1 extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUILookAndFeel, 
+//            GUIButton, GUIDialogClient, GUISeparate
+
+public class GUISetup3D1 extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public ComboCfg cCommon;
-  public ComboCfg cVisible;
-  public ComboCfg cObjLight;
-  public ComboCfg cObjDetail;
-  public ComboCfg cLandLight;
-  public ComboCfg cLandDetail;
-  public ComboCfg cSky;
-  public GUIButton bApply;
-  public GUIButton bCustom;
-  public GUIButton bExit;
-  private boolean bCommon;
-  private boolean bRestoreRenderFocus = false;
-
-  public void _enter() {
-    if ((Mission.isPlaying()) && (RendersMain.getRenderFocus() == (Render)Actor.getByName("renderGUI")))
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-      RendersMain.setRenderFocus(null);
-      this.bRestoreRenderFocus = true;
-    } else {
-      this.bRestoreRenderFocus = false;
-    }
-    this.bCommon = this.cCommon.reset();
-    this.dialogClient.setPosSize();
-    this.client.activateWindow();
-  }
-  public void _leave() {
-    if (this.bRestoreRenderFocus)
-      RendersMain.setRenderFocus((Render)Actor.getByName("renderGUI"));
-    this.client.hideWindow();
-  }
 
-  public GUISetup3D1(GWindowRoot paramGWindowRoot)
-  {
-    super(11);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("setup3d.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    this.cVisible = new ComboCfg(this.dialogClient, new Object[] { CfgTools.get("VisibilityDistance") }, new int[][] { { 0 }, { 1 }, { 2 }, { 3 } }, new String[] { i18n("setup3d.Visible0"), i18n("setup3d.Visible1"), i18n("setup3d.Visible2"), i18n("setup3d.Visible3") });
-
-    this.cObjLight = new ComboCfg(this.dialogClient, new Object[] { CfgTools.get("DiffuseLight"), CfgTools.get("SpecularLight"), CfgTools.get("DynamicalLights"), CfgTools.get("Specular") }, new int[][] { { 0, 0, 0, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1, 2 } }, new String[] { i18n("setup3d.ObjLight0"), i18n("setup3d.ObjLight1"), i18n("setup3d.ObjLight2") });
-
-    this.cObjDetail = new ComboCfg(this.dialogClient, new Object[] { CfgTools.get("MeshDetail"), CfgTools.get("TexQual"), CfgTools.get("TexLarge") }, new int[][] { { 0, 1, 0 }, { 1, 2, 0 }, { 2, 3, 0 }, { 2, 3, 1 } }, new String[] { i18n("setup3d.ObjDetail0"), i18n("setup3d.ObjDetail1"), i18n("setup3d.ObjDetail2"), i18n("setup3d.ObjDetail3") });
-
-    this.cLandLight = new ComboCfg(this.dialogClient, new Object[] { CfgTools.get("LandShading"), CfgTools.get("Shadows") }, new int[][] { { 0, 0 }, { 1, 1 }, { 2, 1 }, { 3, 2 } }, new String[] { i18n("setup3d.LandLight0"), i18n("setup3d.LandLight1"), i18n("setup3d.LandLight2"), i18n("setup3d.LandLight3") });
-
-    this.cLandDetail = new ComboCfg(this.dialogClient, new Object[] { CfgTools.get("Forest"), CfgTools.get("LandDetails"), CfgTools.get("LandGeom"), CfgTools.get("TexLandQual"), CfgTools.get("TexLandLarge"), CfgTools.get("HardwareShaders") }, new int[][] { { 0, 0, 0, 1, 0, 0 }, { 0, 0, 1, 2, 0, 0 }, { 1, 1, 2, 3, 0, 0 }, { 1, 2, 2, 3, 0, 0 }, { 2, 2, 2, 3, 1, 0 }, { 2, 2, 2, 3, 1, 1 } }, new String[] { i18n("setup3d.LandDetail0"), i18n("setup3d.LandDetail1"), i18n("setup3d.LandDetail2"), i18n("setup3d.LandDetail3"), i18n("setup3d.LandDetail4"), i18n("setup3d.LandDetail5") });
-
-    this.cSky = new ComboCfgSky(this.dialogClient, new Object[] { CfgTools.get("Sky") }, new int[][] { { 0 }, { 1 }, { 2 } }, new String[] { i18n("setup3d.Sky0"), i18n("setup3d.Sky1"), i18n("setup3d.Sky2") });
-
-    this.cCommon = new ComboCfg(this.dialogClient, new Object[] { this.cVisible, this.cObjLight, this.cObjDetail, this.cLandLight, this.cLandDetail, this.cSky }, new int[][] { { 0, 0, 1, 0, 0, 1 }, { 1, 1, 1, 1, 1, 1 }, { 2, 2, 2, 2, 2, 1 }, { 2, 2, 2, 2, 3, 2 }, { 3, 2, 3, 3, 4, 2 } }, new String[] { i18n("setup3d.Common0"), i18n("setup3d.Common1"), i18n("setup3d.Common2"), i18n("setup3d.Common3"), i18n("setup3d.Common4") });
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-
-    this.bApply = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.bCustom = ((GUIButton)this.dialogClient.addControl(new GUIButton(this.dialogClient, localGTexture, 0.0F, 48.0F, 48.0F, 48.0F)));
-    this.bExit = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-
-    this.bCommon = false;
-    this.cCommon.hideWindow();
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
-    {
-    }
-
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-
-      if (paramGWindow == GUISetup3D1.this.bApply) {
-        int i = 0;
-        if (GUISetup3D1.this.bCommon) {
-          i |= GUISetup3D1.this.cCommon.apply();
-        } else {
-          i |= GUISetup3D1.this.cVisible.apply();
-          i |= GUISetup3D1.this.cObjLight.apply();
-          i |= GUISetup3D1.this.cObjDetail.apply();
-          i |= GUISetup3D1.this.cLandLight.apply();
-          i |= GUISetup3D1.this.cLandDetail.apply();
-          i |= GUISetup3D1.this.cSky.apply();
-        }
-        CfgGObj.ApplyExtends(i);
-        GUISetup3D1.this.cCommon.reset();
-        return true;
-      }if (paramGWindow == GUISetup3D1.this.bCustom) {
-        GUISetup3D1.access$002(GUISetup3D1.this, !GUISetup3D1.this.bCommon);
-        GUISetup3D1.this.cCommon.reset();
-        setPosSize();
-        return true;
-      }if (paramGWindow == GUISetup3D1.this.bExit) {
-        Main.stateStack().pop();
-        return true;
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
-    }
-
-    public void render() {
-      super.render();
-      if (GUISetup3D1.this.bCommon) {
-        GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(104.0F), x1024(416.0F), 2.0F);
-        setCanvasFont(0);
-        setCanvasColor(GColor.Gray);
-        draw(x1024(48.0F), y1024(24.0F), x1024(384.0F), y1024(32.0F), 1, GUISetup3D1.this.i18n("setup3d.Common"));
-
-        draw(x1024(80.0F), y1024(176.0F), x1024(160.0F), y1024(48.0F), 0, GUISetup3D1.this.i18n("setup3d.Back"));
-        draw(x1024(144.0F), y1024(120.0F), x1024(256.0F), y1024(48.0F), 2, GUISetup3D1.this.i18n("setup3d.Custom"));
-        draw(x1024(240.0F), y1024(176.0F), x1024(160.0F), y1024(48.0F), 2, GUISetup3D1.this.i18n("setup3d.Apply"));
-      } else {
-        GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(504.0F), x1024(416.0F), 2.0F);
-        setCanvasFont(0);
-        setCanvasColor(GColor.Gray);
-        draw(x1024(48.0F), y1024(24.0F), x1024(384.0F), y1024(32.0F), 1, GUISetup3D1.this.i18n("setup3d.Visible"));
-        draw(x1024(48.0F), y1024(104.0F), x1024(384.0F), y1024(32.0F), 1, GUISetup3D1.this.i18n("setup3d.ObjLight"));
-        draw(x1024(48.0F), y1024(184.0F), x1024(384.0F), y1024(32.0F), 1, GUISetup3D1.this.i18n("setup3d.ObjDetail"));
-        draw(x1024(48.0F), y1024(264.0F), x1024(384.0F), y1024(32.0F), 1, GUISetup3D1.this.i18n("setup3d.LandLight"));
-        draw(x1024(48.0F), y1024(344.0F), x1024(384.0F), y1024(32.0F), 1, GUISetup3D1.this.i18n("setup3d.LandDetail"));
-        draw(x1024(48.0F), y1024(424.0F), x1024(384.0F), y1024(32.0F), 1, GUISetup3D1.this.i18n("setup3d.Sky"));
-
-        draw(x1024(80.0F), y1024(576.0F), x1024(160.0F), y1024(48.0F), 0, GUISetup3D1.this.i18n("setup3d.Back"));
-        draw(x1024(144.0F), y1024(520.0F), x1024(256.0F), y1024(48.0F), 2, GUISetup3D1.this.i18n("setup3d.Simple"));
-        draw(x1024(240.0F), y1024(576.0F), x1024(160.0F), y1024(48.0F), 2, GUISetup3D1.this.i18n("setup3d.Apply"));
-      }
-    }
-
-    public void setPosSize()
-    {
-      if (GUISetup3D1.this.bCommon) {
-        GUISetup3D1.this.cCommon.showWindow();
-        GUISetup3D1.this.cVisible.hideWindow();
-        GUISetup3D1.this.cObjLight.hideWindow();
-        GUISetup3D1.this.cObjDetail.hideWindow();
-        GUISetup3D1.this.cLandLight.hideWindow();
-        GUISetup3D1.this.cLandDetail.hideWindow();
-        GUISetup3D1.this.cSky.hideWindow();
-
-        set1024PosSize(0.0F, 512.0F, 480.0F, 256.0F);
-        GUISetup3D1.this.cCommon.set1024PosSize(80.0F, 56.0F, 320.0F, 32.0F);
-
-        GUISetup3D1.this.bExit.setPosC(x1024(56.0F), y1024(200.0F));
-        GUISetup3D1.this.bCustom.setPosC(x1024(424.0F), y1024(144.0F));
-        GUISetup3D1.this.bApply.setPosC(x1024(424.0F), y1024(200.0F));
-      } else {
-        GUISetup3D1.this.cCommon.hideWindow();
-        GUISetup3D1.this.cVisible.showWindow();
-        GUISetup3D1.this.cObjLight.showWindow();
-        GUISetup3D1.this.cObjDetail.showWindow();
-        GUISetup3D1.this.cLandLight.showWindow();
-        GUISetup3D1.this.cLandDetail.showWindow();
-        GUISetup3D1.this.cSky.showWindow();
-
-        set1024PosSize(0.0F, 112.0F, 480.0F, 656.0F);
-
-        GUISetup3D1.this.cVisible.set1024PosSize(80.0F, 56.0F, 320.0F, 32.0F);
-        GUISetup3D1.this.cObjLight.set1024PosSize(80.0F, 136.0F, 320.0F, 32.0F);
-        GUISetup3D1.this.cObjDetail.set1024PosSize(80.0F, 216.0F, 320.0F, 32.0F);
-        GUISetup3D1.this.cLandLight.set1024PosSize(80.0F, 296.0F, 320.0F, 32.0F);
-        GUISetup3D1.this.cLandDetail.set1024PosSize(80.0F, 376.0F, 320.0F, 32.0F);
-        GUISetup3D1.this.cSky.set1024PosSize(80.0F, 456.0F, 320.0F, 32.0F);
-
-        GUISetup3D1.this.bExit.setPosC(x1024(56.0F), y1024(600.0F));
-        GUISetup3D1.this.bCustom.setPosC(x1024(424.0F), y1024(544.0F));
-        GUISetup3D1.this.bApply.setPosC(x1024(424.0F), y1024(600.0F));
-      }
-    }
-  }
-
-  public class ComboCfgSky extends GUISetup3D1.ComboCfg
-  {
-    public boolean reset()
-    {
-      boolean bool = super.reset();
-      this.posEnable[0] = (!Mission.isNet() ? 1 : false);
-      return bool;
-    }
-    public ComboCfgSky(GWindow paramArrayOfObject, Object[] paramArrayOfInt, int[][] paramArrayOfString, String[] arg5) {
-      super(paramArrayOfObject, paramArrayOfInt, paramArrayOfString, arrayOfString);
-    }
-  }
-
-  public class ComboCfg extends GWindowComboControl
-  {
-    public Object[] cfg;
-    public int[][] state;
-
-    public boolean reset()
-    {
-      for (int i = 0; i < this.cfg.length; i++) {
-        if ((this.cfg[i] instanceof Cfg))
-          ((Cfg)this.cfg[i]).reset();
-        else {
-          ((ComboCfg)this.cfg[i]).reset();
-        }
-      }
-      i = this.state.length;
-      int j = 0;
-      if (this.posEnable != null) {
-        for (; j < i; j++) {
-          int[] arrayOfInt1 = this.state[j];
-          this.posEnable[j] = true;
-          for (int m = 0; m < this.cfg.length; m++)
-          {
-            Object localObject1;
-            if ((this.cfg[m] instanceof CfgFlags)) {
-              localObject1 = (CfgFlags)this.cfg[m];
-              if (!((CfgFlags)localObject1).isEnabledFlag(0))
-                this.posEnable[j] = false;
-            } else if ((this.cfg[m] instanceof CfgInt)) {
-              localObject1 = (CfgInt)this.cfg[m];
-              if (!((CfgInt)localObject1).isEnabledState(arrayOfInt1[m]))
-                this.posEnable[j] = false;
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bApply)
+            {
+                int k = 0;
+                if(bCommon)
+                {
+                    k |= cCommon.apply();
+                } else
+                {
+                    k |= cVisible.apply();
+                    k |= cObjLight.apply();
+                    k |= cObjDetail.apply();
+                    k |= cLandLight.apply();
+                    k |= cLandDetail.apply();
+                    k |= cSky.apply();
+                }
+                com.maddox.il2.engine.CfgGObj.ApplyExtends(k);
+                cCommon.reset();
+                return true;
             }
-          }
-        }
-      }
-      j = 0;
-      int k = 1;
-      for (; j < i; j++) {
-        k = 1;
-        int[] arrayOfInt2 = this.state[j];
-        for (int n = 0; n < this.cfg.length; n++)
-        {
-          Object localObject2;
-          if ((this.cfg[n] instanceof CfgFlags)) {
-            localObject2 = (CfgFlags)this.cfg[n];
-            k = ((CfgFlags)localObject2).get(0) == (arrayOfInt2[n] != 0) ? 1 : 0;
-          }
-          else
-          {
-            int i1;
-            int i2;
-            if ((this.cfg[n] instanceof CfgInt)) {
-              localObject2 = (CfgInt)this.cfg[n];
-              i1 = ((CfgInt)localObject2).get();
-              i2 = arrayOfInt2[n];
-              while ((i2 > 0) && (!((CfgInt)localObject2).isEnabledState(i2)))
-                i2--;
-              k = i1 == i2 ? 1 : 0;
-            } else {
-              localObject2 = (ComboCfg)this.cfg[n];
-              i1 = ((ComboCfg)localObject2).getSelected();
-              i2 = arrayOfInt2[n];
-              while ((i2 > 0) && (localObject2.posEnable[i2] == 0))
-                i2--;
-              k = i1 == i2 ? 1 : 0;
+            if(gwindow == bCustom)
+            {
+                bCommon = !bCommon;
+                cCommon.reset();
+                setPosSize();
+                return true;
             }
-          }
-          if (k == 0)
-            break;
+            if(gwindow == bExit)
+            {
+                com.maddox.il2.game.Main.stateStack().pop();
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
         }
-        if (k != 0)
-          break;
-      }
-      if (j == i)
-        j = i - 1;
-      if (this.posEnable != null) {
-        while ((j > 0) && 
-          (this.posEnable[j] == 0))
+
+        public void render()
         {
-          j--;
+            super.render();
+            if(bCommon)
+            {
+                com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(104F), x1024(416F), 2.0F);
+                setCanvasFont(0);
+                setCanvasColor(com.maddox.gwindow.GColor.Gray);
+                draw(x1024(48F), y1024(24F), x1024(384F), y1024(32F), 1, i18n("setup3d.Common"));
+                draw(x1024(80F), y1024(176F), x1024(160F), y1024(48F), 0, i18n("setup3d.Back"));
+                draw(x1024(144F), y1024(120F), x1024(256F), y1024(48F), 2, i18n("setup3d.Custom"));
+                draw(x1024(240F), y1024(176F), x1024(160F), y1024(48F), 2, i18n("setup3d.Apply"));
+            } else
+            {
+                com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(504F), x1024(416F), 2.0F);
+                setCanvasFont(0);
+                setCanvasColor(com.maddox.gwindow.GColor.Gray);
+                draw(x1024(48F), y1024(24F), x1024(384F), y1024(32F), 1, i18n("setup3d.Visible"));
+                draw(x1024(48F), y1024(104F), x1024(384F), y1024(32F), 1, i18n("setup3d.ObjLight"));
+                draw(x1024(48F), y1024(184F), x1024(384F), y1024(32F), 1, i18n("setup3d.ObjDetail"));
+                draw(x1024(48F), y1024(264F), x1024(384F), y1024(32F), 1, i18n("setup3d.LandLight"));
+                draw(x1024(48F), y1024(344F), x1024(384F), y1024(32F), 1, i18n("setup3d.LandDetail"));
+                draw(x1024(48F), y1024(424F), x1024(384F), y1024(32F), 1, i18n("setup3d.Sky"));
+                draw(x1024(80F), y1024(576F), x1024(160F), y1024(48F), 0, i18n("setup3d.Back"));
+                draw(x1024(144F), y1024(520F), x1024(256F), y1024(48F), 2, i18n("setup3d.Simple"));
+                draw(x1024(240F), y1024(576F), x1024(160F), y1024(48F), 2, i18n("setup3d.Apply"));
+            }
         }
-      }
-      setSelected(j, true, false);
-      return k;
+
+        public void setPosSize()
+        {
+            if(bCommon)
+            {
+                cCommon.showWindow();
+                cVisible.hideWindow();
+                cObjLight.hideWindow();
+                cObjDetail.hideWindow();
+                cLandLight.hideWindow();
+                cLandDetail.hideWindow();
+                cSky.hideWindow();
+                set1024PosSize(0.0F, 512F, 480F, 256F);
+                cCommon.set1024PosSize(80F, 56F, 320F, 32F);
+                bExit.setPosC(x1024(56F), y1024(200F));
+                bCustom.setPosC(x1024(424F), y1024(144F));
+                bApply.setPosC(x1024(424F), y1024(200F));
+            } else
+            {
+                cCommon.hideWindow();
+                cVisible.showWindow();
+                cObjLight.showWindow();
+                cObjDetail.showWindow();
+                cLandLight.showWindow();
+                cLandDetail.showWindow();
+                cSky.showWindow();
+                set1024PosSize(0.0F, 112F, 480F, 656F);
+                cVisible.set1024PosSize(80F, 56F, 320F, 32F);
+                cObjLight.set1024PosSize(80F, 136F, 320F, 32F);
+                cObjDetail.set1024PosSize(80F, 216F, 320F, 32F);
+                cLandLight.set1024PosSize(80F, 296F, 320F, 32F);
+                cLandDetail.set1024PosSize(80F, 376F, 320F, 32F);
+                cSky.set1024PosSize(80F, 456F, 320F, 32F);
+                bExit.setPosC(x1024(56F), y1024(600F));
+                bCustom.setPosC(x1024(424F), y1024(544F));
+                bApply.setPosC(x1024(424F), y1024(600F));
+            }
+        }
+
+        public DialogClient()
+        {
+        }
     }
 
-    public int apply() {
-      int i = 0;
-      int j = getSelected();
-      int[] arrayOfInt = this.state[j];
-      for (int k = 0; k < this.cfg.length; k++)
-      {
-        Object localObject;
-        if ((this.cfg[k] instanceof CfgFlags)) {
-          localObject = (CfgFlags)this.cfg[k];
-          ((CfgFlags)localObject).set(0, arrayOfInt[k] != 0);
-          i |= ((CfgFlags)localObject).apply();
-        }
-        else
+    public class ComboCfgSky extends com.maddox.il2.gui.ComboCfg
+    {
+
+        public boolean reset()
         {
-          int m;
-          if ((this.cfg[k] instanceof CfgInt)) {
-            localObject = (CfgInt)this.cfg[k];
-            m = arrayOfInt[k];
-            while ((m > 0) && (!((CfgInt)localObject).isEnabledState(m)))
-              m--;
-            ((CfgInt)localObject).set(m);
-            i |= ((CfgInt)localObject).apply();
-          } else {
-            localObject = (ComboCfg)this.cfg[k];
-            m = arrayOfInt[k];
-            while ((m > 0) && (localObject.posEnable[m] == 0))
-              m--;
-            ((ComboCfg)localObject).setSelected(m, true, false);
-            i |= ((ComboCfg)localObject).apply();
-          }
+            boolean flag = super.reset();
+            posEnable[0] = !com.maddox.il2.game.Mission.isNet();
+            return flag;
         }
-      }
-      return i;
+
+        public ComboCfgSky(com.maddox.gwindow.GWindow gwindow, java.lang.Object aobj[], int ai[][], java.lang.String as[])
+        {
+            super(gwindow, aobj, ai, as);
+        }
     }
 
-    public ComboCfg(GWindow paramArrayOfObject, Object[] paramArrayOfInt, int[][] paramArrayOfString, String[] arg5) {
-      super(0.0F, 0.0F, 10.0F);
-      setEditable(false);
-      this.cfg = paramArrayOfInt;
-      this.state = paramArrayOfString;
-      Object localObject;
-      for (int i = 0; i < localObject.length; i++)
-        add(localObject[i]);
-      if (!(paramArrayOfInt[0] instanceof ComboCfg))
-        this.posEnable = new boolean[localObject.length];
-      reset();
+    public class ComboCfg extends com.maddox.gwindow.GWindowComboControl
+    {
+
+        public boolean reset()
+        {
+            for(int i = 0; i < cfg.length; i++)
+                if(cfg[i] instanceof com.maddox.rts.Cfg)
+                    ((com.maddox.rts.Cfg)cfg[i]).reset();
+                else
+                    ((com.maddox.il2.gui.ComboCfg)cfg[i]).reset();
+
+            int j = state.length;
+            int k = 0;
+            if(posEnable != null)
+                for(; k < j; k++)
+                {
+                    int ai[] = state[k];
+                    posEnable[k] = true;
+                    for(int l = 0; l < cfg.length; l++)
+                    {
+                        if(cfg[l] instanceof com.maddox.rts.CfgFlags)
+                        {
+                            com.maddox.rts.CfgFlags cfgflags = (com.maddox.rts.CfgFlags)cfg[l];
+                            if(!cfgflags.isEnabledFlag(0))
+                                posEnable[k] = false;
+                            continue;
+                        }
+                        if(!(cfg[l] instanceof com.maddox.rts.CfgInt))
+                            continue;
+                        com.maddox.rts.CfgInt cfgint = (com.maddox.rts.CfgInt)cfg[l];
+                        if(!cfgint.isEnabledState(ai[l]))
+                            posEnable[k] = false;
+                    }
+
+                }
+
+            k = 0;
+            boolean flag = true;
+            do
+            {
+                if(k >= j)
+                    break;
+                flag = true;
+                int ai1[] = state[k];
+                int i1 = 0;
+                do
+                {
+                    if(i1 >= cfg.length)
+                        break;
+                    if(cfg[i1] instanceof com.maddox.rts.CfgFlags)
+                    {
+                        com.maddox.rts.CfgFlags cfgflags1 = (com.maddox.rts.CfgFlags)cfg[i1];
+                        flag = cfgflags1.get(0) == (ai1[i1] != 0);
+                    } else
+                    if(cfg[i1] instanceof com.maddox.rts.CfgInt)
+                    {
+                        com.maddox.rts.CfgInt cfgint1 = (com.maddox.rts.CfgInt)cfg[i1];
+                        int j1 = cfgint1.get();
+                        int l1;
+                        for(l1 = ai1[i1]; l1 > 0 && !cfgint1.isEnabledState(l1); l1--);
+                        flag = j1 == l1;
+                    } else
+                    {
+                        com.maddox.il2.gui.ComboCfg combocfg = (com.maddox.il2.gui.ComboCfg)cfg[i1];
+                        int k1 = combocfg.getSelected();
+                        int i2;
+                        for(i2 = ai1[i1]; i2 > 0 && !combocfg.posEnable[i2]; i2--);
+                        flag = k1 == i2;
+                    }
+                    if(!flag)
+                        break;
+                    i1++;
+                } while(true);
+                if(flag)
+                    break;
+                k++;
+            } while(true);
+            if(k == j)
+                k = j - 1;
+            if(posEnable != null)
+                for(; k > 0 && !posEnable[k]; k--);
+            setSelected(k, true, false);
+            return flag;
+        }
+
+        public int apply()
+        {
+            int i = 0;
+            int j = getSelected();
+            int ai[] = state[j];
+            for(int k = 0; k < cfg.length; k++)
+            {
+                if(cfg[k] instanceof com.maddox.rts.CfgFlags)
+                {
+                    com.maddox.rts.CfgFlags cfgflags = (com.maddox.rts.CfgFlags)cfg[k];
+                    cfgflags.set(0, ai[k] != 0);
+                    i |= cfgflags.apply();
+                    continue;
+                }
+                if(cfg[k] instanceof com.maddox.rts.CfgInt)
+                {
+                    com.maddox.rts.CfgInt cfgint = (com.maddox.rts.CfgInt)cfg[k];
+                    int l;
+                    for(l = ai[k]; l > 0 && !cfgint.isEnabledState(l); l--);
+                    cfgint.set(l);
+                    i |= cfgint.apply();
+                    continue;
+                }
+                com.maddox.il2.gui.ComboCfg combocfg = (com.maddox.il2.gui.ComboCfg)cfg[k];
+                int i1;
+                for(i1 = ai[k]; i1 > 0 && !combocfg.posEnable[i1]; i1--);
+                combocfg.setSelected(i1, true, false);
+                i |= combocfg.apply();
+            }
+
+            return i;
+        }
+
+        public java.lang.Object cfg[];
+        public int state[][];
+
+        public ComboCfg(com.maddox.gwindow.GWindow gwindow, java.lang.Object aobj[], int ai[][], java.lang.String as[])
+        {
+            super(gwindow, 0.0F, 0.0F, 10F);
+            setEditable(false);
+            cfg = aobj;
+            state = ai;
+            for(int i = 0; i < as.length; i++)
+                add(as[i]);
+
+            if(!(aobj[0] instanceof com.maddox.il2.gui.ComboCfg))
+                posEnable = new boolean[as.length];
+            reset();
+        }
     }
-  }
+
+
+    public void _enter()
+    {
+        if(com.maddox.il2.game.Mission.isPlaying() && com.maddox.il2.engine.RendersMain.getRenderFocus() == (com.maddox.il2.engine.Render)com.maddox.il2.engine.Actor.getByName("renderGUI"))
+        {
+            com.maddox.il2.engine.RendersMain.setRenderFocus(null);
+            bRestoreRenderFocus = true;
+        } else
+        {
+            bRestoreRenderFocus = false;
+        }
+        bCommon = cCommon.reset();
+        dialogClient.setPosSize();
+        client.activateWindow();
+    }
+
+    public void _leave()
+    {
+        if(bRestoreRenderFocus)
+            com.maddox.il2.engine.RendersMain.setRenderFocus((com.maddox.il2.engine.Render)com.maddox.il2.engine.Actor.getByName("renderGUI"));
+        client.hideWindow();
+    }
+
+    public GUISetup3D1(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(11);
+        bRestoreRenderFocus = false;
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("setup3d.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        cVisible = new ComboCfg(dialogClient, new java.lang.Object[] {
+            com.maddox.rts.CfgTools.get("VisibilityDistance")
+        }, new int[][] {
+            new int[] {
+                0
+            }, new int[] {
+                1
+            }, new int[] {
+                2
+            }, new int[] {
+                3
+            }
+        }, new java.lang.String[] {
+            i18n("setup3d.Visible0"), i18n("setup3d.Visible1"), i18n("setup3d.Visible2"), i18n("setup3d.Visible3")
+        });
+        cObjLight = new ComboCfg(dialogClient, new java.lang.Object[] {
+            com.maddox.rts.CfgTools.get("DiffuseLight"), com.maddox.rts.CfgTools.get("SpecularLight"), com.maddox.rts.CfgTools.get("DynamicalLights"), com.maddox.rts.CfgTools.get("Specular")
+        }, new int[][] {
+            new int[] {
+                0, 0, 0, 1
+            }, new int[] {
+                1, 1, 1, 1
+            }, new int[] {
+                2, 2, 1, 2
+            }
+        }, new java.lang.String[] {
+            i18n("setup3d.ObjLight0"), i18n("setup3d.ObjLight1"), i18n("setup3d.ObjLight2")
+        });
+        cObjDetail = new ComboCfg(dialogClient, new java.lang.Object[] {
+            com.maddox.rts.CfgTools.get("MeshDetail"), com.maddox.rts.CfgTools.get("TexQual"), com.maddox.rts.CfgTools.get("TexLarge")
+        }, new int[][] {
+            new int[] {
+                0, 1, 0
+            }, new int[] {
+                1, 2, 0
+            }, new int[] {
+                2, 3, 0
+            }, new int[] {
+                2, 3, 1
+            }
+        }, new java.lang.String[] {
+            i18n("setup3d.ObjDetail0"), i18n("setup3d.ObjDetail1"), i18n("setup3d.ObjDetail2"), i18n("setup3d.ObjDetail3")
+        });
+        cLandLight = new ComboCfg(dialogClient, new java.lang.Object[] {
+            com.maddox.rts.CfgTools.get("LandShading"), com.maddox.rts.CfgTools.get("Shadows")
+        }, new int[][] {
+            new int[] {
+                0, 0
+            }, new int[] {
+                1, 1
+            }, new int[] {
+                2, 1
+            }, new int[] {
+                3, 2
+            }
+        }, new java.lang.String[] {
+            i18n("setup3d.LandLight0"), i18n("setup3d.LandLight1"), i18n("setup3d.LandLight2"), i18n("setup3d.LandLight3")
+        });
+        cLandDetail = new ComboCfg(dialogClient, new java.lang.Object[] {
+            com.maddox.rts.CfgTools.get("Forest"), com.maddox.rts.CfgTools.get("LandDetails"), com.maddox.rts.CfgTools.get("LandGeom"), com.maddox.rts.CfgTools.get("TexLandQual"), com.maddox.rts.CfgTools.get("TexLandLarge"), com.maddox.rts.CfgTools.get("HardwareShaders")
+        }, new int[][] {
+            new int[] {
+                0, 0, 0, 1, 0, 0
+            }, new int[] {
+                0, 0, 1, 2, 0, 0
+            }, new int[] {
+                1, 1, 2, 3, 0, 0
+            }, new int[] {
+                1, 2, 2, 3, 0, 0
+            }, new int[] {
+                2, 2, 2, 3, 1, 0
+            }, new int[] {
+                2, 2, 2, 3, 1, 1
+            }
+        }, new java.lang.String[] {
+            i18n("setup3d.LandDetail0"), i18n("setup3d.LandDetail1"), i18n("setup3d.LandDetail2"), i18n("setup3d.LandDetail3"), i18n("setup3d.LandDetail4"), i18n("setup3d.LandDetail5")
+        });
+        cSky = new ComboCfgSky(dialogClient, new java.lang.Object[] {
+            com.maddox.rts.CfgTools.get("Sky")
+        }, new int[][] {
+            new int[] {
+                0
+            }, new int[] {
+                1
+            }, new int[] {
+                2
+            }
+        }, new java.lang.String[] {
+            i18n("setup3d.Sky0"), i18n("setup3d.Sky1"), i18n("setup3d.Sky2")
+        });
+        cCommon = new ComboCfg(dialogClient, new java.lang.Object[] {
+            cVisible, cObjLight, cObjDetail, cLandLight, cLandDetail, cSky
+        }, new int[][] {
+            new int[] {
+                0, 0, 1, 0, 0, 1
+            }, new int[] {
+                1, 1, 1, 1, 1, 1
+            }, new int[] {
+                2, 2, 2, 2, 2, 1
+            }, new int[] {
+                2, 2, 2, 2, 3, 2
+            }, new int[] {
+                3, 2, 3, 3, 4, 2
+            }
+        }, new java.lang.String[] {
+            i18n("setup3d.Common0"), i18n("setup3d.Common1"), i18n("setup3d.Common2"), i18n("setup3d.Common3"), i18n("setup3d.Common4")
+        });
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bApply = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        bCustom = (com.maddox.il2.gui.GUIButton)dialogClient.addControl(new GUIButton(dialogClient, gtexture, 0.0F, 48F, 48F, 48F));
+        bExit = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        bCommon = false;
+        cCommon.hideWindow();
+        dialogClient.activateWindow();
+        client.hideWindow();
+    }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.ComboCfg cCommon;
+    public com.maddox.il2.gui.ComboCfg cVisible;
+    public com.maddox.il2.gui.ComboCfg cObjLight;
+    public com.maddox.il2.gui.ComboCfg cObjDetail;
+    public com.maddox.il2.gui.ComboCfg cLandLight;
+    public com.maddox.il2.gui.ComboCfg cLandDetail;
+    public com.maddox.il2.gui.ComboCfg cSky;
+    public com.maddox.il2.gui.GUIButton bApply;
+    public com.maddox.il2.gui.GUIButton bCustom;
+    public com.maddox.il2.gui.GUIButton bExit;
+    private boolean bCommon;
+    private boolean bRestoreRenderFocus;
+
+
 }

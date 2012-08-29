@@ -1,36 +1,41 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CannonZIS3.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.il2.engine.BulletProperties;
 import com.maddox.il2.engine.GunProperties;
 
-public class CannonZIS3 extends CannonMidrangeGeneric
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            CannonMidrangeGeneric
+
+public class CannonZIS3 extends com.maddox.il2.objects.weapons.CannonMidrangeGeneric
 {
-  protected float Specify(GunProperties paramGunProperties)
-  {
-    paramGunProperties.aimMaxDist = 4000.0F;
 
-    paramGunProperties.sound = "weapon.Cannon75";
+    public CannonZIS3()
+    {
+    }
 
-    BulletProperties localBulletProperties = paramGunProperties.bullet[0];
-
-    localBulletProperties.power = 0.0F;
-
-    localBulletProperties.timeLife = 6.0F;
-    localBulletProperties.kalibr = 0.0762F;
-    localBulletProperties.massa = 6.3F;
-    localBulletProperties.speed = 662.0F;
-
-    localBulletProperties = paramGunProperties.bullet[1];
-
-    localBulletProperties.power = 0.71F;
-    localBulletProperties.powerType = 1;
-    localBulletProperties.powerRadius = 120.0F;
-
-    localBulletProperties.timeLife = 7.0F;
-    localBulletProperties.kalibr = 0.0762F;
-    localBulletProperties.massa = 6.2F;
-    localBulletProperties.speed = 680.0F;
-
-    return 40.0F;
-  }
+    protected float Specify(com.maddox.il2.engine.GunProperties gunproperties)
+    {
+        gunproperties.aimMaxDist = 4000F;
+        gunproperties.sound = "weapon.Cannon75";
+        com.maddox.il2.engine.BulletProperties bulletproperties = gunproperties.bullet[0];
+        bulletproperties.power = 0.0F;
+        bulletproperties.timeLife = 6F;
+        bulletproperties.kalibr = 0.0762F;
+        bulletproperties.massa = 6.3F;
+        bulletproperties.speed = 662F;
+        bulletproperties = gunproperties.bullet[1];
+        bulletproperties.power = 0.71F;
+        bulletproperties.powerType = 1;
+        bulletproperties.powerRadius = 120F;
+        bulletproperties.timeLife = 7F;
+        bulletproperties.kalibr = 0.0762F;
+        bulletproperties.massa = 6.2F;
+        bulletproperties.speed = 680F;
+        return 40F;
+    }
 }

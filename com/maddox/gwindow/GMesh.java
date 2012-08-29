@@ -1,21 +1,49 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GMesh.java
+
 package com.maddox.gwindow;
+
+
+// Referenced classes of package com.maddox.gwindow:
+//            GSize
 
 public abstract class GMesh
 {
-  public GSize size;
-  public static Loader loader;
+    public static class Loader
+    {
 
-  public static GMesh New(String paramString)
-  {
-    return loader.load(paramString);
-  }
-  public static GMesh NewShared(String paramString) {
-    return loader.loadShared(paramString);
-  }
-  public static class Loader {
-    public GMesh load(String paramString) {
-      return null; } 
-    public GMesh loadShared(String paramString) { return null;
+        public com.maddox.gwindow.GMesh load(java.lang.String s)
+        {
+            return null;
+        }
+
+        public com.maddox.gwindow.GMesh loadShared(java.lang.String s)
+        {
+            return null;
+        }
+
+        public Loader()
+        {
+        }
     }
-  }
+
+
+    public GMesh()
+    {
+    }
+
+    public static com.maddox.gwindow.GMesh New(java.lang.String s)
+    {
+        return loader.load(s);
+    }
+
+    public static com.maddox.gwindow.GMesh NewShared(java.lang.String s)
+    {
+        return loader.loadShared(s);
+    }
+
+    public com.maddox.gwindow.GSize size;
+    public static com.maddox.gwindow.Loader loader;
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   JU_52.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.JGP.Point3d;
@@ -11,120 +16,128 @@ import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Turret;
 import com.maddox.rts.Property;
 
-public abstract class JU_52 extends Scheme6
-  implements TypeTransport
+// Referenced classes of package com.maddox.il2.objects.air:
+//            Scheme6, TypeTransport, PaintScheme
+
+public abstract class JU_52 extends com.maddox.il2.objects.air.Scheme6
+    implements com.maddox.il2.objects.air.TypeTransport
 {
-  private boolean bDynamoOperational = true;
-  private float dynamoOrient = 0.0F;
-  private boolean bDynamoRotary = false;
-  private int pk;
 
-  public void doWoundPilot(int paramInt, float paramFloat)
-  {
-    switch (paramInt) {
-    case 2:
-      if (this.FM.turret.length <= 0) break;
-      this.FM.turret[0].setHealth(paramFloat);
-    }
-  }
-
-  public void doMurderPilot(int paramInt)
-  {
-    switch (paramInt) {
-    case 0:
-      hierMesh().chunkVisible("Pilot1_D0", false);
-      hierMesh().chunkVisible("Head1_D0", false);
-      hierMesh().chunkVisible("Pilot1_D1", true);
-      break;
-    case 1:
-      hierMesh().chunkVisible("Pilot2_D0", false);
-      hierMesh().chunkVisible("Pilot2_D1", true);
-      break;
-    case 2:
-      hierMesh().chunkVisible("Pilot3_D0", false);
-      hierMesh().chunkVisible("Pilot3_D1", true);
-    }
-  }
-
-  protected void moveFan(float paramFloat)
-  {
-    if (this.bDynamoOperational) {
-      this.pk = Math.abs((int)(this.FM.Vwld.length() / 14.0D));
-      if (this.pk >= 1) this.pk = 1;
-    }
-    if (this.bDynamoRotary != (this.pk == 1)) {
-      this.bDynamoRotary = (this.pk == 1);
-      hierMesh().chunkVisible("Cart_D0", !this.bDynamoRotary);
-      hierMesh().chunkVisible("CartRot_D0", this.bDynamoRotary);
-    }
-    this.dynamoOrient = (this.bDynamoRotary ? (this.dynamoOrient - 17.987F) % 360.0F : (float)(this.dynamoOrient - this.FM.Vwld.length() * 1.544401526451111D) % 360.0F);
-    hierMesh().chunkSetAngles("Cart_D0", 0.0F, this.dynamoOrient, 0.0F);
-    super.moveFan(paramFloat);
-  }
-
-  protected void moveFlap(float paramFloat)
-  {
-    hierMesh().chunkSetAngles("Flap01_D0", 0.0F, -45.0F * paramFloat, 0.0F);
-    hierMesh().chunkSetAngles("Flap02_D0", 0.0F, -45.0F * paramFloat, 0.0F);
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    setShot(paramShot);
-
-    if ((paramShot.chunkName.startsWith("Engine1")) && 
-      (World.Rnd().nextFloat(0.0F, 0.5F) < paramShot.mass)) {
-      this.FM.AS.hitEngine(paramShot.initiator, 0, 1);
-    }
-    if ((paramShot.chunkName.startsWith("Engine2")) && 
-      (World.Rnd().nextFloat(0.0F, 0.5F) < paramShot.mass)) {
-      this.FM.AS.hitEngine(paramShot.initiator, 1, 1);
-    }
-    if ((paramShot.chunkName.startsWith("Engine3")) && 
-      (World.Rnd().nextFloat(0.0F, 0.5F) < paramShot.mass)) {
-      this.FM.AS.hitEngine(paramShot.initiator, 2, 1);
+    public JU_52()
+    {
+        bDynamoOperational = true;
+        dynamoOrient = 0.0F;
+        bDynamoRotary = false;
     }
 
-    if (paramShot.chunkName.startsWith("Turret")) {
-      this.FM.turret[0].bIsOperable = false;
+    public void doWoundPilot(int i, float f)
+    {
+        switch(i)
+        {
+        default:
+            break;
+
+        case 2: // '\002'
+            if(FM.turret.length > 0)
+                FM.turret[0].setHealth(f);
+            break;
+        }
     }
 
-    if ((paramShot.chunkName.startsWith("Tail1")) && 
-      (Pd.z > 0.5D) && (Pd.x > -6.0D) && (Pd.x < -4.949999809265137D) && (World.Rnd().nextFloat() < 0.5F)) {
-      this.FM.AS.hitPilot(paramShot.initiator, 2, (int)(paramShot.mass * 1000.0F * 0.5F));
+    public void doMurderPilot(int i)
+    {
+        switch(i)
+        {
+        case 0: // '\0'
+            hierMesh().chunkVisible("Pilot1_D0", false);
+            hierMesh().chunkVisible("Head1_D0", false);
+            hierMesh().chunkVisible("Pilot1_D1", true);
+            break;
+
+        case 1: // '\001'
+            hierMesh().chunkVisible("Pilot2_D0", false);
+            hierMesh().chunkVisible("Pilot2_D1", true);
+            break;
+
+        case 2: // '\002'
+            hierMesh().chunkVisible("Pilot3_D0", false);
+            hierMesh().chunkVisible("Pilot3_D1", true);
+            break;
+        }
     }
 
-    if ((paramShot.chunkName.startsWith("CF")) && 
-      (v1.x < -0.2000000029802322D) && (Pd.x > 2.599999904632568D) && (Pd.z > 0.7350000143051148D) && 
-      (World.Rnd().nextFloat() < 0.178F)) {
-      this.FM.AS.hitPilot(paramShot.initiator, Pd.y > 0.0D ? 0 : 1, (int)(paramShot.mass * 900.0F));
+    protected void moveFan(float f)
+    {
+        if(bDynamoOperational)
+        {
+            pk = java.lang.Math.abs((int)(FM.Vwld.length() / 14D));
+            if(pk >= 1)
+                pk = 1;
+        }
+        if(bDynamoRotary != (pk == 1))
+        {
+            bDynamoRotary = pk == 1;
+            hierMesh().chunkVisible("Cart_D0", !bDynamoRotary);
+            hierMesh().chunkVisible("CartRot_D0", bDynamoRotary);
+        }
+        dynamoOrient = bDynamoRotary ? (dynamoOrient - 17.987F) % 360F : (float)((double)dynamoOrient - FM.Vwld.length() * 1.5444015264511108D) % 360F;
+        hierMesh().chunkSetAngles("Cart_D0", 0.0F, dynamoOrient, 0.0F);
+        super.moveFan(f);
     }
 
-    if ((paramShot.chunkName.startsWith("WingLIn")) && 
-      (Math.abs(Pd.y) < 2.099999904632568D)) {
-      this.FM.AS.hitTank(paramShot.initiator, 0, World.Rnd().nextInt(0, (int)(paramShot.mass * 30.0F)));
+    protected void moveFlap(float f)
+    {
+        hierMesh().chunkSetAngles("Flap01_D0", 0.0F, -45F * f, 0.0F);
+        hierMesh().chunkSetAngles("Flap02_D0", 0.0F, -45F * f, 0.0F);
     }
 
-    if ((paramShot.chunkName.startsWith("WingRIn")) && 
-      (Math.abs(Pd.y) < 2.099999904632568D)) {
-      this.FM.AS.hitTank(paramShot.initiator, 0, World.Rnd().nextInt(1, (int)(paramShot.mass * 30.0F)));
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        setShot(shot);
+        if(shot.chunkName.startsWith("Engine1") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 0.5F) < shot.mass)
+            FM.AS.hitEngine(shot.initiator, 0, 1);
+        if(shot.chunkName.startsWith("Engine2") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 0.5F) < shot.mass)
+            FM.AS.hitEngine(shot.initiator, 1, 1);
+        if(shot.chunkName.startsWith("Engine3") && com.maddox.il2.ai.World.Rnd().nextFloat(0.0F, 0.5F) < shot.mass)
+            FM.AS.hitEngine(shot.initiator, 2, 1);
+        if(shot.chunkName.startsWith("Turret"))
+            FM.turret[0].bIsOperable = false;
+        if(shot.chunkName.startsWith("Tail1") && Pd.z > 0.5D && Pd.x > -6D && Pd.x < -4.9499998092651367D && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.5F)
+            FM.AS.hitPilot(shot.initiator, 2, (int)(shot.mass * 1000F * 0.5F));
+        if(shot.chunkName.startsWith("CF") && v1.x < -0.20000000298023224D && Pd.x > 2.5999999046325684D && Pd.z > 0.73500001430511475D && com.maddox.il2.ai.World.Rnd().nextFloat() < 0.178F)
+            FM.AS.hitPilot(shot.initiator, Pd.y <= 0.0D ? 1 : 0, (int)(shot.mass * 900F));
+        if(shot.chunkName.startsWith("WingLIn") && java.lang.Math.abs(Pd.y) < 2.0999999046325684D)
+            FM.AS.hitTank(shot.initiator, 0, com.maddox.il2.ai.World.Rnd().nextInt(0, (int)(shot.mass * 30F)));
+        if(shot.chunkName.startsWith("WingRIn") && java.lang.Math.abs(Pd.y) < 2.0999999046325684D)
+            FM.AS.hitTank(shot.initiator, 0, com.maddox.il2.ai.World.Rnd().nextInt(1, (int)(shot.mass * 30F)));
+        super.msgShot(shot);
     }
 
-    super.msgShot(paramShot);
-  }
+    public static void moveGear(com.maddox.il2.engine.HierMesh hiermesh, float f)
+    {
+    }
 
-  public static void moveGear(HierMesh paramHierMesh, float paramFloat)
-  {
-  }
+    protected void moveGear(float f)
+    {
+        com.maddox.il2.objects.air.JU_52.moveGear(hierMesh(), f);
+    }
 
-  protected void moveGear(float paramFloat)
-  {
-    moveGear(hierMesh(), paramFloat);
-  }
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-  static
-  {
-    Class localClass = JU_52.class;
-    Property.set(localClass, "originCountry", PaintScheme.countryGermany);
-  }
+    private boolean bDynamoOperational;
+    private float dynamoOrient;
+    private boolean bDynamoRotary;
+    private int pk;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.JU_52.class;
+        com.maddox.rts.Property.set(class1, "originCountry", com.maddox.il2.objects.air.PaintScheme.countryGermany);
+    }
 }

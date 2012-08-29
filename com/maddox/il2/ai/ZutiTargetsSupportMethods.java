@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ZutiTargetsSupportMethods.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.JGP.Point3d;
@@ -10,464 +15,429 @@ import com.maddox.il2.objects.ships.ShipGeneric;
 import java.util.ArrayList;
 import java.util.List;
 
+// Referenced classes of package com.maddox.il2.ai:
+//            Target, TDestroy, TDestroyGround, TDestroyBridge, 
+//            TInspect, TEscort, TDefenceGround, TDefenceBridge, 
+//            Wing, World, TargetsGuard
+
 public class ZutiTargetsSupportMethods
 {
-  public static boolean checkIfActorPartOfTDestroyGround(Actor paramActor, TDestroyGround paramTDestroyGround)
-  {
-    if (paramActor.pos == null) {
-      return false;
-    }
-    paramActor.pos.getAbs(TDestroyGround.p);
-    TDestroyGround.p.z = paramTDestroyGround.pos.getAbsPoint().z;
-    if (paramTDestroyGround.pos.getAbsPoint().distance(TDestroyGround.p) <= paramTDestroyGround.r)
+
+    public ZutiTargetsSupportMethods()
     {
-      if (!Target.isStaticActor(paramActor)) {
+    }
+
+    public static boolean checkIfActorPartOfTDestroyGround(com.maddox.il2.engine.Actor actor, com.maddox.il2.ai.TDestroyGround tdestroyground)
+    {
+        if(actor.pos == null)
+            return false;
+        actor.pos.getAbs(com.maddox.il2.ai.TDestroyGround.p);
+        com.maddox.il2.ai.TDestroyGround.p.z = tdestroyground.pos.getAbsPoint().z;
+        if(tdestroyground.pos.getAbsPoint().distance(com.maddox.il2.ai.TDestroyGround.p) <= tdestroyground.r)
+        {
+            if(!com.maddox.il2.ai.Target.isStaticActor(actor))
+                return false;
+            tdestroyground.countActors--;
+            if(tdestroyground.countActors <= 0)
+                return true;
+        }
         return false;
-      }
-      paramTDestroyGround.countActors -= 1;
-
-      if (paramTDestroyGround.countActors <= 0)
-      {
-        return true;
-      }
     }
 
-    return false;
-  }
-
-  public static boolean checkIfActorPartOfTDefenceGround(Actor paramActor, TDefenceGround paramTDefenceGround)
-  {
-    if (paramActor.pos == null) {
-      return false;
-    }
-    paramActor.pos.getAbs(TDefenceGround.p);
-    TDefenceGround.p.z = paramTDefenceGround.pos.getAbsPoint().z;
-    if (paramTDefenceGround.pos.getAbsPoint().distance(TDefenceGround.p) <= paramTDefenceGround.r)
+    public static boolean checkIfActorPartOfTDefenceGround(com.maddox.il2.engine.Actor actor, com.maddox.il2.ai.TDefenceGround tdefenceground)
     {
-      if (!Target.isStaticActor(paramActor)) {
+        if(actor.pos == null)
+            return false;
+        actor.pos.getAbs(com.maddox.il2.ai.TDefenceGround.p);
+        com.maddox.il2.ai.TDefenceGround.p.z = tdefenceground.pos.getAbsPoint().z;
+        if(tdefenceground.pos.getAbsPoint().distance(com.maddox.il2.ai.TDefenceGround.p) <= tdefenceground.r)
+        {
+            if(!com.maddox.il2.ai.Target.isStaticActor(actor))
+                return false;
+            tdefenceground.countActors--;
+            if(tdefenceground.countActors <= 0)
+                return true;
+        }
         return false;
-      }
-      paramTDefenceGround.countActors -= 1;
-
-      if (paramTDefenceGround.countActors <= 0)
-      {
-        return true;
-      }
     }
 
-    return false;
-  }
-
-  public static void checkForDeactivatedTargets()
-  {
-    World localWorld = World.cur();
-    if ((localWorld == null) || (localWorld.targetsGuard == null)) {
-      return;
-    }
-    List localList = localWorld.targetsGuard.zutiGetTargets();
-
-    if ((localList == null) || (localList.size() == 0)) {
-      return;
-    }
-
-    ArrayList localArrayList = new ArrayList();
-
-    Target localTarget = null;
-    Point3d localPoint3d = null;
-    TDestroy localTDestroy = null;
-    TDestroyBridge localTDestroyBridge = null;
-    TDefenceBridge localTDefenceBridge = null;
-    TDestroyGround localTDestroyGround = null;
-    TDefenceGround localTDefenceGround = null;
-    TEscort localTEscort = null;
-    TInspect localTInspect = null;
-
-    int i = localList.size();
-    for (int j = 0; j < i; j++)
+    public static void checkForDeactivatedTargets()
     {
-      localTarget = (Target)localList.get(j);
-      boolean bool;
-      if ((localTarget instanceof TDestroy))
-      {
-        localTDestroy = (TDestroy)localTarget;
-        bool = localTDestroy.checkActor();
+        com.maddox.il2.ai.World world = com.maddox.il2.ai.World.cur();
+        if(world == null || world.targetsGuard == null)
+            return;
+        java.util.List list = world.targetsGuard.zutiGetTargets();
+        if(list == null || list.size() == 0)
+            return;
+        java.util.ArrayList arraylist = new ArrayList();
+        Object obj = null;
+        Object obj1 = null;
+        Object obj2 = null;
+        Object obj3 = null;
+        Object obj4 = null;
+        Object obj5 = null;
+        Object obj6 = null;
+        Object obj7 = null;
+        Object obj8 = null;
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Target target = (com.maddox.il2.ai.Target)list.get(j);
+            if(target instanceof com.maddox.il2.ai.TDestroy)
+            {
+                com.maddox.il2.ai.TDestroy tdestroy = (com.maddox.il2.ai.TDestroy)target;
+                boolean flag = tdestroy.checkActor();
+                if(tdestroy.actor != null && (tdestroy.actor instanceof com.maddox.il2.objects.ships.BigshipGeneric))
+                {
+                    if(((com.maddox.il2.objects.ships.BigshipGeneric)tdestroy.actor).zutiGetDying() > 0)
+                    {
+                        com.maddox.il2.game.ZutiSupportMethods.removeTarget(tdestroy.nameTarget);
+                        arraylist.add(target);
+                    }
+                    continue;
+                }
+                if(tdestroy.actor != null && (tdestroy.actor instanceof com.maddox.il2.objects.ships.ShipGeneric))
+                {
+                    if(((com.maddox.il2.objects.ships.ShipGeneric)tdestroy.actor).zutiGetDying() > 0)
+                    {
+                        com.maddox.il2.game.ZutiSupportMethods.removeTarget(tdestroy.nameTarget);
+                        arraylist.add(target);
+                    }
+                    continue;
+                }
+                if(tdestroy.alive == -1)
+                {
+                    world.targetsGuard.zutiTargetNamesToRemove.add(tdestroy.nameTarget);
+                    arraylist.add(target);
+                    continue;
+                }
+                if(tdestroy.actor != null && tdestroy.actor.getDiedFlag())
+                {
+                    com.maddox.il2.game.ZutiSupportMethods.removeTarget(tdestroy.nameTarget);
+                    arraylist.add(target);
+                    continue;
+                }
+                if(!flag)
+                {
+                    com.maddox.il2.game.ZutiSupportMethods.removeTarget(tdestroy.nameTarget);
+                    arraylist.add(target);
+                }
+                continue;
+            }
+            if(target instanceof com.maddox.il2.ai.TDestroyGround)
+            {
+                com.maddox.il2.ai.TDestroyGround tdestroyground = (com.maddox.il2.ai.TDestroyGround)target;
+                if(tdestroyground.getDiedFlag())
+                {
+                    com.maddox.JGP.Point3d point3d = tdestroyground.pos.getAbsPoint();
+                    com.maddox.il2.game.ZutiSupportMethods.removeTarget(point3d.x, point3d.y);
+                    arraylist.add(target);
+                }
+                continue;
+            }
+            if(target instanceof com.maddox.il2.ai.TDestroyBridge)
+            {
+                com.maddox.il2.ai.TDestroyBridge tdestroybridge = (com.maddox.il2.ai.TDestroyBridge)target;
+                if(tdestroybridge.actor.getDiedFlag())
+                {
+                    com.maddox.il2.game.ZutiSupportMethods.removeTarget(tdestroybridge.actor.name());
+                    arraylist.add(target);
+                }
+                continue;
+            }
+            if(target instanceof com.maddox.il2.ai.TInspect)
+            {
+                com.maddox.il2.ai.TInspect tinspect = (com.maddox.il2.ai.TInspect)target;
+                if(!tinspect.getDiedFlag())
+                    continue;
+                if(tinspect.nameTarget == null || tinspect.nameTarget.trim().length() < 1)
+                {
+                    com.maddox.JGP.Point3d point3d1 = tinspect.pos.getAbsPoint();
+                    com.maddox.il2.game.ZutiSupportMethods.removeTarget(point3d1.x, point3d1.y);
+                    arraylist.add(target);
+                } else
+                {
+                    com.maddox.il2.game.ZutiSupportMethods.removeTarget(tinspect.nameTarget);
+                    arraylist.add(target);
+                }
+                continue;
+            }
+            if(target instanceof com.maddox.il2.ai.TEscort)
+            {
+                com.maddox.il2.ai.TEscort tescort = (com.maddox.il2.ai.TEscort)target;
+                boolean flag1 = tescort.checkActor();
+                if(tescort.actor != null && (tescort.actor instanceof com.maddox.il2.objects.ships.BigshipGeneric))
+                {
+                    if(((com.maddox.il2.objects.ships.BigshipGeneric)tescort.actor).zutiGetDying() > 0)
+                    {
+                        com.maddox.il2.game.ZutiSupportMethods.removeTarget(tescort.nameTarget);
+                        arraylist.add(target);
+                    }
+                    continue;
+                }
+                if(tescort.actor != null && (tescort.actor instanceof com.maddox.il2.objects.ships.ShipGeneric))
+                {
+                    if(((com.maddox.il2.objects.ships.ShipGeneric)tescort.actor).zutiGetDying() > 0)
+                    {
+                        com.maddox.il2.game.ZutiSupportMethods.removeTarget(tescort.nameTarget);
+                        arraylist.add(target);
+                    }
+                    continue;
+                }
+                if(tescort.alive == -1)
+                {
+                    world.targetsGuard.zutiTargetNamesToRemove.add(tescort.nameTarget);
+                    arraylist.add(target);
+                    continue;
+                }
+                if(tescort.actor != null && tescort.actor.getDiedFlag())
+                {
+                    com.maddox.il2.game.ZutiSupportMethods.removeTarget(tescort.nameTarget);
+                    arraylist.add(target);
+                    continue;
+                }
+                if(!flag1)
+                {
+                    com.maddox.il2.game.ZutiSupportMethods.removeTarget(tescort.nameTarget);
+                    arraylist.add(target);
+                }
+                continue;
+            }
+            if(target instanceof com.maddox.il2.ai.TDefenceGround)
+            {
+                com.maddox.il2.ai.TDefenceGround tdefenceground = (com.maddox.il2.ai.TDefenceGround)target;
+                if(tdefenceground.getDiedFlag())
+                {
+                    com.maddox.JGP.Point3d point3d2 = tdefenceground.pos.getAbsPoint();
+                    com.maddox.il2.game.ZutiSupportMethods.removeTarget(point3d2.x, point3d2.y);
+                    arraylist.add(target);
+                }
+                continue;
+            }
+            if(!(target instanceof com.maddox.il2.ai.TDefenceBridge))
+                continue;
+            com.maddox.il2.ai.TDefenceBridge tdefencebridge = (com.maddox.il2.ai.TDefenceBridge)target;
+            if(tdefencebridge.actor.getDiedFlag())
+            {
+                com.maddox.il2.game.ZutiSupportMethods.removeTarget(tdefencebridge.actor.name());
+                arraylist.add(target);
+            }
+        }
 
-        if ((localTDestroy.actor != null) && ((localTDestroy.actor instanceof BigshipGeneric)))
-        {
-          if (((BigshipGeneric)localTDestroy.actor).zutiGetDying() > 0)
-          {
-            ZutiSupportMethods.removeTarget(localTDestroy.nameTarget);
-            localArrayList.add(localTarget);
-          }
-        }
-        else if ((localTDestroy.actor != null) && ((localTDestroy.actor instanceof ShipGeneric)))
-        {
-          if (((ShipGeneric)localTDestroy.actor).zutiGetDying() > 0)
-          {
-            ZutiSupportMethods.removeTarget(localTDestroy.nameTarget);
-            localArrayList.add(localTarget);
-          }
-        }
-        else if (localTDestroy.alive == -1)
-        {
-          localWorld.targetsGuard.zutiTargetNamesToRemove.add(localTDestroy.nameTarget);
-
-          localArrayList.add(localTarget);
-        }
-        else if ((localTDestroy.actor != null) && (localTDestroy.actor.getDiedFlag()))
-        {
-          ZutiSupportMethods.removeTarget(localTDestroy.nameTarget);
-          localArrayList.add(localTarget);
-        }
-        else if (!bool)
-        {
-          ZutiSupportMethods.removeTarget(localTDestroy.nameTarget);
-          localArrayList.add(localTarget);
-        }
-      }
-      else if ((localTarget instanceof TDestroyGround))
-      {
-        localTDestroyGround = (TDestroyGround)localTarget;
-        if (!localTDestroyGround.getDiedFlag())
-          continue;
-        localPoint3d = localTDestroyGround.pos.getAbsPoint();
-
-        ZutiSupportMethods.removeTarget(localPoint3d.x, localPoint3d.y);
-        localArrayList.add(localTarget);
-      }
-      else if ((localTarget instanceof TDestroyBridge))
-      {
-        localTDestroyBridge = (TDestroyBridge)localTarget;
-        if (!localTDestroyBridge.actor.getDiedFlag())
-          continue;
-        ZutiSupportMethods.removeTarget(localTDestroyBridge.actor.name());
-        localArrayList.add(localTarget);
-      }
-      else if ((localTarget instanceof TInspect))
-      {
-        localTInspect = (TInspect)localTarget;
-        if (!localTInspect.getDiedFlag())
-          continue;
-        if ((localTInspect.nameTarget == null) || (localTInspect.nameTarget.trim().length() < 1))
-        {
-          localPoint3d = localTInspect.point;
-
-          ZutiSupportMethods.removeTarget(localPoint3d.x, localPoint3d.y);
-          localArrayList.add(localTarget);
-        }
-        else
-        {
-          ZutiSupportMethods.removeTarget(localTInspect.nameTarget);
-          localArrayList.add(localTarget);
-        }
-
-      }
-      else if ((localTarget instanceof TEscort))
-      {
-        localTEscort = (TEscort)localTarget;
-        bool = localTEscort.checkActor();
-
-        if ((localTEscort.actor != null) && ((localTEscort.actor instanceof BigshipGeneric)))
-        {
-          if (((BigshipGeneric)localTEscort.actor).zutiGetDying() > 0)
-          {
-            ZutiSupportMethods.removeTarget(localTEscort.nameTarget);
-            localArrayList.add(localTarget);
-          }
-        }
-        else if ((localTEscort.actor != null) && ((localTEscort.actor instanceof ShipGeneric)))
-        {
-          if (((ShipGeneric)localTEscort.actor).zutiGetDying() > 0)
-          {
-            ZutiSupportMethods.removeTarget(localTEscort.nameTarget);
-            localArrayList.add(localTarget);
-          }
-        }
-        else if (localTEscort.alive == -1)
-        {
-          localWorld.targetsGuard.zutiTargetNamesToRemove.add(localTEscort.nameTarget);
-
-          localArrayList.add(localTarget);
-        }
-        else if ((localTEscort.actor != null) && (localTEscort.actor.getDiedFlag()))
-        {
-          ZutiSupportMethods.removeTarget(localTEscort.nameTarget);
-          localArrayList.add(localTarget);
-        }
-        else if (!bool)
-        {
-          ZutiSupportMethods.removeTarget(localTEscort.nameTarget);
-          localArrayList.add(localTarget);
-        }
-      }
-      else if ((localTarget instanceof TDefenceGround))
-      {
-        localTDefenceGround = (TDefenceGround)localTarget;
-        if (!localTDefenceGround.getDiedFlag())
-          continue;
-        localPoint3d = localTDefenceGround.pos.getAbsPoint();
-
-        ZutiSupportMethods.removeTarget(localPoint3d.x, localPoint3d.y);
-        localArrayList.add(localTarget);
-      }
-      else {
-        if (!(localTarget instanceof TDefenceBridge))
-          continue;
-        localTDefenceBridge = (TDefenceBridge)localTarget;
-        if (!localTDefenceBridge.actor.getDiedFlag())
-          continue;
-        ZutiSupportMethods.removeTarget(localTDefenceBridge.actor.name());
-        localArrayList.add(localTarget);
-      }
+        i = arraylist.size();
+        for(int k = 0; k < i; k++)
+            list.remove((com.maddox.il2.ai.Target)arraylist.get(k));
 
     }
 
-    i = localArrayList.size();
-    for (j = 0; j < i; j++)
+    public static void staticActorDied(com.maddox.il2.engine.Actor actor)
     {
-      localList.remove((Target)localArrayList.get(j));
+        com.maddox.il2.ai.World world = com.maddox.il2.ai.World.cur();
+        if(world == null || world.targetsGuard == null)
+            return;
+        java.util.List list = world.targetsGuard.zutiGetTargets();
+        int i = list.size();
+        Object obj = null;
+        Object obj1 = null;
+        Object obj2 = null;
+        Object obj3 = null;
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Target target = (com.maddox.il2.ai.Target)list.get(j);
+            if(target instanceof com.maddox.il2.ai.TDestroyGround)
+            {
+                com.maddox.il2.ai.TDestroyGround tdestroyground = (com.maddox.il2.ai.TDestroyGround)target;
+                if(com.maddox.il2.ai.ZutiTargetsSupportMethods.checkIfActorPartOfTDestroyGround(actor, tdestroyground))
+                {
+                    com.maddox.JGP.Point3d point3d = tdestroyground.pos.getAbsPoint();
+                    com.maddox.il2.game.ZutiSupportMethods.removeTarget(point3d.x, point3d.y);
+                    world.targetsGuard.zutiTargetPosToRemove.add(target);
+                }
+                continue;
+            }
+            if(!(target instanceof com.maddox.il2.ai.TDefenceGround))
+                continue;
+            com.maddox.il2.ai.TDefenceGround tdefenceground = (com.maddox.il2.ai.TDefenceGround)target;
+            if(com.maddox.il2.ai.ZutiTargetsSupportMethods.checkIfActorPartOfTDefenceGround(actor, tdefenceground))
+            {
+                com.maddox.JGP.Point3d point3d1 = tdefenceground.pos.getAbsPoint();
+                com.maddox.il2.game.ZutiSupportMethods.removeTarget(point3d1.x, point3d1.y);
+                world.targetsGuard.zutiTargetPosToRemove.add(target);
+            }
+        }
+
     }
-  }
 
-  public static void staticActorDied(Actor paramActor)
-  {
-    World localWorld = World.cur();
-    if ((localWorld == null) || (localWorld.targetsGuard == null)) {
-      return;
-    }
-    List localList = localWorld.targetsGuard.zutiGetTargets();
-
-    int i = localList.size();
-
-    Target localTarget = null;
-    Point3d localPoint3d = null;
-    TDestroyGround localTDestroyGround = null;
-    TDefenceGround localTDefenceGround = null;
-
-    for (int j = 0; j < i; j++)
+    public static com.maddox.JGP.Point3d getNearestTarget(com.maddox.JGP.Point3d point3d, boolean flag)
     {
-      localTarget = (Target)localList.get(j);
-      if ((localTarget instanceof TDestroyGround))
-      {
-        localTDestroyGround = (TDestroyGround)localTarget;
-        if (!checkIfActorPartOfTDestroyGround(paramActor, localTDestroyGround))
-          continue;
-        localPoint3d = localTDestroyGround.pos.getAbsPoint();
+        com.maddox.il2.ai.World world = com.maddox.il2.ai.World.cur();
+        if(world == null || world.targetsGuard == null)
+            return null;
+        java.util.List list = world.targetsGuard.zutiGetTargets();
+        com.maddox.JGP.Point3d point3d1 = null;
+        double d = -1D;
+        int i = list.size();
+        Object obj = null;
+        Object obj1 = null;
+        Object obj2 = null;
+        Object obj3 = null;
+        com.maddox.il2.ai.TDestroy tdestroy = null;
+        Object obj4 = null;
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Target target = (com.maddox.il2.ai.Target)list.get(j);
+            if(!target.isAlive())
+                continue;
+            if(flag && (target instanceof com.maddox.il2.ai.TDestroyGround))
+            {
+                com.maddox.JGP.Point3d point3d2 = target.pos.getAbsPoint();
+                double d1 = java.lang.Math.pow(point3d.x - point3d2.x, 2D) + java.lang.Math.pow(point3d.y - point3d2.y, 2D);
+                if(d1 < d || d < 0.0D)
+                {
+                    d = d1;
+                    point3d1 = point3d2;
+                }
+            }
+            if(flag && (target instanceof com.maddox.il2.ai.TDestroyBridge))
+            {
+                com.maddox.il2.ai.TDestroyBridge tdestroybridge = (com.maddox.il2.ai.TDestroyBridge)target;
+                if(tdestroybridge.actor == null)
+                    continue;
+                com.maddox.JGP.Point3d point3d3 = tdestroybridge.actor.pos.getAbsPoint();
+                double d2 = java.lang.Math.pow(point3d.x - point3d3.x, 2D) + java.lang.Math.pow(point3d.y - point3d3.y, 2D);
+                if(d2 < d || d < 0.0D)
+                {
+                    d = d2;
+                    point3d1 = point3d3;
+                }
+            }
+            if(flag && (target instanceof com.maddox.il2.ai.TDestroy))
+            {
+                tdestroy = (com.maddox.il2.ai.TDestroy)target;
+                if(tdestroy.actor == null)
+                    continue;
+                if(tdestroy.actor instanceof com.maddox.il2.ai.Wing)
+                {
+                    com.maddox.JGP.Point3d point3d4 = com.maddox.il2.ai.ZutiTargetsSupportMethods.getPointFromWing((com.maddox.il2.ai.Wing)tdestroy.actor);
+                    if(point3d4 == null)
+                        continue;
+                    double d3 = java.lang.Math.pow(point3d.x - point3d4.x, 2D) + java.lang.Math.pow(point3d.y - point3d4.y, 2D);
+                    if(d3 < d || d < 0.0D)
+                    {
+                        d = d3;
+                        point3d1 = point3d4;
+                    }
+                } else
+                {
+                    com.maddox.JGP.Point3d point3d5 = tdestroy.actor.pos.getAbsPoint();
+                    double d4 = java.lang.Math.pow(point3d.x - point3d5.x, 2D) + java.lang.Math.pow(point3d.y - point3d5.y, 2D);
+                    if(d4 < d || d < 0.0D)
+                    {
+                        d = d4;
+                        point3d1 = point3d5;
+                    }
+                }
+            }
+            if(!flag && (target instanceof com.maddox.il2.ai.TDefenceGround))
+            {
+                com.maddox.JGP.Point3d point3d6 = target.pos.getAbsPoint();
+                double d5 = java.lang.Math.pow(point3d.x - point3d6.x, 2D) + java.lang.Math.pow(point3d.y - point3d6.y, 2D);
+                if(d5 < d || d < 0.0D)
+                {
+                    d = d5;
+                    point3d1 = point3d6;
+                }
+            }
+            if(!flag && (target instanceof com.maddox.il2.ai.TDefenceBridge))
+            {
+                com.maddox.il2.ai.TDefenceBridge tdefencebridge = (com.maddox.il2.ai.TDefenceBridge)target;
+                if(tdefencebridge.actor == null)
+                    continue;
+                com.maddox.JGP.Point3d point3d7 = tdestroy.actor.pos.getAbsPoint();
+                double d6 = java.lang.Math.pow(point3d.x - point3d7.x, 2D) + java.lang.Math.pow(point3d.y - point3d7.y, 2D);
+                if(d6 < d || d < 0.0D)
+                {
+                    d = d6;
+                    point3d1 = point3d7;
+                }
+            }
+            if(flag || !(target instanceof com.maddox.il2.ai.TEscort))
+                continue;
+            com.maddox.il2.ai.TEscort tescort = (com.maddox.il2.ai.TEscort)target;
+            tescort.checkActor();
+            if(tescort.actor == null)
+                continue;
+            if(tescort.actor instanceof com.maddox.il2.ai.Wing)
+            {
+                com.maddox.JGP.Point3d point3d8 = com.maddox.il2.ai.ZutiTargetsSupportMethods.getPointFromWing((com.maddox.il2.ai.Wing)tdestroy.actor);
+                if(point3d8 == null)
+                    continue;
+                double d7 = java.lang.Math.pow(point3d.x - point3d8.x, 2D) + java.lang.Math.pow(point3d.y - point3d8.y, 2D);
+                if(d7 < d || d < 0.0D)
+                {
+                    d = d7;
+                    point3d1 = point3d8;
+                }
+                continue;
+            }
+            com.maddox.JGP.Point3d point3d9 = tdestroy.actor.pos.getAbsPoint();
+            double d8 = java.lang.Math.pow(point3d.x - point3d9.x, 2D) + java.lang.Math.pow(point3d.y - point3d9.y, 2D);
+            if(d8 < d || d < 0.0D)
+            {
+                d = d8;
+                point3d1 = point3d9;
+            }
+        }
 
-        ZutiSupportMethods.removeTarget(localPoint3d.x, localPoint3d.y);
-
-        localWorld.targetsGuard.zutiTargetPosToRemove.add(localTarget);
-      }
-      else {
-        if (!(localTarget instanceof TDefenceGround))
-          continue;
-        localTDefenceGround = (TDefenceGround)localTarget;
-        if (!checkIfActorPartOfTDefenceGround(paramActor, localTDefenceGround))
-          continue;
-        localPoint3d = localTDefenceGround.pos.getAbsPoint();
-
-        ZutiSupportMethods.removeTarget(localPoint3d.x, localPoint3d.y);
-
-        localWorld.targetsGuard.zutiTargetPosToRemove.add(localTarget);
-      }
+        return point3d1;
     }
-  }
 
-  public static Point3d getNearestTarget(Point3d paramPoint3d, boolean paramBoolean)
-  {
-    World localWorld = World.cur();
-    if ((localWorld == null) || (localWorld.targetsGuard == null)) {
-      return null;
-    }
-    List localList = localWorld.targetsGuard.zutiGetTargets();
-    Object localObject = null;
-
-    double d1 = -1.0D;
-    int i = localList.size();
-
-    Target localTarget = null;
-    Point3d localPoint3d = null;
-    TDestroyBridge localTDestroyBridge = null;
-    TDefenceBridge localTDefenceBridge = null;
-    TDestroy localTDestroy = null;
-    TEscort localTEscort = null;
-
-    for (int j = 0; j < i; j++)
+    public static com.maddox.JGP.Point3d getPointFromWing(com.maddox.il2.ai.Wing wing)
     {
-      localTarget = (Target)localList.get(j);
-      if (!localTarget.isAlive())
-        continue;
-      double d2;
-      if ((paramBoolean) && ((localTarget instanceof TDestroyGround)))
-      {
-        localPoint3d = localTarget.pos.getAbsPoint();
-        d2 = Math.pow(paramPoint3d.x - localPoint3d.x, 2.0D) + Math.pow(paramPoint3d.y - localPoint3d.y, 2.0D);
-
-        if ((d2 < d1) || (d1 < 0.0D))
+        com.maddox.JGP.Point3d point3d = null;
+        int i = wing.airc.length;
+        int j = 0;
+        do
         {
-          d1 = d2;
-          localObject = localPoint3d;
-        }
-      }
-      if ((paramBoolean) && ((localTarget instanceof TDestroyBridge)))
-      {
-        localTDestroyBridge = (TDestroyBridge)localTarget;
-        if (localTDestroyBridge.actor == null) {
-          continue;
-        }
-        localPoint3d = localTDestroyBridge.actor.pos.getAbsPoint();
-        d2 = Math.pow(paramPoint3d.x - localPoint3d.x, 2.0D) + Math.pow(paramPoint3d.y - localPoint3d.y, 2.0D);
-
-        if ((d2 < d1) || (d1 < 0.0D))
-        {
-          d1 = d2;
-          localObject = localPoint3d;
-        }
-      }
-      if ((paramBoolean) && ((localTarget instanceof TDestroy)))
-      {
-        localTDestroy = (TDestroy)localTarget;
-        if (localTDestroy.actor == null) {
-          continue;
-        }
-        if ((localTDestroy.actor instanceof Wing))
-        {
-          localPoint3d = getPointFromWing((Wing)localTDestroy.actor);
-          if (localPoint3d == null)
-          {
-            continue;
-          }
-          d2 = Math.pow(paramPoint3d.x - localPoint3d.x, 2.0D) + Math.pow(paramPoint3d.y - localPoint3d.y, 2.0D);
-
-          if ((d2 < d1) || (d1 < 0.0D))
-          {
-            d1 = d2;
-            localObject = localPoint3d;
-          }
-
-        }
-        else
-        {
-          localPoint3d = localTDestroy.actor.pos.getAbsPoint();
-          d2 = Math.pow(paramPoint3d.x - localPoint3d.x, 2.0D) + Math.pow(paramPoint3d.y - localPoint3d.y, 2.0D);
-
-          if ((d2 < d1) || (d1 < 0.0D))
-          {
-            d1 = d2;
-            localObject = localPoint3d;
-          }
-        }
-      }
-
-      if ((!paramBoolean) && ((localTarget instanceof TDefenceGround)))
-      {
-        localPoint3d = localTarget.pos.getAbsPoint();
-        d2 = Math.pow(paramPoint3d.x - localPoint3d.x, 2.0D) + Math.pow(paramPoint3d.y - localPoint3d.y, 2.0D);
-
-        if ((d2 < d1) || (d1 < 0.0D))
-        {
-          d1 = d2;
-          localObject = localPoint3d;
-        }
-      }
-      if ((!paramBoolean) && ((localTarget instanceof TDefenceBridge)))
-      {
-        localTDefenceBridge = (TDefenceBridge)localTarget;
-        if (localTDefenceBridge.actor == null) {
-          continue;
-        }
-        localPoint3d = localTDestroy.actor.pos.getAbsPoint();
-        d2 = Math.pow(paramPoint3d.x - localPoint3d.x, 2.0D) + Math.pow(paramPoint3d.y - localPoint3d.y, 2.0D);
-
-        if ((d2 < d1) || (d1 < 0.0D))
-        {
-          d1 = d2;
-          localObject = localPoint3d;
-        }
-      }
-      if ((paramBoolean) || (!(localTarget instanceof TEscort)))
-        continue;
-      localTEscort = (TEscort)localTarget;
-      localTEscort.checkActor();
-      if (localTEscort.actor == null) {
-        continue;
-      }
-      if ((localTEscort.actor instanceof Wing))
-      {
-        localPoint3d = getPointFromWing((Wing)localTDestroy.actor);
-        if (localPoint3d == null)
-        {
-          continue;
-        }
-        d2 = Math.pow(paramPoint3d.x - localPoint3d.x, 2.0D) + Math.pow(paramPoint3d.y - localPoint3d.y, 2.0D);
-
-        if ((d2 < d1) || (d1 < 0.0D))
-        {
-          d1 = d2;
-          localObject = localPoint3d;
-        }
-
-      }
-      else
-      {
-        localPoint3d = localTDestroy.actor.pos.getAbsPoint();
-        d2 = Math.pow(paramPoint3d.x - localPoint3d.x, 2.0D) + Math.pow(paramPoint3d.y - localPoint3d.y, 2.0D);
-
-        if ((d2 >= d1) && (d1 >= 0.0D))
-          continue;
-        d1 = d2;
-        localObject = localPoint3d;
-      }
-
+            if(j >= i)
+                break;
+            if(wing.airc[j] != null && !wing.airc[j].getDiedFlag())
+            {
+                point3d = wing.airc[j].pos.getAbsPoint();
+                break;
+            }
+            j++;
+        } while(true);
+        return point3d;
     }
 
-    return localObject;
-  }
-
-  public static Point3d getPointFromWing(Wing paramWing)
-  {
-    Point3d localPoint3d = null;
-    int i = paramWing.airc.length;
-    for (int j = 0; j < i; j++)
+    public static boolean isOverTarget(double d, double d1)
     {
-      if ((paramWing.airc[j] == null) || (paramWing.airc[j].getDiedFlag()))
-        continue;
-      localPoint3d = paramWing.airc[j].pos.getAbsPoint();
-      break;
-    }
-
-    return localPoint3d;
-  }
-
-  public static boolean isOverTarget(double paramDouble1, double paramDouble2)
-  {
-    World localWorld = World.cur();
-    if ((localWorld == null) || (localWorld.targetsGuard == null)) {
-      return false;
-    }
-    Target localTarget = null;
-    TDestroyGround localTDestroyGround = null;
-    TDefenceGround localTDefenceGround = null;
-    List localList = localWorld.targetsGuard.zutiGetTargets();
-    int i = localList.size();
-    for (int j = 0; j < i; j++)
-    {
-      localTarget = (Target)localList.get(j);
-
-      if ((localTarget instanceof TDestroyGround))
-      {
-        localTDestroyGround = (TDestroyGround)localTarget;
-        if ((!localTDestroyGround.getDiedFlag()) && (localTDestroyGround.zutiIsOverTarged(paramDouble1, paramDouble2)))
-          return true;
-      } else {
-        if (!(localTarget instanceof TDefenceGround))
-          continue;
-        localTDefenceGround = (TDefenceGround)localTarget;
-        if ((!localTDefenceGround.getDiedFlag()) && (localTDefenceGround.zutiIsOverTarged(paramDouble1, paramDouble2))) {
-          return true;
+        com.maddox.il2.ai.World world = com.maddox.il2.ai.World.cur();
+        if(world == null || world.targetsGuard == null)
+            return false;
+        Object obj = null;
+        Object obj1 = null;
+        Object obj2 = null;
+        java.util.List list = world.targetsGuard.zutiGetTargets();
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.Target target = (com.maddox.il2.ai.Target)list.get(j);
+            if(target instanceof com.maddox.il2.ai.TDestroyGround)
+            {
+                com.maddox.il2.ai.TDestroyGround tdestroyground = (com.maddox.il2.ai.TDestroyGround)target;
+                if(!tdestroyground.getDiedFlag() && tdestroyground.zutiIsOverTarged(d, d1))
+                    return true;
+                continue;
+            }
+            if(!(target instanceof com.maddox.il2.ai.TDefenceGround))
+                continue;
+            com.maddox.il2.ai.TDefenceGround tdefenceground = (com.maddox.il2.ai.TDefenceGround)target;
+            if(!tdefenceground.getDiedFlag() && tdefenceground.zutiIsOverTarged(d, d1))
+                return true;
         }
-      }
+
+        return false;
     }
-    return false;
-  }
 }

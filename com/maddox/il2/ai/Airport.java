@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Airport.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.JGP.Point3d;
@@ -21,195 +26,230 @@ import com.maddox.rts.Time;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Airport extends Actor
-  implements MsgDreamListener
+// Referenced classes of package com.maddox.il2.ai:
+//            AirportGround, AirportMaritime, AirportCarrier, World, 
+//            Way, WayPoint
+
+public abstract class Airport extends com.maddox.il2.engine.Actor
+    implements com.maddox.il2.engine.MsgDreamListener
 {
-  public static final int TYPE_ANY = 7;
-  public static final int TYPE_GROUND = 1;
-  public static final int TYPE_MARITIME = 2;
-  public static final int TYPE_CARRIER = 4;
-  private static Point3f PlLoc = new Point3f();
-  public int takeoffRequest = 0;
-  public int landingRequest = 0;
+    class Interpolater extends com.maddox.il2.engine.Interpolate
+    {
 
-  private static Point3d pd = new Point3d();
-
-  public static Airport nearest(Point3f paramPoint3f, int paramInt1, int paramInt2)
-  {
-    pd.set(paramPoint3f.x, paramPoint3f.y, paramPoint3f.z);
-    return nearest(pd, paramInt1, paramInt2);
-  }
-
-  public static Airport nearest(Point3d paramPoint3d, int paramInt1, int paramInt2)
-  {
-    Object localObject = null;
-    double d1 = 0.0D;
-    pd.set(paramPoint3d.x, paramPoint3d.y, paramPoint3d.z);
-    int i = World.cur().airports.size();
-    for (int j = 0; j < i; j++) {
-      Airport localAirport = (Airport)World.cur().airports.get(j);
-
-      if ((((paramInt2 & 0x1) == 0) || (!(localAirport instanceof AirportGround))) && 
-        (((paramInt2 & 0x2) == 0) || (!(localAirport instanceof AirportMaritime))) && (
-        ((paramInt2 & 0x4) == 0) || (!(localAirport instanceof AirportCarrier))))
-      {
-        continue;
-      }
-
-      if (!Actor.isAlive(localAirport))
-        continue;
-      if (paramInt1 >= 0) {
-        int k = localAirport.getArmy();
-        if ((k != 0) && (k != paramInt1)) {
-          continue;
+        public boolean tick()
+        {
+            update();
+            return true;
         }
-      }
-      pd.z = localAirport.pos.getAbsPoint().z;
-      double d2 = pd.distanceSquared(localAirport.pos.getAbsPoint());
-      if ((localObject == null) || (d2 < d1)) {
-        localObject = localAirport;
-        d1 = d2;
-      }
-    }
-    if (d1 > 225000000.0D)
-      localObject = null;
-    return localObject;
-  }
 
-  public Airport()
-  {
-    this.flags |= 512;
-    World.cur().airports.add(this);
-  }
-
-  public static double distToNearestAirport(Point3d paramPoint3d)
-  {
-    return distToNearestAirport(paramPoint3d, -1, 7);
-  }
-
-  public static double distToNearestAirport(Point3d paramPoint3d, int paramInt1, int paramInt2) {
-    Airport localAirport = nearest(paramPoint3d, paramInt1, paramInt2);
-    if (localAirport == null) return 225000000.0D;
-    return localAirport.pos.getAbsPoint().distance(paramPoint3d);
-  }
-
-  public static Airport makeLandWay(FlightModel paramFlightModel)
-  {
-    paramFlightModel.AP.way.curr().getP(PlLoc);
-    int i = 0;
-    Airport localAirport = null;
-    int j = paramFlightModel.actor.getArmy();
-
-    if ((paramFlightModel.actor instanceof TypeSailPlane)) {
-      i = 2;
-      localAirport = nearest(PlLoc, j, i);
-    }
-    else if (paramFlightModel.AP.way.isLandingOnShip()) {
-      i = 4;
-      localAirport = nearest(PlLoc, j, i);
-      if (!Actor.isAlive(localAirport)) {
-        i = 1;
-        localAirport = nearest(PlLoc, j, i);
-      }
-    }
-    else {
-      i = 3;
-      if (!(paramFlightModel.actor instanceof TypeAmphibiousPlane)) i &= -3;
-      localAirport = nearest(PlLoc, j, i);
-      if (!Actor.isAlive(localAirport)) {
-        i = 4;
-        localAirport = nearest(PlLoc, j, i);
-      }
-    }
-
-    Aircraft.debugprintln(paramFlightModel.actor, "Searching a place to land - Selecting RWY Type " + i);
-
-    if (Actor.isAlive(localAirport)) {
-      if (localAirport.landWay(paramFlightModel)) {
-        paramFlightModel.AP.way.landingAirport = localAirport;
-        return localAirport;
-      }
-      return null;
-    }
-    return null;
-  }
-
-  public boolean landWay(FlightModel paramFlightModel)
-  {
-    return false;
-  }
-
-  public void rebuildLandWay(FlightModel paramFlightModel) {
-  }
-
-  public void rebuildLastPoint(FlightModel paramFlightModel) {
-  }
-
-  public double ShiftFromLine(FlightModel paramFlightModel) {
-    return 0.0D;
-  }
-
-  public int landingFeedback(Point3d paramPoint3d, Aircraft paramAircraft) {
-    if (paramAircraft.FM.CT.GearControl > 0.0F) return 0;
-    if (this.landingRequest > 0) return 1;
-    double d1 = 640000.0D;
-    List localList = Engine.targets(); int i = localList.size();
-    for (int j = 0; j < i; j++) {
-      Actor localActor = (Actor)localList.get(j);
-      if (((localActor instanceof Aircraft)) && (localActor != paramAircraft)) {
-        Aircraft localAircraft = (Aircraft)localActor;
-        Point3d localPoint3d = localAircraft.pos.getAbsPoint();
-        double d2 = (paramPoint3d.x - localPoint3d.x) * (paramPoint3d.x - localPoint3d.x) + (paramPoint3d.y - localPoint3d.y) * (paramPoint3d.y - localPoint3d.y) + (paramPoint3d.z - localPoint3d.z) * (paramPoint3d.z - localPoint3d.z);
-
-        if (d2 < d1) {
-          if (((Maneuver)localAircraft.FM).get_maneuver() == 25) {
-            if ((((Maneuver)localAircraft.FM).wayCurPos instanceof Point_Runaway)) return 2;
-            if ((localAircraft.FM.AP.way.isLanding()) && (localAircraft.FM.AP.way.Cur() > 5)) return 1;
-          }
-          if ((((Maneuver)localAircraft.FM).get_maneuver() == 26) || (((Maneuver)localAircraft.FM).get_maneuver() == 64))
-          {
-            return 2;
-          }
+        Interpolater()
+        {
         }
-      }
     }
-    this.landingRequest = 2000;
-    return 0; } 
-  public abstract boolean nearestRunway(Point3d paramPoint3d, Loc paramLoc);
 
-  public abstract void setTakeoff(Point3d paramPoint3d, Aircraft[] paramArrayOfAircraft);
 
-  public Object getSwitchListener(Message paramMessage) { return this; }
-
-  protected void createActorHashCode() {
-    makeActorRealHashCode();
-  }
-
-  protected void update()
-  {
-    if (this.takeoffRequest > 0) this.takeoffRequest -= 1;
-    if (this.landingRequest > 0) this.landingRequest -= 1;
-  }
-
-  public void msgDream(boolean paramBoolean)
-  {
-    if (paramBoolean) {
-      if (interpGet("AirportTicker") == null)
-        interpPut(new Interpolater(), "AirportTicker", Time.current(), null);
+    public static com.maddox.il2.ai.Airport nearest(com.maddox.JGP.Point3f point3f, int i, int j)
+    {
+        pd.set(point3f.x, point3f.y, point3f.z);
+        return com.maddox.il2.ai.Airport.nearest(pd, i, j);
     }
-    else interpEnd("AirportTicker");
-  }
 
-  class Interpolater extends Interpolate
-  {
-    Interpolater()
+    public static com.maddox.il2.ai.Airport nearest(com.maddox.JGP.Point3d point3d, int i, int j)
+    {
+        com.maddox.il2.ai.Airport airport = null;
+        double d = 0.0D;
+        pd.set(point3d.x, point3d.y, point3d.z);
+        int k = com.maddox.il2.ai.World.cur().airports.size();
+        for(int l = 0; l < k; l++)
+        {
+            com.maddox.il2.ai.Airport airport1 = (com.maddox.il2.ai.Airport)com.maddox.il2.ai.World.cur().airports.get(l);
+            if(((j & 1) == 0 || !(airport1 instanceof com.maddox.il2.ai.AirportGround)) && ((j & 2) == 0 || !(airport1 instanceof com.maddox.il2.ai.AirportMaritime)) && ((j & 4) == 0 || !(airport1 instanceof com.maddox.il2.ai.AirportCarrier)) || !com.maddox.il2.engine.Actor.isAlive(airport1))
+                continue;
+            if(i >= 0)
+            {
+                int i1 = airport1.getArmy();
+                if(i1 != 0 && i1 != i)
+                    continue;
+            }
+            pd.z = airport1.pos.getAbsPoint().z;
+            double d1 = pd.distanceSquared(airport1.pos.getAbsPoint());
+            if(airport == null || d1 < d)
+            {
+                airport = airport1;
+                d = d1;
+            }
+        }
+
+        if(d > 225000000D)
+            airport = null;
+        return airport;
+    }
+
+    public Airport()
+    {
+        takeoffRequest = 0;
+        landingRequest = 0;
+        com.maddox.il2.ai.Airport _tmp = this;
+        flags |= 0x200;
+        com.maddox.il2.ai.World.cur().airports.add(this);
+    }
+
+    public static double distToNearestAirport(com.maddox.JGP.Point3d point3d)
+    {
+        return com.maddox.il2.ai.Airport.distToNearestAirport(point3d, -1, 7);
+    }
+
+    public static double distToNearestAirport(com.maddox.JGP.Point3d point3d, int i, int j)
+    {
+        com.maddox.il2.ai.Airport airport = com.maddox.il2.ai.Airport.nearest(point3d, i, j);
+        if(airport == null)
+            return 225000000D;
+        else
+            return airport.pos.getAbsPoint().distance(point3d);
+    }
+
+    public static com.maddox.il2.ai.Airport makeLandWay(com.maddox.il2.fm.FlightModel flightmodel)
+    {
+        flightmodel.AP.way.curr().getP(PlLoc);
+        int i = 0;
+        com.maddox.il2.ai.Airport airport = null;
+        int j = flightmodel.actor.getArmy();
+        if(flightmodel.actor instanceof com.maddox.il2.objects.air.TypeSailPlane)
+        {
+            i = 2;
+            airport = com.maddox.il2.ai.Airport.nearest(PlLoc, j, i);
+        } else
+        if(flightmodel.AP.way.isLandingOnShip())
+        {
+            i = 4;
+            airport = com.maddox.il2.ai.Airport.nearest(PlLoc, j, i);
+            if(!com.maddox.il2.engine.Actor.isAlive(airport))
+            {
+                i = 1;
+                airport = com.maddox.il2.ai.Airport.nearest(PlLoc, j, i);
+            }
+        } else
+        {
+            i = 3;
+            if(!(flightmodel.actor instanceof com.maddox.il2.objects.air.TypeAmphibiousPlane))
+                i &= -3;
+            airport = com.maddox.il2.ai.Airport.nearest(PlLoc, j, i);
+            if(!com.maddox.il2.engine.Actor.isAlive(airport))
+            {
+                i = 4;
+                airport = com.maddox.il2.ai.Airport.nearest(PlLoc, j, i);
+            }
+        }
+        com.maddox.il2.objects.air.Aircraft.debugprintln(flightmodel.actor, "Searching a place to land - Selecting RWY Type " + i);
+        if(com.maddox.il2.engine.Actor.isAlive(airport))
+        {
+            if(airport.landWay(flightmodel))
+            {
+                flightmodel.AP.way.landingAirport = airport;
+                return airport;
+            } else
+            {
+                return null;
+            }
+        } else
+        {
+            return null;
+        }
+    }
+
+    public boolean landWay(com.maddox.il2.fm.FlightModel flightmodel)
+    {
+        return false;
+    }
+
+    public void rebuildLandWay(com.maddox.il2.fm.FlightModel flightmodel)
     {
     }
 
-    public boolean tick()
+    public void rebuildLastPoint(com.maddox.il2.fm.FlightModel flightmodel)
     {
-      Airport.this.update();
-      return true;
     }
-  }
+
+    public double ShiftFromLine(com.maddox.il2.fm.FlightModel flightmodel)
+    {
+        return 0.0D;
+    }
+
+    public int landingFeedback(com.maddox.JGP.Point3d point3d, com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        if(aircraft.FM.CT.GearControl > 0.0F)
+            return 0;
+        if(landingRequest > 0)
+            return 1;
+        double d = 640000D;
+        java.util.List list = com.maddox.il2.engine.Engine.targets();
+        int i = list.size();
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)list.get(j);
+            if(!(actor instanceof com.maddox.il2.objects.air.Aircraft) || actor == aircraft)
+                continue;
+            com.maddox.il2.objects.air.Aircraft aircraft1 = (com.maddox.il2.objects.air.Aircraft)actor;
+            com.maddox.JGP.Point3d point3d1 = aircraft1.pos.getAbsPoint();
+            double d1 = (point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y) + (point3d.z - point3d1.z) * (point3d.z - point3d1.z);
+            if(d1 >= d)
+                continue;
+            if(((com.maddox.il2.ai.air.Maneuver)aircraft1.FM).get_maneuver() == 25)
+            {
+                if(((com.maddox.il2.ai.air.Maneuver)aircraft1.FM).wayCurPos instanceof com.maddox.il2.ai.air.Point_Runaway)
+                    return 2;
+                if(aircraft1.FM.AP.way.isLanding() && aircraft1.FM.AP.way.Cur() > 5)
+                    return 1;
+            }
+            if(((com.maddox.il2.ai.air.Maneuver)aircraft1.FM).get_maneuver() == 26 || ((com.maddox.il2.ai.air.Maneuver)aircraft1.FM).get_maneuver() == 64)
+                return 2;
+        }
+
+        landingRequest = 2000;
+        return 0;
+    }
+
+    public abstract boolean nearestRunway(com.maddox.JGP.Point3d point3d, com.maddox.il2.engine.Loc loc);
+
+    public abstract void setTakeoff(com.maddox.JGP.Point3d point3d, com.maddox.il2.objects.air.Aircraft aaircraft[]);
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    protected void createActorHashCode()
+    {
+        makeActorRealHashCode();
+    }
+
+    protected void update()
+    {
+        if(takeoffRequest > 0)
+            takeoffRequest--;
+        if(landingRequest > 0)
+            landingRequest--;
+    }
+
+    public void msgDream(boolean flag)
+    {
+        if(flag)
+        {
+            if(interpGet("AirportTicker") == null)
+                interpPut(new Interpolater(), "AirportTicker", com.maddox.rts.Time.current(), null);
+        } else
+        {
+            interpEnd("AirportTicker");
+        }
+    }
+
+    public static final int TYPE_ANY = 7;
+    public static final int TYPE_GROUND = 1;
+    public static final int TYPE_MARITIME = 2;
+    public static final int TYPE_CARRIER = 4;
+    private static com.maddox.JGP.Point3f PlLoc = new Point3f();
+    public int takeoffRequest;
+    public int landingRequest;
+    private static com.maddox.JGP.Point3d pd = new Point3d();
+
 }

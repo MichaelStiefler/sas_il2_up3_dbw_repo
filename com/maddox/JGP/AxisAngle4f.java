@@ -1,250 +1,267 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   AxisAngle4f.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
+// Referenced classes of package com.maddox.JGP:
+//            Matrix3f, Tuple3f, AxisAngle4d, Matrix4f, 
+//            Matrix4d, Matrix3d, Quat4f, Quat4d, 
+//            Vector3f
+
 public class AxisAngle4f
-  implements Serializable, Cloneable
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public float x;
-  public float y;
-  public float z;
-  public float angle;
-  private static Matrix3f Mr = new Matrix3f();
 
-  public AxisAngle4f(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
-  {
-    set(paramFloat1, paramFloat2, paramFloat3, paramFloat4);
-  }
-
-  public AxisAngle4f(float[] paramArrayOfFloat)
-  {
-    set(paramArrayOfFloat);
-  }
-
-  public AxisAngle4f(AxisAngle4f paramAxisAngle4f)
-  {
-    set(paramAxisAngle4f);
-  }
-
-  public AxisAngle4f(AxisAngle4d paramAxisAngle4d)
-  {
-    set(paramAxisAngle4d);
-  }
-
-  public AxisAngle4f(Tuple3f paramTuple3f, float paramFloat) {
-    this.x = paramTuple3f.x;
-    this.y = paramTuple3f.y;
-    this.z = paramTuple3f.z;
-    this.angle = paramFloat;
-  }
-
-  public AxisAngle4f()
-  {
-    this.x = 0.0F;
-    this.y = 0.0F;
-    this.z = 1.0F;
-    this.angle = 0.0F;
-  }
-
-  public final void set(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4)
-  {
-    this.x = paramFloat1;
-    this.y = paramFloat2;
-    this.z = paramFloat3;
-    this.angle = paramFloat4;
-  }
-
-  public final void set(float[] paramArrayOfFloat)
-  {
-    this.x = paramArrayOfFloat[0];
-    this.y = paramArrayOfFloat[1];
-    this.z = paramArrayOfFloat[2];
-    this.angle = paramArrayOfFloat[3];
-  }
-
-  public final void set(AxisAngle4f paramAxisAngle4f)
-  {
-    this.x = paramAxisAngle4f.x;
-    this.y = paramAxisAngle4f.y;
-    this.z = paramAxisAngle4f.z;
-    this.angle = paramAxisAngle4f.angle;
-  }
-
-  public final void set(AxisAngle4d paramAxisAngle4d)
-  {
-    this.x = (float)paramAxisAngle4d.x;
-    this.y = (float)paramAxisAngle4d.y;
-    this.z = (float)paramAxisAngle4d.z;
-    this.angle = (float)paramAxisAngle4d.angle;
-  }
-
-  public final void get(float[] paramArrayOfFloat)
-  {
-    paramArrayOfFloat[0] = this.x;
-    paramArrayOfFloat[1] = this.y;
-    paramArrayOfFloat[2] = this.z;
-    paramArrayOfFloat[3] = this.angle;
-  }
-
-  public final void set(Matrix4f paramMatrix4f)
-  {
-    setFromMat(paramMatrix4f.m00, paramMatrix4f.m01, paramMatrix4f.m02, paramMatrix4f.m10, paramMatrix4f.m11, paramMatrix4f.m12, paramMatrix4f.m20, paramMatrix4f.m21, paramMatrix4f.m22);
-  }
-
-  public final void set(Matrix4d paramMatrix4d)
-  {
-    setFromMat(paramMatrix4d.m00, paramMatrix4d.m01, paramMatrix4d.m02, paramMatrix4d.m10, paramMatrix4d.m11, paramMatrix4d.m12, paramMatrix4d.m20, paramMatrix4d.m21, paramMatrix4d.m22);
-  }
-
-  public final void set(Matrix3f paramMatrix3f)
-  {
-    setFromMat(paramMatrix3f.m00, paramMatrix3f.m01, paramMatrix3f.m02, paramMatrix3f.m10, paramMatrix3f.m11, paramMatrix3f.m12, paramMatrix3f.m20, paramMatrix3f.m21, paramMatrix3f.m22);
-  }
-
-  public final void set(Matrix3d paramMatrix3d)
-  {
-    setFromMat(paramMatrix3d.m00, paramMatrix3d.m01, paramMatrix3d.m02, paramMatrix3d.m10, paramMatrix3d.m11, paramMatrix3d.m12, paramMatrix3d.m20, paramMatrix3d.m21, paramMatrix3d.m22);
-  }
-
-  public final void set(Quat4f paramQuat4f)
-  {
-    setFromQuat(paramQuat4f.x, paramQuat4f.y, paramQuat4f.z, paramQuat4f.w);
-  }
-
-  public final void set(Quat4d paramQuat4d)
-  {
-    setFromQuat(paramQuat4d.x, paramQuat4d.y, paramQuat4d.z, paramQuat4d.w);
-  }
-
-  private void setFromMat(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4, double paramDouble5, double paramDouble6, double paramDouble7, double paramDouble8, double paramDouble9)
-  {
-    double d1 = (paramDouble1 + paramDouble5 + paramDouble9 - 1.0D) * 0.5D;
-    this.x = (float)(paramDouble8 - paramDouble6);
-    this.y = (float)(paramDouble3 - paramDouble7);
-    this.z = (float)(paramDouble4 - paramDouble2);
-    double d2 = 0.5D * Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
-    this.angle = (float)Math.atan2(d2, d1);
-  }
-
-  private void setFromQuat(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4)
-  {
-    double d = Math.sqrt(paramDouble1 * paramDouble1 + paramDouble2 * paramDouble2 + paramDouble3 * paramDouble3);
-    this.angle = (float)(2.0D * Math.atan2(d, paramDouble4));
-    this.x = (float)paramDouble1;
-    this.y = (float)paramDouble2;
-    this.z = (float)paramDouble3;
-  }
-
-  public String toString()
-  {
-    return "(" + this.x + ", " + this.y + ", " + this.z + ", " + this.angle + ")";
-  }
-
-  public boolean equals(AxisAngle4f paramAxisAngle4f)
-  {
-    return (paramAxisAngle4f != null) && (this.x == paramAxisAngle4f.x) && (this.y == paramAxisAngle4f.y) && (this.z == paramAxisAngle4f.z) && (this.angle == paramAxisAngle4f.angle);
-  }
-
-  public boolean equals(Object paramObject)
-  {
-    return (paramObject != null) && ((paramObject instanceof AxisAngle4f)) && (equals((AxisAngle4f)paramObject));
-  }
-
-  public boolean epsilonEquals(AxisAngle4f paramAxisAngle4f, float paramFloat)
-  {
-    return (Math.abs(paramAxisAngle4f.x - this.x) <= paramFloat) && (Math.abs(paramAxisAngle4f.y - this.y) <= paramFloat) && (Math.abs(paramAxisAngle4f.z - this.z) <= paramFloat) && (Math.abs(paramAxisAngle4f.angle - this.angle) <= paramFloat);
-  }
-
-  public int hashCode()
-  {
-    return Float.floatToIntBits(this.x) ^ Float.floatToIntBits(this.y) ^ Float.floatToIntBits(this.z) ^ Float.floatToIntBits(this.angle);
-  }
-
-  public void set(Vector3f paramVector3f)
-  {
-    float f1 = paramVector3f.length();
-    float f2;
-    if (f1 != 0.0F) f2 = 1.0F / f1; else f2 = 0.0F;
-    this.x = (paramVector3f.x * f2);
-    this.y = (paramVector3f.y * f2);
-    this.z = (paramVector3f.z * f2);
-    this.angle = f1;
-  }
-
-  public void get(Vector3f paramVector3f)
-  {
-    if (this.angle >= 0.0F) {
-      paramVector3f.x = (this.x * this.angle);
-      paramVector3f.y = (this.y * this.angle);
-      paramVector3f.z = (this.z * this.angle);
-    } else {
-      paramVector3f.x = (-this.x * this.angle);
-      paramVector3f.y = (-this.y * this.angle);
-      paramVector3f.z = (-this.z * this.angle);
+    public AxisAngle4f(float f, float f1, float f2, float f3)
+    {
+        set(f, f1, f2, f3);
     }
-  }
 
-  private void makeMatrix()
-  {
-    float f1 = (float)Math.sin(this.angle);
-    float f2 = (float)Math.cos(this.angle);
-    float f3 = 1.0F - f2;
-    float f4 = this.x; float f5 = this.y; float f6 = this.z;
-    float f8 = f4 * f3;
-    float f7 = f4 * f4;
-    Mr.m00 = (f7 + f2 * (1.0F - f7));
-    Mr.m01 = (f8 * f5 + f6 * f1);
-    Mr.m02 = (f8 * f6 - f5 * f1);
-    f7 = f5 * f5;
-    Mr.m10 = (f8 * f5 - f6 * f1);
-    Mr.m11 = (f7 + f2 * (1.0F - f7));
-    Mr.m12 = (f5 * f3 * f6 + f4 * f1);
-    f7 = f6 * f6;
-    Mr.m20 = (f8 * f6 + f5 * f1);
-    Mr.m21 = (f5 * f3 * f6 - f4 * f1);
-    Mr.m22 = (f7 + f2 * (1.0F - f7));
-  }
+    public AxisAngle4f(float af[])
+    {
+        set(af);
+    }
 
-  public void rotate(Vector3f paramVector3f)
-  {
-    makeMatrix();
-    Mr.transform(paramVector3f);
-  }
+    public AxisAngle4f(com.maddox.JGP.AxisAngle4f axisangle4f)
+    {
+        set(axisangle4f);
+    }
 
-  private void makeMatrixRightHanded()
-  {
-    double d1 = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    public AxisAngle4f(com.maddox.JGP.AxisAngle4d axisangle4d)
+    {
+        set(axisangle4d);
+    }
 
-    d1 = 1.0D / d1;
-    this.x = (float)(this.x * d1);
-    this.y = (float)(this.y * d1);
-    this.z = (float)(this.z * d1);
-    double d2 = Math.cos(this.angle);
-    double d3 = Math.sin(this.angle);
-    double d4 = 1.0D - d2;
-    Mr.m00 = (float)(d2 + this.x * this.x * d4);
-    Mr.m11 = (float)(d2 + this.y * this.y * d4);
-    Mr.m22 = (float)(d2 + this.z * this.z * d4);
+    public AxisAngle4f(com.maddox.JGP.Tuple3f tuple3f, float f)
+    {
+        x = tuple3f.x;
+        y = tuple3f.y;
+        z = tuple3f.z;
+        angle = f;
+    }
 
-    double d5 = this.x * this.y * d4;
-    double d6 = this.z * d3;
-    Mr.m01 = (float)(d5 - d6);
-    Mr.m10 = (float)(d5 + d6);
+    public AxisAngle4f()
+    {
+        x = 0.0F;
+        y = 0.0F;
+        z = 1.0F;
+        angle = 0.0F;
+    }
 
-    d5 = this.x * this.z * d4;
-    d6 = this.y * d3;
-    Mr.m02 = (float)(d5 + d6);
-    Mr.m20 = (float)(d5 - d6);
+    public final void set(float f, float f1, float f2, float f3)
+    {
+        x = f;
+        y = f1;
+        z = f2;
+        angle = f3;
+    }
 
-    d5 = this.y * this.z * d4;
-    d6 = this.x * d3;
-    Mr.m12 = (float)(d5 - d6);
-    Mr.m21 = (float)(d5 + d6);
-  }
+    public final void set(float af[])
+    {
+        x = af[0];
+        y = af[1];
+        z = af[2];
+        angle = af[3];
+    }
 
-  public void rotateRightHanded(Vector3f paramVector3f)
-  {
-    makeMatrixRightHanded();
-    Mr.transform(paramVector3f);
-  }
+    public final void set(com.maddox.JGP.AxisAngle4f axisangle4f)
+    {
+        x = axisangle4f.x;
+        y = axisangle4f.y;
+        z = axisangle4f.z;
+        angle = axisangle4f.angle;
+    }
+
+    public final void set(com.maddox.JGP.AxisAngle4d axisangle4d)
+    {
+        x = (float)axisangle4d.x;
+        y = (float)axisangle4d.y;
+        z = (float)axisangle4d.z;
+        angle = (float)axisangle4d.angle;
+    }
+
+    public final void get(float af[])
+    {
+        af[0] = x;
+        af[1] = y;
+        af[2] = z;
+        af[3] = angle;
+    }
+
+    public final void set(com.maddox.JGP.Matrix4f matrix4f)
+    {
+        setFromMat(matrix4f.m00, matrix4f.m01, matrix4f.m02, matrix4f.m10, matrix4f.m11, matrix4f.m12, matrix4f.m20, matrix4f.m21, matrix4f.m22);
+    }
+
+    public final void set(com.maddox.JGP.Matrix4d matrix4d)
+    {
+        setFromMat(matrix4d.m00, matrix4d.m01, matrix4d.m02, matrix4d.m10, matrix4d.m11, matrix4d.m12, matrix4d.m20, matrix4d.m21, matrix4d.m22);
+    }
+
+    public final void set(com.maddox.JGP.Matrix3f matrix3f)
+    {
+        setFromMat(matrix3f.m00, matrix3f.m01, matrix3f.m02, matrix3f.m10, matrix3f.m11, matrix3f.m12, matrix3f.m20, matrix3f.m21, matrix3f.m22);
+    }
+
+    public final void set(com.maddox.JGP.Matrix3d matrix3d)
+    {
+        setFromMat(matrix3d.m00, matrix3d.m01, matrix3d.m02, matrix3d.m10, matrix3d.m11, matrix3d.m12, matrix3d.m20, matrix3d.m21, matrix3d.m22);
+    }
+
+    public final void set(com.maddox.JGP.Quat4f quat4f)
+    {
+        setFromQuat(quat4f.x, quat4f.y, quat4f.z, quat4f.w);
+    }
+
+    public final void set(com.maddox.JGP.Quat4d quat4d)
+    {
+        setFromQuat(quat4d.x, quat4d.y, quat4d.z, quat4d.w);
+    }
+
+    private void setFromMat(double d, double d1, double d2, double d3, double d4, double d5, double d6, 
+            double d7, double d8)
+    {
+        double d9 = ((d + d4 + d8) - 1.0D) * 0.5D;
+        x = (float)(d7 - d5);
+        y = (float)(d2 - d6);
+        z = (float)(d3 - d1);
+        double d10 = 0.5D * java.lang.Math.sqrt(x * x + y * y + z * z);
+        angle = (float)java.lang.Math.atan2(d10, d9);
+    }
+
+    private void setFromQuat(double d, double d1, double d2, double d3)
+    {
+        double d4 = java.lang.Math.sqrt(d * d + d1 * d1 + d2 * d2);
+        angle = (float)(2D * java.lang.Math.atan2(d4, d3));
+        x = (float)d;
+        y = (float)d1;
+        z = (float)d2;
+    }
+
+    public java.lang.String toString()
+    {
+        return "(" + x + ", " + y + ", " + z + ", " + angle + ")";
+    }
+
+    public boolean equals(com.maddox.JGP.AxisAngle4f axisangle4f)
+    {
+        return axisangle4f != null && x == axisangle4f.x && y == axisangle4f.y && z == axisangle4f.z && angle == axisangle4f.angle;
+    }
+
+    public boolean equals(java.lang.Object obj)
+    {
+        return obj != null && (obj instanceof com.maddox.JGP.AxisAngle4f) && equals((com.maddox.JGP.AxisAngle4f)obj);
+    }
+
+    public boolean epsilonEquals(com.maddox.JGP.AxisAngle4f axisangle4f, float f)
+    {
+        return java.lang.Math.abs(axisangle4f.x - x) <= f && java.lang.Math.abs(axisangle4f.y - y) <= f && java.lang.Math.abs(axisangle4f.z - z) <= f && java.lang.Math.abs(axisangle4f.angle - angle) <= f;
+    }
+
+    public int hashCode()
+    {
+        return java.lang.Float.floatToIntBits(x) ^ java.lang.Float.floatToIntBits(y) ^ java.lang.Float.floatToIntBits(z) ^ java.lang.Float.floatToIntBits(angle);
+    }
+
+    public void set(com.maddox.JGP.Vector3f vector3f)
+    {
+        float f = vector3f.length();
+        float f1;
+        if(f != 0.0F)
+            f1 = 1.0F / f;
+        else
+            f1 = 0.0F;
+        x = vector3f.x * f1;
+        y = vector3f.y * f1;
+        z = vector3f.z * f1;
+        angle = f;
+    }
+
+    public void get(com.maddox.JGP.Vector3f vector3f)
+    {
+        if(angle >= 0.0F)
+        {
+            vector3f.x = x * angle;
+            vector3f.y = y * angle;
+            vector3f.z = z * angle;
+        } else
+        {
+            vector3f.x = -x * angle;
+            vector3f.y = -y * angle;
+            vector3f.z = -z * angle;
+        }
+    }
+
+    private void makeMatrix()
+    {
+        float f = (float)java.lang.Math.sin(angle);
+        float f1 = (float)java.lang.Math.cos(angle);
+        float f2 = 1.0F - f1;
+        float f3 = x;
+        float f4 = y;
+        float f5 = z;
+        float f7 = f3 * f2;
+        float f6 = f3 * f3;
+        Mr.m00 = f6 + f1 * (1.0F - f6);
+        Mr.m01 = f7 * f4 + f5 * f;
+        Mr.m02 = f7 * f5 - f4 * f;
+        f6 = f4 * f4;
+        Mr.m10 = f7 * f4 - f5 * f;
+        Mr.m11 = f6 + f1 * (1.0F - f6);
+        Mr.m12 = f4 * f2 * f5 + f3 * f;
+        f6 = f5 * f5;
+        Mr.m20 = f7 * f5 + f4 * f;
+        Mr.m21 = f4 * f2 * f5 - f3 * f;
+        Mr.m22 = f6 + f1 * (1.0F - f6);
+    }
+
+    public void rotate(com.maddox.JGP.Vector3f vector3f)
+    {
+        makeMatrix();
+        Mr.transform(vector3f);
+    }
+
+    private void makeMatrixRightHanded()
+    {
+        double d = java.lang.Math.sqrt(x * x + y * y + z * z);
+        d = 1.0D / d;
+        x *= d;
+        y *= d;
+        z *= d;
+        double d1 = java.lang.Math.cos(angle);
+        double d2 = java.lang.Math.sin(angle);
+        double d3 = 1.0D - d1;
+        Mr.m00 = (float)(d1 + (double)(x * x) * d3);
+        Mr.m11 = (float)(d1 + (double)(y * y) * d3);
+        Mr.m22 = (float)(d1 + (double)(z * z) * d3);
+        double d4 = (double)(x * y) * d3;
+        double d5 = (double)z * d2;
+        Mr.m01 = (float)(d4 - d5);
+        Mr.m10 = (float)(d4 + d5);
+        d4 = (double)(x * z) * d3;
+        d5 = (double)y * d2;
+        Mr.m02 = (float)(d4 + d5);
+        Mr.m20 = (float)(d4 - d5);
+        d4 = (double)(y * z) * d3;
+        d5 = (double)x * d2;
+        Mr.m12 = (float)(d4 - d5);
+        Mr.m21 = (float)(d4 + d5);
+    }
+
+    public void rotateRightHanded(com.maddox.JGP.Vector3f vector3f)
+    {
+        makeMatrixRightHanded();
+        Mr.transform(vector3f);
+    }
+
+    public float x;
+    public float y;
+    public float z;
+    public float angle;
+    private static com.maddox.JGP.Matrix3f Mr = new Matrix3f();
+
 }

@@ -1,40 +1,54 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CampaignDGen.java
+
 package com.maddox.il2.game.campaign;
 
 import java.io.PrintStream;
 
-public class CampaignDGen extends Campaign
+// Referenced classes of package com.maddox.il2.game.campaign:
+//            Campaign
+
+public class CampaignDGen extends com.maddox.il2.game.campaign.Campaign
 {
-  private String dgenFileName;
-  private String prefix;
 
-  public String dgenFileName()
-  {
-    return this.dgenFileName;
-  }
-  public String prefix() { return this.prefix; }
-
-  public void doExternalCampaignGenerator(String paramString) {
-    String str1 = "DGen.exe";
-    try {
-      String str2 = branch() + " " + " " + rank();
-
-      Runtime localRuntime = Runtime.getRuntime();
-
-      Process localProcess = localRuntime.exec(str1 + " " + str2);
-
-      localProcess.waitFor();
+    public java.lang.String dgenFileName()
+    {
+        return dgenFileName;
     }
-    catch (Throwable localThrowable) {
-      System.out.println(localThrowable.getMessage());
-      localThrowable.printStackTrace();
-    }
-  }
 
-  public CampaignDGen(String paramString1, String paramString2, int paramInt1, int paramInt2, String paramString3) {
-    this.dgenFileName = paramString1;
-    this._country = paramString2;
-    this._difficulty = paramInt1;
-    this._rank = paramInt2;
-    this.prefix = paramString3;
-  }
+    public java.lang.String prefix()
+    {
+        return prefix;
+    }
+
+    public void doExternalCampaignGenerator(java.lang.String s)
+    {
+        java.lang.String s1 = "DGen.exe";
+        try
+        {
+            java.lang.String s2 = branch() + " " + " " + rank();
+            java.lang.Runtime runtime = java.lang.Runtime.getRuntime();
+            java.lang.Process process = runtime.exec(s1 + " " + s2);
+            process.waitFor();
+        }
+        catch(java.lang.Throwable throwable)
+        {
+            java.lang.System.out.println(throwable.getMessage());
+            throwable.printStackTrace();
+        }
+    }
+
+    public CampaignDGen(java.lang.String s, java.lang.String s1, int i, int j, java.lang.String s2)
+    {
+        dgenFileName = s;
+        _country = s1;
+        _difficulty = i;
+        _rank = j;
+        prefix = s2;
+    }
+
+    private java.lang.String dgenFileName;
+    private java.lang.String prefix;
 }

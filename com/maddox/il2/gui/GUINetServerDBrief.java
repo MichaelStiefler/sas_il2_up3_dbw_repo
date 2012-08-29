@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUINetServerDBrief.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GWindow;
@@ -13,11 +18,9 @@ import com.maddox.il2.game.GameStateStack;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.game.Main3D;
 import com.maddox.il2.net.BornPlace;
-import com.maddox.il2.net.NetServerParams;
 import com.maddox.il2.net.NetUser;
 import com.maddox.il2.net.NetUserRegiment;
 import com.maddox.il2.net.USGS;
-import com.maddox.il2.objects.air.Aircraft;
 import com.maddox.il2.objects.effects.ForceFeedback;
 import com.maddox.rts.CmdEnv;
 import com.maddox.rts.HotKeyCmd;
@@ -25,187 +28,180 @@ import com.maddox.rts.NetEnv;
 import com.maddox.rts.Property;
 import com.maddox.rts.SectFile;
 import com.maddox.sound.AudioDevice;
-import java.io.PrintStream;
 import java.util.ArrayList;
 
-public class GUINetServerDBrief extends GUIBriefing
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIBriefing, GUIAirArming, GUI, GUINetServer, 
+//            GUIButton, GUIBriefingGeneric
+
+public class GUINetServerDBrief extends com.maddox.il2.gui.GUIBriefing
 {
-  public void enter(GameState paramGameState)
-  {
-    super.enter(paramGameState);
-    if ((paramGameState != null) && ((paramGameState.id() == 42) || (paramGameState.id() == 38)))
+
+    public void enter(com.maddox.il2.game.GameState gamestate)
     {
-      if (this.briefSound != null) {
-        String str = Main.cur().currentMissionFile.get("MAIN", "briefSound" + ((NetUser)NetEnv.host()).getArmy());
-        if (str != null)
-          this.briefSound = str;
-        CmdEnv.top().exec("music PUSH");
-        CmdEnv.top().exec("music LIST " + this.briefSound);
-        CmdEnv.top().exec("music PLAY");
-      }
+        super.enter(gamestate);
+        if(gamestate != null && (gamestate.id() == 42 || gamestate.id() == 38) && briefSound != null)
+        {
+            java.lang.String s = com.maddox.il2.game.Main.cur().currentMissionFile.get("MAIN", "briefSound" + ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).getArmy());
+            if(s != null)
+                briefSound = s;
+            com.maddox.rts.CmdEnv.top().exec("music PUSH");
+            com.maddox.rts.CmdEnv.top().exec("music LIST " + briefSound);
+            com.maddox.rts.CmdEnv.top().exec("music PLAY");
+        }
     }
-  }
 
-  public void leave(GameState paramGameState) {
-    if ((paramGameState != null) && (paramGameState.id() == 42))
+    public void leave(com.maddox.il2.game.GameState gamestate)
     {
-      if (this.briefSound != null) {
-        CmdEnv.top().exec("music POP");
-        CmdEnv.top().exec("music STOP");
-        this.briefSound = null;
-      }
-    }
-    super.leave(paramGameState);
-  }
-  public void leavePop(GameState paramGameState) {
-    if ((paramGameState != null) && (paramGameState.id() == 2) && 
-      (this.briefSound != null)) {
-      CmdEnv.top().exec("music POP");
-      CmdEnv.top().exec("music PLAY");
+        if(gamestate != null && gamestate.id() == 42 && briefSound != null)
+        {
+            com.maddox.rts.CmdEnv.top().exec("music POP");
+            com.maddox.rts.CmdEnv.top().exec("music STOP");
+            briefSound = null;
+        }
+        super.leave(gamestate);
     }
 
-    super.leavePop(paramGameState);
-  }
-
-  protected void fillTextDescription() {
-    super.fillTextDescription();
-    prepareTextDescription(Army.amountNet());
-  }
-  protected String textDescription() {
-    if (this.textArmyDescription == null) return null;
-    NetUser localNetUser = (NetUser)NetEnv.host();
-    int i = localNetUser.getBornPlace();
-    if (i < 0)
-      return this.textArmyDescription[0];
-    BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(i);
-    return this.textArmyDescription[localBornPlace.army];
-  }
-
-  private boolean isValidBornPlace()
-  {
-    NetUser localNetUser = (NetUser)NetEnv.host();
-    int i = localNetUser.getBornPlace();
-    if ((i < 0) || (i >= World.cur().bornPlaces.size())) {
-      new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("brief.BornPlace"), i18n("brief.BornPlaceSelect"), 3, 0.0F);
-
-      return false;
-    }
-    int j = localNetUser.getAirdromeStay();
-    if (j < 0) {
-      new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("brief.StayPlace"), i18n("brief.StayPlaceWait"), 3, 0.0F);
-
-      return false;
-    }
-    return true;
-  }
-
-  private boolean isValidAircraftForServer()
-  {
-    if (Main.cur().netServerParams == null)
-      return true;
-    if (!Main.cur().netServerParams.isMaster()) {
-      return true;
-    }
-    NetUser localNetUser = (NetUser)NetEnv.host();
-
-    if (localNetUser == null) {
-      return true;
-    }
-    try
+    public void leavePop(com.maddox.il2.game.GameState gamestate)
     {
-      UserCfg localUserCfg = World.cur().userCfg;
-      localNetUser.checkReplicateSkin(localUserCfg.netAirName);
-      String str = localUserCfg.netAirName;
-
-      BornPlace localBornPlace = (BornPlace)World.cur().bornPlaces.get(localNetUser.getBornPlace());
-      if (localBornPlace != null)
-      {
-        if ((!localBornPlace.zutiEnablePlaneLimits) || (localBornPlace.zutiIsAcAvailable(str)))
-          return true;
-      }
-    } catch (Exception localException) {
-      System.out.println("isValidAircraftForServer exception: " + localException.toString());
-    }return false;
-  }
-
-  protected void doNext()
-  {
-    if (!isValidBornPlace()) {
-      return;
+        if(gamestate != null && gamestate.id() == 2 && briefSound != null)
+        {
+            com.maddox.rts.CmdEnv.top().exec("music POP");
+            com.maddox.rts.CmdEnv.top().exec("music PLAY");
+        }
+        super.leavePop(gamestate);
     }
-    if (!isValidAircraftForServer())
+
+    protected void fillTextDescription()
     {
-      GUIAirArming.stateId = 2;
-      Main.stateStack().push(55);
-      return;
+        super.fillTextDescription();
+        prepareTextDescription(com.maddox.il2.ai.Army.amountNet());
     }
 
-    if (!isCarrierDeckFree((NetUser)NetEnv.host()))
+    protected java.lang.String textDescription()
     {
-      new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("brief.CarrierDeckFull"), i18n("brief.CarrierDeckFullWait"), 3, 0.0F);
-
-      return;
+        if(textArmyDescription == null)
+            return null;
+        com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+        int i = netuser.getBornPlace();
+        if(i < 0)
+        {
+            return textArmyDescription[0];
+        } else
+        {
+            com.maddox.il2.net.BornPlace bornplace = (com.maddox.il2.net.BornPlace)com.maddox.il2.ai.World.cur().bornPlaces.get(i);
+            return textArmyDescription[bornplace.army];
+        }
     }
-    if (!isValidArming()) {
-      GUIAirArming.stateId = 2;
-      Main.stateStack().push(55);
-      return;
+
+    private boolean isValidBornPlace()
+    {
+        com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+        int i = netuser.getBornPlace();
+        if(i < 0 || i >= com.maddox.il2.ai.World.cur().bornPlaces.size())
+        {
+            new GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("brief.BornPlace"), i18n("brief.BornPlaceSelect"), 3, 0.0F);
+            return false;
+        }
+        int j = netuser.getAirdromeStay();
+        if(j < 0)
+        {
+            new GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("brief.StayPlace"), i18n("brief.StayPlaceWait"), 3, 0.0F);
+            return false;
+        } else
+        {
+            return true;
+        }
     }
 
-    Main.cur().resetUser();
+    protected void doNext()
+    {
+        if(!isValidBornPlace())
+            return;
+        if(!isCarrierDeckFree((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()))
+        {
+            new GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("brief.CarrierDeckFull"), i18n("brief.CarrierDeckFullWait"), 3, 0.0F);
+            return;
+        }
+        if(!isValidArming())
+        {
+            com.maddox.il2.gui.GUIAirArming.stateId = 2;
+            com.maddox.il2.game.Main.stateStack().push(55);
+            return;
+        }
+        com.maddox.il2.game.Main.cur().resetUser();
+        com.maddox.il2.net.NetUser netuser = (com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host();
+        int i = netuser.getBornPlace();
+        int j = netuser.getAirdromeStay();
+        com.maddox.il2.ai.UserCfg usercfg = com.maddox.il2.ai.World.cur().userCfg;
+        netuser.checkReplicateSkin(usercfg.netAirName);
+        netuser.checkReplicateNoseart(usercfg.netAirName);
+        netuser.checkReplicatePilot();
+        java.lang.String s;
+        if(usercfg.netTacticalNumber < 10)
+            s = "0" + usercfg.netTacticalNumber;
+        else
+            s = "" + usercfg.netTacticalNumber;
+        com.maddox.rts.CmdEnv.top().exec("spawn " + ((java.lang.Class)com.maddox.rts.Property.value(usercfg.netAirName, "airClass", null)).getName() + " PLAYER NAME " + (((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).netUserRegiment.isEmpty() ? usercfg.netRegiment : "") + usercfg.netSquadron + "0" + s + " WEAPONS " + usercfg.getWeapon(usercfg.netAirName) + " BORNPLACE " + i + " STAYPLACE " + j + " FUEL " + usercfg.fuel + " OVR");
+        com.maddox.il2.objects.air.Aircraft aircraft = com.maddox.il2.ai.World.getPlayerAircraft();
+        if(!com.maddox.il2.engine.Actor.isValid(aircraft))
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.gui.GUI.unActivate();
+            com.maddox.rts.HotKeyCmd.exec("aircraftView", "CockpitView");
+            com.maddox.il2.objects.effects.ForceFeedback.startMission();
+            com.maddox.sound.AudioDevice.soundsOn();
+            com.maddox.il2.game.Main.stateStack().change(42);
+            return;
+        }
+    }
 
-    NetUser localNetUser = (NetUser)NetEnv.host();
-    int i = localNetUser.getBornPlace();
-    int j = localNetUser.getAirdromeStay();
-    UserCfg localUserCfg = World.cur().userCfg;
-    localNetUser.checkReplicateSkin(localUserCfg.netAirName);
-    localNetUser.checkReplicateNoseart(localUserCfg.netAirName);
-    localNetUser.checkReplicatePilot();
-    String str;
-    if (localUserCfg.netTacticalNumber < 10) str = "0" + localUserCfg.netTacticalNumber; else
-      str = "" + localUserCfg.netTacticalNumber;
-    CmdEnv.top().exec("spawn " + ((Class)Property.value(localUserCfg.netAirName, "airClass", null)).getName() + " PLAYER NAME " + (((NetUser)NetEnv.host()).netUserRegiment.isEmpty() ? localUserCfg.netRegiment : "") + localUserCfg.netSquadron + "0" + str + " WEAPONS " + localUserCfg.getWeapon(localUserCfg.netAirName) + " BORNPLACE " + i + " STAYPLACE " + j + " FUEL " + localUserCfg.fuel + " OVR");
+    protected void doDiff()
+    {
+        com.maddox.il2.game.Main.stateStack().push(41);
+    }
 
-    Aircraft localAircraft = World.getPlayerAircraft();
-    if (!Actor.isValid(localAircraft)) return;
+    protected void doLoodout()
+    {
+        if(!isValidBornPlace())
+        {
+            return;
+        } else
+        {
+            com.maddox.il2.gui.GUIAirArming.stateId = 2;
+            com.maddox.il2.game.Main.stateStack().push(55);
+            return;
+        }
+    }
 
-    GUI.unActivate();
-    HotKeyCmd.exec("aircraftView", "CockpitView");
-    ForceFeedback.startMission();
-    AudioDevice.soundsOn();
+    protected void doBack()
+    {
+        com.maddox.il2.gui.GUINetServer.exitServer(true);
+    }
 
-    Main.stateStack().change(42);
-  }
-  protected void doDiff() {
-    Main.stateStack().push(41);
-  }
-  protected void doLoodout() {
-    if (!isValidBornPlace())
-      return;
-    GUIAirArming.stateId = 2;
-    Main.stateStack().push(55);
-  }
-  protected void doBack() {
-    GUINetServer.exitServer(true);
-  }
+    protected void clientRender()
+    {
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient dialogclient = dialogClient;
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp = dialogclient;
+        dialogclient.draw(dialogclient.x1024(15F), dialogclient.y1024(633F), dialogclient.x1024(140F), dialogclient.y1024(48F), 1, !com.maddox.il2.net.USGS.isUsed() && com.maddox.il2.game.Main.cur().netGameSpy == null ? i18n("brief.MainMenu") : i18n("main.Quit"));
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp1 = dialogclient;
+        dialogclient.draw(dialogclient.x1024(194F), dialogclient.y1024(633F), dialogclient.x1024(208F), dialogclient.y1024(48F), 1, i18n("brief.Difficulty"));
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp2 = dialogclient;
+        dialogclient.draw(dialogclient.x1024(680F), dialogclient.y1024(633F), dialogclient.x1024(176F), dialogclient.y1024(48F), 1, i18n("brief.Arming"));
+        super.clientRender();
+    }
 
-  protected void clientRender() {
-    GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
-    localDialogClient.draw(localDialogClient.x1024(15.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(140.0F), localDialogClient.y1024(48.0F), 1, (USGS.isUsed()) || (Main.cur().netGameSpy != null) ? i18n("main.Quit") : i18n("brief.MainMenu"));
+    protected void clientSetPosSize()
+    {
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient dialogclient = dialogClient;
+        bLoodout.setPosC(dialogclient.x1024(768F), dialogclient.y1024(689F));
+    }
 
-    localDialogClient.draw(localDialogClient.x1024(194.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Difficulty"));
-    localDialogClient.draw(localDialogClient.x1024(680.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(176.0F), localDialogClient.y1024(48.0F), 1, i18n("brief.Arming"));
-    super.clientRender();
-  }
-  protected void clientSetPosSize() {
-    GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
-
-    this.bLoodout.setPosC(localDialogClient.x1024(768.0F), localDialogClient.y1024(689.0F));
-  }
-
-  public GUINetServerDBrief(GWindowRoot paramGWindowRoot)
-  {
-    super(39);
-    init(paramGWindowRoot);
-  }
+    public GUINetServerDBrief(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(39);
+        init(gwindowroot);
+    }
 }

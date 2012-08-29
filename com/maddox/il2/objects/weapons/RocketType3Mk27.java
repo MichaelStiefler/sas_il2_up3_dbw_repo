@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   RocketType3Mk27.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Color3f;
@@ -11,67 +16,80 @@ import com.maddox.il2.engine.Orient;
 import com.maddox.il2.objects.effects.Explosions;
 import com.maddox.rts.Property;
 
-public class RocketType3Mk27 extends Rocket
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Rocket, RocketPhBall
+
+public class RocketType3Mk27 extends com.maddox.il2.objects.weapons.Rocket
 {
-  protected void doExplosion(Actor paramActor, String paramString)
-  {
-    doFireContaineds();
-  }
-  protected void doExplosionAir() {
-    doFireContaineds();
-  }
 
-  private final void doFireContaineds()
-  {
-    Explosions.AirFlak(this.pos.getAbsPoint(), 1);
-
-    Actor localActor = null;
-    if (Actor.isValid(getOwner())) {
-      localActor = getOwner();
+    public RocketType3Mk27()
+    {
     }
 
-    Point3d localPoint3d = new Point3d(this.pos.getAbsPoint());
-    Orient localOrient = new Orient();
-    Vector3d localVector3d = new Vector3d();
-    for (int i = 0; i < 145; i++) {
-      localOrient.set(World.Rnd().nextFloat(-180.0F, 180.0F), World.Rnd().nextFloat(-180.0F, 180.0F), World.Rnd().nextFloat(-180.0F, 180.0F));
-      getSpeed(localVector3d);
-      localVector3d.scale(0.2D);
-      localVector3d.add(World.Rnd().nextDouble(-75.0D, 75.0D), World.Rnd().nextDouble(-75.0D, 75.0D), World.Rnd().nextDouble(-75.0D, 75.0D));
-      RocketPhBall localRocketPhBall = new RocketPhBall();
-      localRocketPhBall.start(-1.0F);
-      localRocketPhBall.pos.setUpdateEnable(true);
-      localRocketPhBall.pos.setAbs(localPoint3d, localOrient);
-      localRocketPhBall.pos.reset();
-
-      localRocketPhBall.setOwner(localActor, false, false, false);
-      localRocketPhBall.setSpeed(localVector3d);
+    protected void doExplosion(com.maddox.il2.engine.Actor actor, java.lang.String s)
+    {
+        doFireContaineds();
     }
-    postDestroy();
-  }
 
-  static
-  {
-    Class localClass = RocketType3Mk27.class;
-    Property.set(localClass, "mesh", "3DO/Arms/Type3No6Mk27B(R)Model1/mono.sim");
+    protected void doExplosionAir()
+    {
+        doFireContaineds();
+    }
 
-    Property.set(localClass, "sprite", "3DO/Effects/Tracers/GuidedRocket/Black.eff");
-    Property.set(localClass, "flame", "3DO/Effects/Rocket/mono.sim");
-    Property.set(localClass, "smoke", "3DO/Effects/Tracers/GuidedRocket/White.eff");
-    Property.set(localClass, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
-    Property.set(localClass, "emitLen", 50.0F);
-    Property.set(localClass, "emitMax", 1.0F);
-    Property.set(localClass, "sound", "weapon.rocket_132");
+    private final void doFireContaineds()
+    {
+        com.maddox.il2.objects.effects.Explosions.AirFlak(pos.getAbsPoint(), 1);
+        com.maddox.il2.engine.Actor actor = null;
+        if(com.maddox.il2.engine.Actor.isValid(getOwner()))
+            actor = getOwner();
+        com.maddox.JGP.Point3d point3d = new Point3d(pos.getAbsPoint());
+        com.maddox.il2.engine.Orient orient = new Orient();
+        com.maddox.JGP.Vector3d vector3d = new Vector3d();
+        for(int i = 0; i < 145; i++)
+        {
+            orient.set(com.maddox.il2.ai.World.Rnd().nextFloat(-180F, 180F), com.maddox.il2.ai.World.Rnd().nextFloat(-180F, 180F), com.maddox.il2.ai.World.Rnd().nextFloat(-180F, 180F));
+            getSpeed(vector3d);
+            vector3d.scale(0.20000000000000001D);
+            vector3d.add(com.maddox.il2.ai.World.Rnd().nextDouble(-75D, 75D), com.maddox.il2.ai.World.Rnd().nextDouble(-75D, 75D), com.maddox.il2.ai.World.Rnd().nextDouble(-75D, 75D));
+            com.maddox.il2.objects.weapons.RocketPhBall rocketphball = new RocketPhBall();
+            rocketphball.start(-1F);
+            ((com.maddox.il2.objects.weapons.Rocket) (rocketphball)).pos.setUpdateEnable(true);
+            ((com.maddox.il2.objects.weapons.Rocket) (rocketphball)).pos.setAbs(point3d, orient);
+            ((com.maddox.il2.objects.weapons.Rocket) (rocketphball)).pos.reset();
+            rocketphball.setOwner(actor, false, false, false);
+            rocketphball.setSpeed(vector3d);
+        }
 
-    Property.set(localClass, "radius", 40.0F);
-    Property.set(localClass, "timeLife", 10.0F);
-    Property.set(localClass, "timeFire", 10.0F);
-    Property.set(localClass, "force", 10000.0F);
+        postDestroy();
+    }
 
-    Property.set(localClass, "power", 2.2275F);
-    Property.set(localClass, "powerType", 0);
-    Property.set(localClass, "kalibr", 0.3F);
-    Property.set(localClass, "massa", 58.806F);
-    Property.set(localClass, "massaEnd", 49.896F);
-  }
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.RocketType3Mk27.class;
+        com.maddox.rts.Property.set(class1, "mesh", "3DO/Arms/Type3No6Mk27B(R)Model1/mono.sim");
+        com.maddox.rts.Property.set(class1, "sprite", "3DO/Effects/Tracers/GuidedRocket/Black.eff");
+        com.maddox.rts.Property.set(class1, "flame", "3DO/Effects/Rocket/mono.sim");
+        com.maddox.rts.Property.set(class1, "smoke", "3DO/Effects/Tracers/GuidedRocket/White.eff");
+        com.maddox.rts.Property.set(class1, "emitColor", new Color3f(1.0F, 1.0F, 0.5F));
+        com.maddox.rts.Property.set(class1, "emitLen", 50F);
+        com.maddox.rts.Property.set(class1, "emitMax", 1.0F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.rocket_132");
+        com.maddox.rts.Property.set(class1, "radius", 40F);
+        com.maddox.rts.Property.set(class1, "timeLife", 10F);
+        com.maddox.rts.Property.set(class1, "timeFire", 10F);
+        com.maddox.rts.Property.set(class1, "force", 10000F);
+        com.maddox.rts.Property.set(class1, "power", 2.2275F);
+        com.maddox.rts.Property.set(class1, "powerType", 0);
+        com.maddox.rts.Property.set(class1, "kalibr", 0.3F);
+        com.maddox.rts.Property.set(class1, "massa", 58.806F);
+        com.maddox.rts.Property.set(class1, "massaEnd", 49.896F);
+    }
 }

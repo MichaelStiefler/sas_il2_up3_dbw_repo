@@ -1,129 +1,144 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CfgIntSound.java
+
 package com.maddox.sound;
 
 import com.maddox.rts.CfgInt;
 import com.maddox.rts.IniFile;
 
+// Referenced classes of package com.maddox.sound:
+//            AudioDevice
+
 public class CfgIntSound
-  implements CfgInt
+    implements com.maddox.rts.CfgInt
 {
-  int code;
-  int value;
-  String name;
-  int defState;
-  String[] stateNames;
-  boolean needApply;
-  IniFile ini;
-  String sectName;
-  public static String[] stdStateNames = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" };
 
-  public CfgIntSound(int paramInt1, String paramString, String[] paramArrayOfString, int paramInt2)
-  {
-    if (paramArrayOfString == null) paramArrayOfString = stdStateNames;
-    this.code = paramInt1;
-    this.name = paramString;
-    this.stateNames = paramArrayOfString;
-    this.defState = paramInt2;
-    this.value = AudioDevice.getControl(paramInt1);
-    this.needApply = false;
-    this.ini = null;
-    this.sectName = null;
-  }
+    public CfgIntSound(int i, java.lang.String s, java.lang.String as[], int j)
+    {
+        if(as == null)
+            as = stdStateNames;
+        code = i;
+        name = s;
+        stateNames = as;
+        defState = j;
+        value = com.maddox.sound.AudioDevice.getControl(i);
+        needApply = false;
+        ini = null;
+        sectName = null;
+    }
 
-  public int firstState()
-  {
-    return 0;
-  }
+    public int firstState()
+    {
+        return 0;
+    }
 
-  public int countStates()
-  {
-    return this.stateNames.length;
-  }
+    public int countStates()
+    {
+        return stateNames.length;
+    }
 
-  public int defaultState()
-  {
-    return this.defState;
-  }
+    public int defaultState()
+    {
+        return defState;
+    }
 
-  public String nameState(int paramInt)
-  {
-    return this.stateNames[paramInt];
-  }
+    public java.lang.String nameState(int i)
+    {
+        return stateNames[i];
+    }
 
-  public boolean isEnabledState(int paramInt)
-  {
-    return true;
-  }
+    public boolean isEnabledState(int i)
+    {
+        return true;
+    }
 
-  public int get()
-  {
-    return this.value;
-  }
+    public int get()
+    {
+        return value;
+    }
 
-  public void set(int paramInt)
-  {
-    this.value = paramInt;
-    if (this.code == 1) AudioDevice._cur_en = paramInt > 0;
-    this.needApply = (!AudioDevice.setControl(this.code, this.value));
-  }
+    public void set(int i)
+    {
+        value = i;
+        if(code == 1)
+            com.maddox.sound.AudioDevice._cur_en = i > 0;
+        needApply = !com.maddox.sound.AudioDevice.setControl(code, value);
+    }
 
-  public String name()
-  {
-    return this.name;
-  }
+    public java.lang.String name()
+    {
+        return name;
+    }
 
-  public boolean isPermanent()
-  {
-    return true;
-  }
+    public boolean isPermanent()
+    {
+        return true;
+    }
 
-  public boolean isEnabled()
-  {
-    return ((AudioDevice._cur_en) || (this.code == 1)) && (AudioDevice.isControlEnabled(this.code));
-  }
+    public boolean isEnabled()
+    {
+        return (com.maddox.sound.AudioDevice._cur_en || code == 1) && com.maddox.sound.AudioDevice.isControlEnabled(code);
+    }
 
-  public void load(IniFile paramIniFile, String paramString)
-  {
-    this.ini = paramIniFile;
-    this.sectName = paramString;
-    this.value = paramIniFile.get(paramString, this.name, this.defState);
-  }
+    public void load(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        ini = inifile;
+        sectName = s;
+        value = inifile.get(s, name, defState);
+    }
 
-  public IniFile loadedSectFile()
-  {
-    return this.ini;
-  }
+    public com.maddox.rts.IniFile loadedSectFile()
+    {
+        return ini;
+    }
 
-  public String loadedSectName()
-  {
-    return this.sectName;
-  }
+    public java.lang.String loadedSectName()
+    {
+        return sectName;
+    }
 
-  public void save()
-  {
-    save(this.ini, this.sectName);
-  }
+    public void save()
+    {
+        save(ini, sectName);
+    }
 
-  public void save(IniFile paramIniFile, String paramString)
-  {
-    paramIniFile.set(paramString, this.name, this.value);
-  }
+    public void save(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        inifile.set(s, name, value);
+    }
 
-  public int apply()
-  {
-    AudioDevice.setControl(this.code, this.value);
-    return 0;
-  }
+    public int apply()
+    {
+        com.maddox.sound.AudioDevice.setControl(code, value);
+        return 0;
+    }
 
-  public int applyStatus()
-  {
-    return 0;
-  }
+    public int applyStatus()
+    {
+        return 0;
+    }
 
-  public void applyExtends(int paramInt)
-  {
-  }
+    public void applyExtends(int i)
+    {
+    }
 
-  public void reset()
-  {
-  }
+    public void reset()
+    {
+    }
+
+    int code;
+    int value;
+    java.lang.String name;
+    int defState;
+    java.lang.String stateNames[];
+    boolean needApply;
+    com.maddox.rts.IniFile ini;
+    java.lang.String sectName;
+    public static java.lang.String stdStateNames[] = {
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", 
+        "10", "11", "12", "13", "14", "15"
+    };
+
 }

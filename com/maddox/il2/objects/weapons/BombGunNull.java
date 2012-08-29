@@ -1,24 +1,45 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BombGunNull.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.rts.Property;
 
-public class BombGunNull extends BombGun
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            BombGun
+
+public class BombGunNull extends com.maddox.il2.objects.weapons.BombGun
 {
-  public void setBombDelay(float paramFloat)
-  {
-  }
 
-  public void shots(int paramInt)
-  {
-    bullets(0);
-  }
+    public BombGunNull()
+    {
+    }
 
-  static {
-    Class localClass = BombGunNull.class;
-    Property.set(localClass, "bulletClass", BombPhBall.class);
-    Property.set(localClass, "bullets", 1);
-    Property.set(localClass, "shotFreq", 1.0F);
+    public void setBombDelay(float f)
+    {
+    }
 
-    Property.set(localClass, "sound", "weapon.bombgun_phball");
-  }
+    public void shots(int i)
+    {
+        bullets(0);
+    }
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.weapons.BombGunNull.class;
+        com.maddox.rts.Property.set(class1, "bulletClass", com.maddox.il2.objects.weapons.BombPhBall.class);
+        com.maddox.rts.Property.set(class1, "bullets", 1);
+        com.maddox.rts.Property.set(class1, "shotFreq", 1.0F);
+        com.maddox.rts.Property.set(class1, "sound", "weapon.bombgun_phball");
+    }
 }

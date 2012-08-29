@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   PAir.java
+
 package com.maddox.il2.builder;
 
 import com.maddox.JGP.Point3d;
@@ -6,118 +11,161 @@ import com.maddox.il2.engine.IconDraw;
 import com.maddox.il2.engine.Mat;
 import com.maddox.rts.Property;
 
-public class PAir extends PPoint
+// Referenced classes of package com.maddox.il2.builder:
+//            PPoint, Path, PathChief, PlMisChief
+
+public class PAir extends com.maddox.il2.builder.PPoint
 {
-  public static final int NORMFLY = 0;
-  public static final int TAKEOFF = 1;
-  public static final int LANDING = 2;
-  public static final int GATTACK = 3;
-  public static final String[] types = { "NORMFLY", "TAKEOFF", "LANDING", "GATTACK" };
-  private int type;
-  public double height;
-  public double speed;
-  private Actor target = null;
-  public String sTarget = null;
-  public int iTarget = 0;
-  public boolean bRadioSilence = false;
 
-  public void setType(int paramInt) {
-    this.type = paramInt;
-    setIcon();
-  }
-  public int type() {
-    return this.type;
-  }
-  public Actor getTarget() {
-    if (Actor.isValid(this.target))
-      return this.target;
-    if (this.sTarget != null) {
-      Actor localActor = Actor.getByName(this.sTarget);
-      if (Actor.isValid(localActor)) {
-        if ((localActor instanceof Path)) {
-          Path localPath = (Path)localActor;
-          if (this.iTarget >= localPath.points())
-            this.iTarget = (localPath.points() - 1);
-          if (this.iTarget < 0) {
-            this.iTarget = 0;
-            this.sTarget = null;
-            this.target = null;
-          } else {
-            PPoint localPPoint = localPath.point(this.iTarget);
-            this.target = localPPoint;
-          }
-        } else {
-          this.target = localActor;
-        }
-        return this.target;
-      }
-      this.sTarget = null;
+    public void setType(int i)
+    {
+        type = i;
+        setIcon();
     }
-    this.target = null;
-    return null;
-  }
 
-  public void setTarget(Actor paramActor) {
-    this.target = paramActor;
-    if (this.target != null)
-      if ((this.type != 1) && (this.type != 2)) {
-        if ((this.target instanceof PAir)) setType(0); else
-          setType(3);
-      }
-      else if ((this.target instanceof PPoint)) {
-        if ((this.target.getOwner() instanceof PathChief)) {
-          PathChief localPathChief = (PathChief)this.target.getOwner();
-          if (!PlMisChief.isAirport(localPathChief._iType, localPathChief._iItem))
-            this.target = null;
-        } else {
-          this.target = null;
-        }
-      } else if (!"true".equals(Property.stringValue(this.target.getClass(), "IsAirport", (String)null)))
-        this.target = null;
-  }
-
-  public void destroy()
-  {
-    this.target = null;
-    this.sTarget = null;
-    Path localPath = (Path)getOwner();
-    super.destroy();
-    if (localPath != null)
-      localPath.computeTimes();
-  }
-
-  public PAir(Path paramPath, PPoint paramPPoint, Mat paramMat, Point3d paramPoint3d, int paramInt, double paramDouble1, double paramDouble2)
-  {
-    super(paramPath, paramPPoint, paramMat, paramPoint3d);
-    setType(paramInt);
-    this.height = paramDouble1;
-    this.speed = paramDouble2;
-    paramPath.computeTimes();
-  }
-
-  public PAir(Path paramPath, PPoint paramPPoint, Point3d paramPoint3d, int paramInt, double paramDouble1, double paramDouble2)
-  {
-    this(paramPath, paramPPoint, (Mat)null, paramPoint3d, paramInt, paramDouble1, paramDouble2);
-  }
-
-  public PAir(Path paramPath, PPoint paramPPoint, String paramString, Point3d paramPoint3d, int paramInt, double paramDouble1, double paramDouble2)
-  {
-    this(paramPath, paramPPoint, IconDraw.get(paramString), paramPoint3d, paramInt, paramDouble1, paramDouble2);
-  }
-
-  private void setIcon() {
-    String str = null;
-    switch (this.type) { case 0:
-      str = "normfly"; break;
-    case 1:
-      str = "takeoff"; break;
-    case 2:
-      str = "landing"; break;
-    case 3:
-      str = "gattack"; break;
-    default:
-      return;
+    public int type()
+    {
+        return type;
     }
-    this.icon = IconDraw.get("icons/" + str + ".mat");
-  }
+
+    public com.maddox.il2.engine.Actor getTarget()
+    {
+        if(com.maddox.il2.engine.Actor.isValid(target))
+            return target;
+        if(sTarget != null)
+        {
+            com.maddox.il2.engine.Actor actor = com.maddox.il2.engine.Actor.getByName(sTarget);
+            if(com.maddox.il2.engine.Actor.isValid(actor))
+            {
+                if(actor instanceof com.maddox.il2.builder.Path)
+                {
+                    com.maddox.il2.builder.Path path = (com.maddox.il2.builder.Path)actor;
+                    if(iTarget >= path.points())
+                        iTarget = path.points() - 1;
+                    if(iTarget < 0)
+                    {
+                        iTarget = 0;
+                        sTarget = null;
+                        target = null;
+                    } else
+                    {
+                        com.maddox.il2.builder.PPoint ppoint = path.point(iTarget);
+                        target = ppoint;
+                    }
+                } else
+                {
+                    target = actor;
+                }
+                return target;
+            }
+            sTarget = null;
+        }
+        target = null;
+        return null;
+    }
+
+    public void setTarget(com.maddox.il2.engine.Actor actor)
+    {
+        target = actor;
+        if(target != null)
+            if(type != 1 && type != 2)
+            {
+                if(target instanceof com.maddox.il2.builder.PAir)
+                    setType(0);
+                else
+                    setType(3);
+            } else
+            if(target instanceof com.maddox.il2.builder.PPoint)
+            {
+                if(target.getOwner() instanceof com.maddox.il2.builder.PathChief)
+                {
+                    com.maddox.il2.builder.PathChief pathchief = (com.maddox.il2.builder.PathChief)target.getOwner();
+                    if(!com.maddox.il2.builder.PlMisChief.isAirport(pathchief._iType, pathchief._iItem))
+                        target = null;
+                } else
+                {
+                    target = null;
+                }
+            } else
+            if(!"true".equals(com.maddox.rts.Property.stringValue(target.getClass(), "IsAirport", (java.lang.String)null)))
+                target = null;
+    }
+
+    public void destroy()
+    {
+        target = null;
+        sTarget = null;
+        com.maddox.il2.builder.Path path = (com.maddox.il2.builder.Path)getOwner();
+        super.destroy();
+        if(path != null)
+            path.computeTimes();
+    }
+
+    public PAir(com.maddox.il2.builder.Path path, com.maddox.il2.builder.PPoint ppoint, com.maddox.il2.engine.Mat mat, com.maddox.JGP.Point3d point3d, int i, double d, 
+            double d1)
+    {
+        super(path, ppoint, mat, point3d);
+        target = null;
+        sTarget = null;
+        iTarget = 0;
+        bRadioSilence = false;
+        setType(i);
+        height = d;
+        speed = d1;
+        path.computeTimes();
+    }
+
+    public PAir(com.maddox.il2.builder.Path path, com.maddox.il2.builder.PPoint ppoint, com.maddox.JGP.Point3d point3d, int i, double d, double d1)
+    {
+        this(path, ppoint, (com.maddox.il2.engine.Mat)null, point3d, i, d, d1);
+    }
+
+    public PAir(com.maddox.il2.builder.Path path, com.maddox.il2.builder.PPoint ppoint, java.lang.String s, com.maddox.JGP.Point3d point3d, int i, double d, 
+            double d1)
+    {
+        this(path, ppoint, com.maddox.il2.engine.IconDraw.get(s), point3d, i, d, d1);
+    }
+
+    private void setIcon()
+    {
+        java.lang.String s = null;
+        switch(type)
+        {
+        case 0: // '\0'
+            s = "normfly";
+            break;
+
+        case 1: // '\001'
+            s = "takeoff";
+            break;
+
+        case 2: // '\002'
+            s = "landing";
+            break;
+
+        case 3: // '\003'
+            s = "gattack";
+            break;
+
+        default:
+            return;
+        }
+        icon = com.maddox.il2.engine.IconDraw.get("icons/" + s + ".mat");
+    }
+
+    public static final int NORMFLY = 0;
+    public static final int TAKEOFF = 1;
+    public static final int LANDING = 2;
+    public static final int GATTACK = 3;
+    public static final java.lang.String types[] = {
+        "NORMFLY", "TAKEOFF", "LANDING", "GATTACK"
+    };
+    private int type;
+    public double height;
+    public double speed;
+    private com.maddox.il2.engine.Actor target;
+    public java.lang.String sTarget;
+    public int iTarget;
+    public boolean bRadioSilence;
+
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUIDGenDeBriefing.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GPoint;
@@ -8,7 +13,6 @@ import com.maddox.gwindow.GWindowRoot;
 import com.maddox.il2.ai.Army;
 import com.maddox.il2.ai.DifficultySettings;
 import com.maddox.il2.ai.EventLog;
-import com.maddox.il2.ai.EventLog.Action;
 import com.maddox.il2.ai.Scores;
 import com.maddox.il2.ai.TargetsGuard;
 import com.maddox.il2.ai.UserCfg;
@@ -45,639 +49,776 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class GUIDGenDeBriefing extends GUIDeBriefing
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIDeBriefing, GUIDGenRoster, GUIClient, GUIButton, 
+//            GUIBWDemoPlay, GUIBriefingGeneric
+
+public class GUIDGenDeBriefing extends com.maddox.il2.gui.GUIDeBriefing
 {
-  private static final String fileNameDebrifing = "dgen/debrifing.txt";
-  private String sound = null;
 
-  protected boolean bMissComplete = false;
-  private static final int ICON_AAA = 0;
-  private static final int ICON_Bailed = 1;
-  private static final int ICON_Bridge = 2;
-  private static final int ICON_Car = 3;
-  private static final int ICON_Crashed = 4;
-  private static final int ICON_Gun = 5;
-  private static final int ICON_Landed = 6;
-  private static final int ICON_Plane = 7;
-  private static final int ICON_Ship = 8;
-  private static final int ICON_Tank = 9;
-  private static final int ICON_Train = 10;
-  private static final int ICON_Pilot = 11;
-  private static final int ICON_Airstatic = 12;
-  private static final int ICON_RadarRadio = 13;
-  private Mat[] iconAction = new Mat[14];
-
-  private HashMap assPilot = new HashMap();
-  private HashMap assType = new HashMap();
-
-  private String[] tip = new String[4];
-
-  private float[] lineXYZ = new float[6];
-
-  public void enter(GameState paramGameState)
-  {
-    super.enter(paramGameState);
-    if (this.sound != null) {
-      CmdEnv.top().exec("music PUSH");
-      CmdEnv.top().exec("music LIST " + this.sound);
-      CmdEnv.top().exec("music PLAY");
-    }
-  }
-
-  public void leave(GameState paramGameState) {
-    if (this.sound != null) {
-      CmdEnv.top().exec("music POP");
-      CmdEnv.top().exec("music STOP");
-      this.sound = null;
-    }
-    super.leave(paramGameState);
-  }
-
-  public void enterPop(GameState paramGameState)
-  {
-    if (paramGameState.id() == 58) {
-      Main.cur().currentMissionFile = Main.cur().campaign.nextMission();
-      if (Main.cur().currentMissionFile == null) {
-        new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
-        {
-          public void result(int paramInt) {
-            GUIDGenDeBriefing.this.doBack();
-          }
-        };
-        return;
-      }
-      Main.stateStack().change(62);
-      return;
-    }
-    if (this.sound != null) {
-      CmdEnv.top().exec("music POP");
-      CmdEnv.top().exec("music PLAY");
-      this.sound = null;
-    }
-    this.client.activateWindow();
-  }
-
-  public void _enter()
-  {
-    preparePilotAssociation();
-    prepareTypeAssociation();
-
-    if (NetMissionTrack.countRecorded == 0)
-      this.bDifficulty.showWindow();
-    else {
-      this.bDifficulty.hideWindow();
-    }
-    Scores.compute();
-
-    doExternalDebrifingGenerator();
-
-    Scores.score += Main.cur().campaign.score();
-    Scores.enemyAirKill += Main.cur().campaign.enemyAirDestroyed();
-    Scores.friendlyKill += Main.cur().campaign.friendDestroyed();
-    int[] arrayOfInt1 = Main.cur().campaign.enemyGroundDestroyed();
-    if (arrayOfInt1 != null) {
-      if (Scores.arrayEnemyGroundKill != null) {
-        int[] arrayOfInt2 = new int[arrayOfInt1.length + Scores.enemyGroundKill];
-        int i = 0;
-        for (int j = 0; j < arrayOfInt1.length; j++)
-          arrayOfInt2[(i++)] = arrayOfInt1[j];
-        for (j = 0; j < Scores.arrayEnemyGroundKill.length; j++)
-          arrayOfInt2[(i++)] = Scores.arrayEnemyGroundKill[j];
-        Scores.arrayEnemyGroundKill = arrayOfInt2;
-      } else {
-        Scores.arrayEnemyGroundKill = arrayOfInt1;
-      }
-      Scores.enemyGroundKill = Scores.arrayEnemyGroundKill.length;
-    }
-
-    if (!Actor.isAlive(World.getPlayerAircraft())) {
-      Main.cur().campaign.incAircraftLost();
-    }
-    if ((!World.isPlayerDead()) && (!World.isPlayerCaptured()) && ((World.cur().targetsGuard.isTaskComplete()) || (Time.current() / 1000.0D / 60.0D > 20.0D) || (!World.cur().diffCur.NoInstantSuccess)))
+    public void enter(com.maddox.il2.game.GameState gamestate)
     {
-      this.bMissComplete = true;
-      this.bNext.showWindow();
-    } else {
-      this.bMissComplete = false;
-      this.bNext.hideWindow();
-    }
-
-    super._enter();
-  }
-
-  private void doExternalDebrifingGenerator() {
-    String str1 = "DGen.exe";
-    Campaign localCampaign = Main.cur().campaign;
-    try {
-      String str2 = "debrief missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir() + "/ " + localCampaign.difficulty() + " " + Scores.score + " " + localCampaign.rank() + " " + "dgen/debrifing.txt";
-
-      Runtime localRuntime = Runtime.getRuntime();
-
-      Process localProcess = localRuntime.exec(str1 + " " + str2);
-
-      localProcess.waitFor();
-    }
-    catch (Throwable localThrowable) {
-      System.out.println(localThrowable.getMessage());
-      localThrowable.printStackTrace();
-    }
-  }
-
-  private void saveCampaign()
-  {
-    saveCampaign(true);
-  }
-  private void saveCampaign(boolean paramBoolean) {
-    Campaign localCampaign = Main.cur().campaign;
-    try {
-      String str1 = localCampaign.branch() + localCampaign.missionsDir();
-      String str2 = "users/" + World.cur().userCfg.sId + "/campaigns.ini";
-      SectFile localSectFile = new SectFile(str2, 1, false, World.cur().userCfg.krypto());
-      if ((paramBoolean) && 
-        (this.bMissComplete)) {
-        if (localCampaign.isComplete())
-          localCampaign.clearSavedStatics(localSectFile);
-        else {
-          localCampaign.saveStatics(localSectFile);
+        super.enter(gamestate);
+        if(sound != null)
+        {
+            com.maddox.rts.CmdEnv.top().exec("music PUSH");
+            com.maddox.rts.CmdEnv.top().exec("music LIST " + sound);
+            com.maddox.rts.CmdEnv.top().exec("music PLAY");
         }
-      }
-      localSectFile.set("list", str1, localCampaign, true);
-      localSectFile.saveFile();
-    } catch (Exception localException) {
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-      return;
     }
-  }
 
-  protected void fillTextDescription() {
-    BufferedReader localBufferedReader = null;
-    this.textDescription = null;
-    this.sound = null;
-    try {
-      localBufferedReader = new BufferedReader(new SFSReader("dgen/debrifing.txt", RTSConf.charEncoding));
-      StringBuffer localStringBuffer = null;
-      while (true)
-      {
-        String str = localBufferedReader.readLine();
-        if (str == null)
-          break;
-        int i = str.length();
-        if (i == 0)
-          continue;
-        if (str.startsWith("SOUND ")) {
-          this.sound = str.substring("SOUND ".length());
-        } else {
-          str = UnicodeTo8bit.load(str, false);
-          if (localStringBuffer == null) {
-            localStringBuffer = new StringBuffer(str);
-          }
-          else {
-            localStringBuffer.append('\n');
-            localStringBuffer.append(str);
-          }
-        }
-      }
-      localBufferedReader.close();
-      if (localStringBuffer != null)
-        this.textDescription = localStringBuffer.toString();
-    } catch (Exception localException1) {
-      if (localBufferedReader != null) try {
-          localBufferedReader.close(); } catch (Exception localException2) {
-        } System.out.println("Debrifing text load failed: " + localException1.getMessage());
-      localException1.printStackTrace();
-    }
-  }
-
-  private void updatePlayerScore() {
-    BufferedReader localBufferedReader = null;
-    try {
-      Campaign localCampaign = Main.cur().campaign;
-      String str = "missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir() + "/squadron.dat";
-      localBufferedReader = new BufferedReader(new SFSReader(str, RTSConf.charEncoding));
-      GUIDGenRoster localGUIDGenRoster = (GUIDGenRoster)GameState.get(65);
-      GUIDGenRoster.Pilot localPilot = localGUIDGenRoster.loadPilot(localBufferedReader);
-      localBufferedReader.close();
-      localCampaign._rank = localPilot.rank;
-      localCampaign._nawards = localPilot.nmedals;
-      saveCampaign(false);
-    } catch (Exception localException1) {
-      if (localBufferedReader != null) try {
-          localBufferedReader.close(); } catch (Exception localException2) {
-        } System.out.println("Squadron file load failed: " + localException1.getMessage());
-      localException1.printStackTrace();
-    }
-  }
-
-  private void preparePilotAssociation()
-  {
-    this.assPilot.clear();
-    GUIDGenRoster localGUIDGenRoster = (GUIDGenRoster)GameState.get(65);
-    localGUIDGenRoster.loadPilotList();
-    if (localGUIDGenRoster.pilotPlayer == null) return; try
+    public void leave(com.maddox.il2.game.GameState gamestate)
     {
-      Campaign localCampaign = Main.cur().campaign;
-      String str1 = "missions/campaign/" + localCampaign.branch() + "/" + localCampaign.missionsDir() + "/status.dat";
-      BufferedReader localBufferedReader = new BufferedReader(new SFSReader(str1, RTSConf.charEncoding));
-      for (int i = 0; i < 9; i++) {
-        localBufferedReader.readLine();
-      }
-      while (localBufferedReader.ready())
-      {
-        String str2 = localBufferedReader.readLine();
-        if (str2 == null)
-          break;
-        int j = str2.length();
-        if (j == 0)
-          continue;
-        str2 = UnicodeTo8bit.load(str2, false);
-        SharedTokenizer.set(str2);
-        String str3 = SharedTokenizer.next();
-        String str4 = SharedTokenizer.next();
-        String str5 = SharedTokenizer.next();
-        String str6 = SharedTokenizer.getGap();
-        if ((str6 == null) || ("None,None".equals(str6)))
-          continue;
-        for (int k = 0; k < localGUIDGenRoster.pilots.size(); k++) {
-          GUIDGenRoster.Pilot localPilot = (GUIDGenRoster.Pilot)localGUIDGenRoster.pilots.get(k);
-          String str7 = localPilot.lastName + "," + localPilot.firstName;
-          if (str6.equals(str7)) {
-            this.assPilot.put(str4, localPilot.sRank + " " + localPilot.lastName);
-          }
-        }
-      }
-      localBufferedReader.close();
-    } catch (Exception localException) {
-      System.out.println("Status file load failed: " + localException.getMessage());
-      localException.printStackTrace();
-      Main.stateStack().pop();
-    }
-  }
-
-  private void prepareTypeAssociation() {
-    this.assType.clear();
-    SectFile localSectFile = Mission.cur().sectFile();
-    int i = localSectFile.sectionIndex("Wing");
-    if (i < 0) return;
-    int j = localSectFile.vars(i);
-    for (int k = 0; k < j; k++) {
-      String str1 = localSectFile.var(i, k);
-      int m = localSectFile.sectionIndex(str1);
-      if (m >= 0) {
-        int n = localSectFile.get(str1, "Planes", 1, 1, 4);
-        String str2 = localSectFile.get(str1, "Class", (String)null);
-        if (str2 != null) {
-          Class localClass = null;
-          try {
-            localClass = ObjIO.classForName(str2);
-          } catch (Exception localException) {
-            continue;
-          }
-          String str3 = Property.stringValue(localClass, "keyName", null);
-          if (str3 != null) {
-            String str4 = I18N.plane(str3);
-            for (int i1 = 0; i1 < n; i1++)
-              this.assType.put(str1 + i1, str4); 
-          }
-        }
-      }
-    }
-  }
-
-  private void drawEvents() {
-    GPoint localGPoint = this.renders.getMouseXY();
-    int i = -1;
-    float f1 = localGPoint.x;
-    float f2 = this.renders.win.dy - 1.0F - localGPoint.y;
-    float f3 = IconDraw.scrSizeX() / 2;
-    float f4 = f1; float f5 = f2;
-    ArrayList localArrayList = EventLog.actions;
-    int j = localArrayList.size();
-    float f9;
-    for (int k = 0; k < j; k++) {
-      Mat localMat = null;
-      EventLog.Action localAction2 = (EventLog.Action)localArrayList.get(k);
-      switch (localAction2.event) {
-      case 0:
-        this.assPilot.put(localAction2.arg0, localAction2.arg1);
-        break;
-      case 2:
-      case 3:
-      case 4:
-        switch (localAction2.scoreItem0) { case 0:
-          localMat = this.iconAction[4]; break;
-        case 8:
-          localMat = this.iconAction[12]; break;
-        case 1:
-          localMat = this.iconAction[9]; break;
-        case 2:
-          localMat = this.iconAction[3]; break;
-        case 3:
-          localMat = this.iconAction[5]; break;
-        case 4:
-          localMat = this.iconAction[0]; break;
-        case 5:
-          localMat = this.iconAction[2]; break;
-        case 6:
-          localMat = this.iconAction[10]; break;
-        case 7:
-          localMat = this.iconAction[8]; break;
-        case 9:
-          localMat = this.iconAction[13]; }
-        break;
-      case 5:
-        if ((localAction2.argi != 0) || (this.assPilot.get(localAction2.arg0) == null)) break;
-        localMat = this.iconAction[1]; break;
-      case 6:
-        if ((localAction2.argi != 0) || (this.assPilot.get(localAction2.arg0) == null)) break;
-        localMat = this.iconAction[11]; break;
-      case 7:
-        if ((localAction2.argi != 0) || (this.assPilot.get(localAction2.arg0) == null)) break;
-        localMat = this.iconAction[6]; break;
-      case 1:
-      }
-
-      if (localMat != null) {
-        float f7 = (float)((localAction2.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-        f9 = (float)((localAction2.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-        IconDraw.setColor(0xFF000000 | Army.color(localAction2.army0));
-        IconDraw.render(localMat, f7, f9);
-        if ((f7 >= f1 - f3) && (f7 <= f1 + f3) && (f9 >= f2 - f3) && (f9 <= f2 + f3)) {
-          i = k;
-          f4 = f7; f5 = f9;
-        }
-      }
-    }
-    if (i >= 0) {
-      EventLog.Action localAction1 = (EventLog.Action)localArrayList.get(i);
-      for (int m = 0; m < 4; m++) this.tip[m] = null;
-      String str;
-      switch (localAction1.event) {
-      case 2:
-        if (localAction1.scoreItem0 == 0)
-          this.tip[1] = getAss(localAction1.arg0);
-        else {
-          this.tip[1] = getByScoreItem(localAction1.scoreItem0, localAction1.arg0);
-        }
-        this.tip[2] = i18n("debrief.Crashed");
-
-        break;
-      case 3:
-        this.tip[1] = getAss(localAction1.arg0);
-        str = getAss(localAction1.arg1);
-        if (str != null) {
-          this.tip[2] = i18n("debrief.ShotDownBy");
-          this.tip[3] = str;
-        } else {
-          this.tip[2] = i18n("debrief.ShotDown");
-        }
-
-        break;
-      case 4:
-        this.tip[1] = getByScoreItem(localAction1.scoreItem0, localAction1.arg0);
-        str = (String)this.assPilot.get(localAction1.arg1);
-        if (str != null) {
-          this.tip[2] = i18n("debrief.DestroyedBy");
-          this.tip[3] = str;
-        } else {
-          this.tip[2] = i18n("debrief.Destroyed");
-        }
-
-        break;
-      case 5:
-        str = getAss(localAction1.arg0);
-        if (str != null) {
-          this.tip[1] = str;
-          this.tip[2] = i18n("debrief.BailedOut");
-        }
-
-        break;
-      case 6:
-        str = getAss(localAction1.arg0);
-        if (str != null) {
-          this.tip[1] = str;
-          this.tip[2] = i18n("debrief.WasKilled");
-        }
-
-        break;
-      case 7:
-        str = getAss(localAction1.arg0);
-        if (str != null) {
-          this.tip[1] = str;
-          this.tip[2] = i18n("debrief.Landed");
-        }
-
-        break;
-      }
-
-      if (this.tip[1] != null) {
-        this.tip[0] = EventLog.logOnTime(localAction1.time).toString();
-        float f6 = this.gridFont.width(this.tip[0]);
-        int n = 1;
-        for (int i1 = 1; (i1 < 4) && 
-          (this.tip[i1] != null); i1++)
+        if(sound != null)
         {
-          n = i1;
-          f9 = this.gridFont.width(this.tip[i1]);
-          if (f6 >= f9) continue; f6 = f9;
+            com.maddox.rts.CmdEnv.top().exec("music POP");
+            com.maddox.rts.CmdEnv.top().exec("music STOP");
+            sound = null;
         }
-        float f8 = -this.gridFont.descender();
-        f9 = this.gridFont.height() + f8;
-        f6 += 2.0F * f8;
-        float f10 = f9 * (n + 1) + 2.0F * f8;
-
-        float f11 = f4 - f6 / 2.0F;
-        float f12 = f5 + f3;
-        if (f11 + f6 > this.renders.win.dx) f11 = this.renders.win.dx - f6;
-        if (f12 + f10 > this.renders.win.dy) f12 = this.renders.win.dy - f10;
-        if (f11 < 0.0F) f11 = 0.0F;
-        if (f12 < 0.0F) f12 = 0.0F;
-
-        Render.drawTile(f11, f12, f6, f10, 0.0F, this.emptyMat, -813694977, 0.0F, 0.0F, 1.0F, 1.0F);
-        Render.drawEnd();
-        for (int i2 = 0; i2 <= n; i2++)
-          this.gridFont.output(-16777216, f11 + f8, f12 + f8 + (n - i2) * f9 + f8, 0.0F, this.tip[i2]);
-      }
+        super.leave(gamestate);
     }
-  }
 
-  private String getAss(String paramString) {
-    String str = (String)this.assPilot.get(paramString);
-    if (str == null) str = (String)this.assType.get(paramString);
-    return str;
-  }
-  private String getByScoreItem(int paramInt, String paramString) {
-    switch (paramInt) { case 8:
-      return i18n("debrief.Airstatic");
-    case 1:
-      return i18n("debrief.Tank");
-    case 2:
-      return i18n("debrief.Car");
-    case 3:
-      return i18n("debrief.Artillery");
-    case 4:
-      return i18n("debrief.AAA");
-    case 5:
-      return i18n("debrief.Bridge");
-    case 6:
-      return i18n("debrief.Train");
-    case 7:
-      return i18n("debrief.Ship");
-    case 9:
-      return i18n("debrief.Radio"); }
-    return paramString;
-  }
-
-  private int colorPath()
-  {
-    long l1 = Time.currentReal();
-    long l2 = 1000L;
-    double d = 2.0D * (l1 % l2) / l2;
-    if (d >= 1.0D)
-      d = 2.0D - d;
-    int i = (int)(255.0D * d);
-    return 0xFF000000 | i << 16 | i << 8 | i;
-  }
-
-  private void drawPlayerPath() {
-    Render.drawBeginLines(-1);
-    double d1 = 5.0D / this.cameraMap2D.worldScale;
-    d1 *= d1;
-    ArrayList localArrayList = EventLog.actions;
-    int i = localArrayList.size();
-    Object localObject = null;
-    int j = colorPath();
-    for (int k = 0; k < i; k++) {
-      EventLog.Action localAction = (EventLog.Action)localArrayList.get(k);
-      if (localAction.event != 11)
-        continue;
-      if (localObject == null) {
-        localObject = localAction;
-      } else {
-        double d2 = (localObject.x - localAction.x) * (localObject.x - localAction.x) + (localObject.y - localAction.y) * (localObject.y - localAction.y);
-        if (d2 < d1)
-          continue;
-        this.lineXYZ[0] = (float)((localObject.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-        this.lineXYZ[1] = (float)((localObject.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-        this.lineXYZ[2] = 0.0F;
-        this.lineXYZ[3] = (float)((localAction.x - this.cameraMap2D.worldXOffset) * this.cameraMap2D.worldScale);
-        this.lineXYZ[4] = (float)((localAction.y - this.cameraMap2D.worldYOffset) * this.cameraMap2D.worldScale);
-        this.lineXYZ[5] = 0.0F;
-        Render.drawLines(this.lineXYZ, 2, 3.0F, j, Mat.NOWRITEZ | Mat.MODULATE | Mat.NOTEXTURE | Mat.BLEND, 1);
-
-        localObject = localAction;
-      }
-    }
-    Render.drawEnd();
-  }
-
-  protected void doRenderMap2D()
-  {
-    drawPlayerPath();
-    drawEvents();
-  }
-
-  protected void doBack()
-  {
-    saveCampaign();
-    Main3D.cur3D().keyRecord.clearRecorded();
-    if ((Mission.cur() != null) && (!Mission.cur().isDestroyed()))
-      Mission.cur().destroy();
-    Main.cur().campaign = null;
-    Main.cur().currentMissionFile = null;
-    Main.stateStack().pop();
-  }
-  protected void doDiff() {
-    Main.stateStack().push(9);
-  }
-  protected void doLoodout() {
-    Main3D.cur3D().keyRecord.clearRecorded();
-    Main.stateStack().change(63);
-  }
-  protected void doNext() {
-    if (!this.bMissComplete)
-      return;
-    int i = Main.cur().campaign._rank;
-    Main.cur().campaign.currentMissionComplete(Scores.score, Scores.enemyAirKill, Scores.arrayEnemyGroundKill, Scores.friendlyKill);
-    Main.cur().campaign._rank = i;
-    String str;
-    if (Main.cur().campaign.isComplete()) {
-      str = Main.cur().campaign.epilogueTrack();
-      doBack();
-      if (str != null) {
-        GUIBWDemoPlay.demoFile = str;
-        GUIBWDemoPlay.soundFile = null;
-        Main.stateStack().push(58);
-      }
-    } else {
-      saveCampaign();
-      Main3D.cur3D().keyRecord.clearRecorded();
-      if ((Mission.cur() != null) && (!Mission.cur().isDestroyed())) {
-        Mission.cur().destroy();
-      }
-      Main.cur().campaign.doExternalGenerator();
-      updatePlayerScore();
-
-      if (Main.cur().campaign.isComplete()) {
-        str = Main.cur().campaign.epilogueTrack();
-        doBack();
-        if (str != null) {
-          GUIBWDemoPlay.demoFile = str;
-          GUIBWDemoPlay.soundFile = null;
-          Main.stateStack().push(58);
-        }
-        return;
-      }
-
-      str = Main.cur().campaign.nextIntro();
-      if (str != null) {
-        GUIBWDemoPlay.demoFile = str;
-        GUIBWDemoPlay.soundFile = null;
-        Main.stateStack().push(58);
-        return;
-      }
-      Main.cur().currentMissionFile = Main.cur().campaign.nextMission();
-      if (Main.cur().currentMissionFile == null) {
-        new GWindowMessageBox(Main3D.cur3D().guiManager.root, 20.0F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F)
+    public void enterPop(com.maddox.il2.game.GameState gamestate)
+    {
+        if(gamestate.id() == 58)
         {
-          public void result(int paramInt) {
-            GUIDGenDeBriefing.this.doBack();
-          }
-        };
-        return;
-      }
-      Main.stateStack().change(62);
+            com.maddox.il2.game.Main.cur().currentMissionFile = com.maddox.il2.game.Main.cur().campaign.nextMission();
+            if(com.maddox.il2.game.Main.cur().currentMissionFile == null)
+            {
+                new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F) {
+
+                    public void result(int i)
+                    {
+                        doBack();
+                    }
+
+                }
+;
+                return;
+            } else
+            {
+                com.maddox.il2.game.Main.stateStack().change(62);
+                return;
+            }
+        }
+        if(sound != null)
+        {
+            com.maddox.rts.CmdEnv.top().exec("music POP");
+            com.maddox.rts.CmdEnv.top().exec("music PLAY");
+            sound = null;
+        }
+        client.activateWindow();
     }
-  }
 
-  protected void clientRender() {
-    GUIBriefingGeneric.DialogClient localDialogClient = this.dialogClient;
+    public void _enter()
+    {
+        preparePilotAssociation();
+        prepareTypeAssociation();
+        if(com.maddox.il2.net.NetMissionTrack.countRecorded == 0)
+            bDifficulty.showWindow();
+        else
+            bDifficulty.hideWindow();
+        com.maddox.il2.ai.Scores.compute();
+        doExternalDebrifingGenerator();
+        com.maddox.il2.ai.Scores.score += com.maddox.il2.game.Main.cur().campaign.score();
+        com.maddox.il2.ai.Scores.enemyAirKill += com.maddox.il2.game.Main.cur().campaign.enemyAirDestroyed();
+        com.maddox.il2.ai.Scores.friendlyKill += com.maddox.il2.game.Main.cur().campaign.friendDestroyed();
+        int ai[] = com.maddox.il2.game.Main.cur().campaign.enemyGroundDestroyed();
+        if(ai != null)
+        {
+            if(com.maddox.il2.ai.Scores.arrayEnemyGroundKill != null)
+            {
+                int ai1[] = new int[ai.length + com.maddox.il2.ai.Scores.enemyGroundKill];
+                int i = 0;
+                for(int j = 0; j < ai.length; j++)
+                    ai1[i++] = ai[j];
 
-    if (this.bNext.isVisible()) {
-      localDialogClient.draw(localDialogClient.x1024(427.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(170.0F), localDialogClient.y1024(48.0F), 1, i18n("debrief.Apply"));
+                for(int k = 0; k < com.maddox.il2.ai.Scores.arrayEnemyGroundKill.length; k++)
+                    ai1[i++] = com.maddox.il2.ai.Scores.arrayEnemyGroundKill[k];
+
+                com.maddox.il2.ai.Scores.arrayEnemyGroundKill = ai1;
+            } else
+            {
+                com.maddox.il2.ai.Scores.arrayEnemyGroundKill = ai;
+            }
+            com.maddox.il2.ai.Scores.enemyGroundKill = com.maddox.il2.ai.Scores.arrayEnemyGroundKill.length;
+        }
+        if(!com.maddox.il2.engine.Actor.isAlive(com.maddox.il2.ai.World.getPlayerAircraft()))
+            com.maddox.il2.game.Main.cur().campaign.incAircraftLost();
+        if(!com.maddox.il2.ai.World.isPlayerDead() && !com.maddox.il2.ai.World.isPlayerCaptured() && (com.maddox.il2.ai.World.cur().targetsGuard.isTaskComplete() || (double)com.maddox.rts.Time.current() / 1000D / 60D > 20D || !com.maddox.il2.ai.World.cur().diffCur.NoInstantSuccess))
+        {
+            bMissComplete = true;
+            bNext.showWindow();
+        } else
+        {
+            bMissComplete = false;
+            bNext.hideWindow();
+        }
+        super._enter();
     }
 
-    localDialogClient.draw(localDialogClient.x1024(0.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(170.0F), localDialogClient.y1024(48.0F), 1, i18n("debrief.MainMenu"));
-    localDialogClient.draw(localDialogClient.x1024(194.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(208.0F), localDialogClient.y1024(48.0F), 1, i18n("debrief.SaveTrack"));
-    localDialogClient.draw(localDialogClient.x1024(680.0F), localDialogClient.y1024(633.0F), localDialogClient.x1024(176.0F), localDialogClient.y1024(48.0F), 1, i18n("debrief.ReFly"));
-  }
+    private void doExternalDebrifingGenerator()
+    {
+        java.lang.String s = "DGen.exe";
+        com.maddox.il2.game.campaign.Campaign campaign = com.maddox.il2.game.Main.cur().campaign;
+        try
+        {
+            java.lang.String s1 = "debrief missions/campaign/" + campaign.branch() + "/" + campaign.missionsDir() + "/ " + campaign.difficulty() + " " + com.maddox.il2.ai.Scores.score + " " + campaign.rank() + " " + "dgen/debrifing.txt";
+            java.lang.Runtime runtime = java.lang.Runtime.getRuntime();
+            java.lang.Process process = runtime.exec(s + " " + s1);
+            process.waitFor();
+        }
+        catch(java.lang.Throwable throwable)
+        {
+            java.lang.System.out.println(throwable.getMessage());
+            throwable.printStackTrace();
+        }
+    }
 
-  public GUIDGenDeBriefing(GWindowRoot paramGWindowRoot) {
-    super(64);
-    init(paramGWindowRoot);
-    this.iconAction[0] = Mat.New("icons/objActAAA.mat");
-    this.iconAction[1] = Mat.New("icons/objActBailed.mat");
-    this.iconAction[2] = Mat.New("icons/objActBridge.mat");
-    this.iconAction[3] = Mat.New("icons/objActCar.mat");
-    this.iconAction[4] = Mat.New("icons/objActCrashed.mat");
-    this.iconAction[5] = Mat.New("icons/objActGun.mat");
-    this.iconAction[6] = Mat.New("icons/objActLanded.mat");
-    this.iconAction[7] = Mat.New("icons/objActPlane.mat");
-    this.iconAction[8] = Mat.New("icons/objActShip.mat");
-    this.iconAction[9] = Mat.New("icons/objActTank.mat");
-    this.iconAction[10] = Mat.New("icons/objActTrain.mat");
-    this.iconAction[11] = Mat.New("icons/objActPilot.mat");
-    this.iconAction[12] = Mat.New("icons/objActAirstatic.mat");
-    this.iconAction[13] = Mat.New("icons/objActRR.mat");
-  }
+    private void saveCampaign()
+    {
+        saveCampaign(true);
+    }
+
+    private void saveCampaign(boolean flag)
+    {
+        com.maddox.il2.game.campaign.Campaign campaign = com.maddox.il2.game.Main.cur().campaign;
+        try
+        {
+            java.lang.String s = campaign.branch() + campaign.missionsDir();
+            java.lang.String s1 = "users/" + com.maddox.il2.ai.World.cur().userCfg.sId + "/campaigns.ini";
+            com.maddox.rts.SectFile sectfile = new SectFile(s1, 1, false, com.maddox.il2.ai.World.cur().userCfg.krypto());
+            if(flag && bMissComplete)
+                if(campaign.isComplete())
+                    campaign.clearSavedStatics(sectfile);
+                else
+                    campaign.saveStatics(sectfile);
+            sectfile.set("list", s, campaign, true);
+            sectfile.saveFile();
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            return;
+        }
+    }
+
+    protected void fillTextDescription()
+    {
+        java.io.BufferedReader bufferedreader = null;
+        textDescription = null;
+        sound = null;
+        try
+        {
+            bufferedreader = new BufferedReader(new SFSReader("dgen/debrifing.txt", com.maddox.rts.RTSConf.charEncoding));
+            java.lang.StringBuffer stringbuffer = null;
+            do
+            {
+                java.lang.String s = bufferedreader.readLine();
+                if(s == null)
+                    break;
+                int i = s.length();
+                if(i != 0)
+                    if(s.startsWith("SOUND "))
+                    {
+                        sound = s.substring("SOUND ".length());
+                    } else
+                    {
+                        s = com.maddox.util.UnicodeTo8bit.load(s, false);
+                        if(stringbuffer == null)
+                        {
+                            stringbuffer = new StringBuffer(s);
+                        } else
+                        {
+                            stringbuffer.append('\n');
+                            stringbuffer.append(s);
+                        }
+                    }
+            } while(true);
+            bufferedreader.close();
+            if(stringbuffer != null)
+                textDescription = stringbuffer.toString();
+        }
+        catch(java.lang.Exception exception)
+        {
+            if(bufferedreader != null)
+                try
+                {
+                    bufferedreader.close();
+                }
+                catch(java.lang.Exception exception1) { }
+            java.lang.System.out.println("Debrifing text load failed: " + exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void updatePlayerScore()
+    {
+        java.io.BufferedReader bufferedreader = null;
+        try
+        {
+            com.maddox.il2.game.campaign.Campaign campaign = com.maddox.il2.game.Main.cur().campaign;
+            java.lang.String s = "missions/campaign/" + campaign.branch() + "/" + campaign.missionsDir() + "/squadron.dat";
+            bufferedreader = new BufferedReader(new SFSReader(s, com.maddox.rts.RTSConf.charEncoding));
+            com.maddox.il2.gui.GUIDGenRoster guidgenroster = (com.maddox.il2.gui.GUIDGenRoster)com.maddox.il2.game.GameState.get(65);
+            com.maddox.il2.gui.GUIDGenRoster.Pilot pilot = guidgenroster.loadPilot(bufferedreader);
+            bufferedreader.close();
+            campaign._rank = pilot.rank;
+            campaign._nawards = pilot.nmedals;
+            saveCampaign(false);
+        }
+        catch(java.lang.Exception exception)
+        {
+            if(bufferedreader != null)
+                try
+                {
+                    bufferedreader.close();
+                }
+                catch(java.lang.Exception exception1) { }
+            java.lang.System.out.println("Squadron file load failed: " + exception.getMessage());
+            exception.printStackTrace();
+        }
+    }
+
+    private void preparePilotAssociation()
+    {
+        assPilot.clear();
+        com.maddox.il2.gui.GUIDGenRoster guidgenroster = (com.maddox.il2.gui.GUIDGenRoster)com.maddox.il2.game.GameState.get(65);
+        guidgenroster.loadPilotList();
+        if(guidgenroster.pilotPlayer == null)
+            return;
+        try
+        {
+            com.maddox.il2.game.campaign.Campaign campaign = com.maddox.il2.game.Main.cur().campaign;
+            java.lang.String s = "missions/campaign/" + campaign.branch() + "/" + campaign.missionsDir() + "/status.dat";
+            java.io.BufferedReader bufferedreader = new BufferedReader(new SFSReader(s, com.maddox.rts.RTSConf.charEncoding));
+            for(int i = 0; i < 9; i++)
+                bufferedreader.readLine();
+
+            do
+            {
+                if(!bufferedreader.ready())
+                    break;
+                java.lang.String s1 = bufferedreader.readLine();
+                if(s1 == null)
+                    break;
+                int j = s1.length();
+                if(j != 0)
+                {
+                    s1 = com.maddox.util.UnicodeTo8bit.load(s1, false);
+                    com.maddox.util.SharedTokenizer.set(s1);
+                    java.lang.String s2 = com.maddox.util.SharedTokenizer.next();
+                    java.lang.String s3 = com.maddox.util.SharedTokenizer.next();
+                    java.lang.String s4 = com.maddox.util.SharedTokenizer.next();
+                    java.lang.String s5 = com.maddox.util.SharedTokenizer.getGap();
+                    if(s5 != null && !"None,None".equals(s5))
+                    {
+                        int k = 0;
+                        while(k < guidgenroster.pilots.size()) 
+                        {
+                            com.maddox.il2.gui.GUIDGenRoster.Pilot pilot = (com.maddox.il2.gui.GUIDGenRoster.Pilot)guidgenroster.pilots.get(k);
+                            java.lang.String s6 = pilot.lastName + "," + pilot.firstName;
+                            if(s5.equals(s6))
+                                assPilot.put(s3, pilot.sRank + " " + pilot.lastName);
+                            k++;
+                        }
+                    }
+                }
+            } while(true);
+            bufferedreader.close();
+        }
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println("Status file load failed: " + exception.getMessage());
+            exception.printStackTrace();
+            com.maddox.il2.game.Main.stateStack().pop();
+        }
+    }
+
+    private void prepareTypeAssociation()
+    {
+        assType.clear();
+        com.maddox.rts.SectFile sectfile = com.maddox.il2.game.Mission.cur().sectFile();
+        int i = sectfile.sectionIndex("Wing");
+        if(i < 0)
+            return;
+        int j = sectfile.vars(i);
+        for(int k = 0; k < j; k++)
+        {
+            java.lang.String s = sectfile.var(i, k);
+            int l = sectfile.sectionIndex(s);
+            if(l < 0)
+                continue;
+            int i1 = sectfile.get(s, "Planes", 1, 1, 4);
+            java.lang.String s1 = sectfile.get(s, "Class", (java.lang.String)null);
+            if(s1 == null)
+                continue;
+            java.lang.Class class1 = null;
+            try
+            {
+                class1 = com.maddox.rts.ObjIO.classForName(s1);
+            }
+            catch(java.lang.Exception exception)
+            {
+                continue;
+            }
+            java.lang.String s2 = com.maddox.rts.Property.stringValue(class1, "keyName", null);
+            if(s2 == null)
+                continue;
+            java.lang.String s3 = com.maddox.il2.game.I18N.plane(s2);
+            for(int j1 = 0; j1 < i1; j1++)
+                assType.put(s + j1, s3);
+
+        }
+
+    }
+
+    private void drawEvents()
+    {
+        com.maddox.gwindow.GPoint gpoint = renders.getMouseXY();
+        int i = -1;
+        float f = gpoint.x;
+        float f1 = renders.win.dy - 1.0F - gpoint.y;
+        float f2 = com.maddox.il2.engine.IconDraw.scrSizeX() / 2;
+        float f3 = f;
+        float f4 = f1;
+        java.util.ArrayList arraylist = com.maddox.il2.ai.EventLog.actions;
+        int j = arraylist.size();
+        for(int k = 0; k < j; k++)
+        {
+            com.maddox.il2.engine.Mat mat = null;
+            com.maddox.il2.ai.EventLog.Action action1 = (com.maddox.il2.ai.EventLog.Action)arraylist.get(k);
+            switch(action1.event)
+            {
+            case 0: // '\0'
+                assPilot.put(action1.arg0, action1.arg1);
+                break;
+
+            case 2: // '\002'
+            case 3: // '\003'
+            case 4: // '\004'
+                switch(action1.scoreItem0)
+                {
+                case 0: // '\0'
+                    mat = iconAction[4];
+                    break;
+
+                case 8: // '\b'
+                    mat = iconAction[12];
+                    break;
+
+                case 1: // '\001'
+                    mat = iconAction[9];
+                    break;
+
+                case 2: // '\002'
+                    mat = iconAction[3];
+                    break;
+
+                case 3: // '\003'
+                    mat = iconAction[5];
+                    break;
+
+                case 4: // '\004'
+                    mat = iconAction[0];
+                    break;
+
+                case 5: // '\005'
+                    mat = iconAction[2];
+                    break;
+
+                case 6: // '\006'
+                    mat = iconAction[10];
+                    break;
+
+                case 7: // '\007'
+                    mat = iconAction[8];
+                    break;
+
+                case 9: // '\t'
+                    mat = iconAction[13];
+                    break;
+                }
+                break;
+
+            case 5: // '\005'
+                if(action1.argi == 0 && assPilot.get(action1.arg0) != null)
+                    mat = iconAction[1];
+                break;
+
+            case 6: // '\006'
+                if(action1.argi == 0 && assPilot.get(action1.arg0) != null)
+                    mat = iconAction[11];
+                break;
+
+            case 7: // '\007'
+                if(action1.argi == 0 && assPilot.get(action1.arg0) != null)
+                    mat = iconAction[6];
+                break;
+            }
+            if(mat == null)
+                continue;
+            float f6 = (float)(((double)action1.x - cameraMap2D.worldXOffset) * cameraMap2D.worldScale);
+            float f8 = (float)(((double)action1.y - cameraMap2D.worldYOffset) * cameraMap2D.worldScale);
+            com.maddox.il2.engine.IconDraw.setColor(0xff000000 | com.maddox.il2.ai.Army.color(action1.army0));
+            com.maddox.il2.engine.IconDraw.render(mat, f6, f8);
+            if(f6 >= f - f2 && f6 <= f + f2 && f8 >= f1 - f2 && f8 <= f1 + f2)
+            {
+                i = k;
+                f3 = f6;
+                f4 = f8;
+            }
+        }
+
+        if(i >= 0)
+        {
+            com.maddox.il2.ai.EventLog.Action action = (com.maddox.il2.ai.EventLog.Action)arraylist.get(i);
+            for(int l = 0; l < 4; l++)
+                tip[l] = null;
+
+            switch(action.event)
+            {
+            case 2: // '\002'
+                if(action.scoreItem0 == 0)
+                    tip[1] = getAss(action.arg0);
+                else
+                    tip[1] = getByScoreItem(action.scoreItem0, action.arg0);
+                tip[2] = i18n("debrief.Crashed");
+                break;
+
+            case 3: // '\003'
+                tip[1] = getAss(action.arg0);
+                java.lang.String s = getAss(action.arg1);
+                if(s != null)
+                {
+                    tip[2] = i18n("debrief.ShotDownBy");
+                    tip[3] = s;
+                } else
+                {
+                    tip[2] = i18n("debrief.ShotDown");
+                }
+                break;
+
+            case 4: // '\004'
+                tip[1] = getByScoreItem(action.scoreItem0, action.arg0);
+                java.lang.String s1 = (java.lang.String)assPilot.get(action.arg1);
+                if(s1 != null)
+                {
+                    tip[2] = i18n("debrief.DestroyedBy");
+                    tip[3] = s1;
+                } else
+                {
+                    tip[2] = i18n("debrief.Destroyed");
+                }
+                break;
+
+            case 5: // '\005'
+                java.lang.String s2 = getAss(action.arg0);
+                if(s2 != null)
+                {
+                    tip[1] = s2;
+                    tip[2] = i18n("debrief.BailedOut");
+                }
+                break;
+
+            case 6: // '\006'
+                java.lang.String s3 = getAss(action.arg0);
+                if(s3 != null)
+                {
+                    tip[1] = s3;
+                    tip[2] = i18n("debrief.WasKilled");
+                }
+                break;
+
+            case 7: // '\007'
+                java.lang.String s4 = getAss(action.arg0);
+                if(s4 != null)
+                {
+                    tip[1] = s4;
+                    tip[2] = i18n("debrief.Landed");
+                }
+                break;
+            }
+            if(tip[1] != null)
+            {
+                tip[0] = com.maddox.il2.ai.EventLog.logOnTime(action.time).toString();
+                float f5 = gridFont.width(tip[0]);
+                int i1 = 1;
+                for(int j1 = 1; j1 < 4 && tip[j1] != null; j1++)
+                {
+                    i1 = j1;
+                    float f9 = gridFont.width(tip[j1]);
+                    if(f5 < f9)
+                        f5 = f9;
+                }
+
+                float f7 = -gridFont.descender();
+                float f10 = (float)gridFont.height() + f7;
+                f5 += 2.0F * f7;
+                float f11 = f10 * (float)(i1 + 1) + 2.0F * f7;
+                float f12 = f3 - f5 / 2.0F;
+                float f13 = f4 + f2;
+                if(f12 + f5 > renders.win.dx)
+                    f12 = renders.win.dx - f5;
+                if(f13 + f11 > renders.win.dy)
+                    f13 = renders.win.dy - f11;
+                if(f12 < 0.0F)
+                    f12 = 0.0F;
+                if(f13 < 0.0F)
+                    f13 = 0.0F;
+                com.maddox.il2.engine.Render.drawTile(f12, f13, f5, f11, 0.0F, emptyMat, 0xcf7fffff, 0.0F, 0.0F, 1.0F, 1.0F);
+                com.maddox.il2.engine.Render.drawEnd();
+                for(int k1 = 0; k1 <= i1; k1++)
+                    gridFont.output(0xff000000, f12 + f7, f13 + f7 + (float)(i1 - k1) * f10 + f7, 0.0F, tip[k1]);
+
+            }
+        }
+    }
+
+    private java.lang.String getAss(java.lang.String s)
+    {
+        java.lang.String s1 = (java.lang.String)assPilot.get(s);
+        if(s1 == null)
+            s1 = (java.lang.String)assType.get(s);
+        return s1;
+    }
+
+    private java.lang.String getByScoreItem(int i, java.lang.String s)
+    {
+        switch(i)
+        {
+        case 8: // '\b'
+            return i18n("debrief.Airstatic");
+
+        case 1: // '\001'
+            return i18n("debrief.Tank");
+
+        case 2: // '\002'
+            return i18n("debrief.Car");
+
+        case 3: // '\003'
+            return i18n("debrief.Artillery");
+
+        case 4: // '\004'
+            return i18n("debrief.AAA");
+
+        case 5: // '\005'
+            return i18n("debrief.Bridge");
+
+        case 6: // '\006'
+            return i18n("debrief.Train");
+
+        case 7: // '\007'
+            return i18n("debrief.Ship");
+
+        case 9: // '\t'
+            return i18n("debrief.Radio");
+        }
+        return s;
+    }
+
+    private int colorPath()
+    {
+        long l = com.maddox.rts.Time.currentReal();
+        long l1 = 1000L;
+        double d = (2D * (double)(l % l1)) / (double)l1;
+        if(d >= 1.0D)
+            d = 2D - d;
+        int i = (int)(255D * d);
+        return 0xff000000 | i << 16 | i << 8 | i;
+    }
+
+    private void drawPlayerPath()
+    {
+        com.maddox.il2.engine.Render.drawBeginLines(-1);
+        double d = 5D / cameraMap2D.worldScale;
+        d *= d;
+        java.util.ArrayList arraylist = com.maddox.il2.ai.EventLog.actions;
+        int i = arraylist.size();
+        com.maddox.il2.ai.EventLog.Action action = null;
+        int j = colorPath();
+        for(int k = 0; k < i; k++)
+        {
+            com.maddox.il2.ai.EventLog.Action action1 = (com.maddox.il2.ai.EventLog.Action)arraylist.get(k);
+            if(action1.event != 11)
+                continue;
+            if(action == null)
+            {
+                action = action1;
+                continue;
+            }
+            double d1 = (action.x - action1.x) * (action.x - action1.x) + (action.y - action1.y) * (action.y - action1.y);
+            if(d1 >= d)
+            {
+                lineXYZ[0] = (float)(((double)action.x - cameraMap2D.worldXOffset) * cameraMap2D.worldScale);
+                lineXYZ[1] = (float)(((double)action.y - cameraMap2D.worldYOffset) * cameraMap2D.worldScale);
+                lineXYZ[2] = 0.0F;
+                lineXYZ[3] = (float)(((double)action1.x - cameraMap2D.worldXOffset) * cameraMap2D.worldScale);
+                lineXYZ[4] = (float)(((double)action1.y - cameraMap2D.worldYOffset) * cameraMap2D.worldScale);
+                lineXYZ[5] = 0.0F;
+                com.maddox.il2.engine.Render.drawLines(lineXYZ, 2, 3F, j, com.maddox.il2.engine.Mat.NOWRITEZ | com.maddox.il2.engine.Mat.MODULATE | com.maddox.il2.engine.Mat.NOTEXTURE | com.maddox.il2.engine.Mat.BLEND, 1);
+                action = action1;
+            }
+        }
+
+        com.maddox.il2.engine.Render.drawEnd();
+    }
+
+    protected void doRenderMap2D()
+    {
+        drawPlayerPath();
+        drawEvents();
+    }
+
+    protected void doBack()
+    {
+        saveCampaign();
+        com.maddox.il2.game.Main3D.cur3D().keyRecord.clearRecorded();
+        if(com.maddox.il2.game.Mission.cur() != null && !com.maddox.il2.game.Mission.cur().isDestroyed())
+            com.maddox.il2.game.Mission.cur().destroy();
+        com.maddox.il2.game.Main.cur().campaign = null;
+        com.maddox.il2.game.Main.cur().currentMissionFile = null;
+        com.maddox.il2.game.Main.stateStack().pop();
+    }
+
+    protected void doDiff()
+    {
+        com.maddox.il2.game.Main.stateStack().push(9);
+    }
+
+    protected void doLoodout()
+    {
+        com.maddox.il2.game.Main3D.cur3D().keyRecord.clearRecorded();
+        com.maddox.il2.game.Main.stateStack().change(63);
+    }
+
+    protected void doNext()
+    {
+        if(!bMissComplete)
+            return;
+        int i = com.maddox.il2.game.Main.cur().campaign._rank;
+        com.maddox.il2.game.Main.cur().campaign.currentMissionComplete(com.maddox.il2.ai.Scores.score, com.maddox.il2.ai.Scores.enemyAirKill, com.maddox.il2.ai.Scores.arrayEnemyGroundKill, com.maddox.il2.ai.Scores.friendlyKill);
+        com.maddox.il2.game.Main.cur().campaign._rank = i;
+        if(com.maddox.il2.game.Main.cur().campaign.isComplete())
+        {
+            java.lang.String s = com.maddox.il2.game.Main.cur().campaign.epilogueTrack();
+            doBack();
+            if(s != null)
+            {
+                com.maddox.il2.gui.GUIBWDemoPlay.demoFile = s;
+                com.maddox.il2.gui.GUIBWDemoPlay.soundFile = null;
+                com.maddox.il2.game.Main.stateStack().push(58);
+            }
+        } else
+        {
+            saveCampaign();
+            com.maddox.il2.game.Main3D.cur3D().keyRecord.clearRecorded();
+            if(com.maddox.il2.game.Mission.cur() != null && !com.maddox.il2.game.Mission.cur().isDestroyed())
+                com.maddox.il2.game.Mission.cur().destroy();
+            com.maddox.il2.game.Main.cur().campaign.doExternalGenerator();
+            updatePlayerScore();
+            if(com.maddox.il2.game.Main.cur().campaign.isComplete())
+            {
+                java.lang.String s1 = com.maddox.il2.game.Main.cur().campaign.epilogueTrack();
+                doBack();
+                if(s1 != null)
+                {
+                    com.maddox.il2.gui.GUIBWDemoPlay.demoFile = s1;
+                    com.maddox.il2.gui.GUIBWDemoPlay.soundFile = null;
+                    com.maddox.il2.game.Main.stateStack().push(58);
+                }
+                return;
+            }
+            java.lang.String s2 = com.maddox.il2.game.Main.cur().campaign.nextIntro();
+            if(s2 != null)
+            {
+                com.maddox.il2.gui.GUIBWDemoPlay.demoFile = s2;
+                com.maddox.il2.gui.GUIBWDemoPlay.soundFile = null;
+                com.maddox.il2.game.Main.stateStack().push(58);
+                return;
+            }
+            com.maddox.il2.game.Main.cur().currentMissionFile = com.maddox.il2.game.Main.cur().campaign.nextMission();
+            if(com.maddox.il2.game.Main.cur().currentMissionFile == null)
+            {
+                new com.maddox.gwindow.GWindowMessageBox(com.maddox.il2.game.Main3D.cur3D().guiManager.root, 20F, true, i18n("miss.Error"), i18n("miss.LoadFailed"), 3, 0.0F) {
+
+                    public void result(int j)
+                    {
+                        doBack();
+                    }
+
+                }
+;
+                return;
+            }
+            com.maddox.il2.game.Main.stateStack().change(62);
+        }
+    }
+
+    protected void clientRender()
+    {
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient dialogclient = dialogClient;
+        if(bNext.isVisible())
+        {
+            com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp = dialogclient;
+            dialogclient.draw(dialogclient.x1024(427F), dialogclient.y1024(633F), dialogclient.x1024(170F), dialogclient.y1024(48F), 1, i18n("debrief.Apply"));
+        }
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp1 = dialogclient;
+        dialogclient.draw(dialogclient.x1024(0.0F), dialogclient.y1024(633F), dialogclient.x1024(170F), dialogclient.y1024(48F), 1, i18n("debrief.MainMenu"));
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp2 = dialogclient;
+        dialogclient.draw(dialogclient.x1024(194F), dialogclient.y1024(633F), dialogclient.x1024(208F), dialogclient.y1024(48F), 1, i18n("debrief.SaveTrack"));
+        com.maddox.il2.gui.GUIBriefingGeneric.DialogClient _tmp3 = dialogclient;
+        dialogclient.draw(dialogclient.x1024(680F), dialogclient.y1024(633F), dialogclient.x1024(176F), dialogclient.y1024(48F), 1, i18n("debrief.ReFly"));
+    }
+
+    public GUIDGenDeBriefing(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(64);
+        sound = null;
+        bMissComplete = false;
+        iconAction = new com.maddox.il2.engine.Mat[14];
+        assPilot = new HashMap();
+        assType = new HashMap();
+        tip = new java.lang.String[4];
+        lineXYZ = new float[6];
+        init(gwindowroot);
+        iconAction[0] = com.maddox.il2.engine.Mat.New("icons/objActAAA.mat");
+        iconAction[1] = com.maddox.il2.engine.Mat.New("icons/objActBailed.mat");
+        iconAction[2] = com.maddox.il2.engine.Mat.New("icons/objActBridge.mat");
+        iconAction[3] = com.maddox.il2.engine.Mat.New("icons/objActCar.mat");
+        iconAction[4] = com.maddox.il2.engine.Mat.New("icons/objActCrashed.mat");
+        iconAction[5] = com.maddox.il2.engine.Mat.New("icons/objActGun.mat");
+        iconAction[6] = com.maddox.il2.engine.Mat.New("icons/objActLanded.mat");
+        iconAction[7] = com.maddox.il2.engine.Mat.New("icons/objActPlane.mat");
+        iconAction[8] = com.maddox.il2.engine.Mat.New("icons/objActShip.mat");
+        iconAction[9] = com.maddox.il2.engine.Mat.New("icons/objActTank.mat");
+        iconAction[10] = com.maddox.il2.engine.Mat.New("icons/objActTrain.mat");
+        iconAction[11] = com.maddox.il2.engine.Mat.New("icons/objActPilot.mat");
+        iconAction[12] = com.maddox.il2.engine.Mat.New("icons/objActAirstatic.mat");
+        iconAction[13] = com.maddox.il2.engine.Mat.New("icons/objActRR.mat");
+    }
+
+    private static final java.lang.String fileNameDebrifing = "dgen/debrifing.txt";
+    private java.lang.String sound;
+    protected boolean bMissComplete;
+    private static final int ICON_AAA = 0;
+    private static final int ICON_Bailed = 1;
+    private static final int ICON_Bridge = 2;
+    private static final int ICON_Car = 3;
+    private static final int ICON_Crashed = 4;
+    private static final int ICON_Gun = 5;
+    private static final int ICON_Landed = 6;
+    private static final int ICON_Plane = 7;
+    private static final int ICON_Ship = 8;
+    private static final int ICON_Tank = 9;
+    private static final int ICON_Train = 10;
+    private static final int ICON_Pilot = 11;
+    private static final int ICON_Airstatic = 12;
+    private static final int ICON_RadarRadio = 13;
+    private com.maddox.il2.engine.Mat iconAction[];
+    private java.util.HashMap assPilot;
+    private java.util.HashMap assType;
+    private java.lang.String tip[];
+    private float lineXYZ[];
 }

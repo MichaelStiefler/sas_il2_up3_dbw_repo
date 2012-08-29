@@ -1,41 +1,69 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   P_36A3.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
+import com.maddox.il2.fm.EnginesInterface;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Motor;
 import com.maddox.rts.Property;
 
-public class P_36A3 extends P_36
+// Referenced classes of package com.maddox.il2.objects.air:
+//            P_36, PaintSchemeFMPar01, PaintSchemeFMPar06, NetAircraft
+
+public class P_36A3 extends com.maddox.il2.objects.air.P_36
 {
-  private float kangle = 0.0F;
 
-  public void update(float paramFloat) { for (int i = 1; i < 12; i++) {
-      hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -10.0F * this.kangle, 0.0F);
+    public P_36A3()
+    {
+        kangle = 0.0F;
     }
-    this.kangle = (0.95F * this.kangle + 0.05F * this.FM.EI.engines[0].getControlRadiator());
-    super.update(paramFloat);
-  }
 
-  static
-  {
-    Class localClass = P_36A3.class;
-    new NetAircraft.SPAWN(localClass);
+    public void update(float f)
+    {
+        for(int i = 1; i < 12; i++)
+            hierMesh().chunkSetAngles("Water" + i + "_D0", 0.0F, -10F * kangle, 0.0F);
 
-    Property.set(localClass, "iconFar_shortClassName", "P-36");
-    Property.set(localClass, "meshName", "3DO/Plane/Hawk75A-3(Multi1)/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar01());
-    Property.set(localClass, "meshName_us", "3DO/Plane/Hawk75A-3(USA)/hier.him");
-    Property.set(localClass, "PaintScheme_us", new PaintSchemeFMPar06());
+        kangle = 0.95F * kangle + 0.05F * FM.EI.engines[0].getControlRadiator();
+        super.update(f);
+    }
 
-    Property.set(localClass, "yearService", 1939.0F);
-    Property.set(localClass, "yearExpired", 1945.5F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/P-36A-3.fmd");
+    private float kangle;
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0, 0, 0 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning50si 200", "MGunBrowning50si 200", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.P_36A3.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "P-36");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/Hawk75A-3(Multi1)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
+        com.maddox.rts.Property.set(class1, "meshName_us", "3DO/Plane/Hawk75A-3(USA)/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme_us", new PaintSchemeFMPar06());
+        com.maddox.rts.Property.set(class1, "yearService", 1939F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/P-36A-3.fmd");
+        com.maddox.il2.objects.air.P_36A3.weaponTriggersRegister(class1, new int[] {
+            0, 0, 0, 0, 0, 0
+        });
+        com.maddox.il2.objects.air.P_36A3.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06"
+        });
+        com.maddox.il2.objects.air.P_36A3.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning50si 200", "MGunBrowning50si 200", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500", "MGunBrowning303k 500"
+        });
+        com.maddox.il2.objects.air.P_36A3.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null
+        });
+    }
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BridgeSegment.java
+
 package com.maddox.il2.objects.bridges;
 
 import com.maddox.JGP.Point3d;
@@ -22,270 +27,287 @@ import com.maddox.il2.objects.Statics;
 import com.maddox.rts.Message;
 import java.io.PrintStream;
 
-public class BridgeSegment extends ActorMesh
-  implements MsgCollisionRequestListener, MsgCollisionListener, MsgExplosionListener, MsgShotListener
+// Referenced classes of package com.maddox.il2.objects.bridges:
+//            LongBridge
+
+public class BridgeSegment extends com.maddox.il2.engine.ActorMesh
+    implements com.maddox.il2.engine.MsgCollisionRequestListener, com.maddox.il2.engine.MsgCollisionListener, com.maddox.il2.ai.MsgExplosionListener, com.maddox.il2.ai.MsgShotListener
 {
-  private int ID;
-  private int brID;
-  private int dirOct;
-  private Vector2d dir2d;
-  private float[] life = new float[2];
-  private float maxLife;
-  private float ignoreTNT = 0.01F;
 
-  public boolean isStaticPos() {
-    return true;
-  }
-
-  public int Code() {
-    return (this.brID << 16) + this.ID;
-  }
-
-  public boolean IsDamaged() {
-    return (this.life[0] <= 0.0F) || (this.life[1] <= 0.0F);
-  }
-
-  private boolean IsDead() {
-    return (this.life[0] <= 0.0F) && (this.life[1] <= 0.0F);
-  }
-
-  boolean IsDead(int paramInt) {
-    return this.life[paramInt] <= 0.0F;
-  }
-
-  private static String NameByIdx(int paramInt1, int paramInt2)
-  {
-    return " Bridge" + paramInt1 + "Seg" + paramInt2;
-  }
-
-  public static BridgeSegment getByIdx(int paramInt1, int paramInt2) {
-    return (BridgeSegment)(BridgeSegment)Actor.getByName(NameByIdx(paramInt1, paramInt2));
-  }
-
-  public static boolean isEncodedSegmentDamaged(int paramInt) {
-    return getByIdx(paramInt >> 16, paramInt & 0x7FFF).IsDamaged();
-  }
-
-  private double getNearestDistToSegment(Point3d paramPoint3d)
-  {
-    Point3d localPoint3d1 = new Point3d();
-    Point3d localPoint3d2 = new Point3d();
-    Point3d localPoint3d3 = new Point3d();
-    Point3d localPoint3d4 = new Point3d();
-    ((LongBridge)getOwner()).ComputeSegmentKeyPoints(this.ID, localPoint3d1, localPoint3d2, localPoint3d3, localPoint3d4);
-
-    Vector3d localVector3d1 = new Vector3d();
-    localVector3d1.sub(paramPoint3d, localPoint3d2);
-    Vector3d localVector3d2 = new Vector3d();
-    localVector3d2.sub(localPoint3d4, localPoint3d2);
-
-    double d1 = localVector3d1.dot(localVector3d2);
-    if (d1 <= 0.0D) {
-      return localPoint3d2.distance(paramPoint3d);
-    }
-    double d2 = localVector3d2.lengthSquared();
-    if (d1 >= d2) {
-      return localPoint3d4.distance(paramPoint3d);
-    }
-    d1 = localVector3d1.lengthSquared() - d1 * d1 / d2;
-    if (d1 <= 0.0D) {
-      return 0.0D;
-    }
-    return Math.sqrt(d1);
-  }
-
-  public void msgCollisionRequest(Actor paramActor, boolean[] paramArrayOfBoolean)
-  {
-    if ((paramActor instanceof UnitInterface)) {
-      Actor localActor = paramActor.getOwner();
-      if ((localActor != null) && ((localActor instanceof ChiefGround)))
-        paramArrayOfBoolean[0] = false;
-    }
-  }
-
-  public void msgCollision(Actor paramActor, String paramString1, String paramString2)
-  {
-    if (!(paramActor instanceof TgtShip)) {
-      return;
-    }
-
-    if (IsDead()) {
-      return;
-    }
-
-    damagedByTNT(paramActor.pos.getAbsPoint(), this.maxLife + 1.0F, paramActor);
-  }
-
-  private void damagedByTNT(Point3d paramPoint3d, float paramFloat, Actor paramActor)
-  {
-    if (paramFloat <= this.ignoreTNT) {
-      return;
-    }
-
-    float f = World.Rnd().nextFloat();
-    f *= f;
-    paramFloat = f * paramFloat * 2.0F + (paramFloat * 0.8F - this.ignoreTNT / 2.0F);
-
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    int i = this.dir2d.x * (paramPoint3d.x - localPoint3d.x) + this.dir2d.y * (paramPoint3d.y - localPoint3d.y) < 0.0D ? 0 : 1;
-
-    if (this.life[i] <= 0.0F) {
-      return;
-    }
-
-    if (((LongBridge)getOwner()).isNetMirror()) {
-      LongBridge localLongBridge = (LongBridge)getOwner();
-      localLongBridge.sendLifeChanged(this.brID, this.ID, i, this.life[i] - paramFloat, paramActor, true);
-      return;
-    }
-
-    LifeChanged(i, this.life[i] - paramFloat, paramActor, true);
-  }
-
-  public void msgShot(Shot paramShot)
-  {
-    paramShot.bodyMaterial = ((LongBridge)getOwner()).bodyMaterial;
-
-    if (IsDead()) {
-      return;
-    }
-
-    if (paramShot.power <= 0.0F) {
-      return;
-    }
-
-    if (paramShot.powerType == 1) {
-      return;
-    }
-
-    damagedByTNT(paramShot.p, paramShot.powerToTNT(), paramShot.initiator);
-  }
-
-  public void msgExplosion(Explosion paramExplosion)
-  {
-    if (IsDead()) {
-      return;
-    }
-
-    float f = (float)getNearestDistToSegment(paramExplosion.p);
-    f -= ((LongBridge)getOwner()).getWidth();
-    if (f <= 0.0F) f = 0.0F;
-
-    damagedByTNT(paramExplosion.p, paramExplosion.receivedTNT_1meter(f), paramExplosion.initiator);
-  }
-
-  void ForcePartState(int paramInt, boolean paramBoolean)
-  {
-    this.life[paramInt] = (paramBoolean ? this.maxLife : 0.0F);
-
-    LongBridge localLongBridge = (LongBridge)getOwner();
-    localLongBridge.SetSegmentDamageState(false, this, this.ID, this.life[0], this.life[1], null);
-  }
-
-  void ForcePartDestroing(int paramInt, Actor paramActor)
-  {
-    if (this.life[paramInt] <= 0.0F) {
-      return;
-    }
-
-    LifeChanged(paramInt, 0.0F, paramActor, false);
-  }
-
-  public void netForcePartDestroing(int paramInt, Actor paramActor)
-  {
-    if (this.life[paramInt] <= 0.0F) {
-      return;
-    }
-
-    LifeChanged(paramInt, 0.0F, paramActor, Mission.isServer());
-  }
-
-  void netLifeChanged(int paramInt, float paramFloat, Actor paramActor, boolean paramBoolean) {
-    LifeChanged(paramInt, paramFloat, paramActor, paramBoolean);
-  }
-  private void LifeChanged(int paramInt, float paramFloat, Actor paramActor, boolean paramBoolean) {
-    if (paramFloat <= 0.0F) {
-      paramFloat = 0.0F;
-    }
-
-    if (paramInt < 0)
+    public boolean isStaticPos()
     {
-      float tmp23_22 = paramFloat; this.life[1] = tmp23_22; this.life[0] = tmp23_22;
+        return true;
+    }
 
-      LongBridge localLongBridge1 = (LongBridge)getOwner();
+    public int Code()
+    {
+        return (brID << 16) + ID;
+    }
 
-      localLongBridge1.SetSegmentDamageState(false, this, this.ID, this.life[0], this.life[1], paramActor);
-    } else {
-      if ((paramFloat <= 0.0F) && (paramBoolean) && 
-        (!World.cur().statics.onBridgeDied(this.brID, this.ID, paramInt, paramActor)))
-        return;
-      boolean bool = IsDead(paramInt);
-      this.life[paramInt] = paramFloat;
-      if (IsDead(paramInt) != bool)
-      {
-        LongBridge localLongBridge2 = (LongBridge)getOwner();
+    public boolean IsDamaged()
+    {
+        return life[0] <= 0.0F || life[1] <= 0.0F;
+    }
 
-        if (IsDead(paramInt)) {
-          localLongBridge2.ShowSegmentExplosion(this, this.ID, paramInt);
+    private boolean IsDead()
+    {
+        return life[0] <= 0.0F && life[1] <= 0.0F;
+    }
+
+    boolean IsDead(int i)
+    {
+        return life[i] <= 0.0F;
+    }
+
+    private static java.lang.String NameByIdx(int i, int j)
+    {
+        return " Bridge" + i + "Seg" + j;
+    }
+
+    public static com.maddox.il2.objects.bridges.BridgeSegment getByIdx(int i, int j)
+    {
+        return (com.maddox.il2.objects.bridges.BridgeSegment)(com.maddox.il2.objects.bridges.BridgeSegment)com.maddox.il2.engine.Actor.getByName(com.maddox.il2.objects.bridges.BridgeSegment.NameByIdx(i, j));
+    }
+
+    public static boolean isEncodedSegmentDamaged(int i)
+    {
+        return com.maddox.il2.objects.bridges.BridgeSegment.getByIdx(i >> 16, i & 0x7fff).IsDamaged();
+    }
+
+    private double getNearestDistToSegment(com.maddox.JGP.Point3d point3d)
+    {
+        com.maddox.JGP.Point3d point3d1 = new Point3d();
+        com.maddox.JGP.Point3d point3d2 = new Point3d();
+        com.maddox.JGP.Point3d point3d3 = new Point3d();
+        com.maddox.JGP.Point3d point3d4 = new Point3d();
+        ((com.maddox.il2.objects.bridges.LongBridge)getOwner()).ComputeSegmentKeyPoints(ID, point3d1, point3d2, point3d3, point3d4);
+        com.maddox.JGP.Vector3d vector3d = new Vector3d();
+        vector3d.sub(point3d, point3d2);
+        com.maddox.JGP.Vector3d vector3d1 = new Vector3d();
+        vector3d1.sub(point3d4, point3d2);
+        double d = vector3d.dot(vector3d1);
+        if(d <= 0.0D)
+            return point3d2.distance(point3d);
+        double d1 = vector3d1.lengthSquared();
+        if(d >= d1)
+            return point3d4.distance(point3d);
+        d = vector3d.lengthSquared() - (d * d) / d1;
+        if(d <= 0.0D)
+            return 0.0D;
+        else
+            return java.lang.Math.sqrt(d);
+    }
+
+    public void msgCollisionRequest(com.maddox.il2.engine.Actor actor, boolean aflag[])
+    {
+        if(actor instanceof com.maddox.il2.ai.ground.UnitInterface)
+        {
+            com.maddox.il2.engine.Actor actor1 = actor.getOwner();
+            if(actor1 != null && (actor1 instanceof com.maddox.il2.ai.ground.ChiefGround))
+                aflag[0] = false;
         }
-
-        localLongBridge2.SetSegmentDamageState(true, this, this.ID, this.life[0], this.life[1], paramActor);
-      }
-    }
-  }
-
-  public void destroy()
-  {
-    super.destroy();
-  }
-
-  public Object getSwitchListener(Message paramMessage)
-  {
-    return this;
-  }
-
-  public BridgeSegment(LongBridge paramLongBridge, int paramInt1, int paramInt2, float paramFloat1, float paramFloat2, Point3d paramPoint3d, int paramInt3)
-  {
-    setOwner(paramLongBridge);
-
-    if (paramFloat1 <= 0.0F) {
-      System.out.println("*** Internal error in BridgeSegment");
-      float f = (1.0F / 1.0F);
     }
 
-    this.brID = paramInt1;
-    this.ID = paramInt2;
-
-    setName(NameByIdx(this.brID, this.ID));
-
-    setArmy(0);
-
-    this.pos.setAbs(paramPoint3d);
-    this.pos.reset();
-
-    this.dirOct = paramInt3;
-    switch (this.dirOct) { case 0:
-      this.dir2d = new Vector2d(1.0D, 0.0D); break;
-    case 1:
-      this.dir2d = new Vector2d(1.0D, 1.0D); break;
-    case 2:
-      this.dir2d = new Vector2d(0.0D, 1.0D); break;
-    case 3:
-      this.dir2d = new Vector2d(-1.0D, 1.0D); break;
-    case 4:
-      this.dir2d = new Vector2d(-1.0D, 0.0D); break;
-    case 5:
-      this.dir2d = new Vector2d(-1.0D, -1.0D); break;
-    case 6:
-      this.dir2d = new Vector2d(0.0D, -1.0D); break;
-    case 7:
-      this.dir2d = new Vector2d(1.0D, -1.0D); break;
-    default:
-      throw new RuntimeException("Bad bridge's direction");
+    public void msgCollision(com.maddox.il2.engine.Actor actor, java.lang.String s, java.lang.String s1)
+    {
+        if(!(actor instanceof com.maddox.il2.ai.ground.TgtShip))
+            return;
+        if(IsDead())
+        {
+            return;
+        } else
+        {
+            damagedByTNT(actor.pos.getAbsPoint(), maxLife + 1.0F, actor);
+            return;
+        }
     }
 
-    this.ignoreTNT = (paramFloat2 <= 0.0F ? 0.0F : paramFloat2);
-    this.maxLife = paramFloat1;
-    LifeChanged(-1, this.maxLife, null, false);
-  }
+    private void damagedByTNT(com.maddox.JGP.Point3d point3d, float f, com.maddox.il2.engine.Actor actor)
+    {
+        if(f <= ignoreTNT)
+            return;
+        float f1 = com.maddox.il2.ai.World.Rnd().nextFloat();
+        f1 *= f1;
+        f = f1 * f * 2.0F + (f * 0.8F - ignoreTNT / 2.0F);
+        com.maddox.JGP.Point3d point3d1 = pos.getAbsPoint();
+        int i = dir2d.x * (point3d.x - point3d1.x) + dir2d.y * (point3d.y - point3d1.y) >= 0.0D ? 1 : 0;
+        if(life[i] <= 0.0F)
+            return;
+        if(((com.maddox.il2.objects.bridges.LongBridge)getOwner()).isNetMirror())
+        {
+            com.maddox.il2.objects.bridges.LongBridge longbridge = (com.maddox.il2.objects.bridges.LongBridge)getOwner();
+            longbridge.sendLifeChanged(brID, ID, i, life[i] - f, actor, true);
+            return;
+        } else
+        {
+            LifeChanged(i, life[i] - f, actor, true);
+            return;
+        }
+    }
+
+    public void msgShot(com.maddox.il2.ai.Shot shot)
+    {
+        shot.bodyMaterial = ((com.maddox.il2.objects.bridges.LongBridge)getOwner()).bodyMaterial;
+        if(IsDead())
+            return;
+        if(shot.power <= 0.0F)
+            return;
+        if(shot.powerType == 1)
+        {
+            return;
+        } else
+        {
+            damagedByTNT(shot.p, shot.powerToTNT(), shot.initiator);
+            return;
+        }
+    }
+
+    public void msgExplosion(com.maddox.il2.ai.Explosion explosion)
+    {
+        if(IsDead())
+            return;
+        float f = (float)getNearestDistToSegment(explosion.p);
+        f -= ((com.maddox.il2.objects.bridges.LongBridge)getOwner()).getWidth();
+        if(f <= 0.0F)
+            f = 0.0F;
+        damagedByTNT(explosion.p, explosion.receivedTNT_1meter(f), explosion.initiator);
+    }
+
+    void ForcePartState(int i, boolean flag)
+    {
+        life[i] = flag ? maxLife : 0.0F;
+        com.maddox.il2.objects.bridges.LongBridge longbridge = (com.maddox.il2.objects.bridges.LongBridge)getOwner();
+        longbridge.SetSegmentDamageState(false, this, ID, life[0], life[1], null);
+    }
+
+    void ForcePartDestroing(int i, com.maddox.il2.engine.Actor actor)
+    {
+        if(life[i] <= 0.0F)
+        {
+            return;
+        } else
+        {
+            LifeChanged(i, 0.0F, actor, false);
+            return;
+        }
+    }
+
+    public void netForcePartDestroing(int i, com.maddox.il2.engine.Actor actor)
+    {
+        if(life[i] <= 0.0F)
+        {
+            return;
+        } else
+        {
+            LifeChanged(i, 0.0F, actor, com.maddox.il2.game.Mission.isServer());
+            return;
+        }
+    }
+
+    void netLifeChanged(int i, float f, com.maddox.il2.engine.Actor actor, boolean flag)
+    {
+        LifeChanged(i, f, actor, flag);
+    }
+
+    private void LifeChanged(int i, float f, com.maddox.il2.engine.Actor actor, boolean flag)
+    {
+        if(f <= 0.0F)
+            f = 0.0F;
+        if(i < 0)
+        {
+            life[0] = life[1] = f;
+            com.maddox.il2.objects.bridges.LongBridge longbridge = (com.maddox.il2.objects.bridges.LongBridge)getOwner();
+            longbridge.SetSegmentDamageState(false, this, ID, life[0], life[1], actor);
+        } else
+        {
+            if(f <= 0.0F && flag && !com.maddox.il2.ai.World.cur().statics.onBridgeDied(brID, ID, i, actor))
+                return;
+            boolean flag1 = IsDead(i);
+            life[i] = f;
+            if(IsDead(i) != flag1)
+            {
+                com.maddox.il2.objects.bridges.LongBridge longbridge1 = (com.maddox.il2.objects.bridges.LongBridge)getOwner();
+                if(IsDead(i))
+                    longbridge1.ShowSegmentExplosion(this, ID, i);
+                longbridge1.SetSegmentDamageState(true, this, ID, life[0], life[1], actor);
+            }
+        }
+    }
+
+    public void destroy()
+    {
+        super.destroy();
+    }
+
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
+
+    public BridgeSegment(com.maddox.il2.objects.bridges.LongBridge longbridge, int i, int j, float f, float f1, com.maddox.JGP.Point3d point3d, int k)
+    {
+        life = new float[2];
+        ignoreTNT = 0.01F;
+        setOwner(longbridge);
+        if(f <= 0.0F)
+        {
+            java.lang.System.out.println("*** Internal error in BridgeSegment");
+            float f2 = (1.0F / 0.0F);
+        }
+        brID = i;
+        ID = j;
+        setName(com.maddox.il2.objects.bridges.BridgeSegment.NameByIdx(brID, ID));
+        setArmy(0);
+        pos.setAbs(point3d);
+        pos.reset();
+        dirOct = k;
+        switch(dirOct)
+        {
+        case 0: // '\0'
+            dir2d = new Vector2d(1.0D, 0.0D);
+            break;
+
+        case 1: // '\001'
+            dir2d = new Vector2d(1.0D, 1.0D);
+            break;
+
+        case 2: // '\002'
+            dir2d = new Vector2d(0.0D, 1.0D);
+            break;
+
+        case 3: // '\003'
+            dir2d = new Vector2d(-1D, 1.0D);
+            break;
+
+        case 4: // '\004'
+            dir2d = new Vector2d(-1D, 0.0D);
+            break;
+
+        case 5: // '\005'
+            dir2d = new Vector2d(-1D, -1D);
+            break;
+
+        case 6: // '\006'
+            dir2d = new Vector2d(0.0D, -1D);
+            break;
+
+        case 7: // '\007'
+            dir2d = new Vector2d(1.0D, -1D);
+            break;
+
+        default:
+            throw new RuntimeException("Bad bridge's direction");
+        }
+        ignoreTNT = f1 > 0.0F ? f1 : 0.0F;
+        maxLife = f;
+        LifeChanged(-1, maxLife, null, false);
+    }
+
+    private int ID;
+    private int brID;
+    private int dirOct;
+    private com.maddox.JGP.Vector2d dir2d;
+    private float life[];
+    private float maxLife;
+    private float ignoreTNT;
 }

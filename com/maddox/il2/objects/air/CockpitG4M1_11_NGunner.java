@@ -1,83 +1,107 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CockpitG4M1_11_NGunner.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.ai.BulletEmitter;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.engine.Orient;
+import com.maddox.il2.fm.Controls;
+import com.maddox.il2.fm.FlightModel;
 import com.maddox.il2.fm.Turret;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
-public class CockpitG4M1_11_NGunner extends CockpitGunner
+// Referenced classes of package com.maddox.il2.objects.air:
+//            CockpitGunner
+
+public class CockpitG4M1_11_NGunner extends com.maddox.il2.objects.air.CockpitGunner
 {
-  private int iCocking = 0;
 
-  public void moveGun(Orient paramOrient)
-  {
-    super.moveGun(paramOrient);
-    float f1 = -paramOrient.getYaw();
-    float f2 = paramOrient.getTangage();
-    this.mesh.chunkSetAngles("Turret1A", 0.0F, -f1, 0.0F);
-    this.mesh.chunkSetAngles("Turret1B", 0.0F, f2, 0.0F);
-  }
-
-  public void clipAnglesGun(Orient paramOrient)
-  {
-    if (!isRealMode()) return;
-    if (!aiTurret().bIsOperable) {
-      paramOrient.setYPR(0.0F, 0.0F, 0.0F);
-      return;
-    }
-    float f1 = paramOrient.getYaw(); float f2 = paramOrient.getTangage();
-    if (f1 < -35.0F) f1 = -35.0F;
-    if (f1 > 35.0F) f1 = 35.0F;
-    if (f2 > 25.0F) f2 = 25.0F;
-    if (f2 < -45.0F) f2 = -45.0F;
-    paramOrient.setYPR(f1, f2, 0.0F);
-    paramOrient.wrap();
-  }
-
-  protected void interpTick() {
-    if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    public void moveGun(com.maddox.il2.engine.Orient orient)
     {
-      this.bGunFire = false;
-    }this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
-
-    if (this.bGunFire) {
-      if (this.iCocking > 0) this.iCocking = 0; else
-        this.iCocking = 1;
+        super.moveGun(orient);
+        float f = -orient.getYaw();
+        float f1 = orient.getTangage();
+        mesh.chunkSetAngles("Turret1A", 0.0F, -f, 0.0F);
+        mesh.chunkSetAngles("Turret1B", 0.0F, f1, 0.0F);
     }
-    else this.iCocking = 0;
 
-    resetYPRmodifier();
-    xyz[1] = (-0.07F * this.iCocking);
-    ypr[1] = 0.0F;
-    this.mesh.chunkSetLocate("Turret1C", xyz, ypr);
-  }
-
-  public void doGunFire(boolean paramBoolean)
-  {
-    if (!isRealMode()) return;
-    if ((this.emitter == null) || (!this.emitter.haveBullets()) || (!aiTurret().bIsOperable))
+    public void clipAnglesGun(com.maddox.il2.engine.Orient orient)
     {
-      this.bGunFire = false;
+        if(!isRealMode())
+            return;
+        if(!aiTurret().bIsOperable)
+        {
+            orient.setYPR(0.0F, 0.0F, 0.0F);
+            return;
+        }
+        float f = orient.getYaw();
+        float f1 = orient.getTangage();
+        if(f < -35F)
+            f = -35F;
+        if(f > 35F)
+            f = 35F;
+        if(f1 > 25F)
+            f1 = 25F;
+        if(f1 < -45F)
+            f1 = -45F;
+        orient.setYPR(f, f1, 0.0F);
+        orient.wrap();
     }
-    else this.bGunFire = paramBoolean;
-    this.fm.CT.WeaponControl[weaponControlNum()] = this.bGunFire;
-  }
 
-  public CockpitG4M1_11_NGunner() {
-    super("3DO/Cockpit/G4M1-11-NGun/hier.him", "he111");
-  }
+    protected void interpTick()
+    {
+        if(!isRealMode())
+            return;
+        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+            bGunFire = false;
+        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+        if(bGunFire)
+        {
+            if(iCocking > 0)
+                iCocking = 0;
+            else
+                iCocking = 1;
+        } else
+        {
+            iCocking = 0;
+        }
+        resetYPRmodifier();
+        xyz[1] = -0.07F * (float)iCocking;
+        ypr[1] = 0.0F;
+        mesh.chunkSetLocate("Turret1C", xyz, ypr);
+    }
 
-  public void reflectCockpitState()
-  {
-  }
+    public void doGunFire(boolean flag)
+    {
+        if(!isRealMode())
+            return;
+        if(emitter == null || !emitter.haveBullets() || !aiTurret().bIsOperable)
+            bGunFire = false;
+        else
+            bGunFire = flag;
+        fm.CT.WeaponControl[weaponControlNum()] = bGunFire;
+    }
 
-  static
-  {
-    Property.set(CLASS.THIS(), "aiTuretNum", 0);
-    Property.set(CLASS.THIS(), "weaponControlNum", 10);
-    Property.set(CLASS.THIS(), "astatePilotIndx", 2);
-  }
+    public CockpitG4M1_11_NGunner()
+    {
+        super("3DO/Cockpit/G4M1-11-NGun/hier.him", "he111");
+        iCocking = 0;
+    }
+
+    public void reflectCockpitState()
+    {
+    }
+
+    private int iCocking;
+
+    static 
+    {
+        com.maddox.rts.Property.set(com.maddox.rts.CLASS.THIS(), "aiTuretNum", 0);
+        com.maddox.rts.Property.set(com.maddox.rts.CLASS.THIS(), "weaponControlNum", 10);
+        com.maddox.rts.Property.set(com.maddox.rts.CLASS.THIS(), "astatePilotIndx", 2);
+    }
 }

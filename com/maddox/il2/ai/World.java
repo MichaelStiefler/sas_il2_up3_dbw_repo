@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   World.java
+
 package com.maddox.il2.ai;
 
 import com.maddox.JGP.Point2d;
@@ -56,647 +61,771 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+// Referenced classes of package com.maddox.il2.ai:
+//            Wing, Airport, ChiefManager, RangeRandom, 
+//            DifficultySettings, TargetsGuard, ScoreCounter, Front, 
+//            War, UserCfg, Regiment, EventLog, 
+//            MsgExplosion, MsgShot
+
 public class World
 {
-  public static final float NORD = 270.0F;
-  public static final float PIXEL = 200.0F;
-  public static float MaxVisualDistance = 5000.0F;
-  public static float MaxStaticVisualDistance = 4000.0F;
-  public static float MaxLongVisualDistance = 10000.0F;
-  public static float MaxPlateVisualDistance = 16000.0F;
-
-  public boolean blockMorseChat = false;
-  public boolean smallMapWPLabels = false;
-  public boolean showMorseAsText = false;
-
-  public RangeRandom rnd = new RangeRandom();
-
-  public int camouflage = 0;
-  public static final int CAMOUFLAGE_SUMMER = 0;
-  public static final int CAMOUFLAGE_WINTER = 1;
-  public static final int CAMOUFLAGE_DESERT = 2;
-  public static final int CAMOUFLAGE_PACIFIC = 3;
-  public static final int CAMOUFLAGE_ETO = 4;
-  public static final int CAMOUFLAGE_MTO = 5;
-  public static final int CAMOUFLAGE_CBI = 6;
-  public DifficultySettings diffCur = new DifficultySettings();
-
-  public DifficultySettings diffUser = new DifficultySettings();
-  public UserCfg userCfg;
-  public float userCoverMashineGun = 500.0F;
-
-  public float userCoverCannon = 500.0F;
-
-  public float userCoverRocket = 500.0F;
-
-  public float userRocketDelay = 10.0F;
-
-  public float userBombDelay = 0.0F;
-
-  private boolean bArcade = false;
-
-  private boolean bHighGore = false;
-
-  private boolean bHakenAllowed = false;
-
-  private boolean bDebugFM = false;
-
-  private boolean bTimeOfDayConstant = false;
-
-  private boolean bWeaponsConstant = false;
-  protected War war;
-  protected ArrayList airports;
-  public ArrayList bornPlaces;
-  public HouseManager houseManager;
-  public Runaway runawayList;
-  public Airdrome airdrome;
-  private int missionArmy = 1;
-  private Aircraft PlayerAircraft;
-  private NetGunner PlayerGunner;
-  private int PlayerArmy = 1;
-  private FlightModel PlayerFM;
-  private Regiment PlayerRegiment;
-  private String PlayerLastCountry;
-  private boolean bPlayerParatrooper = false;
-  private boolean bPlayerDead = false;
-  private boolean bPlayerCaptured = false;
-  private boolean bPlayerRemoved = false;
-
-  public static Actor remover = new Remover();
-
-  static ClipFilter clipFilter = new ClipFilter();
-
-  public TargetsGuard targetsGuard = new TargetsGuard();
-
-  public ScoreCounter scoreCounter = new ScoreCounter();
-
-  private Wind wind = new Wind();
-
-  protected Front front = new Front();
-  public Statics statics;
-  private int startTimeofDay = 43200;
-
-  public Atmosphere Atm = new Atmosphere();
-  public float[] fogColor = { 0.53F, 0.64F, 0.8F, 1.0F };
-  public float[] beachColor = { 0.6F, 0.6F, 0.6F };
-  public float[] lodColor = { 0.7F, 0.7F, 0.7F };
-
-  public ChiefManager ChiefMan = new ChiefManager();
-  private Sun sun = new Sun();
-  public Voice voicebase = new Voice();
-
-  private BornPlace zutiCurrentBornPlace = null;
-
-  public static RangeRandom Rnd()
-  {
-    return cur().rnd;
-  }
-
-  public void setCamouflage(String paramString)
-  {
-    if ("SUMMER".equalsIgnoreCase(paramString)) this.camouflage = 0;
-    else if ("WINTER".equalsIgnoreCase(paramString)) this.camouflage = 1;
-    else if ("DESERT".equalsIgnoreCase(paramString)) this.camouflage = 2;
-    else if ("PACIFIC".equalsIgnoreCase(paramString)) this.camouflage = 3;
-    else if ("ETO".equalsIgnoreCase(paramString)) this.camouflage = 4;
-    else if ("MTO".equalsIgnoreCase(paramString)) this.camouflage = 5;
-    else if ("CBI".equalsIgnoreCase(paramString)) this.camouflage = 6;
-    else
-      this.camouflage = 0;
-  }
-
-  public void setUserCovers()
-  {
-    this.userCoverMashineGun = this.userCfg.coverMashineGun;
-    this.userCoverCannon = this.userCfg.coverCannon;
-    this.userCoverRocket = this.userCfg.coverRocket;
-    this.userRocketDelay = this.userCfg.rocketDelay;
-    this.userBombDelay = this.userCfg.bombDelay;
-  }
-
-  public boolean isArcade() {
-    return (Mission.isSingle()) && (this.bArcade) && (!NetMissionTrack.isPlaying());
-  }
-  public void setArcade(boolean paramBoolean) { this.bArcade = paramBoolean; }
-
-  public boolean isHighGore() {
-    return this.bHighGore;
-  }
-
-  public boolean isHakenAllowed() {
-    return this.bHakenAllowed;
-  }
-
-  public boolean isDebugFM() {
-    return this.bDebugFM;
-  }
-
-  public boolean isTimeOfDayConstant()
-  {
-    return this.bTimeOfDayConstant;
-  }
-
-  public void setTimeOfDayConstant(boolean paramBoolean) {
-    this.bTimeOfDayConstant = paramBoolean;
-  }
-
-  public boolean isWeaponsConstant()
-  {
-    return this.bWeaponsConstant;
-  }
-
-  public void setWeaponsConstant(boolean paramBoolean) {
-    this.bWeaponsConstant = paramBoolean;
-  }
-
-  public static void getAirports(List paramList)
-  {
-    if (cur().airports != null)
-      paramList.addAll(cur().airports); 
-  }
-
-  public static int getMissionArmy() {
-    return cur().missionArmy; } 
-  public static void setMissionArmy(int paramInt) { cur().missionArmy = paramInt; } 
-  public static Aircraft getPlayerAircraft() {
-    return cur().PlayerAircraft; } 
-  public static int getPlayerArmy() { return cur().PlayerArmy; } 
-  public static FlightModel getPlayerFM() { return cur().PlayerFM; } 
-  public static Regiment getPlayerRegiment() { return cur().PlayerRegiment; } 
-  public static String getPlayerLastCountry() {
-    Regiment localRegiment = getPlayerRegiment();
-    if (localRegiment != null)
-      cur().PlayerLastCountry = localRegiment.country();
-    return cur().PlayerLastCountry;
-  }
-  public static boolean isPlayerGunner() { return Actor.isValid(cur().PlayerGunner); } 
-  public static NetGunner getPlayerGunner() { return cur().PlayerGunner; } 
-  public static boolean isPlayerParatrooper() {
-    return cur().bPlayerParatrooper; } 
-  public static boolean isPlayerDead() { return cur().bPlayerDead; } 
-  public static boolean isPlayerCaptured() { return cur().bPlayerCaptured; } 
-  public static boolean isPlayerRemoved() { return cur().bPlayerRemoved; }
-
-  public static void setPlayerAircraft(Aircraft paramAircraft) {
-    cur().PlayerAircraft = paramAircraft;
-    if (paramAircraft != null) {
-      cur().PlayerFM = paramAircraft.FM;
-      cur().scoreCounter.playerStartAir(paramAircraft);
-    } else {
-      cur().PlayerFM = null;
-    }
-  }
-
-  public static void setPlayerFM() {
-    if (Actor.isValid(cur().PlayerAircraft))
-      cur().PlayerFM = cur().PlayerAircraft.FM;
-  }
-
-  public static void setPlayerRegiment()
-  {
-    if (Actor.isValid(cur().PlayerAircraft)) {
-      Aircraft localAircraft = cur().PlayerAircraft;
-      if (localAircraft.getOwner() != null)
-        cur().PlayerRegiment = ((Wing)localAircraft.getOwner()).regiment();
-      else
-        cur().PlayerRegiment = null;
-      cur().PlayerArmy = localAircraft.getArmy();
-      if (Mission.isSingle())
-        cur().missionArmy = cur().PlayerArmy;
-    }
-  }
-
-  public static void doPlayerParatrooper(Paratrooper paramParatrooper)
-  {
-    FlightModel localFlightModel = getPlayerFM();
-
-    if (!isPlayerParatrooper())
+    static class ClipFilter
+        implements com.maddox.il2.engine.ActorFilter
     {
-      if (Config.isUSE_RENDER())
-        RTSConf.cur.hotKeyEnvs.endAllActiveCmd(false);
-      cur().bPlayerParatrooper = true;
-      if (ZutiAircraft.isPlaneLandedAndDamaged(localFlightModel))
-        cur().scoreCounter.playerParatrooper();
-      if (Config.isUSE_RENDER()) {
-        if (Main3D.cur3D().viewActor() == getPlayerAircraft())
-          Main3D.cur3D().setViewFlow10(paramParatrooper, false);
-        Main3D.cur3D().ordersTree.unactivate();
-        ForceFeedback.stopMission();
-      }
 
-    }
-
-    if ((Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied) && (Mission.isDogfight()))
-    {
-      ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
-      GUINetMission.setPlayerParatrooper(paramParatrooper);
-    }
-  }
-
-  public static void doGunnerParatrooper(Paratrooper paramParatrooper)
-  {
-    if (isPlayerParatrooper()) return;
-    if (Config.isUSE_RENDER())
-      RTSConf.cur.hotKeyEnvs.endAllActiveCmd(false);
-    cur().bPlayerParatrooper = true;
-    cur().scoreCounter.playerParatrooper();
-    if (Config.isUSE_RENDER()) {
-      if (Main3D.cur3D().viewActor() == getPlayerAircraft())
-        Main3D.cur3D().setViewFlow10(paramParatrooper, false);
-      ForceFeedback.stopMission();
-
-      if ((Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied) && (Mission.isDogfight()))
-      {
-        ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
-        GUINetMission.setPlayerParatrooper(paramParatrooper);
-      }
-    }
-  }
-
-  public static void doPlayerUnderWater() {
-    if ((Config.isUSE_RENDER()) && 
-      (Main3D.cur3D().viewActor() == getPlayerAircraft()) && (!Main3D.cur3D().isViewOutside()))
-    {
-      Main3D.cur3D().setViewFlow10(getPlayerAircraft(), false);
-    }
-  }
-
-  public static void setPlayerDead() {
-    if (Config.isUSE_RENDER())
-      RTSConf.cur.hotKeyEnvs.endAllActiveCmd(false);
-    cur().bPlayerDead = true;
-    cur().scoreCounter.playerDead();
-
-    if ((Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied) && (Mission.isDogfight()))
-    {
-      if (getPlayerFM().Gears.nOfGearsOnGr < 3)
-      {
-        ZutiSupportMethods.ZUTI_KIA_COUNTER += 1;
-      }
-
-      ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
-      float f = Main.cur().mission.zutiMisc_ReflyKIADelay + ZutiSupportMethods.ZUTI_KIA_COUNTER * Main.cur().mission.zutiMisc_ReflyKIADelayMultiplier;
-      ZutiSupportMethods.setPlayerBanDuration(()f);
-      GUINetMission.setReflyTimer(new ZutiTimer_Refly(f));
-      System.out.println(((NetUser)NetEnv.host()).uniqueName() + " has died for " + ZutiSupportMethods.ZUTI_KIA_COUNTER + " times. Refly penalty is " + f + "s.");
-      EventLog.type(true, ((NetUser)NetEnv.host()).uniqueName() + " has died for " + ZutiSupportMethods.ZUTI_KIA_COUNTER + " times. Refly penalty is " + f + "s.");
-    }
-  }
-
-  public static void setPlayerCaptured()
-  {
-    cur().bPlayerCaptured = true;
-    cur().scoreCounter.playerCaptured();
-  }
-  public static void setPlayerGunner(NetGunner paramNetGunner) {
-    cur().PlayerGunner = paramNetGunner;
-    cur().scoreCounter.playerStartGunner();
-  }
-
-  public static void onActorDied(Actor paramActor1, Actor paramActor2)
-  {
-    onActorDied(paramActor1, paramActor2, true);
-  }
-
-  public static void onActorDied(Actor paramActor1, Actor paramActor2, boolean paramBoolean) {
-    if (paramActor1.getDiedFlag())
-    {
-      throw new ActorException("actor " + paramActor1.getClass() + ":" + paramActor1.name() + " alredy dead");
-    }
-
-    if ((paramActor1 instanceof PlaneGeneric))
-    {
-      cur().zutiManagePilotsBornPlacePlaneCounter((PlaneGeneric)paramActor1);
-    }
-    if (((paramActor1 instanceof NetAircraft)) && (Main.cur().netServerParams != null) && (Main.cur().netServerParams.isMaster()))
-    {
-      try
-      {
-        boolean bool1 = false;
-        boolean bool2 = false;
-        if (paramActor2 != null)
+        public boolean isUse(com.maddox.il2.engine.Actor actor, double d)
         {
-          bool1 = paramActor1.name().equals(paramActor2.name());
-          bool2 = paramActor2.name().equals("NONAME");
+            return actor instanceof com.maddox.il2.objects.ships.BigshipGeneric;
         }
 
-        boolean bool3 = ZutiSupportMethods.isPlaneStationary(((NetAircraft)paramActor1).FM);
-
-        if ((paramActor2 != null) && (!bool2) && (!bool1) && (!bool3)) {
-          ZutiSupportMethods.managePilotBornPlacePlaneCounter((NetAircraft)paramActor1, false);
+        ClipFilter()
+        {
         }
+    }
+
+    static class Remover extends com.maddox.il2.engine.Actor
+    {
+
+        protected void createActorHashCode()
+        {
+            makeActorRealHashCode();
+        }
+
+        Remover()
+        {
+        }
+    }
+
+
+    public static com.maddox.il2.ai.RangeRandom Rnd()
+    {
+        return com.maddox.il2.ai.World.cur().rnd;
+    }
+
+    public void setCamouflage(java.lang.String s)
+    {
+        if("SUMMER".equalsIgnoreCase(s))
+            camouflage = 0;
         else
+        if("WINTER".equalsIgnoreCase(s))
+            camouflage = 1;
+        else
+        if("DESERT".equalsIgnoreCase(s))
+            camouflage = 2;
+        else
+        if("PACIFIC".equalsIgnoreCase(s))
+            camouflage = 3;
+        else
+        if("ETO".equalsIgnoreCase(s))
+            camouflage = 4;
+        else
+        if("MTO".equalsIgnoreCase(s))
+            camouflage = 5;
+        else
+        if("CBI".equalsIgnoreCase(s))
+            camouflage = 6;
+        else
+            camouflage = 0;
+    }
+
+    public void setUserCovers()
+    {
+        userCoverMashineGun = userCfg.coverMashineGun;
+        userCoverCannon = userCfg.coverCannon;
+        userCoverRocket = userCfg.coverRocket;
+        userRocketDelay = userCfg.rocketDelay;
+        userBombDelay = userCfg.bombDelay;
+    }
+
+    public boolean isArcade()
+    {
+        return com.maddox.il2.game.Mission.isSingle() && bArcade && !com.maddox.il2.net.NetMissionTrack.isPlaying();
+    }
+
+    public void setArcade(boolean flag)
+    {
+        bArcade = flag;
+    }
+
+    public boolean isHighGore()
+    {
+        return bHighGore;
+    }
+
+    public boolean isHakenAllowed()
+    {
+        return bHakenAllowed;
+    }
+
+    public boolean isDebugFM()
+    {
+        return bDebugFM;
+    }
+
+    public boolean isTimeOfDayConstant()
+    {
+        return bTimeOfDayConstant;
+    }
+
+    public void setTimeOfDayConstant(boolean flag)
+    {
+        bTimeOfDayConstant = flag;
+    }
+
+    public boolean isWeaponsConstant()
+    {
+        return bWeaponsConstant;
+    }
+
+    public void setWeaponsConstant(boolean flag)
+    {
+        bWeaponsConstant = flag;
+    }
+
+    public static void getAirports(java.util.List list)
+    {
+        if(com.maddox.il2.ai.World.cur().airports != null)
+            list.addAll(com.maddox.il2.ai.World.cur().airports);
+    }
+
+    public static int getMissionArmy()
+    {
+        return com.maddox.il2.ai.World.cur().missionArmy;
+    }
+
+    public static void setMissionArmy(int i)
+    {
+        com.maddox.il2.ai.World.cur().missionArmy = i;
+    }
+
+    public static com.maddox.il2.objects.air.Aircraft getPlayerAircraft()
+    {
+        return com.maddox.il2.ai.World.cur().PlayerAircraft;
+    }
+
+    public static int getPlayerArmy()
+    {
+        return com.maddox.il2.ai.World.cur().PlayerArmy;
+    }
+
+    public static com.maddox.il2.fm.FlightModel getPlayerFM()
+    {
+        return com.maddox.il2.ai.World.cur().PlayerFM;
+    }
+
+    public static com.maddox.il2.ai.Regiment getPlayerRegiment()
+    {
+        return com.maddox.il2.ai.World.cur().PlayerRegiment;
+    }
+
+    public static java.lang.String getPlayerLastCountry()
+    {
+        com.maddox.il2.ai.Regiment regiment = com.maddox.il2.ai.World.getPlayerRegiment();
+        if(regiment != null)
+            com.maddox.il2.ai.World.cur().PlayerLastCountry = regiment.country();
+        return com.maddox.il2.ai.World.cur().PlayerLastCountry;
+    }
+
+    public static boolean isPlayerGunner()
+    {
+        return com.maddox.il2.engine.Actor.isValid(com.maddox.il2.ai.World.cur().PlayerGunner);
+    }
+
+    public static com.maddox.il2.objects.air.NetGunner getPlayerGunner()
+    {
+        return com.maddox.il2.ai.World.cur().PlayerGunner;
+    }
+
+    public static boolean isPlayerParatrooper()
+    {
+        return com.maddox.il2.ai.World.cur().bPlayerParatrooper;
+    }
+
+    public static boolean isPlayerDead()
+    {
+        return com.maddox.il2.ai.World.cur().bPlayerDead;
+    }
+
+    public static boolean isPlayerCaptured()
+    {
+        return com.maddox.il2.ai.World.cur().bPlayerCaptured;
+    }
+
+    public static boolean isPlayerRemoved()
+    {
+        return com.maddox.il2.ai.World.cur().bPlayerRemoved;
+    }
+
+    public static void setPlayerAircraft(com.maddox.il2.objects.air.Aircraft aircraft)
+    {
+        com.maddox.il2.ai.World.cur().PlayerAircraft = aircraft;
+        if(aircraft != null)
         {
-          ZutiSupportMethods.managePilotBornPlacePlaneCounter((NetAircraft)paramActor1, true);
-        }
-      }
-      catch (Exception localException)
-      {
-        System.out.println("onActorDied Exception: " + localException);
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-
-    }
-
-    if (!Mission.isDogfight()) {
-      Voice.testTargDestr(paramActor1, paramActor2 == remover ? null : paramActor2);
-    }
-    trySendChatMsgDied(paramActor1, paramActor2 == remover ? paramActor1 : paramActor2);
-
-    paramActor1.setDiedFlag(true);
-    if ((paramActor2 == remover) && (paramActor1 == cur().PlayerAircraft))
-      cur().bPlayerRemoved = true;
-    if (paramBoolean)
-      EventLog.onActorDied(paramActor1, paramActor2);
-    Engine.cur.world.war.onActorDied(paramActor1, paramActor2 == remover ? null : paramActor2);
-    Engine.cur.world.targetsGuard.checkActorDied(paramActor1);
-
-    Object localObject = cur().PlayerAircraft;
-    cur(); if (isPlayerGunner())
-      localObject = cur().PlayerGunner;
-    if ((paramActor1.getArmy() != 0) && (paramActor1 != localObject) && (localObject != null) && (paramActor2 == localObject)) {
-      if (paramActor1.getArmy() != ((Actor)localObject).getArmy()) cur().scoreCounter.enemyDestroyed(paramActor1); else
-        cur().scoreCounter.friendDestroyed(paramActor1);
-    }
-    if (paramActor1 == cur().PlayerAircraft) {
-      cur().checkViewOnPlayerDied(paramActor1);
-      if (Config.isUSE_RENDER()) {
-        CmdEnv.top().exec("music RAND music/crash");
-        ForceFeedback.stopMission();
-      }
-
-      if (paramActor2 != cur().PlayerAircraft) { cur(); if (!isPlayerParatrooper())
-          cur().scoreCounter.playerDead(); }
-    }
-  }
-
-  public void checkViewOnPlayerDied(Actor paramActor) {
-    Point3d localPoint3d1 = new Point3d();
-    Point3d localPoint3d2 = new Point3d();
-    Point3d localPoint3d3 = new Point3d();
-    localPoint3d1.set(paramActor.pos.getAbsPoint());
-    localPoint3d2.set(paramActor.pos.getAbsPoint());
-    localPoint3d1.z -= 40.0D;
-    localPoint3d2.z += 40.0D;
-    Actor localActor = Engine.collideEnv().getLine(localPoint3d2, localPoint3d1, false, clipFilter, localPoint3d3);
-    if (Actor.isValid(localActor)) {
-      if ((Config.isUSE_RENDER()) && 
-        (Main3D.cur3D().viewActor() == paramActor)) {
-        Main3D.cur3D().setViewFlow10(localActor, false);
-      }
-
-      return;
-    }
-    ActorViewPoint localActorViewPoint = new ActorViewPoint();
-    localActorViewPoint.pos.setAbs(paramActor.pos.getAbs()); localActorViewPoint.pos.reset();
-    localActorViewPoint.dreamFire(true);
-    if ((Config.isUSE_RENDER()) && 
-      (Main3D.cur3D().viewActor() == paramActor)) {
-      Main3D.cur3D().hookView.set(localActorViewPoint, 3.0F * HookView.defaultLen(), 10.0F, -10.0F);
-      Main3D.cur3D().setView(localActorViewPoint, true);
-    }
-  }
-
-  public static void onTaskComplete(Actor paramActor)
-  {
-    if (paramActor.isTaskComplete()) return;
-
-    paramActor.setTaskCompleteFlag(true);
-    Engine.cur.world.targetsGuard.checkTaskComplete(paramActor);
-    if (paramActor.isNetMaster())
-      ((NetUser)NetEnv.host()).postTaskComplete(paramActor);
-  }
-
-  private static void trySendChatMsgDied(Actor paramActor1, Actor paramActor2) {
-    if (!Actor.isValid(paramActor2)) return;
-    if (Mission.isSingle()) return;
-
-    if (Main.cur().chat == null) return;
-    if (!(paramActor1 instanceof Aircraft)) return;
-    if (paramActor1.net == null) return;
-    if (!paramActor1.net.isMaster()) return;
-    Aircraft localAircraft = (Aircraft)paramActor1;
-    NetUser localNetUser = localAircraft.netUser();
-    if (localNetUser == null) return;
-    if (paramActor1 == paramActor2)
-    {
-      return;
-    }
-    int i = Engine.cur.world.scoreCounter.getRegisteredType(paramActor2);
-    if (!localAircraft.FM.isSentBuryNote())
-    {
-      localAircraft.FM.setSentBuryNote(true);
-      switch (i) {
-      case 0:
-        if (((paramActor2 instanceof Aircraft)) && (((Aircraft)paramActor2).netUser() != null)) {
-          Chat.sendLog(1, "gore_kill" + Rnd().nextInt(1, 5), (Aircraft)paramActor2, localAircraft);
-          if ((!localAircraft.FM.isWasAirborne()) && (localAircraft.isDamagerExclusive()))
-            Chat.sendLogRnd(2, "gore_vulcher", (Aircraft)paramActor2, null);
-        } else {
-          Chat.sendLogRnd(1, "gore_ai", localAircraft, null);
-        }
-        return;
-      case 1:
-        Chat.sendLogRnd(2, "gore_tank", localAircraft, null);
-        return;
-      case 2:
-        Chat.sendLogRnd(2, "gore_gun", localAircraft, null);
-        return;
-      case 3:
-        Chat.sendLogRnd(2, "gore_gun", localAircraft, null);
-        return;
-      case 4:
-        Chat.sendLogRnd(2, "gore_killaaa", localAircraft, null);
-        return;
-      case 7:
-        Chat.sendLogRnd(2, "gore_ship", localAircraft, null);
-        return;
-      case 6:
-        Chat.sendLogRnd(2, "gore_killaaa", localAircraft, null);
-        return;
-      case 5:
-      case 8:
-      case 9:
-      }
-
-      Chat.sendLogRnd(1, "gore_crashes", localAircraft, null);
-    }
-  }
-
-  public static Landscape land()
-  {
-    return Engine.land();
-  }
-
-  public static Wind wind() {
-    return cur().wind;
-  }
-
-  public static World cur()
-  {
-    return Engine.cur.world;
-  }
-  public void resetGameClear() {
-    EventLog.resetGameClear();
-    this.front.resetGameClear();
-    this.war.resetGameClear();
-    this.bTimeOfDayConstant = false;
-    if (this.statics != null)
-      this.statics.resetGame();
-    if (this.airports != null) {
-      for (int i = 0; i < this.airports.size(); i++)
-        ((Airport)this.airports.get(i)).destroy();
-      this.airports.clear();
-      this.airports = null;
-    }
-    while (this.runawayList != null) {
-      Runaway localRunaway = this.runawayList;
-      this.runawayList = localRunaway.next();
-      if (Actor.isValid(localRunaway))
-        localRunaway.destroy();
-    }
-    this.targetsGuard.resetGame();
-    this.scoreCounter.resetGame();
-    NearestEnemies.resetGameClear();
-    NearestAircraft.resetGameClear();
-    Aircraft.resetGameClear();
-    MsgExplosion.resetGame();
-    MsgShot.resetGame();
-    Regiment.resetGame();
-    this.bornPlaces = null;
-    this.bPlayerParatrooper = false;
-    this.bPlayerDead = false;
-    this.bPlayerCaptured = false;
-    this.bPlayerRemoved = false;
-    if (Actor.isValid(this.houseManager))
-      this.houseManager.destroy();
-    this.houseManager = null;
-  }
-
-  public void resetGameCreate() {
-    if (this.statics == null)
-      this.statics = new Statics();
-    this.ChiefMan = new ChiefManager();
-    setPlayerAircraft(null);
-    this.PlayerArmy = 1;
-    this.rnd = new RangeRandom();
-    this.voicebase = new Voice();
-    setTimeofDay(12.0F);
-    this.airports = new ArrayList();
-    this.war.resetGameCreate();
-    this.front.resetGameCreate();
-    EventLog.resetGameCreate();
-  }
-
-  public void resetUser() {
-    this.bPlayerParatrooper = false;
-    this.bPlayerDead = false;
-
-    ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
-  }
-
-  public World()
-  {
-    this.war = new War();
-    this.bArcade = Config.cur.ini.get("game", "Arcade", this.bArcade);
-    if (Config.LOCALE.equals("RU")) {
-      this.bHighGore = Config.cur.ini.get("game", "HighGore", this.bHighGore);
-      this.bHakenAllowed = Config.cur.ini.get("game", "HakenAllowed", this.bHakenAllowed);
-    }
-
-    this.blockMorseChat = Config.cur.ini.get("game", "BlockMorseChat", this.blockMorseChat);
-    this.smallMapWPLabels = Config.cur.ini.get("game", "SmallMapWPLabels", this.smallMapWPLabels);
-    this.showMorseAsText = Config.cur.ini.get("game", "ShowMorseAsText", this.showMorseAsText);
-  }
-
-  public static float getTimeofDay()
-  {
-    if (cur().bTimeOfDayConstant) {
-      return cur().startTimeofDay * 0.0002777778F % 24.0F;
-    }
-    return (float)(Time.current() / 1000L + cur().startTimeofDay) * 0.0002777778F % 24.0F;
-  }
-
-  public static void setTimeofDay(float paramFloat) {
-    int i = (int)(paramFloat * 3600.0F % 86400.0F);
-    if (cur().bTimeOfDayConstant)
-      cur().startTimeofDay = i;
-    else
-      cur().startTimeofDay = (i - (int)(Time.current() / 1000L)); 
-  }
-
-  public static float g() {
-    return Atmosphere.g(); } 
-  public static Sun Sun() { return cur().sun; } 
-  public Sun sun() {
-    return this.sun;
-  }
-
-  private void zutiManagePilotsBornPlacePlaneCounter(PlaneGeneric paramPlaneGeneric)
-  {
-    String str = ZutiAircraft.getStaticAcNameFromActor(paramPlaneGeneric.toString());
-    Point3d localPoint3d = paramPlaneGeneric.pos.getAbsPoint();
-    double d1 = localPoint3d.x;
-    double d2 = localPoint3d.y;
-    try
-    {
-      int i = 0;
-      if (this.zutiCurrentBornPlace != null)
-      {
-        double d3 = Math.sqrt(Math.pow(this.zutiCurrentBornPlace.place.x - d1, 2.0D) + Math.pow(this.zutiCurrentBornPlace.place.y - d2, 2.0D));
-        if (d3 <= this.zutiCurrentBornPlace.r)
+            com.maddox.il2.ai.World.cur().PlayerFM = aircraft.FM;
+            com.maddox.il2.ai.World.cur().scoreCounter.playerStartAir(aircraft);
+        } else
         {
-          this.zutiCurrentBornPlace.zutiReleaseAircraft(null, str, false, true, false);
-
-          i = 1;
+            com.maddox.il2.ai.World.cur().PlayerFM = null;
         }
-      }
-      if ((i == 0) && (this.bornPlaces != null))
-      {
-        BornPlace localBornPlace = null;
-        for (int j = 0; j < this.bornPlaces.size(); j++)
+    }
+
+    public static void setPlayerFM()
+    {
+        if(com.maddox.il2.engine.Actor.isValid(com.maddox.il2.ai.World.cur().PlayerAircraft))
+            com.maddox.il2.ai.World.cur().PlayerFM = com.maddox.il2.ai.World.cur().PlayerAircraft.FM;
+    }
+
+    public static void setPlayerRegiment()
+    {
+        if(com.maddox.il2.engine.Actor.isValid(com.maddox.il2.ai.World.cur().PlayerAircraft))
         {
-          localBornPlace = (BornPlace)this.bornPlaces.get(j);
-
-          if (!localBornPlace.zutiIncludeStaticPlanes)
-          {
-            continue;
-          }
-          double d4 = Math.pow(localBornPlace.place.x - d1, 2.0D) + Math.pow(localBornPlace.place.y - d2, 2.0D);
-          if (d4 > localBornPlace.r * localBornPlace.r) {
-            continue;
-          }
-          localBornPlace.zutiReleaseAircraft(null, str, false, true, false);
-
-          this.zutiCurrentBornPlace = localBornPlace;
+            com.maddox.il2.objects.air.Aircraft aircraft = com.maddox.il2.ai.World.cur().PlayerAircraft;
+            if(aircraft.getOwner() != null)
+                com.maddox.il2.ai.World.cur().PlayerRegiment = ((com.maddox.il2.ai.Wing)aircraft.getOwner()).regiment();
+            else
+                com.maddox.il2.ai.World.cur().PlayerRegiment = null;
+            com.maddox.il2.ai.World.cur().PlayerArmy = aircraft.getArmy();
+            if(com.maddox.il2.game.Mission.isSingle())
+                com.maddox.il2.ai.World.cur().missionArmy = com.maddox.il2.ai.World.cur().PlayerArmy;
         }
-      }
     }
-    catch (Exception localException) {
-      localException.printStackTrace();
-    }
-  }
 
-  static
-  {
-    ScoreRegister.load();
-  }
-
-  static class ClipFilter
-    implements ActorFilter
-  {
-    public boolean isUse(Actor paramActor, double paramDouble)
+    public static void doPlayerParatrooper(com.maddox.il2.objects.air.Paratrooper paratrooper)
     {
-      return paramActor instanceof BigshipGeneric;
+        com.maddox.il2.fm.FlightModel flightmodel = com.maddox.il2.ai.World.getPlayerFM();
+        if(!com.maddox.il2.ai.World.isPlayerParatrooper())
+        {
+            if(com.maddox.il2.engine.Config.isUSE_RENDER())
+                com.maddox.rts.RTSConf.cur.hotKeyEnvs.endAllActiveCmd(false);
+            com.maddox.il2.ai.World.cur().bPlayerParatrooper = true;
+            if(com.maddox.il2.game.ZutiAircraft.isPlaneLandedAndDamaged(flightmodel))
+                com.maddox.il2.ai.World.cur().scoreCounter.playerParatrooper();
+            if(com.maddox.il2.engine.Config.isUSE_RENDER())
+            {
+                if(com.maddox.il2.game.Main3D.cur3D().viewActor() == com.maddox.il2.ai.World.getPlayerAircraft())
+                    com.maddox.il2.game.Main3D.cur3D().setViewFlow10(paratrooper, false);
+                com.maddox.il2.game.Main3D.cur3D().ordersTree.unactivate();
+                com.maddox.il2.objects.effects.ForceFeedback.stopMission();
+            }
+        }
+        if(com.maddox.il2.game.Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied && com.maddox.il2.game.Mission.isDogfight())
+        {
+            com.maddox.il2.game.ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
+            com.maddox.il2.gui.GUINetMission.setPlayerParatrooper(paratrooper);
+        }
     }
-  }
 
-  static class Remover extends Actor
-  {
-    protected void createActorHashCode()
+    public static void doGunnerParatrooper(com.maddox.il2.objects.air.Paratrooper paratrooper)
     {
-      makeActorRealHashCode();
+        if(com.maddox.il2.ai.World.isPlayerParatrooper())
+            return;
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+            com.maddox.rts.RTSConf.cur.hotKeyEnvs.endAllActiveCmd(false);
+        com.maddox.il2.ai.World.cur().bPlayerParatrooper = true;
+        com.maddox.il2.ai.World.cur().scoreCounter.playerParatrooper();
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+        {
+            if(com.maddox.il2.game.Main3D.cur3D().viewActor() == com.maddox.il2.ai.World.getPlayerAircraft())
+                com.maddox.il2.game.Main3D.cur3D().setViewFlow10(paratrooper, false);
+            com.maddox.il2.objects.effects.ForceFeedback.stopMission();
+            if(com.maddox.il2.game.Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied && com.maddox.il2.game.Mission.isDogfight())
+            {
+                com.maddox.il2.game.ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
+                com.maddox.il2.gui.GUINetMission.setPlayerParatrooper(paratrooper);
+            }
+        }
     }
-  }
+
+    public static void doPlayerUnderWater()
+    {
+        if(com.maddox.il2.engine.Config.isUSE_RENDER() && com.maddox.il2.game.Main3D.cur3D().viewActor() == com.maddox.il2.ai.World.getPlayerAircraft() && !com.maddox.il2.game.Main3D.cur3D().isViewOutside())
+            com.maddox.il2.game.Main3D.cur3D().setViewFlow10(com.maddox.il2.ai.World.getPlayerAircraft(), false);
+    }
+
+    public static void setPlayerDead()
+    {
+        if(com.maddox.il2.engine.Config.isUSE_RENDER())
+            com.maddox.rts.RTSConf.cur.hotKeyEnvs.endAllActiveCmd(false);
+        com.maddox.il2.ai.World.cur().bPlayerDead = true;
+        com.maddox.il2.ai.World.cur().scoreCounter.playerDead();
+        if(com.maddox.il2.game.Main.cur().mission.zutiMisc_EnableReflyOnlyIfBailedOrDied && com.maddox.il2.game.Mission.isDogfight())
+        {
+            if(com.maddox.il2.ai.World.getPlayerFM().Gears.nOfGearsOnGr < 3)
+                com.maddox.il2.game.ZutiSupportMethods.ZUTI_KIA_COUNTER++;
+            com.maddox.il2.game.ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
+            float f = (float)com.maddox.il2.game.Main.cur().mission.zutiMisc_ReflyKIADelay + (float)com.maddox.il2.game.ZutiSupportMethods.ZUTI_KIA_COUNTER * com.maddox.il2.game.Main.cur().mission.zutiMisc_ReflyKIADelayMultiplier;
+            com.maddox.il2.game.ZutiSupportMethods.setPlayerBanDuration((long)f);
+            com.maddox.il2.gui.GUINetMission.setReflyTimer(new ZutiTimer_Refly(f));
+            java.lang.System.out.println(((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).uniqueName() + " has died for " + com.maddox.il2.game.ZutiSupportMethods.ZUTI_KIA_COUNTER + " times. Refly penalty is " + f + "s.");
+            com.maddox.il2.ai.EventLog.type(true, ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).uniqueName() + " has died for " + com.maddox.il2.game.ZutiSupportMethods.ZUTI_KIA_COUNTER + " times. Refly penalty is " + f + "s.");
+        }
+    }
+
+    public static void setPlayerCaptured()
+    {
+        com.maddox.il2.ai.World.cur().bPlayerCaptured = true;
+        com.maddox.il2.ai.World.cur().scoreCounter.playerCaptured();
+    }
+
+    public static void setPlayerGunner(com.maddox.il2.objects.air.NetGunner netgunner)
+    {
+        com.maddox.il2.ai.World.cur().PlayerGunner = netgunner;
+        com.maddox.il2.ai.World.cur().scoreCounter.playerStartGunner();
+    }
+
+    public static void onActorDied(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        com.maddox.il2.ai.World.onActorDied(actor, actor1, true);
+    }
+
+    public static void onActorDied(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1, boolean flag)
+    {
+        if(actor.getDiedFlag())
+            throw new ActorException("actor " + actor.getClass() + ":" + actor.name() + " alredy dead");
+        if(actor instanceof com.maddox.il2.objects.vehicles.planes.PlaneGeneric)
+            com.maddox.il2.ai.World.cur().zutiManagePilotsBornPlacePlaneCounter((com.maddox.il2.objects.vehicles.planes.PlaneGeneric)actor);
+        if((actor instanceof com.maddox.il2.objects.air.NetAircraft) && com.maddox.il2.game.Main.cur().netServerParams != null && com.maddox.il2.game.Main.cur().netServerParams.isMaster())
+            try
+            {
+                boolean flag1 = false;
+                boolean flag2 = false;
+                if(actor1 != null)
+                {
+                    flag1 = actor.name().equals(actor1.name());
+                    flag2 = actor1.name().equals("NONAME");
+                }
+                boolean flag3 = com.maddox.il2.game.ZutiSupportMethods.isPlaneStationary(((com.maddox.il2.objects.air.NetAircraft)actor).FM);
+                if(actor1 != null && !flag2 && !flag1 && !flag3)
+                    com.maddox.il2.game.ZutiSupportMethods.managePilotBornPlacePlaneCounter((com.maddox.il2.objects.air.NetAircraft)actor, false);
+                else
+                    com.maddox.il2.game.ZutiSupportMethods.managePilotBornPlacePlaneCounter((com.maddox.il2.objects.air.NetAircraft)actor, true);
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println("onActorDied Exception: " + exception);
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+        if(!com.maddox.il2.game.Mission.isDogfight())
+            com.maddox.il2.objects.sounds.Voice.testTargDestr(actor, actor1 != remover ? actor1 : null);
+        com.maddox.il2.ai.World.trySendChatMsgDied(actor, actor1 != remover ? actor1 : actor);
+        actor.setDiedFlag(true);
+        if(actor1 == remover && actor == com.maddox.il2.ai.World.cur().PlayerAircraft)
+            com.maddox.il2.ai.World.cur().bPlayerRemoved = true;
+        if(flag)
+            com.maddox.il2.ai.EventLog.onActorDied(actor, actor1);
+        com.maddox.il2.engine.Engine.cur.world.war.onActorDied(actor, actor1 != remover ? actor1 : null);
+        com.maddox.il2.engine.Engine.cur.world.targetsGuard.checkActorDied(actor);
+        java.lang.Object obj = com.maddox.il2.ai.World.cur().PlayerAircraft;
+        com.maddox.il2.ai.World.cur();
+        if(com.maddox.il2.ai.World.isPlayerGunner())
+            obj = com.maddox.il2.ai.World.cur().PlayerGunner;
+        if(actor.getArmy() != 0 && actor != obj && obj != null && actor1 == obj)
+            if(actor.getArmy() != ((com.maddox.il2.engine.Actor) (obj)).getArmy())
+                com.maddox.il2.ai.World.cur().scoreCounter.enemyDestroyed(actor);
+            else
+                com.maddox.il2.ai.World.cur().scoreCounter.friendDestroyed(actor);
+        if(actor == com.maddox.il2.ai.World.cur().PlayerAircraft)
+        {
+            com.maddox.il2.ai.World.cur().checkViewOnPlayerDied(actor);
+            if(com.maddox.il2.engine.Config.isUSE_RENDER())
+            {
+                com.maddox.rts.CmdEnv.top().exec("music RAND music/crash");
+                com.maddox.il2.objects.effects.ForceFeedback.stopMission();
+            }
+            if(actor1 != com.maddox.il2.ai.World.cur().PlayerAircraft)
+            {
+                com.maddox.il2.ai.World.cur();
+                if(!com.maddox.il2.ai.World.isPlayerParatrooper())
+                    com.maddox.il2.ai.World.cur().scoreCounter.playerDead();
+            }
+        }
+    }
+
+    public void checkViewOnPlayerDied(com.maddox.il2.engine.Actor actor)
+    {
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        com.maddox.JGP.Point3d point3d1 = new Point3d();
+        com.maddox.JGP.Point3d point3d2 = new Point3d();
+        point3d.set(actor.pos.getAbsPoint());
+        point3d1.set(actor.pos.getAbsPoint());
+        point3d.z -= 40D;
+        point3d1.z += 40D;
+        com.maddox.il2.engine.Actor actor1 = com.maddox.il2.engine.Engine.collideEnv().getLine(point3d1, point3d, false, clipFilter, point3d2);
+        if(com.maddox.il2.engine.Actor.isValid(actor1))
+        {
+            if(com.maddox.il2.engine.Config.isUSE_RENDER() && com.maddox.il2.game.Main3D.cur3D().viewActor() == actor)
+                com.maddox.il2.game.Main3D.cur3D().setViewFlow10(actor1, false);
+            return;
+        }
+        com.maddox.il2.objects.ActorViewPoint actorviewpoint = new ActorViewPoint();
+        actorviewpoint.pos.setAbs(actor.pos.getAbs());
+        actorviewpoint.pos.reset();
+        actorviewpoint.dreamFire(true);
+        if(com.maddox.il2.engine.Config.isUSE_RENDER() && com.maddox.il2.game.Main3D.cur3D().viewActor() == actor)
+        {
+            com.maddox.il2.game.Main3D.cur3D().hookView.set(actorviewpoint, 3F * com.maddox.il2.game.Main3D.cur3D().hookView.defaultLen(), 10F, -10F);
+            com.maddox.il2.game.Main3D.cur3D().setView(actorviewpoint, true);
+        }
+    }
+
+    public static void onTaskComplete(com.maddox.il2.engine.Actor actor)
+    {
+        if(actor.isTaskComplete())
+            return;
+        actor.setTaskCompleteFlag(true);
+        com.maddox.il2.engine.Engine.cur.world.targetsGuard.checkTaskComplete(actor);
+        if(actor.isNetMaster())
+            ((com.maddox.il2.net.NetUser)com.maddox.rts.NetEnv.host()).postTaskComplete(actor);
+    }
+
+    private static void trySendChatMsgDied(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        if(!com.maddox.il2.engine.Actor.isValid(actor1))
+            return;
+        if(com.maddox.il2.game.Mission.isSingle())
+            return;
+        if(com.maddox.il2.game.Main.cur().chat == null)
+            return;
+        if(!(actor instanceof com.maddox.il2.objects.air.Aircraft))
+            return;
+        if(actor.net == null)
+            return;
+        if(!actor.net.isMaster())
+            return;
+        com.maddox.il2.objects.air.Aircraft aircraft = (com.maddox.il2.objects.air.Aircraft)actor;
+        com.maddox.il2.net.NetUser netuser = aircraft.netUser();
+        if(netuser == null)
+            return;
+        if(actor == actor1)
+            return;
+        int i = com.maddox.il2.engine.Engine.cur.world.scoreCounter.getRegisteredType(actor1);
+        if(!aircraft.FM.isSentBuryNote())
+        {
+            aircraft.FM.setSentBuryNote(true);
+            switch(i)
+            {
+            case 0: // '\0'
+                if((actor1 instanceof com.maddox.il2.objects.air.Aircraft) && ((com.maddox.il2.objects.air.Aircraft)actor1).netUser() != null)
+                {
+                    com.maddox.il2.net.Chat.sendLog(1, "gore_kill" + com.maddox.il2.ai.World.Rnd().nextInt(1, 5), (com.maddox.il2.objects.air.Aircraft)actor1, aircraft);
+                    if(!aircraft.FM.isWasAirborne() && aircraft.isDamagerExclusive())
+                        com.maddox.il2.net.Chat.sendLogRnd(2, "gore_vulcher", (com.maddox.il2.objects.air.Aircraft)actor1, null);
+                } else
+                {
+                    com.maddox.il2.net.Chat.sendLogRnd(1, "gore_ai", aircraft, null);
+                }
+                return;
+
+            case 1: // '\001'
+                com.maddox.il2.net.Chat.sendLogRnd(2, "gore_tank", aircraft, null);
+                return;
+
+            case 2: // '\002'
+                com.maddox.il2.net.Chat.sendLogRnd(2, "gore_gun", aircraft, null);
+                return;
+
+            case 3: // '\003'
+                com.maddox.il2.net.Chat.sendLogRnd(2, "gore_gun", aircraft, null);
+                return;
+
+            case 4: // '\004'
+                com.maddox.il2.net.Chat.sendLogRnd(2, "gore_killaaa", aircraft, null);
+                return;
+
+            case 7: // '\007'
+                com.maddox.il2.net.Chat.sendLogRnd(2, "gore_ship", aircraft, null);
+                return;
+
+            case 6: // '\006'
+                com.maddox.il2.net.Chat.sendLogRnd(2, "gore_killaaa", aircraft, null);
+                return;
+
+            case 5: // '\005'
+            case 8: // '\b'
+            case 9: // '\t'
+            default:
+                com.maddox.il2.net.Chat.sendLogRnd(1, "gore_crashes", aircraft, null);
+                break;
+            }
+        }
+    }
+
+    public static com.maddox.il2.engine.Landscape land()
+    {
+        return com.maddox.il2.engine.Engine.land();
+    }
+
+    public static com.maddox.il2.fm.Wind wind()
+    {
+        return com.maddox.il2.ai.World.cur().wind;
+    }
+
+    public static com.maddox.il2.ai.World cur()
+    {
+        return com.maddox.il2.engine.Engine.cur.world;
+    }
+
+    public void resetGameClear()
+    {
+        com.maddox.il2.ai.EventLog.resetGameClear();
+        front.resetGameClear();
+        war.resetGameClear();
+        bTimeOfDayConstant = false;
+        if(statics != null)
+            statics.resetGame();
+        if(airports != null)
+        {
+            for(int i = 0; i < airports.size(); i++)
+                ((com.maddox.il2.ai.Airport)airports.get(i)).destroy();
+
+            airports.clear();
+            airports = null;
+        }
+        do
+        {
+            if(runawayList == null)
+                break;
+            com.maddox.il2.objects.air.Runaway runaway = runawayList;
+            runawayList = runaway.next();
+            if(com.maddox.il2.engine.Actor.isValid(runaway))
+                runaway.destroy();
+        } while(true);
+        targetsGuard.resetGame();
+        scoreCounter.resetGame();
+        com.maddox.il2.ai.ground.NearestEnemies.resetGameClear();
+        com.maddox.il2.ai.air.NearestAircraft.resetGameClear();
+        com.maddox.il2.objects.air.Aircraft.resetGameClear();
+        com.maddox.il2.ai.MsgExplosion.resetGame();
+        com.maddox.il2.ai.MsgShot.resetGame();
+        com.maddox.il2.ai.Regiment.resetGame();
+        bornPlaces = null;
+        bPlayerParatrooper = false;
+        bPlayerDead = false;
+        bPlayerCaptured = false;
+        bPlayerRemoved = false;
+        if(com.maddox.il2.engine.Actor.isValid(houseManager))
+            houseManager.destroy();
+        houseManager = null;
+    }
+
+    public void resetGameCreate()
+    {
+        if(statics == null)
+            statics = new Statics();
+        ChiefMan = new ChiefManager();
+        com.maddox.il2.ai.World.setPlayerAircraft(null);
+        PlayerArmy = 1;
+        rnd = new RangeRandom();
+        voicebase = new Voice();
+        com.maddox.il2.ai.World.setTimeofDay(12F);
+        airports = new ArrayList();
+        war.resetGameCreate();
+        front.resetGameCreate();
+        com.maddox.il2.ai.EventLog.resetGameCreate();
+    }
+
+    public void resetUser()
+    {
+        bPlayerParatrooper = false;
+        bPlayerDead = false;
+        com.maddox.il2.game.ZutiSupportMethods.ZUTI_KIA_DELAY_CLEARED = false;
+    }
+
+    public World()
+    {
+        blockMorseChat = false;
+        smallMapWPLabels = false;
+        rnd = new RangeRandom();
+        camouflage = 0;
+        diffCur = new DifficultySettings();
+        diffUser = new DifficultySettings();
+        userCoverMashineGun = 500F;
+        userCoverCannon = 500F;
+        userCoverRocket = 500F;
+        userRocketDelay = 10F;
+        userBombDelay = 0.0F;
+        bArcade = false;
+        bHighGore = false;
+        bHakenAllowed = false;
+        bDebugFM = false;
+        bTimeOfDayConstant = false;
+        bWeaponsConstant = false;
+        missionArmy = 1;
+        PlayerArmy = 1;
+        bPlayerParatrooper = false;
+        bPlayerDead = false;
+        bPlayerCaptured = false;
+        bPlayerRemoved = false;
+        targetsGuard = new TargetsGuard();
+        scoreCounter = new ScoreCounter();
+        wind = new Wind();
+        front = new Front();
+        startTimeofDay = 43200;
+        Atm = new Atmosphere();
+        ChiefMan = new ChiefManager();
+        sun = new Sun();
+        voicebase = new Voice();
+        zutiCurrentBornPlace = null;
+        war = new War();
+        bArcade = com.maddox.il2.engine.Config.cur.ini.get("game", "Arcade", bArcade);
+        if(com.maddox.il2.engine.Config.LOCALE.equals("RU"))
+        {
+            bHighGore = com.maddox.il2.engine.Config.cur.ini.get("game", "HighGore", bHighGore);
+            bHakenAllowed = com.maddox.il2.engine.Config.cur.ini.get("game", "HakenAllowed", bHakenAllowed);
+        }
+        blockMorseChat = com.maddox.il2.engine.Config.cur.ini.get("game", "BlockMorseChat", blockMorseChat);
+        smallMapWPLabels = com.maddox.il2.engine.Config.cur.ini.get("game", "SmallMapWPLabels", smallMapWPLabels);
+    }
+
+    public static float getTimeofDay()
+    {
+        if(com.maddox.il2.ai.World.cur().bTimeOfDayConstant)
+            return ((float)com.maddox.il2.ai.World.cur().startTimeofDay * 0.0002777778F) % 24F;
+        else
+            return ((float)(com.maddox.rts.Time.current() / 1000L + (long)com.maddox.il2.ai.World.cur().startTimeofDay) * 0.0002777778F) % 24F;
+    }
+
+    public static void setTimeofDay(float f)
+    {
+        int i = (int)((f * 3600F) % 86400F);
+        if(com.maddox.il2.ai.World.cur().bTimeOfDayConstant)
+            com.maddox.il2.ai.World.cur().startTimeofDay = i;
+        else
+            com.maddox.il2.ai.World.cur().startTimeofDay = i - (int)(com.maddox.rts.Time.current() / 1000L);
+    }
+
+    public static float g()
+    {
+        return com.maddox.il2.fm.Atmosphere.g();
+    }
+
+    public static com.maddox.il2.engine.Sun Sun()
+    {
+        return com.maddox.il2.ai.World.cur().sun;
+    }
+
+    public com.maddox.il2.engine.Sun sun()
+    {
+        return sun;
+    }
+
+    private void zutiManagePilotsBornPlacePlaneCounter(com.maddox.il2.objects.vehicles.planes.PlaneGeneric planegeneric)
+    {
+        java.lang.String s = com.maddox.il2.game.ZutiAircraft.getStaticAcNameFromActor(planegeneric.toString());
+        com.maddox.JGP.Point3d point3d = planegeneric.pos.getAbsPoint();
+        double d = point3d.x;
+        double d1 = point3d.y;
+        try
+        {
+            boolean flag = false;
+            if(zutiCurrentBornPlace != null)
+            {
+                double d2 = java.lang.Math.sqrt(java.lang.Math.pow(zutiCurrentBornPlace.place.x - d, 2D) + java.lang.Math.pow(zutiCurrentBornPlace.place.y - d1, 2D));
+                if(d2 <= (double)zutiCurrentBornPlace.r)
+                {
+                    zutiCurrentBornPlace.zutiReleaseAircraft(null, s, false, true, false);
+                    flag = true;
+                }
+            }
+            if(!flag && bornPlaces != null)
+            {
+                Object obj = null;
+                for(int i = 0; i < bornPlaces.size(); i++)
+                {
+                    com.maddox.il2.net.BornPlace bornplace = (com.maddox.il2.net.BornPlace)bornPlaces.get(i);
+                    if(bornplace.zutiIncludeStaticPlanes)
+                    {
+                        double d3 = java.lang.Math.pow(bornplace.place.x - d, 2D) + java.lang.Math.pow(bornplace.place.y - d1, 2D);
+                        if(d3 <= (double)(bornplace.r * bornplace.r))
+                        {
+                            bornplace.zutiReleaseAircraft(null, s, false, true, false);
+                            zutiCurrentBornPlace = bornplace;
+                        }
+                    }
+                }
+
+            }
+        }
+        catch(java.lang.Exception exception)
+        {
+            exception.printStackTrace();
+        }
+    }
+
+    public static final float NORD = 270F;
+    public static final float PIXEL = 200F;
+    public static float MaxVisualDistance = 5000F;
+    public static float MaxStaticVisualDistance = 4000F;
+    public static float MaxLongVisualDistance = 10000F;
+    public static float MaxPlateVisualDistance = 16000F;
+    public boolean blockMorseChat;
+    public boolean smallMapWPLabels;
+    public com.maddox.il2.ai.RangeRandom rnd;
+    public int camouflage;
+    public static final int CAMOUFLAGE_SUMMER = 0;
+    public static final int CAMOUFLAGE_WINTER = 1;
+    public static final int CAMOUFLAGE_DESERT = 2;
+    public static final int CAMOUFLAGE_PACIFIC = 3;
+    public static final int CAMOUFLAGE_ETO = 4;
+    public static final int CAMOUFLAGE_MTO = 5;
+    public static final int CAMOUFLAGE_CBI = 6;
+    public com.maddox.il2.ai.DifficultySettings diffCur;
+    public com.maddox.il2.ai.DifficultySettings diffUser;
+    public com.maddox.il2.ai.UserCfg userCfg;
+    public float userCoverMashineGun;
+    public float userCoverCannon;
+    public float userCoverRocket;
+    public float userRocketDelay;
+    public float userBombDelay;
+    private boolean bArcade;
+    private boolean bHighGore;
+    private boolean bHakenAllowed;
+    private boolean bDebugFM;
+    private boolean bTimeOfDayConstant;
+    private boolean bWeaponsConstant;
+    protected com.maddox.il2.ai.War war;
+    protected java.util.ArrayList airports;
+    public java.util.ArrayList bornPlaces;
+    public com.maddox.il2.objects.buildings.HouseManager houseManager;
+    public com.maddox.il2.objects.air.Runaway runawayList;
+    public com.maddox.il2.ai.air.Airdrome airdrome;
+    private int missionArmy;
+    private com.maddox.il2.objects.air.Aircraft PlayerAircraft;
+    private com.maddox.il2.objects.air.NetGunner PlayerGunner;
+    private int PlayerArmy;
+    private com.maddox.il2.fm.FlightModel PlayerFM;
+    private com.maddox.il2.ai.Regiment PlayerRegiment;
+    private java.lang.String PlayerLastCountry;
+    private boolean bPlayerParatrooper;
+    private boolean bPlayerDead;
+    private boolean bPlayerCaptured;
+    private boolean bPlayerRemoved;
+    public static com.maddox.il2.engine.Actor remover = new Remover();
+    static com.maddox.il2.ai.ClipFilter clipFilter = new ClipFilter();
+    public com.maddox.il2.ai.TargetsGuard targetsGuard;
+    public com.maddox.il2.ai.ScoreCounter scoreCounter;
+    private com.maddox.il2.fm.Wind wind;
+    protected com.maddox.il2.ai.Front front;
+    public com.maddox.il2.objects.Statics statics;
+    private int startTimeofDay;
+    public com.maddox.il2.fm.Atmosphere Atm;
+    public float fogColor[] = {
+        0.53F, 0.64F, 0.8F, 1.0F
+    };
+    public float beachColor[] = {
+        0.6F, 0.6F, 0.6F
+    };
+    public float lodColor[] = {
+        0.7F, 0.7F, 0.7F
+    };
+    public com.maddox.il2.ai.ChiefManager ChiefMan;
+    private com.maddox.il2.engine.Sun sun;
+    public com.maddox.il2.objects.sounds.Voice voicebase;
+    private com.maddox.il2.net.BornPlace zutiCurrentBornPlace;
+
+    static 
+    {
+        com.maddox.il2.objects.ScoreRegister.load();
+    }
 }

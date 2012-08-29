@@ -1,23 +1,32 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   BsData.java
+
 package com.maddox.netphone;
 
 import java.util.Vector;
 
 public class BsData
 {
-  protected int size;
-  protected int wp;
-  protected int maxlen;
-  protected boolean rdflag;
-  protected byte[] data;
-  protected Vector links = new Vector();
 
-  public BsData(int paramInt)
-  {
-    this.size = (paramInt * 8);
-    this.wp = 0;
-    this.data = new byte[paramInt];
-    for (int i = 0; i < paramInt; i++) this.data[i] = 0;
-    this.maxlen = 0;
-    this.rdflag = false;
-  }
+    public BsData(int i)
+    {
+        links = new Vector();
+        size = i * 8;
+        wp = 0;
+        data = new byte[i];
+        for(int j = 0; j < i; j++)
+            data[j] = 0;
+
+        maxlen = 0;
+        rdflag = false;
+    }
+
+    protected int size;
+    protected int wp;
+    protected int maxlen;
+    protected boolean rdflag;
+    protected byte data[];
+    protected java.util.Vector links;
 }

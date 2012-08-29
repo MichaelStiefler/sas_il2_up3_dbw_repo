@@ -1,62 +1,83 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HotKeyCmdEnvs.java
+
 package com.maddox.rts;
 
 import com.maddox.util.HashMapExt;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.Map;
+
+// Referenced classes of package com.maddox.rts:
+//            HotKeyCmdEnv, HotKeyCmd, MsgHotKeyCmd, MsgAddListenerListener, 
+//            MsgRemoveListenerListener, RTSConf, HotKeyEnvs
 
 public final class HotKeyCmdEnvs
-  implements MsgAddListenerListener, MsgRemoveListenerListener
+    implements com.maddox.rts.MsgAddListenerListener, com.maddox.rts.MsgRemoveListenerListener
 {
-  protected HashMap envs;
-  private ArrayList listeners;
-  private MsgHotKeyCmd msg = new MsgHotKeyCmd();
-  protected ArrayList lst;
-  protected HotKeyCmdEnv cur;
 
-  public Object[] getListeners()
-  {
-    return this.listeners.toArray();
-  }
-  public void msgAddListener(Object paramObject1, Object paramObject2) {
-    this.listeners.add(paramObject1);
-  }
-
-  public void msgRemoveListener(Object paramObject1, Object paramObject2) {
-    int i = this.listeners.indexOf(paramObject1);
-    if (i >= 0)
-      this.listeners.remove(i);
-  }
-
-  protected void post(HotKeyCmd paramHotKeyCmd, boolean paramBoolean1, boolean paramBoolean2) {
-    int i = this.listeners.size();
-    if (i == 0) return;
-    this.msg.bStart = paramBoolean1;
-    this.msg.bBefore = paramBoolean2;
-    for (int j = 0; j < i; j++)
-      this.msg.send(this.listeners.get(j), paramHotKeyCmd);
-  }
-
-  public void endAllCmd() {
-    for (int i = 0; i < this.lst.size(); i++) {
-      HotKeyCmdEnv localHotKeyCmdEnv = (HotKeyCmdEnv)this.lst.get(i);
-      if (localHotKeyCmdEnv.isEnabled()) {
-        HashMapExt localHashMapExt = localHotKeyCmdEnv.all();
-        Map.Entry localEntry = localHashMapExt.nextEntry(null);
-        while (localEntry != null) {
-          HotKeyCmd localHotKeyCmd = (HotKeyCmd)localEntry.getValue();
-          if (localHotKeyCmd.isActive())
-            localHotKeyCmd.stop();
-          localEntry = localHashMapExt.nextEntry(localEntry);
-        }
-      }
+    public java.lang.Object[] getListeners()
+    {
+        return listeners.toArray();
     }
-    RTSConf.cur.hotKeyEnvs.active.clear();
-  }
 
-  protected HotKeyCmdEnvs() {
-    this.envs = new HashMap();
-    this.lst = new ArrayList();
-    this.listeners = new ArrayList();
-  }
+    public void msgAddListener(java.lang.Object obj, java.lang.Object obj1)
+    {
+        listeners.add(obj);
+    }
+
+    public void msgRemoveListener(java.lang.Object obj, java.lang.Object obj1)
+    {
+        int i = listeners.indexOf(obj);
+        if(i >= 0)
+            listeners.remove(i);
+    }
+
+    protected void post(com.maddox.rts.HotKeyCmd hotkeycmd, boolean flag, boolean flag1)
+    {
+        int i = listeners.size();
+        if(i == 0)
+            return;
+        msg.bStart = flag;
+        msg.bBefore = flag1;
+        for(int j = 0; j < i; j++)
+            msg.send(listeners.get(j), hotkeycmd);
+
+    }
+
+    public void endAllCmd()
+    {
+        for(int i = 0; i < lst.size(); i++)
+        {
+            com.maddox.rts.HotKeyCmdEnv hotkeycmdenv = (com.maddox.rts.HotKeyCmdEnv)lst.get(i);
+            if(!hotkeycmdenv.isEnabled())
+                continue;
+            com.maddox.util.HashMapExt hashmapext = hotkeycmdenv.all();
+            for(java.util.Map.Entry entry = hashmapext.nextEntry(null); entry != null; entry = hashmapext.nextEntry(entry))
+            {
+                com.maddox.rts.HotKeyCmd hotkeycmd = (com.maddox.rts.HotKeyCmd)entry.getValue();
+                if(hotkeycmd.isActive())
+                    hotkeycmd.stop();
+            }
+
+        }
+
+        com.maddox.rts.RTSConf.cur.hotKeyEnvs.active.clear();
+    }
+
+    protected HotKeyCmdEnvs()
+    {
+        msg = new MsgHotKeyCmd();
+        envs = new HashMap();
+        lst = new ArrayList();
+        listeners = new ArrayList();
+    }
+
+    protected java.util.HashMap envs;
+    private java.util.ArrayList listeners;
+    private com.maddox.rts.MsgHotKeyCmd msg;
+    protected java.util.ArrayList lst;
+    protected com.maddox.rts.HotKeyCmdEnv cur;
 }

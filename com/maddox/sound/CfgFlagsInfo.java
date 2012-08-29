@@ -1,17 +1,24 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CfgFlagsInfo.java
+
 package com.maddox.sound;
+
 
 public class CfgFlagsInfo
 {
-  String name;
-  int code;
-  boolean value;
-  boolean isDefault;
 
-  public CfgFlagsInfo(String paramString, int paramInt, boolean paramBoolean1, boolean paramBoolean2)
-  {
-    this.name = paramString;
-    this.code = paramInt;
-    this.value = paramBoolean1;
-    this.isDefault = paramBoolean2;
-  }
+    public CfgFlagsInfo(java.lang.String s, int i, boolean flag, boolean flag1)
+    {
+        name = s;
+        code = i;
+        value = flag;
+        isDefault = flag1;
+    }
+
+    java.lang.String name;
+    int code;
+    boolean value;
+    boolean isDefault;
 }

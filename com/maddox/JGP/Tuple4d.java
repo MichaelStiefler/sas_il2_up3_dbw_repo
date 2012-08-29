@@ -1,274 +1,283 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Tuple4d.java
+
 package com.maddox.JGP;
 
 import java.io.Serializable;
 
+// Referenced classes of package com.maddox.JGP:
+//            Tuple4f
+
 public abstract class Tuple4d
-  implements Serializable, Cloneable
+    implements java.io.Serializable, java.lang.Cloneable
 {
-  public double x;
-  public double y;
-  public double z;
-  public double w;
 
-  public Tuple4d(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4)
-  {
-    set(paramDouble1, paramDouble2, paramDouble3, paramDouble4);
-  }
+    public Tuple4d(double d, double d1, double d2, double d3)
+    {
+        set(d, d1, d2, d3);
+    }
 
-  public Tuple4d(double[] paramArrayOfDouble)
-  {
-    set(paramArrayOfDouble);
-  }
+    public Tuple4d(double ad[])
+    {
+        set(ad);
+    }
 
-  public Tuple4d(Tuple4d paramTuple4d)
-  {
-    set(paramTuple4d);
-  }
+    public Tuple4d(com.maddox.JGP.Tuple4d tuple4d)
+    {
+        set(tuple4d);
+    }
 
-  public Tuple4d(Tuple4f paramTuple4f)
-  {
-    set(paramTuple4f);
-  }
+    public Tuple4d(com.maddox.JGP.Tuple4f tuple4f)
+    {
+        set(tuple4f);
+    }
 
-  public Tuple4d()
-  {
-    this.x = 0.0D;
-    this.y = 0.0D;
-    this.z = 0.0D;
-    this.w = 0.0D;
-  }
+    public Tuple4d()
+    {
+        x = 0.0D;
+        y = 0.0D;
+        z = 0.0D;
+        w = 0.0D;
+    }
 
-  public final void set(double paramDouble1, double paramDouble2, double paramDouble3, double paramDouble4)
-  {
-    this.x = paramDouble1;
-    this.y = paramDouble2;
-    this.z = paramDouble3;
-    this.w = paramDouble4;
-  }
+    public final void set(double d, double d1, double d2, double d3)
+    {
+        x = d;
+        y = d1;
+        z = d2;
+        w = d3;
+    }
 
-  public final void set(double[] paramArrayOfDouble)
-  {
-    this.x = paramArrayOfDouble[0];
-    this.y = paramArrayOfDouble[1];
-    this.z = paramArrayOfDouble[2];
-    this.w = paramArrayOfDouble[3];
-  }
+    public final void set(double ad[])
+    {
+        x = ad[0];
+        y = ad[1];
+        z = ad[2];
+        w = ad[3];
+    }
 
-  public final void set(Tuple4d paramTuple4d)
-  {
-    this.x = paramTuple4d.x;
-    this.y = paramTuple4d.y;
-    this.z = paramTuple4d.z;
-    this.w = paramTuple4d.w;
-  }
+    public final void set(com.maddox.JGP.Tuple4d tuple4d)
+    {
+        x = tuple4d.x;
+        y = tuple4d.y;
+        z = tuple4d.z;
+        w = tuple4d.w;
+    }
 
-  public final void set(Tuple4f paramTuple4f)
-  {
-    this.x = paramTuple4f.x;
-    this.y = paramTuple4f.y;
-    this.z = paramTuple4f.z;
-    this.w = paramTuple4f.w;
-  }
+    public final void set(com.maddox.JGP.Tuple4f tuple4f)
+    {
+        x = tuple4f.x;
+        y = tuple4f.y;
+        z = tuple4f.z;
+        w = tuple4f.w;
+    }
 
-  public final void get(double[] paramArrayOfDouble)
-  {
-    paramArrayOfDouble[0] = this.x;
-    paramArrayOfDouble[1] = this.y;
-    paramArrayOfDouble[2] = this.z;
-    paramArrayOfDouble[3] = this.w;
-  }
+    public final void get(double ad[])
+    {
+        ad[0] = x;
+        ad[1] = y;
+        ad[2] = z;
+        ad[3] = w;
+    }
 
-  public final void get(Tuple4d paramTuple4d)
-  {
-    paramTuple4d.x = this.x;
-    paramTuple4d.y = this.y;
-    paramTuple4d.z = this.z;
-    paramTuple4d.w = this.w;
-  }
+    public final void get(com.maddox.JGP.Tuple4d tuple4d)
+    {
+        tuple4d.x = x;
+        tuple4d.y = y;
+        tuple4d.z = z;
+        tuple4d.w = w;
+    }
 
-  public final void add(Tuple4d paramTuple4d1, Tuple4d paramTuple4d2)
-  {
-    paramTuple4d1.x += paramTuple4d2.x;
-    paramTuple4d1.y += paramTuple4d2.y;
-    paramTuple4d1.z += paramTuple4d2.z;
-    paramTuple4d1.w += paramTuple4d2.w;
-  }
+    public final void add(com.maddox.JGP.Tuple4d tuple4d, com.maddox.JGP.Tuple4d tuple4d1)
+    {
+        x = tuple4d.x + tuple4d1.x;
+        y = tuple4d.y + tuple4d1.y;
+        z = tuple4d.z + tuple4d1.z;
+        w = tuple4d.w + tuple4d1.w;
+    }
 
-  public final void add(Tuple4d paramTuple4d)
-  {
-    this.x += paramTuple4d.x;
-    this.y += paramTuple4d.y;
-    this.z += paramTuple4d.z;
-    this.w += paramTuple4d.w;
-  }
+    public final void add(com.maddox.JGP.Tuple4d tuple4d)
+    {
+        x += tuple4d.x;
+        y += tuple4d.y;
+        z += tuple4d.z;
+        w += tuple4d.w;
+    }
 
-  public final void sub(Tuple4d paramTuple4d1, Tuple4d paramTuple4d2)
-  {
-    paramTuple4d1.x -= paramTuple4d2.x;
-    paramTuple4d1.y -= paramTuple4d2.y;
-    paramTuple4d1.z -= paramTuple4d2.z;
-    this.w = (paramTuple4d1.z - paramTuple4d2.w);
-  }
+    public final void sub(com.maddox.JGP.Tuple4d tuple4d, com.maddox.JGP.Tuple4d tuple4d1)
+    {
+        x = tuple4d.x - tuple4d1.x;
+        y = tuple4d.y - tuple4d1.y;
+        z = tuple4d.z - tuple4d1.z;
+        w = tuple4d.z - tuple4d1.w;
+    }
 
-  public final void sub(Tuple4d paramTuple4d)
-  {
-    this.x -= paramTuple4d.x;
-    this.y -= paramTuple4d.y;
-    this.z -= paramTuple4d.z;
-    this.w -= paramTuple4d.w;
-  }
+    public final void sub(com.maddox.JGP.Tuple4d tuple4d)
+    {
+        x -= tuple4d.x;
+        y -= tuple4d.y;
+        z -= tuple4d.z;
+        w -= tuple4d.w;
+    }
 
-  public final void negate(Tuple4d paramTuple4d)
-  {
-    this.x = (-paramTuple4d.x);
-    this.y = (-paramTuple4d.y);
-    this.z = (-paramTuple4d.z);
-    this.w = (-paramTuple4d.w);
-  }
+    public final void negate(com.maddox.JGP.Tuple4d tuple4d)
+    {
+        x = -tuple4d.x;
+        y = -tuple4d.y;
+        z = -tuple4d.z;
+        w = -tuple4d.w;
+    }
 
-  public final void negate()
-  {
-    this.x = (-this.x);
-    this.y = (-this.y);
-    this.z = (-this.z);
-    this.w = (-this.w);
-  }
+    public final void negate()
+    {
+        x = -x;
+        y = -y;
+        z = -z;
+        w = -w;
+    }
 
-  public final void scale(double paramDouble, Tuple4d paramTuple4d)
-  {
-    this.x = (paramDouble * paramTuple4d.x);
-    this.y = (paramDouble * paramTuple4d.y);
-    this.z = (paramDouble * paramTuple4d.z);
-    this.w = (paramDouble * paramTuple4d.w);
-  }
+    public final void scale(double d, com.maddox.JGP.Tuple4d tuple4d)
+    {
+        x = d * tuple4d.x;
+        y = d * tuple4d.y;
+        z = d * tuple4d.z;
+        w = d * tuple4d.w;
+    }
 
-  public final void scale(double paramDouble)
-  {
-    this.x *= paramDouble;
-    this.y *= paramDouble;
-    this.z *= paramDouble;
-    this.w *= paramDouble;
-  }
+    public final void scale(double d)
+    {
+        x *= d;
+        y *= d;
+        z *= d;
+        w *= d;
+    }
 
-  public final void scaleAdd(double paramDouble, Tuple4d paramTuple4d1, Tuple4d paramTuple4d2)
-  {
-    this.x = (paramDouble * paramTuple4d1.x + paramTuple4d2.x);
-    this.y = (paramDouble * paramTuple4d1.y + paramTuple4d2.y);
-    this.z = (paramDouble * paramTuple4d1.z + paramTuple4d2.z);
-    this.w = (paramDouble * paramTuple4d1.w + paramTuple4d2.w);
-  }
+    public final void scaleAdd(double d, com.maddox.JGP.Tuple4d tuple4d, com.maddox.JGP.Tuple4d tuple4d1)
+    {
+        x = d * tuple4d.x + tuple4d1.x;
+        y = d * tuple4d.y + tuple4d1.y;
+        z = d * tuple4d.z + tuple4d1.z;
+        w = d * tuple4d.w + tuple4d1.w;
+    }
 
-  public final void scaleAdd(double paramDouble, Tuple4d paramTuple4d)
-  {
-    this.x = (paramDouble * this.x + paramTuple4d.x);
-    this.y = (paramDouble * this.y + paramTuple4d.y);
-    this.z = (paramDouble * this.z + paramTuple4d.z);
-    this.w = (paramDouble * this.z + paramTuple4d.w);
-  }
+    public final void scaleAdd(double d, com.maddox.JGP.Tuple4d tuple4d)
+    {
+        x = d * x + tuple4d.x;
+        y = d * y + tuple4d.y;
+        z = d * z + tuple4d.z;
+        w = d * z + tuple4d.w;
+    }
 
-  public int hashCode()
-  {
-    long l1 = Double.doubleToLongBits(this.x);
-    long l2 = Double.doubleToLongBits(this.y);
-    long l3 = Double.doubleToLongBits(this.z);
-    long l4 = Double.doubleToLongBits(this.w);
-    return (int)(l1 ^ l1 >> 32 ^ l2 ^ l2 >> 32 ^ l3 ^ l3 >> 32 ^ l4 ^ l4 >> 32);
-  }
+    public int hashCode()
+    {
+        long l = java.lang.Double.doubleToLongBits(x);
+        long l1 = java.lang.Double.doubleToLongBits(y);
+        long l2 = java.lang.Double.doubleToLongBits(z);
+        long l3 = java.lang.Double.doubleToLongBits(w);
+        return (int)(l ^ l >> 32 ^ l1 ^ l1 >> 32 ^ l2 ^ l2 >> 32 ^ l3 ^ l3 >> 32);
+    }
 
-  public boolean equals(Tuple4d paramTuple4d)
-  {
-    return (paramTuple4d != null) && (this.x == paramTuple4d.x) && (this.y == paramTuple4d.y) && (this.z == paramTuple4d.z) && (this.w == paramTuple4d.w);
-  }
+    public boolean equals(com.maddox.JGP.Tuple4d tuple4d)
+    {
+        return tuple4d != null && x == tuple4d.x && y == tuple4d.y && z == tuple4d.z && w == tuple4d.w;
+    }
 
-  public boolean epsilonEquals(Tuple4d paramTuple4d, double paramDouble)
-  {
-    return (Math.abs(paramTuple4d.x - this.x) <= paramDouble) && (Math.abs(paramTuple4d.y - this.y) <= paramDouble) && (Math.abs(paramTuple4d.z - this.z) <= paramDouble) && (Math.abs(paramTuple4d.w - this.w) <= paramDouble);
-  }
+    public boolean epsilonEquals(com.maddox.JGP.Tuple4d tuple4d, double d)
+    {
+        return java.lang.Math.abs(tuple4d.x - x) <= d && java.lang.Math.abs(tuple4d.y - y) <= d && java.lang.Math.abs(tuple4d.z - z) <= d && java.lang.Math.abs(tuple4d.w - w) <= d;
+    }
 
-  public String toString()
-  {
-    return "(" + this.x + ", " + this.y + ", " + this.z + ", " + this.w + ")";
-  }
+    public java.lang.String toString()
+    {
+        return "(" + x + ", " + y + ", " + z + ", " + w + ")";
+    }
 
-  public final void clamp(double paramDouble1, double paramDouble2, Tuple4d paramTuple4d)
-  {
-    set(paramTuple4d);
-    clamp(paramDouble1, paramDouble2);
-  }
+    public final void clamp(double d, double d1, com.maddox.JGP.Tuple4d tuple4d)
+    {
+        set(tuple4d);
+        clamp(d, d1);
+    }
 
-  public final void clampMin(double paramDouble, Tuple4d paramTuple4d)
-  {
-    set(paramTuple4d);
-    clampMin(paramDouble);
-  }
+    public final void clampMin(double d, com.maddox.JGP.Tuple4d tuple4d)
+    {
+        set(tuple4d);
+        clampMin(d);
+    }
 
-  public final void clampMax(double paramDouble, Tuple4d paramTuple4d)
-  {
-    set(paramTuple4d);
-    clampMax(paramDouble);
-  }
+    public final void clampMax(double d, com.maddox.JGP.Tuple4d tuple4d)
+    {
+        set(tuple4d);
+        clampMax(d);
+    }
 
-  public final void absolute(Tuple4d paramTuple4d)
-  {
-    set(paramTuple4d);
-    absolute();
-  }
+    public final void absolute(com.maddox.JGP.Tuple4d tuple4d)
+    {
+        set(tuple4d);
+        absolute();
+    }
 
-  public final void clamp(double paramDouble1, double paramDouble2)
-  {
-    clampMin(paramDouble1);
-    clampMax(paramDouble2);
-  }
+    public final void clamp(double d, double d1)
+    {
+        clampMin(d);
+        clampMax(d1);
+    }
 
-  public final void clampMin(double paramDouble)
-  {
-    if (this.x < paramDouble)
-      this.x = paramDouble;
-    if (this.y < paramDouble)
-      this.y = paramDouble;
-    if (this.z < paramDouble)
-      this.z = paramDouble;
-    if (this.w < paramDouble)
-      this.w = paramDouble;
-  }
+    public final void clampMin(double d)
+    {
+        if(x < d)
+            x = d;
+        if(y < d)
+            y = d;
+        if(z < d)
+            z = d;
+        if(w < d)
+            w = d;
+    }
 
-  public final void clampMax(double paramDouble)
-  {
-    if (this.x > paramDouble)
-      this.x = paramDouble;
-    if (this.y > paramDouble)
-      this.y = paramDouble;
-    if (this.z > paramDouble)
-      this.z = paramDouble;
-    if (this.w > paramDouble)
-      this.w = paramDouble;
-  }
+    public final void clampMax(double d)
+    {
+        if(x > d)
+            x = d;
+        if(y > d)
+            y = d;
+        if(z > d)
+            z = d;
+        if(w > d)
+            w = d;
+    }
 
-  public final void absolute()
-  {
-    if (this.x < 0.0D)
-      this.x = (-this.x);
-    if (this.y < 0.0D)
-      this.y = (-this.y);
-    if (this.z < 0.0D)
-      this.z = (-this.z);
-    if (this.w < 0.0D)
-      this.w = (-this.w);
-  }
+    public final void absolute()
+    {
+        if(x < 0.0D)
+            x = -x;
+        if(y < 0.0D)
+            y = -y;
+        if(z < 0.0D)
+            z = -z;
+        if(w < 0.0D)
+            w = -w;
+    }
 
-  public final void interpolate(Tuple4d paramTuple4d1, Tuple4d paramTuple4d2, double paramDouble)
-  {
-    paramTuple4d1.x += (paramTuple4d2.x - paramTuple4d1.x) * paramDouble;
-    paramTuple4d1.y += (paramTuple4d2.y - paramTuple4d1.y) * paramDouble;
-    paramTuple4d1.z += (paramTuple4d2.z - paramTuple4d1.z) * paramDouble;
-    paramTuple4d1.w += (paramTuple4d2.w - paramTuple4d1.w) * paramDouble;
-  }
+    public final void interpolate(com.maddox.JGP.Tuple4d tuple4d, com.maddox.JGP.Tuple4d tuple4d1, double d)
+    {
+        x = tuple4d.x + (tuple4d1.x - tuple4d.x) * d;
+        y = tuple4d.y + (tuple4d1.y - tuple4d.y) * d;
+        z = tuple4d.z + (tuple4d1.z - tuple4d.z) * d;
+        w = tuple4d.w + (tuple4d1.w - tuple4d.w) * d;
+    }
 
-  public final void interpolate(Tuple4d paramTuple4d, double paramDouble)
-  {
-    this.x += paramDouble * (paramTuple4d.x - this.x);
-    this.y += paramDouble * (paramTuple4d.y - this.y);
-    this.z += paramDouble * (paramTuple4d.z - this.z);
-    this.w += paramDouble * (paramTuple4d.w - this.w);
-  }
+    public final void interpolate(com.maddox.JGP.Tuple4d tuple4d, double d)
+    {
+        x += d * (tuple4d.x - x);
+        y += d * (tuple4d.y - y);
+        z += d * (tuple4d.z - z);
+        w += d * (tuple4d.w - w);
+    }
+
+    public double x;
+    public double y;
+    public double z;
+    public double w;
 }

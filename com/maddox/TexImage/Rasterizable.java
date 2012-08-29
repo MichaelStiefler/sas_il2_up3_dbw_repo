@@ -1,8 +1,15 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Rasterizable.java
+
 package com.maddox.TexImage;
 
-public abstract interface Rasterizable
-{
-  public abstract int pixel(int paramInt1, int paramInt2);
 
-  public abstract int pixel(int paramInt1, int paramInt2, int paramInt3);
+public interface Rasterizable
+{
+
+    public abstract int pixel(int i, int j);
+
+    public abstract int pixel(int i, int j, int k);
 }

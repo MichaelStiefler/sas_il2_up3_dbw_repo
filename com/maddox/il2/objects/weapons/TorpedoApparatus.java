@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   TorpedoApparatus.java
+
 package com.maddox.il2.objects.weapons;
 
 import com.maddox.JGP.Point3d;
@@ -6,122 +11,130 @@ import com.maddox.il2.ai.BulletAimer;
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.ActorPos;
 import com.maddox.il2.engine.Eff3DActor;
+import com.maddox.il2.engine.GunGeneric;
 import com.maddox.il2.engine.GunProperties;
 import com.maddox.il2.engine.HookNamed;
 import com.maddox.il2.engine.Loc;
 import com.maddox.rts.Property;
 
-public abstract class TorpedoApparatus extends Gun
-  implements BulletAimer
+// Referenced classes of package com.maddox.il2.objects.weapons:
+//            Gun, Bomb
+
+public abstract class TorpedoApparatus extends com.maddox.il2.objects.weapons.Gun
+    implements com.maddox.il2.ai.BulletAimer
 {
-  protected Bomb bomb;
-  protected HookNamed hook;
-  protected Class bulletClass = null;
 
-  public void loadBullets(int paramInt)
-  {
-    bullets(paramInt);
-  }
-
-  public void setBulletClass(Class paramClass)
-  {
-    this.bulletClass = paramClass;
-  }
-
-  public void doStartBullet(double paramDouble)
-  {
-    newBomb();
-    if (this.bomb == null) return;
-    this.bomb.pos.setUpdateEnable(true);
-    this.bomb.pos.resetAsBase();
-
-    if (this.bomb.pos.getAbsPoint().z > 0.0D)
+    public void loadBullets(int i)
     {
-      Eff3DActor.New(getOwner(), this.hook, null, 1.0F, "3DO/Effects/Fireworks/20_SmokeBoiling.eff", -1.0F);
-
-      Eff3DActor.New(getOwner(), this.hook, null, 1.0F, "3DO/Effects/Fireworks/20_SparksP.eff", -1.0F);
+        bullets(i);
     }
-    this.bomb.start();
-  }
 
-  public void shots(int paramInt)
-  {
-    doStartBullet(0.0D);
-  }
-
-  public void doEffects(boolean paramBoolean)
-  {
-  }
-
-  private void newBomb()
-  {
-    try {
-      this.bomb = ((Bomb)this.bulletClass.newInstance());
-      this.bomb.pos.setBase(getOwner(), this.hook, false);
-
-      this.bomb.pos.resetAsBase();
-      this.bomb.pos.setUpdateEnable(false);
-    } catch (Exception localException) {
+    public void setBulletClass(java.lang.Class class1)
+    {
+        bulletClass = class1;
     }
-  }
 
-  public void set(Actor paramActor, String paramString, Loc paramLoc) {
-    set(paramActor, paramString);
-  }
-
-  public void set(Actor paramActor, String paramString1, String paramString2)
-  {
-    set(paramActor, paramString1);
-  }
-
-  public void set(Actor paramActor, String paramString)
-  {
-    setOwner(paramActor);
-    Class localClass = getClass();
-
-    this.bulletClass = ((Class)Property.value(localClass, "bulletClass", null));
-
-    setBulletClass(this.bulletClass);
-
-    this.hook = ((HookNamed)paramActor.findHook(paramString));
-
-    paramActor.interpPut(this.interpolater, null, -1L, null);
-  }
-
-  public float TravelTime(Point3d paramPoint3d1, Point3d paramPoint3d2)
-  {
-    float f1 = (float)paramPoint3d1.distance(paramPoint3d2);
-    Class localClass1 = getClass();
-    Class localClass2 = (Class)Property.value(localClass1, "bulletClass", null);
-    float f2 = Property.floatValue(localClass2, "velocity", 1.0F);
-    float f3 = Property.floatValue(localClass2, "traveltime", 1.0F);
-    if (f1 > f2 * f3) {
-      return -1.0F;
+    public void doStartBullet(double d)
+    {
+        newBomb();
+        if(bomb == null)
+            return;
+        bomb.pos.setUpdateEnable(true);
+        bomb.pos.resetAsBase();
+        if(bomb.pos.getAbsPoint().z > 0.0D)
+        {
+            com.maddox.il2.engine.Eff3DActor.New(getOwner(), hook, null, 1.0F, "3DO/Effects/Fireworks/20_SmokeBoiling.eff", -1F);
+            com.maddox.il2.engine.Eff3DActor.New(getOwner(), hook, null, 1.0F, "3DO/Effects/Fireworks/20_SparksP.eff", -1F);
+        }
+        bomb.start();
     }
-    return f1 / f2;
-  }
 
-  public boolean FireDirection(Point3d paramPoint3d1, Point3d paramPoint3d2, Vector3d paramVector3d)
-  {
-    float f1 = (float)paramPoint3d1.distance(paramPoint3d2);
-    Class localClass1 = getClass();
-    Class localClass2 = (Class)Property.value(localClass1, "bulletClass", null);
-    float f2 = Property.floatValue(localClass2, "velocity", 1.0F);
-    float f3 = Property.floatValue(localClass2, "traveltime", 1.0F);
-    if (f1 > f2 * f3) {
-      return false;
+    public void shots(int i)
+    {
+        doStartBullet(0.0D);
     }
-    paramVector3d.set(paramPoint3d2);
-    paramVector3d.sub(paramPoint3d1);
-    paramVector3d.scale(1.0F / f1);
-    return true;
-  }
 
-  public GunProperties createProperties()
-  {
-    GunProperties localGunProperties = new GunProperties();
-    localGunProperties.weaponType = 16;
+    public void doEffects(boolean flag)
+    {
+    }
 
-    return localGunProperties;
-  }
+    private void newBomb()
+    {
+        try
+        {
+            bomb = (com.maddox.il2.objects.weapons.Bomb)bulletClass.newInstance();
+            bomb.pos.setBase(getOwner(), hook, false);
+            bomb.pos.resetAsBase();
+            bomb.pos.setUpdateEnable(false);
+        }
+        catch(java.lang.Exception exception) { }
+    }
+
+    public void set(com.maddox.il2.engine.Actor actor, java.lang.String s, com.maddox.il2.engine.Loc loc)
+    {
+        set(actor, s);
+    }
+
+    public void set(com.maddox.il2.engine.Actor actor, java.lang.String s, java.lang.String s1)
+    {
+        set(actor, s);
+    }
+
+    public void set(com.maddox.il2.engine.Actor actor, java.lang.String s)
+    {
+        setOwner(actor);
+        java.lang.Class class1 = getClass();
+        bulletClass = (java.lang.Class)com.maddox.rts.Property.value(class1, "bulletClass", null);
+        setBulletClass(bulletClass);
+        hook = (com.maddox.il2.engine.HookNamed)actor.findHook(s);
+        actor.interpPut(interpolater, null, -1L, null);
+    }
+
+    public float TravelTime(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        float f = (float)point3d.distance(point3d1);
+        java.lang.Class class1 = getClass();
+        java.lang.Class class2 = (java.lang.Class)com.maddox.rts.Property.value(class1, "bulletClass", null);
+        float f1 = com.maddox.rts.Property.floatValue(class2, "velocity", 1.0F);
+        float f2 = com.maddox.rts.Property.floatValue(class2, "traveltime", 1.0F);
+        if(f > f1 * f2)
+            return -1F;
+        else
+            return f / f1;
+    }
+
+    public boolean FireDirection(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1, com.maddox.JGP.Vector3d vector3d)
+    {
+        float f = (float)point3d.distance(point3d1);
+        java.lang.Class class1 = getClass();
+        java.lang.Class class2 = (java.lang.Class)com.maddox.rts.Property.value(class1, "bulletClass", null);
+        float f1 = com.maddox.rts.Property.floatValue(class2, "velocity", 1.0F);
+        float f2 = com.maddox.rts.Property.floatValue(class2, "traveltime", 1.0F);
+        if(f > f1 * f2)
+        {
+            return false;
+        } else
+        {
+            vector3d.set(point3d1);
+            vector3d.sub(point3d);
+            vector3d.scale(1.0F / f);
+            return true;
+        }
+    }
+
+    public com.maddox.il2.engine.GunProperties createProperties()
+    {
+        com.maddox.il2.engine.GunProperties gunproperties = new GunProperties();
+        gunproperties.weaponType = 16;
+        return gunproperties;
+    }
+
+    public TorpedoApparatus()
+    {
+        bulletClass = null;
+    }
+
+    protected com.maddox.il2.objects.weapons.Bomb bomb;
+    protected com.maddox.il2.engine.HookNamed hook;
+    protected java.lang.Class bulletClass;
 }

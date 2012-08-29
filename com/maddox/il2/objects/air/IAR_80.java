@@ -1,30 +1,54 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   IAR_80.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.rts.Property;
 
-public class IAR_80 extends IAR_8X
-  implements TypeFighter
+// Referenced classes of package com.maddox.il2.objects.air:
+//            IAR_8X, PaintSchemeFMPar01, TypeFighter, NetAircraft
+
+public class IAR_80 extends com.maddox.il2.objects.air.IAR_8X
+    implements com.maddox.il2.objects.air.TypeFighter
 {
-  static
-  {
-    Class localClass = IAR_80.class;
-    new NetAircraft.SPAWN(localClass);
-    Property.set(localClass, "iconFar_shortClassName", "IAR 80");
-    Property.set(localClass, "meshName", "3DO/Plane/IAR-80/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar01());
 
-    Property.set(localClass, "yearService", 1939.5F);
-    Property.set(localClass, "yearExpired", 1945.5F);
+    public IAR_80()
+    {
+    }
 
-    Property.set(localClass, "FlightModel", "FlightModels/IAR-80.fmd");
-    Property.set(localClass, "cockpitClass", CockpitIAR80.class);
-    Property.set(localClass, "LOSElevation", 0.8323F);
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0, 0, 0 });
-    weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04" });
-
-    weaponsRegister(localClass, "default", new String[] { "MGunBrowning303k 1000", "MGunBrowning303k 1000", "MGunBrowning303k 1000", "MGunBrowning303k 1000" });
-
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null });
-  }
+    static 
+    {
+        java.lang.Class class1 = com.maddox.il2.objects.air.IAR_80.class;
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "IAR 80");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/IAR-80/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar01());
+        com.maddox.rts.Property.set(class1, "yearService", 1939.5F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1945.5F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/IAR-80.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitIAR80.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.8323F);
+        com.maddox.il2.objects.air.IAR_80.weaponTriggersRegister(class1, new int[] {
+            0, 0, 0, 0
+        });
+        com.maddox.il2.objects.air.IAR_80.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN02", "_MGUN03", "_MGUN04"
+        });
+        com.maddox.il2.objects.air.IAR_80.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunBrowning303k 1000", "MGunBrowning303k 1000", "MGunBrowning303k 1000", "MGunBrowning303k 1000"
+        });
+        com.maddox.il2.objects.air.IAR_80.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null
+        });
+    }
 }

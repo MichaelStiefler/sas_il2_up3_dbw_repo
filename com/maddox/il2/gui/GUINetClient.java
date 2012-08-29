@@ -1,95 +1,113 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUINetClient.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
-import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowRoot;
 import com.maddox.il2.game.GameState;
 import com.maddox.il2.game.Main;
 import com.maddox.il2.net.USGS;
 
-public class GUINetClient extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUINetClientGuard, GUIClient, GUIInfoMenu, GUIInfoName, 
+//            GUILookAndFeel, GUIButton, GUIDialogClient, GUISeparate
+
+public class GUINetClient extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GUIButton bExit;
-
-  public void _enter()
-  {
-    if (Main.cur().netChannelListener == null)
-      new GUINetClientGuard();
-    this.client.activateWindow();
-  }
-  public void _leave() {
-    this.client.hideWindow();
-  }
-
-  public GUINetClient(GWindowRoot paramGWindowRoot)
-  {
-    super(36);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("netc.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-
-    this.bExit = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-    }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-
-      if (paramGWindow == GUINetClient.this.bExit) {
-        GUINetClientGuard localGUINetClientGuard = (GUINetClientGuard)Main.cur().netChannelListener;
-        localGUINetClientGuard.dlgDestroy(new GUINetClientGuard.DestroyExec() {
-          public void destroy(GUINetClientGuard paramGUINetClientGuard) { if ((USGS.isUsed()) || (Main.cur().netGameSpy != null))
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == bExit)
             {
-              Main.doGameExit();
+                com.maddox.il2.gui.GUINetClientGuard guinetclientguard = (com.maddox.il2.gui.GUINetClientGuard)com.maddox.il2.game.Main.cur().netChannelListener;
+                guinetclientguard.dlgDestroy(new com.maddox.il2.gui.GUINetClientGuard.DestroyExec() {
+
+                    public void destroy(com.maddox.il2.gui.GUINetClientGuard guinetclientguard1)
+                    {
+                        if(com.maddox.il2.net.USGS.isUsed() || com.maddox.il2.game.Main.cur().netGameSpy != null)
+                            com.maddox.il2.game.Main.doGameExit();
+                        else
+                            guinetclientguard1.destroy(true);
+                    }
+
+                }
+);
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
             }
-            else paramGUINetClientGuard.destroy(true);
-          }
-        });
-        return true;
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
+        }
+
+        public void render()
+        {
+            super.render();
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(208F), x1024(480F), 2.0F);
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(32F), y1024(32F), x1024(480F), y1024(48F), 1, i18n("netc.WaitLoading"));
+            draw(x1024(32F), y1024(96F), x1024(480F), y1024(96F), guardMessage(), 3);
+            draw(x1024(96F), y1024(240F), x1024(136F), y1024(48F), 0, !com.maddox.il2.net.USGS.isUsed() && com.maddox.il2.game.Main.cur().netGameSpy == null ? i18n("netc.Disconnect") : i18n("main.Quit"));
+        }
+
+        private java.lang.String guardMessage()
+        {
+            com.maddox.il2.gui.GUINetClientGuard guinetclientguard = (com.maddox.il2.gui.GUINetClientGuard)com.maddox.il2.game.Main.cur().netChannelListener;
+            if(guinetclientguard == null || guinetclientguard.lastNetMissionInfo == null)
+                return "";
+            else
+                return guinetclientguard.lastNetMissionInfo;
+        }
+
+        public void setPosSize()
+        {
+            set1024PosSize(240F, 240F, 544F, 320F);
+            bExit.setPosC(x1024(56F), y1024(264F));
+        }
+
+        public DialogClient()
+        {
+        }
     }
 
-    public void render() {
-      super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(208.0F), x1024(480.0F), 2.0F);
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-      draw(x1024(32.0F), y1024(32.0F), x1024(480.0F), y1024(48.0F), 1, GUINetClient.this.i18n("netc.WaitLoading"));
-      draw(x1024(32.0F), y1024(96.0F), x1024(480.0F), y1024(96.0F), guardMessage(), 3);
-      draw(x1024(96.0F), y1024(240.0F), x1024(136.0F), y1024(48.0F), 0, (USGS.isUsed()) || (Main.cur().netGameSpy != null) ? GUINetClient.this.i18n("main.Quit") : GUINetClient.this.i18n("netc.Disconnect"));
-    }
 
-    private String guardMessage()
+    public void _enter()
     {
-      GUINetClientGuard localGUINetClientGuard = (GUINetClientGuard)Main.cur().netChannelListener;
-      if ((localGUINetClientGuard == null) || (localGUINetClientGuard.lastNetMissionInfo == null)) return "";
-      return localGUINetClientGuard.lastNetMissionInfo;
+        if(com.maddox.il2.game.Main.cur().netChannelListener == null)
+            new GUINetClientGuard();
+        client.activateWindow();
     }
 
-    public void setPosSize() {
-      set1024PosSize(240.0F, 240.0F, 544.0F, 320.0F);
-
-      GUINetClient.this.bExit.setPosC(x1024(56.0F), y1024(264.0F));
+    public void _leave()
+    {
+        client.hideWindow();
     }
-  }
+
+    public GUINetClient(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(36);
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("netc.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        bExit = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
+    }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.il2.gui.GUIButton bExit;
 }

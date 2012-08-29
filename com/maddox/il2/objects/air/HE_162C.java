@@ -1,75 +1,101 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HE_162C.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.Actor;
 import com.maddox.il2.engine.HierMesh;
 import com.maddox.il2.fm.Controls;
 import com.maddox.il2.fm.FlightModel;
+import com.maddox.il2.fm.Gear;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
-public class HE_162C extends HE_162
+// Referenced classes of package com.maddox.il2.objects.air:
+//            HE_162, PaintSchemeFMPar06, NetAircraft
+
+public class HE_162C extends com.maddox.il2.objects.air.HE_162
 {
-  protected void moveRudder(float paramFloat)
-  {
-    resetYPRmodifier();
-    xyz[1] = cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, 0.0632F);
-    if (this.FM.CT.getGear() > 0.99F) {
-      ypr[1] = (40.0F * this.FM.CT.getRudder());
+
+    public HE_162C()
+    {
     }
-    hierMesh().chunkSetLocate("GearC25_D0", xyz, ypr);
-    hierMesh().chunkSetAngles("GearC27_D0", 0.0F, cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, -15.0F), 0.0F);
-    hierMesh().chunkSetAngles("GearC28_D0", 0.0F, cvt(this.FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, 30.0F), 0.0F);
 
-    updateControlsVisuals();
-  }
-
-  protected void moveElevator(float paramFloat)
-  {
-    updateControlsVisuals();
-  }
-
-  private final void updateControlsVisuals()
-  {
-    hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -21.25F * this.FM.CT.getElevator() - 21.25F * this.FM.CT.getRudder(), 0.0F);
-    hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -21.25F * this.FM.CT.getElevator() + 21.25F * this.FM.CT.getRudder(), 0.0F);
-  }
-
-  protected boolean cutFM(int paramInt1, int paramInt2, Actor paramActor)
-  {
-    switch (paramInt1) {
-    case 33:
-      return super.cutFM(34, paramInt2, paramActor);
-    case 36:
-      return super.cutFM(37, paramInt2, paramActor);
-    case 17:
-      return super.cutFM(11, paramInt2, paramActor);
-    case 18:
-      return super.cutFM(12, paramInt2, paramActor);
+    protected void moveRudder(float f)
+    {
+        resetYPRmodifier();
+        xyz[1] = com.maddox.il2.objects.air.HE_162C.cvt(FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, 0.0632F);
+        if(FM.CT.getGear() > 0.99F)
+            ypr[1] = 40F * FM.CT.getRudder();
+        hierMesh().chunkSetLocate("GearC25_D0", xyz, ypr);
+        hierMesh().chunkSetAngles("GearC27_D0", 0.0F, com.maddox.il2.objects.air.HE_162C.cvt(FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, -15F), 0.0F);
+        hierMesh().chunkSetAngles("GearC28_D0", 0.0F, com.maddox.il2.objects.air.HE_162C.cvt(FM.Gears.gWheelSinking[2], 0.0F, 0.0632F, 0.0F, 30F), 0.0F);
+        updateControlsVisuals();
     }
-    return super.cutFM(paramInt1, paramInt2, paramActor);
-  }
 
-  static
-  {
-    Class localClass = CLASS.THIS();
-    new NetAircraft.SPAWN(localClass);
+    protected void moveElevator(float f)
+    {
+        updateControlsVisuals();
+    }
 
-    Property.set(localClass, "iconFar_shortClassName", "He-162");
-    Property.set(localClass, "meshName", "3DO/Plane/He-162C/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeFMPar06());
+    private final void updateControlsVisuals()
+    {
+        hierMesh().chunkSetAngles("VatorL_D0", 0.0F, -21.25F * FM.CT.getElevator() - 21.25F * FM.CT.getRudder(), 0.0F);
+        hierMesh().chunkSetAngles("VatorR_D0", 0.0F, -21.25F * FM.CT.getElevator() + 21.25F * FM.CT.getRudder(), 0.0F);
+    }
 
-    Property.set(localClass, "yearService", 1946.0F);
-    Property.set(localClass, "yearExpired", 1956.0F);
+    protected boolean cutFM(int i, int j, com.maddox.il2.engine.Actor actor)
+    {
+        switch(i)
+        {
+        case 33: // '!'
+            return super.cutFM(34, j, actor);
 
-    Property.set(localClass, "FlightModel", "FlightModels/He-162C.fmd");
-    Property.set(localClass, "cockpitClass", CockpitHE_162C.class);
-    Property.set(localClass, "LOSElevation", 0.5099F);
+        case 36: // '$'
+            return super.cutFM(37, j, actor);
 
-    weaponTriggersRegister(localClass, new int[] { 0, 0 });
-    weaponHooksRegister(localClass, new String[] { "_CANNON01", "_CANNON02" });
+        case 17: // '\021'
+            return super.cutFM(11, j, actor);
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMK108k 100", "MGunMK108k 100" });
+        case 18: // '\022'
+            return super.cutFM(12, j, actor);
+        }
+        return super.cutFM(i, j, actor);
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null, null });
-  }
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.rts.CLASS.THIS();
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "He-162");
+        com.maddox.rts.Property.set(class1, "meshName", "3DO/Plane/He-162C/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeFMPar06());
+        com.maddox.rts.Property.set(class1, "yearService", 1946F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1956F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/He-162C.fmd");
+        com.maddox.rts.Property.set(class1, "cockpitClass", com.maddox.il2.objects.air.CockpitHE_162C.class);
+        com.maddox.rts.Property.set(class1, "LOSElevation", 0.5099F);
+        com.maddox.il2.objects.air.HE_162C.weaponTriggersRegister(class1, new int[] {
+            0, 0
+        });
+        com.maddox.il2.objects.air.HE_162C.weaponHooksRegister(class1, new java.lang.String[] {
+            "_CANNON01", "_CANNON02"
+        });
+        com.maddox.il2.objects.air.HE_162C.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunMK108k 100", "MGunMK108k 100"
+        });
+        com.maddox.il2.objects.air.HE_162C.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null
+        });
+    }
 }

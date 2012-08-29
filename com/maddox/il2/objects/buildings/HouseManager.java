@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   HouseManager.java
+
 package com.maddox.il2.objects.buildings;
 
 import com.maddox.JGP.Point3d;
@@ -17,178 +22,235 @@ import com.maddox.util.NumberTokenizer;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public class HouseManager extends Actor
+// Referenced classes of package com.maddox.il2.objects.buildings:
+//            House
+
+public class HouseManager extends com.maddox.il2.engine.Actor
 {
-  private int houses = 0;
-  private House[] house = null;
-  private long[] houseInitState = null;
-
-  public void destroy() {
-    if (isDestroyed()) return;
-    for (int i = 0; i < this.houses; i++) {
-      if (Actor.isValid(this.house[i]))
-        this.house[i].destroy();
-      this.house[i] = null;
-    }
-    this.house = null;
-    this.houseInitState = null;
-    super.destroy();
-  }
-
-  public void fullUpdateChannel(NetChannel paramNetChannel) {
-    ((HouseNet)this.net).fullUpdateChannel(paramNetChannel);
-  }
-  public void onHouseDie(House paramHouse, Actor paramActor) {
-    for (int i = 0; i < this.houses; i++)
-      if (this.house[i] == paramHouse) {
-        ((HouseNet)this.net).postDie(i, paramActor, null);
-        return;
-      }
-  }
-
-  private void createNetObj(NetChannel paramNetChannel, int paramInt)
-  {
-    if (paramNetChannel == null) this.net = new HouseNet(this); else
-      this.net = new HouseNet(this, paramNetChannel, paramInt);
-  }
-
-  public HouseManager(SectFile paramSectFile, String paramString, NetChannel paramNetChannel, int paramInt) {
-    int i = paramSectFile.sectionIndex(paramString);
-    if (i < 0)
-      return;
-    int j = paramSectFile.vars(i);
-    this.houses = j;
-    this.house = new House[j];
-    this.houseInitState = new long[j / 64 + 1];
-    Point3d localPoint3d = new Point3d();
-    Orient localOrient = new Orient();
-    ActorSpawnArg localActorSpawnArg = new ActorSpawnArg();
-    for (int k = 0; k < j; k++) {
-      NumberTokenizer localNumberTokenizer = new NumberTokenizer(paramSectFile.line(i, k));
-      localNumberTokenizer.next("");
-      String str = "com.maddox.il2.objects.buildings." + localNumberTokenizer.next("");
-      int m = localNumberTokenizer.next(1) == 1 ? 1 : 0;
-      double d1 = localNumberTokenizer.next(0.0D);
-      double d2 = localNumberTokenizer.next(0.0D);
-      float f = localNumberTokenizer.next(0.0F);
-      ActorSpawn localActorSpawn = (ActorSpawn)Spawn.get_WithSoftClass(str, false);
-      if (localActorSpawn == null)
-        continue;
-      localPoint3d.set(d1, d2, 0.0D);
-      localActorSpawnArg.point = localPoint3d;
-      localOrient.set(f, 0.0F, 0.0F);
-      localActorSpawnArg.orient = localOrient;
-      try {
-        House localHouse = (House)localActorSpawn.actorSpawn(localActorSpawnArg);
-
-        localHouse.setName(str);
-        if (m == 0) {
-          localHouse.setDiedFlag(true);
-        } else {
-          int n = k / 64;
-          int i1 = k % 64;
-          this.houseInitState[n] |= 1L << i1;
-        }
-        this.house[k] = localHouse;
-        localHouse.setOwner(this);
-      } catch (Exception localException) {
-        System.out.println(localException.getMessage());
-        localException.printStackTrace();
-      }
-    }
-    createNetObj(paramNetChannel, paramInt);
-
-    if (Actor.isValid(World.cur().houseManager))
-      World.cur().houseManager.destroy();
-    World.cur().houseManager = this;
-  }
-
-  public House[] zutiGetHouses() {
-    return this.house;
-  }
-
-  class HouseNet extends ActorNet
-  {
-    public void fullUpdateChannel(NetChannel paramNetChannel)
+    class HouseNet extends com.maddox.il2.engine.ActorNet
     {
-      int i = HouseManager.this.houses / 64 + 1;
-      try {
-        for (int j = 0; j < i; j++) {
-          long l = 0L;
-          for (int k = 0; k < 64; k++) {
-            int m = j * 64 + k;
-            if (m >= HouseManager.this.houses) break;
-            if (Actor.isAlive(HouseManager.this.house[m]))
-              l |= 1L << k;
-          }
-          if (l == HouseManager.this.houseInitState[j])
-            continue;
-          NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-          localNetMsgGuaranted.writeShort(j);
-          localNetMsgGuaranted.writeLong(l);
-          postTo(paramNetChannel, localNetMsgGuaranted);
+
+        public void fullUpdateChannel(com.maddox.rts.NetChannel netchannel)
+        {
+            int i = houses / 64 + 1;
+            try
+            {
+                for(int j = 0; j < i; j++)
+                {
+                    long l = 0L;
+                    for(int k = 0; k < 64; k++)
+                    {
+                        int i1 = j * 64 + k;
+                        if(i1 >= houses)
+                            break;
+                        if(com.maddox.il2.engine.Actor.isAlive(house[i1]))
+                            l |= 1L << k;
+                    }
+
+                    if(l != houseInitState[j])
+                    {
+                        com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                        netmsgguaranted.writeShort(j);
+                        netmsgguaranted.writeLong(l);
+                        postTo(netchannel, netmsgguaranted);
+                    }
+                }
+
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.objects.buildings.HouseNet.printDebug(exception);
+            }
         }
-      } catch (Exception localException) {
-        printDebug(localException);
-      }
+
+        public boolean netInput(com.maddox.rts.NetMsgInput netmsginput)
+            throws java.io.IOException
+        {
+            if(netmsginput.available() > 4 + com.maddox.rts.NetMsgInput.netObjReferenceLen())
+            {
+                int i = netmsginput.readUnsignedShort();
+                long l = netmsginput.readLong();
+                int k = 0;
+                do
+                {
+                    if(k >= 64)
+                        break;
+                    int i1 = i * 64 + k;
+                    if(i1 >= houses)
+                        break;
+                    com.maddox.il2.objects.buildings.House house2 = house[i1];
+                    if(com.maddox.il2.engine.Actor.isValid(house2))
+                    {
+                        boolean flag = (l & 1L << k) != 0L;
+                        house2.setDiedFlag(!flag);
+                    }
+                    k++;
+                } while(true);
+            } else
+            {
+                int j = netmsginput.readInt();
+                if(j >= houses)
+                    return true;
+                com.maddox.il2.objects.buildings.House house1 = house[j];
+                if(!com.maddox.il2.engine.Actor.isAlive(house1))
+                    return true;
+                com.maddox.rts.NetObj netobj = netmsginput.readNetObj();
+                if(netobj == null)
+                    return true;
+                com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)netobj.superObj();
+                house1.doDieShow();
+                com.maddox.il2.ai.World.onActorDied(house1, actor);
+                postDie(j, actor, netmsginput.channel());
+            }
+            return true;
+        }
+
+        private void postDie(int i, com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel)
+        {
+            int j = countMirrors();
+            if(isMirror())
+                j++;
+            if(netchannel != null)
+                j--;
+            if(j <= 0)
+                return;
+            try
+            {
+                com.maddox.rts.NetMsgGuaranted netmsgguaranted = new NetMsgGuaranted();
+                netmsgguaranted.writeInt(i);
+                netmsgguaranted.writeNetObj(actor.net);
+                postExclude(netchannel, netmsgguaranted);
+            }
+            catch(java.lang.Exception exception)
+            {
+                com.maddox.il2.objects.buildings.HouseNet.printDebug(exception);
+            }
+        }
+
+
+        public HouseNet(com.maddox.il2.engine.Actor actor)
+        {
+            super(actor);
+        }
+
+        public HouseNet(com.maddox.il2.engine.Actor actor, com.maddox.rts.NetChannel netchannel, int i)
+        {
+            super(actor, netchannel, i);
+        }
     }
 
-    public boolean netInput(NetMsgInput paramNetMsgInput)
-      throws IOException
+
+    public void destroy()
     {
-      int i;
-      if (paramNetMsgInput.available() > 4 + NetMsgInput.netObjReferenceLen()) {
-        i = paramNetMsgInput.readUnsignedShort();
-        long l = paramNetMsgInput.readLong();
-        for (int j = 0; j < 64; j++) {
-          int k = i * 64 + j;
-          if (k >= HouseManager.this.houses) break;
-          House localHouse2 = HouseManager.this.house[k];
-          if (!Actor.isValid(localHouse2))
-            continue;
-          int m = (l & 1L << j) != 0L ? 1 : 0;
-          localHouse2.setDiedFlag(m == 0);
+        if(isDestroyed())
+            return;
+        for(int i = 0; i < houses; i++)
+        {
+            if(com.maddox.il2.engine.Actor.isValid(house[i]))
+                house[i].destroy();
+            house[i] = null;
         }
-      }
-      else {
-        i = paramNetMsgInput.readInt();
-        if (i >= HouseManager.this.houses)
-          return true;
-        House localHouse1 = HouseManager.this.house[i];
-        if (!Actor.isAlive(localHouse1))
-          return true;
-        NetObj localNetObj = paramNetMsgInput.readNetObj();
-        if (localNetObj == null)
-          return true;
-        Actor localActor = (Actor)localNetObj.superObj();
 
-        localHouse1.doDieShow();
-        World.onActorDied(localHouse1, localActor);
-
-        postDie(i, localActor, paramNetMsgInput.channel());
-      }
-      return true;
+        house = null;
+        houseInitState = null;
+        super.destroy();
     }
 
-    private void postDie(int paramInt, Actor paramActor, NetChannel paramNetChannel) {
-      int i = countMirrors();
-      if (isMirror()) i++;
-      if (paramNetChannel != null) i--;
-      if (i <= 0) return; try
-      {
-        NetMsgGuaranted localNetMsgGuaranted = new NetMsgGuaranted();
-        localNetMsgGuaranted.writeInt(paramInt);
-        localNetMsgGuaranted.writeNetObj(paramActor.net);
-        postExclude(paramNetChannel, localNetMsgGuaranted); } catch (Exception localException) {
-        printDebug(localException);
-      }
+    public void fullUpdateChannel(com.maddox.rts.NetChannel netchannel)
+    {
+        ((com.maddox.il2.objects.buildings.HouseNet)net).fullUpdateChannel(netchannel);
     }
 
-    public HouseNet(Actor arg2) {
-      super();
+    public void onHouseDie(com.maddox.il2.objects.buildings.House house1, com.maddox.il2.engine.Actor actor)
+    {
+        for(int i = 0; i < houses; i++)
+            if(house[i] == house1)
+            {
+                ((com.maddox.il2.objects.buildings.HouseNet)net).postDie(i, actor, null);
+                return;
+            }
+
     }
-    public HouseNet(Actor paramNetChannel, NetChannel paramInt, int arg4) {
-      super(paramInt, i);
+
+    private void createNetObj(com.maddox.rts.NetChannel netchannel, int i)
+    {
+        if(netchannel == null)
+            net = new HouseNet(this);
+        else
+            net = new HouseNet(this, netchannel, i);
     }
-  }
+
+    public HouseManager(com.maddox.rts.SectFile sectfile, java.lang.String s, com.maddox.rts.NetChannel netchannel, int i)
+    {
+        houses = 0;
+        house = null;
+        houseInitState = null;
+        int j = sectfile.sectionIndex(s);
+        if(j < 0)
+            return;
+        int k = sectfile.vars(j);
+        houses = k;
+        house = new com.maddox.il2.objects.buildings.House[k];
+        houseInitState = new long[k / 64 + 1];
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        com.maddox.il2.engine.Orient orient = new Orient();
+        com.maddox.il2.engine.ActorSpawnArg actorspawnarg = new ActorSpawnArg();
+        for(int l = 0; l < k;)
+        {
+            com.maddox.util.NumberTokenizer numbertokenizer = new NumberTokenizer(sectfile.line(j, l));
+            numbertokenizer.next("");
+            java.lang.String s1 = "com.maddox.il2.objects.buildings." + numbertokenizer.next("");
+            boolean flag = numbertokenizer.next(1) == 1;
+            double d = numbertokenizer.next(0.0D);
+            double d1 = numbertokenizer.next(0.0D);
+            float f = numbertokenizer.next(0.0F);
+            com.maddox.il2.engine.ActorSpawn actorspawn = (com.maddox.il2.engine.ActorSpawn)com.maddox.rts.Spawn.get_WithSoftClass(s1, false);
+            if(actorspawn == null)
+                continue;
+            point3d.set(d, d1, 0.0D);
+            actorspawnarg.point = point3d;
+            orient.set(f, 0.0F, 0.0F);
+            actorspawnarg.orient = orient;
+            try
+            {
+                com.maddox.il2.objects.buildings.House house1 = (com.maddox.il2.objects.buildings.House)actorspawn.actorSpawn(actorspawnarg);
+                house1.setName(s1);
+                if(!flag)
+                {
+                    house1.setDiedFlag(true);
+                } else
+                {
+                    int i1 = l / 64;
+                    int j1 = l % 64;
+                    houseInitState[i1] |= 1L << j1;
+                }
+                house[l] = house1;
+                house1.setOwner(this);
+                continue;
+            }
+            catch(java.lang.Exception exception)
+            {
+                java.lang.System.out.println(exception.getMessage());
+                exception.printStackTrace();
+                l++;
+            }
+        }
+
+        createNetObj(netchannel, i);
+        if(com.maddox.il2.engine.Actor.isValid(com.maddox.il2.ai.World.cur().houseManager))
+            com.maddox.il2.ai.World.cur().houseManager.destroy();
+        com.maddox.il2.ai.World.cur().houseManager = this;
+    }
+
+    public com.maddox.il2.objects.buildings.House[] zutiGetHouses()
+    {
+        return house;
+    }
+
+    private int houses;
+    private com.maddox.il2.objects.buildings.House house[];
+    private long houseInitState[];
+
+
+
 }

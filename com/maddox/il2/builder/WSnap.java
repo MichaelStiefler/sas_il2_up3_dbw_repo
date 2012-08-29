@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   WSnap.java
+
 package com.maddox.il2.builder;
 
 import com.maddox.gwindow.GWindow;
@@ -6,63 +11,86 @@ import com.maddox.gwindow.GWindowDialogClient;
 import com.maddox.gwindow.GWindowEditControl;
 import com.maddox.gwindow.GWindowFramed;
 import com.maddox.gwindow.GWindowLabel;
+import com.maddox.gwindow.GWindowMenuItem;
 
-public class WSnap extends GWindowFramed
+// Referenced classes of package com.maddox.il2.builder:
+//            Builder, Plugin
+
+public class WSnap extends com.maddox.gwindow.GWindowFramed
 {
-  Builder builder;
-  GWindowEditControl wStep;
-  GWindowCheckBox wEnable;
 
-  public void windowShown()
-  {
-    this.builder.mSnap.bChecked = true;
-    super.windowShown();
-  }
-  public void windowHidden() {
-    this.builder.mSnap.bChecked = false;
-    super.windowHidden();
-  }
+    public void windowShown()
+    {
+        builder.mSnap.bChecked = true;
+        super.windowShown();
+    }
 
-  public void created() {
-    this.bAlwaysOnTop = true;
-    super.created();
-    this.title = Plugin.i18n("title.Snap");
-    this.clientWindow = create(new GWindowDialogClient());
-    GWindowDialogClient localGWindowDialogClient = (GWindowDialogClient)this.clientWindow;
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 1.0F, 7.0F, 1.3F, Plugin.i18n("Step"), null));
-    localGWindowDialogClient.addControl(this.wStep = new GWindowEditControl(localGWindowDialogClient, 9.0F, 1.0F, 6.0F, 1.3F, "") {
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 == 2) try {
-            WSnap.this.builder.snapStep = Double.parseDouble(getValue());
-          }
-          catch (Exception localException) {
-          } return super.notify(paramInt1, paramInt2);
-      }
-      public void created() {
-        this.bNumericOnly = true;
-        this.bNumericFloat = true;
-        this.bDelayedNotify = true;
-      }
-    });
-    this.wStep.setValue("" + this.builder.snapStep, false);
-    localGWindowDialogClient.addLabel(new GWindowLabel(localGWindowDialogClient, 1.0F, 3.0F, 7.0F, 1.3F, Plugin.i18n("Enable"), null));
-    localGWindowDialogClient.addControl(this.wEnable = new GWindowCheckBox(localGWindowDialogClient, 9.0F, 3.0F, null) {
-      public boolean notify(int paramInt1, int paramInt2) {
-        if (paramInt1 == 2)
-          WSnap.this.builder.bSnap = isChecked();
-        return true;
-      } } );
-  }
+    public void windowHidden()
+    {
+        builder.mSnap.bChecked = false;
+        super.windowHidden();
+    }
 
-  public void afterCreated() {
-    super.afterCreated();
-    this.wEnable.setChecked(this.builder.bSnap, false);
-    resized();
-    close(false);
-  }
+    public void created()
+    {
+        bAlwaysOnTop = true;
+        super.created();
+        title = com.maddox.il2.builder.Plugin.i18n("title.Snap");
+        clientWindow = create(new GWindowDialogClient());
+        com.maddox.gwindow.GWindowDialogClient gwindowdialogclient = (com.maddox.gwindow.GWindowDialogClient)clientWindow;
+        gwindowdialogclient.addLabel(new GWindowLabel(gwindowdialogclient, 1.0F, 1.0F, 7F, 1.3F, com.maddox.il2.builder.Plugin.i18n("Step"), null));
+        gwindowdialogclient.addControl(wStep = new com.maddox.gwindow.GWindowEditControl(gwindowdialogclient, 9F, 1.0F, 6F, 1.3F, "") {
 
-  public WSnap(Builder paramBuilder, GWindow paramGWindow) {
-    this.builder = paramBuilder;
-    doNew(paramGWindow, 2.0F, 2.0F, 17.0F, 7.0F, true);
-  }
+            public boolean notify(int i, int j)
+            {
+                if(i == 2)
+                    try
+                    {
+                        builder.snapStep = java.lang.Double.parseDouble(getValue());
+                    }
+                    catch(java.lang.Exception exception) { }
+                return super.notify(i, j);
+            }
+
+            public void created()
+            {
+                bNumericOnly = true;
+                bNumericFloat = true;
+                bDelayedNotify = true;
+            }
+
+        }
+);
+        wStep.setValue("" + builder.snapStep, false);
+        gwindowdialogclient.addLabel(new GWindowLabel(gwindowdialogclient, 1.0F, 3F, 7F, 1.3F, com.maddox.il2.builder.Plugin.i18n("Enable"), null));
+        gwindowdialogclient.addControl(wEnable = new com.maddox.gwindow.GWindowCheckBox(gwindowdialogclient, 9F, 3F, null) {
+
+            public boolean notify(int i, int j)
+            {
+                if(i == 2)
+                    builder.bSnap = isChecked();
+                return true;
+            }
+
+        }
+);
+    }
+
+    public void afterCreated()
+    {
+        super.afterCreated();
+        wEnable.setChecked(builder.bSnap, false);
+        resized();
+        close(false);
+    }
+
+    public WSnap(com.maddox.il2.builder.Builder builder1, com.maddox.gwindow.GWindow gwindow)
+    {
+        builder = builder1;
+        doNew(gwindow, 2.0F, 2.0F, 17F, 7F, true);
+    }
+
+    com.maddox.il2.builder.Builder builder;
+    com.maddox.gwindow.GWindowEditControl wStep;
+    com.maddox.gwindow.GWindowCheckBox wEnable;
 }

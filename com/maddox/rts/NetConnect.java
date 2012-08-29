@@ -1,22 +1,32 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetConnect.java
+
 package com.maddox.rts;
 
-public abstract interface NetConnect
+
+// Referenced classes of package com.maddox.rts:
+//            NetSocket, NetAddress, NetChannel
+
+public interface NetConnect
 {
-  public abstract void bindEnable(boolean paramBoolean);
 
-  public abstract boolean isBindEnable();
+    public abstract void bindEnable(boolean flag);
 
-  public abstract void join(NetSocket paramNetSocket, NetAddress paramNetAddress, int paramInt);
+    public abstract boolean isBindEnable();
 
-  public abstract void joinBreak();
+    public abstract void join(com.maddox.rts.NetSocket netsocket, com.maddox.rts.NetAddress netaddress, int i);
 
-  public abstract boolean isJoinProcess();
+    public abstract void joinBreak();
 
-  public abstract void msgRequest(String paramString);
+    public abstract boolean isJoinProcess();
 
-  public abstract void channelCreated(NetChannel paramNetChannel);
+    public abstract void msgRequest(java.lang.String s);
 
-  public abstract void channelNotCreated(NetChannel paramNetChannel, String paramString);
+    public abstract void channelCreated(com.maddox.rts.NetChannel netchannel);
 
-  public abstract void channelDestroying(NetChannel paramNetChannel, String paramString);
+    public abstract void channelNotCreated(com.maddox.rts.NetChannel netchannel, java.lang.String s);
+
+    public abstract void channelDestroying(com.maddox.rts.NetChannel netchannel, java.lang.String s);
 }

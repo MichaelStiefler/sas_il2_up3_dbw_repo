@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   SoundPreset.java
+
 package com.maddox.sound;
 
 import com.maddox.rts.SectFile;
@@ -6,272 +11,362 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-public class SoundPreset extends Preset
+// Referenced classes of package com.maddox.sound:
+//            Preset, Sample, Emitter, AudioDevice, 
+//            VGroup, ControlInfo, SoundControl
+
+public class SoundPreset extends com.maddox.sound.Preset
 {
-  public static final int M3D_NONE = 0;
-  public static final int M3D_NORMAL = 1;
-  public static final float STD_SPL = 70.0F;
-  protected static final int SND_NORMAL = 0;
-  protected static final int SND_MIXER = 1;
-  protected ArrayList sources = null;
-  protected ArrayList emitters = null;
-  protected int fxCaps = 0;
-  protected int fxFlags = 0;
-  protected int type = 0;
 
-  protected float eaxMix = -1.0F;
-  protected float occlusion = 0.0F;
-  protected float occlLF = 0.0F;
-  protected float obstruction = 0.0F;
-  protected float obstrLF = 0.0F;
-  protected float eaxRoom = 0.0F;
-
-  protected ArrayList controls = null;
-
-  protected static HashMapExt map = new HashMapExt();
-
-  protected static Class[] csid = new Class[1];
-  protected static Object[] args = new Object[1];
-  private static String[] typeList;
-
-  public SoundPreset(String paramString)
-  {
-    super(paramString);
-    map.put(paramString, this);
-    try {
-      if (!enabled) return;
-      SectFile localSectFile = new SectFile("presets/sounds/" + paramString + ".prs");
-      this.handle = jniGet(paramString);
-      if (this.handle == 0) this.handle = jniCreate(paramString);
-      onCreate();
-      load(localSectFile, "");
-    }
-    catch (Exception localException) {
-      printf("Cannot load sound preset " + paramString + " (" + localException + ")");
-      this.handle = 0;
-    }
-  }
-
-  public static SoundPreset get(String paramString)
-  {
-    SoundPreset localSoundPreset = (SoundPreset)map.get(paramString);
-    if (localSoundPreset == null) {
-      localSoundPreset = new SoundPreset(paramString);
-    }
-    return localSoundPreset;
-  }
-
-  public void add(Preset paramPreset)
-  {
-    this.sources.add(paramPreset);
-  }
-
-  public boolean is3d()
-  {
-    return (this.fxCaps & 0x7) != 0;
-  }
-
-  public void load(SectFile paramSectFile, String paramString) throws Exception
-  {
-    String str2 = paramString + "common";
-    if (!paramSectFile.sectionExist(str2)) throw new Exception("Invalid preset format");
-
-    this.eaxMix = paramSectFile.get(str2, "eaxMix", -1.0F);
-    this.occlusion = paramSectFile.get(str2, "occlusion", 0.0F);
-    this.occlLF = paramSectFile.get(str2, "occlLF", 0.0F);
-    this.obstruction = paramSectFile.get(str2, "obstruction", 0.0F);
-    this.obstrLF = paramSectFile.get(str2, "obstrLF", 0.0F);
-    this.eaxRoom = paramSectFile.get(str2, "eaxRoom", 0.0F);
-
-    jniSetMutable(this.handle, paramSectFile.get(str2, "mutable", false));
-
-    int i = paramSectFile.sectionIndex("spl");
-    if (i >= 0) {
-      j = paramSectFile.vars(i); int k = 0;
-      for (int m = 0; m < j; m++) {
-        int i1 = 0;
-        int i3 = 0; int i4 = 0;
-        float f1 = 70.0F; float f2 = 0.0F;
-        StringTokenizer localStringTokenizer2 = new StringTokenizer(paramSectFile.line(i, m));
-        while (localStringTokenizer2.hasMoreTokens()) {
-          String str4 = localStringTokenizer2.nextToken();
-          if (str4.compareToIgnoreCase("*") == 0) {
-            i1 = 1;
-            i3 = 0;
-          }
-          else if (i1 != 0) {
-            i4 |= 1 << Integer.parseInt(str4);
-          } else {
-            if (i3 == 0) f1 = Float.parseFloat(str4);
-            else if (i3 == 1) f2 = Float.parseFloat(str4);
-            else
-              throw new Exception("Invalid arguments");
-            i3++;
-          }
-        }
-
-        if (i4 == 0) i4 = -1;
-        if ((k & i4) != 0) throw new Exception("Invalid spl flags");
-        k |= i4;
-        jniSetSPL(this.handle, f1, f2, i4);
-      }
-    }
-
-    String str1 = paramSectFile.get(str2, "mode", (String)null);
-    if (str1 != null) {
-      if (str1.indexOf("seq") >= 0) this.fxFlags |= 32768;
-      if (str1.indexOf("normal") >= 0) {
-        if (str1.indexOf(" pos") >= 0) this.fxCaps |= 1;
-        if (str1.indexOf(" vel") >= 0) this.fxCaps |= 2;
-        if (str1.indexOf(" or") >= 0) this.fxCaps |= 4;
-        if (str1.indexOf(" all") >= 0) {
-          this.fxCaps |= 1;
-          this.fxCaps |= 2;
-          this.fxCaps |= 4;
-          this.fxCaps |= 8;
-        }
-        if (!is3d()) this.fxCaps |= 3;
-      }
-      if (str1.indexOf("relist") >= 0) {
-        if (str1.indexOf(" pos") >= 0) this.fxCaps |= 1;
-        this.fxCaps |= 512;
-      }
-      if (str1.indexOf("relobj") >= 0) {
-        if (str1.indexOf(" pos") >= 0) this.fxCaps |= 1;
-        this.fxCaps |= 256;
-      }
-    }
-    str1 = paramSectFile.get(str2, "type", (String)null);
-    this.type = 0;
-    if (paramSectFile.sectionExist(paramString + "emit")) {
-      this.type = 1;
-    }
-    else if (str1 != null) {
-      for (j = 0; j < typeList.length; j++) {
-        if (typeList[j].compareToIgnoreCase(str1) != 0) continue; this.type = j; break;
-      }
-    }
-
-    if (paramSectFile.get(str2, "infinite", false)) this.fxFlags = 1;
-    if (paramSectFile.get(str2, "permanent", false)) this.fxFlags |= 16384;
-    if (paramSectFile.get(str2, "undetune", false)) this.fxFlags |= 8192;
-    if (paramSectFile.get(str2, "numadj", false)) this.fxFlags |= 4096;
-    if (paramSectFile.get(str2, "pmax", false)) this.fxFlags |= 65536;
-    if (paramSectFile.get(str2, "music", false)) this.fxCaps |= 4096;
-    int j = paramSectFile.get(str2, "forcectrl", -1);
-    if (this.handle != 0) {
-      jniSetProperties(this.handle, this.type, this.fxFlags, AudioDevice.vObj.handle);
-      jniSetEAX(this.handle, this.eaxMix, this.occlusion, this.occlLF, this.eaxRoom, this.obstruction, this.obstrLF);
-      localObject1 = null;
-      if ((this.fxCaps & 0x1000) != 0) localObject1 = AudioDevice.vMusic;
-      else if (paramSectFile.get(str2, "voice", false)) localObject1 = AudioDevice.vVoice;
-      else if ((this.fxFlags & 0x4000) == 0) localObject1 = AudioDevice.vObj;
-      if (localObject1 != null) jniSetVGroup(this.handle, ((VGroup)localObject1).handle);
-      jniForceControl(this.handle, j);
-    }
-
-    Object localObject1 = paramSectFile.get(str2, "controls", (String)null);
-    Object localObject2;
-    if (localObject1 != null) {
-      this.controls = new ArrayList();
-      StringTokenizer localStringTokenizer1 = new StringTokenizer((String)localObject1);
-      while (localStringTokenizer1.hasMoreTokens()) {
-        String str3 = localStringTokenizer1.nextToken();
-        localObject2 = ControlInfo.get(str3, jniGetControlList(this.handle));
-        if (localObject2 != null)
+    public SoundPreset(java.lang.String s)
+    {
+        super(s);
+        sources = null;
+        emitters = null;
+        fxCaps = 0;
+        fxFlags = 0;
+        type = 0;
+        eaxMix = -1F;
+        occlusion = 0.0F;
+        occlLF = 0.0F;
+        obstruction = 0.0F;
+        obstrLF = 0.0F;
+        eaxRoom = 0.0F;
+        controls = null;
+        map.put(s, this);
+        if(!enabled)
+            return;
+        try
         {
-          ((SoundControl)localObject2).load(paramSectFile, paramString + "." + str3);
-          this.controls.add(localObject2);
+            com.maddox.rts.SectFile sectfile = new SectFile("presets/sounds/" + s + ".prs");
+            handle = com.maddox.sound.SoundPreset.jniGet(s);
+            if(handle == 0)
+                handle = jniCreate(s);
+            onCreate();
+            load(sectfile, "");
         }
-      }
+        catch(java.lang.Exception exception)
+        {
+            com.maddox.sound.SoundPreset.printf("Cannot load sound preset " + s + " (" + exception + ")");
+            handle = 0;
+        }
+        return;
     }
 
-    int n = paramSectFile.sectionIndex(paramString + "samples");
-    int i2;
-    Object localObject3;
-    if (n >= 0) {
-      if (this.sources == null) this.sources = new ArrayList(32);
-      for (i2 = 0; i2 < paramSectFile.vars(n); i2++) {
-        localObject2 = paramSectFile.line(n, i2);
-        localObject3 = new Sample((String)localObject2);
-        ((Sample)localObject3).load(paramSectFile, "sample." + (String)localObject2);
-        this.sources.add(localObject3);
-        jniAddSample(this.handle, ((Sample)localObject3).handle);
-      }
+    public static com.maddox.sound.SoundPreset get(java.lang.String s)
+    {
+        com.maddox.sound.SoundPreset soundpreset = (com.maddox.sound.SoundPreset)map.get(s);
+        if(soundpreset == null)
+            soundpreset = new SoundPreset(s);
+        return soundpreset;
     }
 
-    n = paramSectFile.sectionIndex(paramString + "emit");
-    if (n >= 0) {
-      if (this.emitters == null) this.emitters = new ArrayList(32);
-      for (i2 = 0; i2 < paramSectFile.vars(n); i2++) {
-        localObject2 = paramSectFile.line(n, i2);
-        localObject3 = new Emitter((String)localObject2, this.handle);
-        ((Emitter)localObject3).load(paramSectFile, "emit." + (String)localObject2);
-        this.emitters.add(localObject3);
-      }
+    public void add(com.maddox.sound.Preset preset)
+    {
+        sources.add(preset);
     }
-  }
 
-  public void save(SectFile paramSectFile, String paramString) throws Exception
-  {
-    String str = paramString + this.name + ".";
-    paramSectFile.sectionClear(paramSectFile.sectionIndex(paramString + "common"));
-    paramSectFile.sectionClear(paramSectFile.sectionIndex(paramString + "objects"));
-    if (this.sources != null)
-      for (int i = 0; i < this.sources.size(); i++) {
-        Preset localPreset = (Preset)this.sources.get(i);
-        localPreset.save(paramSectFile, str + "object.");
-      }
-  }
-
-  protected void set(String paramString1, String paramString2)
-  {
-    if (paramString1.compareToIgnoreCase("mix") == 0) this.eaxMix = Float.parseFloat(paramString2);
-    else if (paramString1.compareToIgnoreCase("occl") == 0) this.occlusion = Float.parseFloat(paramString2);
-    else if (paramString1.compareToIgnoreCase("lf") == 0) this.occlLF = Float.parseFloat(paramString2);
-    else if (paramString1.compareToIgnoreCase("room") == 0) this.eaxRoom = Float.parseFloat(paramString2);
-    else {
-      System.out.println("params: mix = " + this.eaxMix + ", occlusion = " + this.occlusion + ", lf = " + this.occlLF + ", room = " + this.eaxRoom);
+    public boolean is3d()
+    {
+        return (fxCaps & 7) != 0;
     }
-    if (this.handle != 0) jniSetEAX(this.handle, this.eaxMix, this.occlusion, this.occlLF, this.eaxRoom, this.obstruction, this.obstrLF);
-  }
 
-  protected void onCreate()
-  {
-  }
+    public void load(com.maddox.rts.SectFile sectfile, java.lang.String s)
+        throws java.lang.Exception
+    {
+        java.lang.String s2 = s + "common";
+        if(!sectfile.sectionExist(s2))
+            throw new Exception("Invalid preset format");
+        eaxMix = sectfile.get(s2, "eaxMix", -1F);
+        occlusion = sectfile.get(s2, "occlusion", 0.0F);
+        occlLF = sectfile.get(s2, "occlLF", 0.0F);
+        obstruction = sectfile.get(s2, "obstruction", 0.0F);
+        obstrLF = sectfile.get(s2, "obstrLF", 0.0F);
+        eaxRoom = sectfile.get(s2, "eaxRoom", 0.0F);
+        jniSetMutable(handle, sectfile.get(s2, "mutable", false));
+        int i = sectfile.sectionIndex("spl");
+        if(i >= 0)
+        {
+            int j = sectfile.vars(i);
+            int i1 = 0;
+            for(int j1 = 0; j1 < j; j1++)
+            {
+                boolean flag = false;
+                int j2 = 0;
+                int k2 = 0;
+                float f = 70F;
+                float f1 = 0.0F;
+                for(java.util.StringTokenizer stringtokenizer1 = new StringTokenizer(sectfile.line(i, j1)); stringtokenizer1.hasMoreTokens();)
+                {
+                    java.lang.String s7 = stringtokenizer1.nextToken();
+                    if(s7.compareToIgnoreCase("*") == 0)
+                    {
+                        flag = true;
+                        j2 = 0;
+                    } else
+                    if(flag)
+                    {
+                        k2 |= 1 << java.lang.Integer.parseInt(s7);
+                    } else
+                    {
+                        if(j2 == 0)
+                            f = java.lang.Float.parseFloat(s7);
+                        else
+                        if(j2 == 1)
+                            f1 = java.lang.Float.parseFloat(s7);
+                        else
+                            throw new Exception("Invalid arguments");
+                        j2++;
+                    }
+                }
 
-  protected int createObject()
-  {
-    if (this.handle == 0) return 0;
-    int i = jniGetFreeObject(this.handle, this.fxCaps);
-    if (i == 0) {
-      i = jniCreateObject(this.handle, this.fxCaps);
+                if(k2 == 0)
+                    k2 = -1;
+                if((i1 & k2) != 0)
+                    throw new Exception("Invalid spl flags");
+                i1 |= k2;
+                jniSetSPL(handle, f, f1, k2);
+            }
+
+        }
+        java.lang.String s1 = sectfile.get(s2, "mode", (java.lang.String)null);
+        if(s1 != null)
+        {
+            if(s1.indexOf("seq") >= 0)
+                fxFlags |= 0x8000;
+            if(s1.indexOf("normal") >= 0)
+            {
+                if(s1.indexOf(" pos") >= 0)
+                    fxCaps |= 1;
+                if(s1.indexOf(" vel") >= 0)
+                    fxCaps |= 2;
+                if(s1.indexOf(" or") >= 0)
+                    fxCaps |= 4;
+                if(s1.indexOf(" all") >= 0)
+                {
+                    fxCaps |= 1;
+                    fxCaps |= 2;
+                    fxCaps |= 4;
+                    fxCaps |= 8;
+                }
+                if(!is3d())
+                    fxCaps |= 3;
+            }
+            if(s1.indexOf("relist") >= 0)
+            {
+                if(s1.indexOf(" pos") >= 0)
+                    fxCaps |= 1;
+                fxCaps |= 0x200;
+            }
+            if(s1.indexOf("relobj") >= 0)
+            {
+                if(s1.indexOf(" pos") >= 0)
+                    fxCaps |= 1;
+                fxCaps |= 0x100;
+            }
+        }
+        s1 = sectfile.get(s2, "type", (java.lang.String)null);
+        type = 0;
+        if(sectfile.sectionExist(s + "emit"))
+            type = 1;
+        else
+        if(s1 != null)
+        {
+            int k = 0;
+            do
+            {
+                if(k >= typeList.length)
+                    break;
+                if(typeList[k].compareToIgnoreCase(s1) == 0)
+                {
+                    type = k;
+                    break;
+                }
+                k++;
+            } while(true);
+        }
+        if(sectfile.get(s2, "infinite", false))
+            fxFlags = 1;
+        if(sectfile.get(s2, "permanent", false))
+            fxFlags |= 0x4000;
+        if(sectfile.get(s2, "undetune", false))
+            fxFlags |= 0x2000;
+        if(sectfile.get(s2, "numadj", false))
+            fxFlags |= 0x1000;
+        if(sectfile.get(s2, "pmax", false))
+            fxFlags |= 0x10000;
+        if(sectfile.get(s2, "music", false))
+            fxCaps |= 0x1000;
+        int l = sectfile.get(s2, "forcectrl", -1);
+        if(handle != 0)
+        {
+            jniSetProperties(handle, type, fxFlags, com.maddox.sound.AudioDevice.vObj.handle);
+            jniSetEAX(handle, eaxMix, occlusion, occlLF, eaxRoom, obstruction, obstrLF);
+            com.maddox.sound.VGroup vgroup = null;
+            if((fxCaps & 0x1000) != 0)
+                vgroup = com.maddox.sound.AudioDevice.vMusic;
+            else
+            if(sectfile.get(s2, "voice", false))
+                vgroup = com.maddox.sound.AudioDevice.vVoice;
+            else
+            if((fxFlags & 0x4000) == 0)
+                vgroup = com.maddox.sound.AudioDevice.vObj;
+            if(vgroup != null)
+                jniSetVGroup(handle, vgroup.handle);
+            jniForceControl(handle, l);
+        }
+        java.lang.String s3 = sectfile.get(s2, "controls", (java.lang.String)null);
+        if(s3 != null)
+        {
+            controls = new ArrayList();
+            java.util.StringTokenizer stringtokenizer = new StringTokenizer(s3);
+            do
+            {
+                if(!stringtokenizer.hasMoreTokens())
+                    break;
+                java.lang.String s4 = stringtokenizer.nextToken();
+                com.maddox.sound.SoundControl soundcontrol = com.maddox.sound.ControlInfo.get(s4, jniGetControlList(handle));
+                if(soundcontrol != null)
+                {
+                    soundcontrol.load(sectfile, s + "." + s4);
+                    controls.add(soundcontrol);
+                }
+            } while(true);
+        }
+        int k1 = sectfile.sectionIndex(s + "samples");
+        if(k1 >= 0)
+        {
+            if(sources == null)
+                sources = new ArrayList(32);
+            for(int l1 = 0; l1 < sectfile.vars(k1); l1++)
+            {
+                java.lang.String s5 = sectfile.line(k1, l1);
+                com.maddox.sound.Sample sample = new Sample(s5);
+                sample.load(sectfile, "sample." + s5);
+                sources.add(sample);
+                jniAddSample(handle, sample.handle);
+            }
+
+        }
+        k1 = sectfile.sectionIndex(s + "emit");
+        if(k1 >= 0)
+        {
+            if(emitters == null)
+                emitters = new ArrayList(32);
+            for(int i2 = 0; i2 < sectfile.vars(k1); i2++)
+            {
+                java.lang.String s6 = sectfile.line(k1, i2);
+                com.maddox.sound.Emitter emitter = new Emitter(s6, handle);
+                emitter.load(sectfile, "emit." + s6);
+                emitters.add(emitter);
+            }
+
+        }
     }
-    return i;
-  }
 
-  protected native int jniCreate(String paramString);
+    public void save(com.maddox.rts.SectFile sectfile, java.lang.String s)
+        throws java.lang.Exception
+    {
+        java.lang.String s1 = s + name + ".";
+        sectfile.sectionClear(sectfile.sectionIndex(s + "common"));
+        sectfile.sectionClear(sectfile.sectionIndex(s + "objects"));
+        if(sources != null)
+        {
+            for(int i = 0; i < sources.size(); i++)
+            {
+                com.maddox.sound.Preset preset = (com.maddox.sound.Preset)sources.get(i);
+                preset.save(sectfile, s1 + "object.");
+            }
 
-  protected native void jniSetMutable(int paramInt, boolean paramBoolean);
+        }
+    }
 
-  protected native void jniSetSPL(int paramInt1, float paramFloat1, float paramFloat2, int paramInt2);
+    protected void set(java.lang.String s, java.lang.String s1)
+    {
+        if(s.compareToIgnoreCase("mix") == 0)
+            eaxMix = java.lang.Float.parseFloat(s1);
+        else
+        if(s.compareToIgnoreCase("occl") == 0)
+            occlusion = java.lang.Float.parseFloat(s1);
+        else
+        if(s.compareToIgnoreCase("lf") == 0)
+            occlLF = java.lang.Float.parseFloat(s1);
+        else
+        if(s.compareToIgnoreCase("room") == 0)
+            eaxRoom = java.lang.Float.parseFloat(s1);
+        else
+            java.lang.System.out.println("params: mix = " + eaxMix + ", occlusion = " + occlusion + ", lf = " + occlLF + ", room = " + eaxRoom);
+        if(handle != 0)
+            jniSetEAX(handle, eaxMix, occlusion, occlLF, eaxRoom, obstruction, obstrLF);
+    }
 
-  protected native void jniSetProperties(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
+    protected void onCreate()
+    {
+    }
 
-  protected native void jniSetEAX(int paramInt, float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6);
+    protected int createObject()
+    {
+        if(handle == 0)
+            return 0;
+        int i = com.maddox.sound.SoundPreset.jniGetFreeObject(handle, fxCaps);
+        if(i == 0)
+            i = com.maddox.sound.SoundPreset.jniCreateObject(handle, fxCaps);
+        return i;
+    }
 
-  protected native void jniSetVGroup(int paramInt1, int paramInt2);
+    protected native int jniCreate(java.lang.String s);
 
-  protected native void jniAddSample(int paramInt1, int paramInt2);
+    protected native void jniSetMutable(int i, boolean flag);
 
-  protected native int jniGetControlList(int paramInt);
+    protected native void jniSetSPL(int i, float f, float f1, int j);
 
-  protected native void jniForceControl(int paramInt1, int paramInt2);
+    protected native void jniSetProperties(int i, int j, int k, int l);
 
-  static
-  {
-    csid[0] = String.class;
+    protected native void jniSetEAX(int i, float f, float f1, float f2, float f3, float f4, float f5);
 
-    typeList = new String[] { "normal", "mixer" };
-  }
+    protected native void jniSetVGroup(int i, int j);
+
+    protected native void jniAddSample(int i, int j);
+
+    protected native int jniGetControlList(int i);
+
+    protected native void jniForceControl(int i, int j);
+
+    static java.lang.Class _mthclass$(java.lang.String s)
+    {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
+    }
+
+    public static final int M3D_NONE = 0;
+    public static final int M3D_NORMAL = 1;
+    public static final float STD_SPL = 70F;
+    protected static final int SND_NORMAL = 0;
+    protected static final int SND_MIXER = 1;
+    protected java.util.ArrayList sources;
+    protected java.util.ArrayList emitters;
+    protected int fxCaps;
+    protected int fxFlags;
+    protected int type;
+    protected float eaxMix;
+    protected float occlusion;
+    protected float occlLF;
+    protected float obstruction;
+    protected float obstrLF;
+    protected float eaxRoom;
+    protected java.util.ArrayList controls;
+    protected static com.maddox.util.HashMapExt map = new HashMapExt();
+    protected static java.lang.Class csid[];
+    protected static java.lang.Object args[] = new java.lang.Object[1];
+    private static java.lang.String typeList[] = {
+        "normal", "mixer"
+    };
+
+    static 
+    {
+        csid = new java.lang.Class[1];
+        csid[0] = java.lang.String.class;
+    }
 }

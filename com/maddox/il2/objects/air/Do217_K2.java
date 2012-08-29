@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Do217_K2.java
+
 package com.maddox.il2.objects.air;
 
 import com.maddox.il2.engine.HierMesh;
@@ -6,233 +11,277 @@ import com.maddox.il2.game.HUD;
 import com.maddox.rts.CLASS;
 import com.maddox.rts.Property;
 
-public class Do217_K2 extends Do217
-  implements TypeX4Carrier, TypeGuidedBombCarrier
+// Referenced classes of package com.maddox.il2.objects.air:
+//            Do217, PaintSchemeBMPar02, TypeX4Carrier, TypeGuidedBombCarrier, 
+//            NetAircraft, Aircraft
+
+public class Do217_K2 extends com.maddox.il2.objects.air.Do217
+    implements com.maddox.il2.objects.air.TypeX4Carrier, com.maddox.il2.objects.air.TypeGuidedBombCarrier
 {
-  public boolean bToFire = false;
-  private long tX4Prev = 0L;
-  private float deltaAzimuth = 0.0F;
-  private float deltaTangage = 0.0F;
-  private boolean isGuidingBomb = false;
-  private boolean isMasterAlive;
 
-  public void onAircraftLoaded()
-  {
-    super.onAircraftLoaded();
-    if ((this.thisWeaponsName.startsWith("1xFritzX")) || (this.thisWeaponsName.startsWith("2xFritzX")))
+    public Do217_K2()
     {
-      hierMesh().chunkVisible("WingRackR_D0", true);
-      hierMesh().chunkVisible("WingRackL_D0", true);
+        bToFire = false;
+        tX4Prev = 0L;
+        deltaAzimuth = 0.0F;
+        deltaTangage = 0.0F;
+        isGuidingBomb = false;
     }
-    if ((this.thisWeaponsName.startsWith("1xHS293")) || (this.thisWeaponsName.startsWith("2xHS293")))
+
+    public void onAircraftLoaded()
     {
-      hierMesh().chunkVisible("WingRackR1_D0", true);
-      hierMesh().chunkVisible("WingRackL1_D0", true);
+        super.onAircraftLoaded();
+        if(thisWeaponsName.startsWith("1xFritzX") || thisWeaponsName.startsWith("2xFritzX"))
+        {
+            hierMesh().chunkVisible("WingRackR_D0", true);
+            hierMesh().chunkVisible("WingRackL_D0", true);
+        }
+        if(thisWeaponsName.startsWith("1xHS293") || thisWeaponsName.startsWith("2xHS293"))
+        {
+            hierMesh().chunkVisible("WingRackR1_D0", true);
+            hierMesh().chunkVisible("WingRackL1_D0", true);
+        }
     }
-  }
 
-  public boolean turretAngles(int paramInt, float[] paramArrayOfFloat)
-  {
-    boolean bool = super.turretAngles(paramInt, paramArrayOfFloat);
-    float f1 = -paramArrayOfFloat[0];
-    float f2 = paramArrayOfFloat[1];
-    if (paramInt == 5)
+    public boolean turretAngles(int i, float af[])
     {
-      if (f2 > 5.0F)
-      {
-        f2 = 5.0F;
-        bool = false;
-      }
-      if (f2 < -5.0F)
-      {
-        f2 = -5.0F;
-        bool = false;
-      }
-
-      if (f1 > 5.0F)
-      {
-        f1 = 5.0F;
-        bool = false;
-      }
-      if (f1 < -5.0F)
-      {
-        f1 = -5.0F;
-        bool = false;
-      }
-    }
-    paramArrayOfFloat[0] = (-f1);
-    paramArrayOfFloat[1] = f2;
-    return bool;
-  }
-
-  public void rareAction(float paramFloat, boolean paramBoolean)
-  {
-    super.rareAction(paramFloat, paramBoolean);
-  }
-
-  public boolean typeGuidedBombCisMasterAlive()
-  {
-    return this.isMasterAlive;
-  }
-
-  public void typeGuidedBombCsetMasterAlive(boolean paramBoolean)
-  {
-    this.isMasterAlive = paramBoolean;
-  }
-
-  public boolean typeGuidedBombCgetIsGuiding()
-  {
-    return this.isGuidingBomb;
-  }
-
-  public void typeGuidedBombCsetIsGuiding(boolean paramBoolean)
-  {
-    this.isGuidingBomb = paramBoolean;
-  }
-
-  public void typeX4CAdjSidePlus() {
-    this.deltaAzimuth = 0.002F;
-  }
-
-  public void typeX4CAdjSideMinus()
-  {
-    this.deltaAzimuth = -0.002F;
-  }
-
-  public void typeX4CAdjAttitudePlus()
-  {
-    this.deltaTangage = 0.002F;
-  }
-
-  public void typeX4CAdjAttitudeMinus()
-  {
-    this.deltaTangage = -0.002F;
-  }
-
-  public void typeX4CResetControls()
-  {
-    this.deltaAzimuth = (this.deltaTangage = 0.0F);
-  }
-
-  public float typeX4CgetdeltaAzimuth() {
-    return this.deltaAzimuth;
-  }
-
-  public float typeX4CgetdeltaTangage() {
-    return this.deltaTangage;
-  }
-
-  public void typeBomberAdjDistancePlus()
-  {
-    this.fSightCurForwardAngle += 1.0F;
-    if (this.fSightCurForwardAngle > 85.0F)
-      this.fSightCurForwardAngle = 85.0F;
-    this.fSightCurDistance = (this.fSightCurAltitude * (float)Math.tan(Math.toRadians(this.fSightCurForwardAngle)));
-
-    if (!this.isGuidingBomb) {
-      HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int)this.fSightCurForwardAngle) });
+        boolean flag = super.turretAngles(i, af);
+        float f = -af[0];
+        float f1 = af[1];
+        if(i == 5)
+        {
+            if(f1 > 5F)
+            {
+                f1 = 5F;
+                flag = false;
+            }
+            if(f1 < -5F)
+            {
+                f1 = -5F;
+                flag = false;
+            }
+            if(f > 5F)
+            {
+                f = 5F;
+                flag = false;
+            }
+            if(f < -5F)
+            {
+                f = -5F;
+                flag = false;
+            }
+        }
+        af[0] = -f;
+        af[1] = f1;
+        return flag;
     }
 
-    if (this.bSightAutomation)
-      typeBomberToggleAutomation();
-  }
-
-  public void typeBomberAdjDistanceMinus() {
-    this.fSightCurForwardAngle -= 1.0F;
-    if (this.fSightCurForwardAngle < 0.0F)
-      this.fSightCurForwardAngle = 0.0F;
-    this.fSightCurDistance = (this.fSightCurAltitude * (float)Math.tan(Math.toRadians(this.fSightCurForwardAngle)));
-
-    if (!this.isGuidingBomb) {
-      HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new Object[] { new Integer((int)this.fSightCurForwardAngle) });
-    }
-
-    if (this.bSightAutomation)
-      typeBomberToggleAutomation();
-  }
-
-  public void typeBomberAdjSideslipPlus() {
-    if (!this.isGuidingBomb)
+    public void rareAction(float f, boolean flag)
     {
-      this.fSightCurSideslip += 0.1F;
-      if (this.fSightCurSideslip > 3.0F)
-        this.fSightCurSideslip = 3.0F;
-      HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int)(this.fSightCurSideslip * 10.0F)) });
+        super.rareAction(f, flag);
     }
-  }
 
-  public void typeBomberAdjSideslipMinus()
-  {
-    if (!this.isGuidingBomb)
+    public boolean typeGuidedBombCisMasterAlive()
     {
-      this.fSightCurSideslip -= 0.1F;
-      if (this.fSightCurSideslip < -3.0F)
-        this.fSightCurSideslip = -3.0F;
-      HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new Object[] { new Integer((int)(this.fSightCurSideslip * 10.0F)) });
+        return isMasterAlive;
     }
-  }
 
-  public void typeBomberAdjAltitudePlus()
-  {
-    if (!this.isGuidingBomb)
+    public void typeGuidedBombCsetMasterAlive(boolean flag)
     {
-      this.fSightCurAltitude += 10.0F;
-      if (this.fSightCurAltitude > 10000.0F)
-        this.fSightCurAltitude = 10000.0F;
-      HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int)this.fSightCurAltitude) });
-
-      this.fSightCurDistance = (this.fSightCurAltitude * (float)Math.tan(Math.toRadians(this.fSightCurForwardAngle)));
+        isMasterAlive = flag;
     }
-  }
 
-  public void typeBomberAdjAltitudeMinus()
-  {
-    if (!this.isGuidingBomb)
+    public boolean typeGuidedBombCgetIsGuiding()
     {
-      this.fSightCurAltitude -= 10.0F;
-      if (this.fSightCurAltitude < 850.0F)
-        this.fSightCurAltitude = 850.0F;
-      HUD.log(AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new Object[] { new Integer((int)this.fSightCurAltitude) });
-
-      this.fSightCurDistance = (this.fSightCurAltitude * (float)Math.tan(Math.toRadians(this.fSightCurForwardAngle)));
+        return isGuidingBomb;
     }
-  }
 
-  protected void mydebug(String paramString)
-  {
-  }
+    public void typeGuidedBombCsetIsGuiding(boolean flag)
+    {
+        isGuidingBomb = flag;
+    }
 
-  static
-  {
-    Class localClass = CLASS.THIS();
-    new NetAircraft.SPAWN(localClass);
-    Property.set(localClass, "iconFar_shortClassName", "Do-217");
-    Property.set(localClass, "meshName", "3do/plane/Do217_K2/hier.him");
-    Property.set(localClass, "PaintScheme", new PaintSchemeBMPar02());
-    Property.set(localClass, "yearService", 1943.0F);
-    Property.set(localClass, "yearExpired", 1945.0F);
-    Property.set(localClass, "FlightModel", "FlightModels/Do217K-2.fmd");
+    public void typeX4CAdjSidePlus()
+    {
+        deltaAzimuth = 0.002F;
+    }
 
-    Aircraft.weaponTriggersRegister(localClass, new int[] { 10, 10, 11, 12, 13, 14, 15, 15, 15, 15, 3, 3, 3, 3, 3, 3, 3, 3, 9, 9 });
+    public void typeX4CAdjSideMinus()
+    {
+        deltaAzimuth = -0.002F;
+    }
 
-    Aircraft.weaponHooksRegister(localClass, new String[] { "_MGUN01", "_MGUN10", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", "_ExternalBomb01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb04", "_ExternalDev01", "_ExternalDev02" });
+    public void typeX4CAdjAttitudePlus()
+    {
+        deltaTangage = 0.002F;
+    }
 
-    weaponsRegister(localClass, "default", new String[] { "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", null, null, null, null, null, null, null, null, null, null });
+    public void typeX4CAdjAttitudeMinus()
+    {
+        deltaTangage = -0.002F;
+    }
 
-    weaponsRegister(localClass, "2xFritzX", new String[] { "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "RocketGunFritzX 1", "BombGunNull 1", "RocketGunFritzX 1", "BombGunNull 1", null, null, null, null, null, null });
+    public void typeX4CResetControls()
+    {
+        deltaAzimuth = deltaTangage = 0.0F;
+    }
 
-    weaponsRegister(localClass, "2xHS293", new String[] { "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", null, null, null, null, "RocketGunHS_293 1", "BombGunNull 1", "RocketGunHS_293 1", "BombGunNull 1", null, null });
+    public float typeX4CgetdeltaAzimuth()
+    {
+        return deltaAzimuth;
+    }
 
-    weaponsRegister(localClass, "1xFritzX", new String[] { "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "RocketGunFritzX 1", null, null, null, null, null, null, null, null, null });
+    public float typeX4CgetdeltaTangage()
+    {
+        return deltaTangage;
+    }
 
-    weaponsRegister(localClass, "1xFritzX+1x300LTank", new String[] { "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "RocketGunFritzX 1", null, null, null, null, null, null, null, "FuelTankGun_Type_D 1", null });
+    public void typeBomberAdjDistancePlus()
+    {
+        fSightCurForwardAngle++;
+        if(fSightCurForwardAngle > 85F)
+            fSightCurForwardAngle = 85F;
+        fSightCurDistance = fSightCurAltitude * (float)java.lang.Math.tan(java.lang.Math.toRadians(fSightCurForwardAngle));
+        if(!isGuidingBomb)
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new java.lang.Object[] {
+                new Integer((int)fSightCurForwardAngle)
+            });
+        if(bSightAutomation)
+            typeBomberToggleAutomation();
+    }
 
-    weaponsRegister(localClass, "1xHS293+1x300LTank", new String[] { "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", null, null, null, null, "RocketGunHS_293 1", null, null, null, null, "FuelTankGun_Type_D 1" });
+    public void typeBomberAdjDistanceMinus()
+    {
+        fSightCurForwardAngle--;
+        if(fSightCurForwardAngle < 0.0F)
+            fSightCurForwardAngle = 0.0F;
+        fSightCurDistance = fSightCurAltitude * (float)java.lang.Math.tan(java.lang.Math.toRadians(fSightCurForwardAngle));
+        if(!isGuidingBomb)
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightElevation", new java.lang.Object[] {
+                new Integer((int)fSightCurForwardAngle)
+            });
+        if(bSightAutomation)
+            typeBomberToggleAutomation();
+    }
 
-    weaponsRegister(localClass, "1xFritzX+1x900LTank", new String[] { "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "RocketGunFritzX 1", null, null, null, null, null, null, null, "FuelTankGun_Tank900 1", null });
+    public void typeBomberAdjSideslipPlus()
+    {
+        if(!isGuidingBomb)
+        {
+            fSightCurSideslip += 0.1F;
+            if(fSightCurSideslip > 3F)
+                fSightCurSideslip = 3F;
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new java.lang.Object[] {
+                new Integer((int)(fSightCurSideslip * 10F))
+            });
+        }
+    }
 
-    weaponsRegister(localClass, "1xHS293+1x900LTank", new String[] { "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", null, null, null, null, "RocketGunHS_293 1", null, null, null, null, "FuelTankGun_Tank900 1" });
+    public void typeBomberAdjSideslipMinus()
+    {
+        if(!isGuidingBomb)
+        {
+            fSightCurSideslip -= 0.1F;
+            if(fSightCurSideslip < -3F)
+                fSightCurSideslip = -3F;
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightSlip", new java.lang.Object[] {
+                new Integer((int)(fSightCurSideslip * 10F))
+            });
+        }
+    }
 
-    weaponsRegister(localClass, "none", new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null });
-  }
+    public void typeBomberAdjAltitudePlus()
+    {
+        if(!isGuidingBomb)
+        {
+            fSightCurAltitude += 10F;
+            if(fSightCurAltitude > 10000F)
+                fSightCurAltitude = 10000F;
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new java.lang.Object[] {
+                new Integer((int)fSightCurAltitude)
+            });
+            fSightCurDistance = fSightCurAltitude * (float)java.lang.Math.tan(java.lang.Math.toRadians(fSightCurForwardAngle));
+        }
+    }
+
+    public void typeBomberAdjAltitudeMinus()
+    {
+        if(!isGuidingBomb)
+        {
+            fSightCurAltitude -= 10F;
+            if(fSightCurAltitude < 850F)
+                fSightCurAltitude = 850F;
+            com.maddox.il2.game.HUD.log(com.maddox.il2.game.AircraftHotKeys.hudLogWeaponId, "BombsightAltitude", new java.lang.Object[] {
+                new Integer((int)fSightCurAltitude)
+            });
+            fSightCurDistance = fSightCurAltitude * (float)java.lang.Math.tan(java.lang.Math.toRadians(fSightCurForwardAngle));
+        }
+    }
+
+    protected void mydebug(java.lang.String s)
+    {
+    }
+
+    public boolean bToFire;
+    private long tX4Prev;
+    private float deltaAzimuth;
+    private float deltaTangage;
+    private boolean isGuidingBomb;
+    private boolean isMasterAlive;
+
+    static 
+    {
+        java.lang.Class class1 = com.maddox.rts.CLASS.THIS();
+        new NetAircraft.SPAWN(class1);
+        com.maddox.rts.Property.set(class1, "iconFar_shortClassName", "Do-217");
+        com.maddox.rts.Property.set(class1, "meshName", "3do/plane/Do217_K2/hier.him");
+        com.maddox.rts.Property.set(class1, "PaintScheme", new PaintSchemeBMPar02());
+        com.maddox.rts.Property.set(class1, "yearService", 1943F);
+        com.maddox.rts.Property.set(class1, "yearExpired", 1945F);
+        com.maddox.rts.Property.set(class1, "FlightModel", "FlightModels/Do217K-2.fmd");
+        com.maddox.il2.objects.air.Aircraft.weaponTriggersRegister(class1, new int[] {
+            10, 10, 11, 12, 13, 14, 15, 15, 15, 15, 
+            3, 3, 3, 3, 3, 3, 3, 3, 9, 9
+        });
+        com.maddox.il2.objects.air.Aircraft.weaponHooksRegister(class1, new java.lang.String[] {
+            "_MGUN01", "_MGUN10", "_MGUN02", "_MGUN03", "_MGUN04", "_MGUN05", "_MGUN06", "_MGUN07", "_MGUN08", "_MGUN09", 
+            "_ExternalBomb01", "_ExternalBomb01", "_ExternalBomb02", "_ExternalBomb02", "_ExternalBomb03", "_ExternalBomb03", "_ExternalBomb04", "_ExternalBomb04", "_ExternalDev01", "_ExternalDev02"
+        });
+        com.maddox.il2.objects.air.Do217_K2.weaponsRegister(class1, "default", new java.lang.String[] {
+            "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", 
+            null, null, null, null, null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.Do217_K2.weaponsRegister(class1, "2xFritzX", new java.lang.String[] {
+            "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", 
+            "RocketGunFritzX 1", "BombGunNull 1", "RocketGunFritzX 1", "BombGunNull 1", null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.Do217_K2.weaponsRegister(class1, "2xHS293", new java.lang.String[] {
+            "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", 
+            null, null, null, null, "RocketGunHS_293 1", "BombGunNull 1", "RocketGunHS_293 1", "BombGunNull 1", null, null
+        });
+        com.maddox.il2.objects.air.Do217_K2.weaponsRegister(class1, "1xFritzX", new java.lang.String[] {
+            "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", 
+            "RocketGunFritzX 1", null, null, null, null, null, null, null, null, null
+        });
+        com.maddox.il2.objects.air.Do217_K2.weaponsRegister(class1, "1xFritzX+1x300LTank", new java.lang.String[] {
+            "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", 
+            "RocketGunFritzX 1", null, null, null, null, null, null, null, "FuelTankGun_Type_D 1", null
+        });
+        com.maddox.il2.objects.air.Do217_K2.weaponsRegister(class1, "1xHS293+1x300LTank", new java.lang.String[] {
+            "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", 
+            null, null, null, null, "RocketGunHS_293 1", null, null, null, null, "FuelTankGun_Type_D 1"
+        });
+        com.maddox.il2.objects.air.Do217_K2.weaponsRegister(class1, "1xFritzX+1x900LTank", new java.lang.String[] {
+            "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", 
+            "RocketGunFritzX 1", null, null, null, null, null, null, null, "FuelTankGun_Tank900 1", null
+        });
+        com.maddox.il2.objects.air.Do217_K2.weaponsRegister(class1, "1xHS293+1x900LTank", new java.lang.String[] {
+            "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG131tu 750", "MGunMG131t 500", "MGunMG81t 1000", "MGunMG81t 1000", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", "MGunMG81t 300", 
+            null, null, null, null, "RocketGunHS_293 1", null, null, null, null, "FuelTankGun_Tank900 1"
+        });
+        com.maddox.il2.objects.air.Do217_K2.weaponsRegister(class1, "none", new java.lang.String[] {
+            null, null, null, null, null, null, null, null, null, null, 
+            null, null, null, null, null, null, null, null, null, null
+        });
+    }
 }

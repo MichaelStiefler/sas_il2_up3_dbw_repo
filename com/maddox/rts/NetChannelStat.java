@@ -1,6 +1,16 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   NetChannelStat.java
+
 package com.maddox.rts;
 
-public abstract interface NetChannelStat
+
+// Referenced classes of package com.maddox.rts:
+//            NetChannel, NetObj
+
+public interface NetChannelStat
 {
-  public abstract void inc(NetChannel paramNetChannel, NetObj paramNetObj, boolean paramBoolean1, boolean paramBoolean2, int paramInt1, int paramInt2, int paramInt3);
+
+    public abstract void inc(com.maddox.rts.NetChannel netchannel, com.maddox.rts.NetObj netobj, boolean flag, boolean flag1, int i, int j, int k);
 }

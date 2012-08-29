@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CmdAlias.java
+
 package com.maddox.rts.cmd;
 
 import com.maddox.rts.Cmd;
@@ -10,53 +15,63 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class CmdAlias extends Cmd
+public class CmdAlias extends com.maddox.rts.Cmd
 {
-  public static final String REMOVE = "REMOVE";
 
-  public Object exec(CmdEnv paramCmdEnv, Map paramMap)
-  {
-    if (!paramMap.containsKey("_$$")) {
-      return show(paramCmdEnv, "*");
-    }
-    List localList = (List)paramMap.get("_$$");
-    if (paramMap.containsKey("REMOVE")) {
-      if (paramCmdEnv.delAtom("_$$$alias", localList.get(0).toString()))
-        return CmdEnv.RETURN_OK;
-    } else {
-      if (localList.size() == 1) {
-        return show(paramCmdEnv, localList.get(0).toString());
-      }
-      StringBuffer localStringBuffer = new StringBuffer();
-      for (int i = 1; i < localList.size(); i++) {
-        if (i != 1) localStringBuffer.append(' ');
-        localStringBuffer.append(QuoteTokenizer.toToken(localList.get(i).toString()));
-      }
-      if (paramCmdEnv.setAtom("_$$$alias", localList.get(0).toString(), localStringBuffer.toString())) {
-        return CmdEnv.RETURN_OK;
-      }
-    }
-    return null;
-  }
+    public java.lang.Object exec(com.maddox.rts.CmdEnv cmdenv, java.util.Map map)
+    {
+        if(!map.containsKey("_$$"))
+            return show(cmdenv, "*");
+        java.util.List list = (java.util.List)map.get("_$$");
+        if(map.containsKey("REMOVE"))
+        {
+            if(cmdenv.delAtom("_$$$alias", list.get(0).toString()))
+                return com.maddox.rts.CmdEnv.RETURN_OK;
+        } else
+        {
+            if(list.size() == 1)
+                return show(cmdenv, list.get(0).toString());
+            java.lang.StringBuffer stringbuffer = new StringBuffer();
+            for(int i = 1; i < list.size(); i++)
+            {
+                if(i != 1)
+                    stringbuffer.append(' ');
+                stringbuffer.append(com.maddox.util.QuoteTokenizer.toToken(list.get(i).toString()));
+            }
 
-  private Object show(CmdEnv paramCmdEnv, String paramString) {
-    Map localMap = (Map)paramCmdEnv.area().get("_$$$alias");
-    if (localMap != null) {
-      Set localSet = localMap.keySet();
-      Iterator localIterator = localSet.iterator();
-      while (localIterator.hasNext()) {
-        String str1 = (String)localIterator.next();
-        String str2 = (String)localMap.get(str1);
-        INFO_HARD(str1 + " is " + str2);
-      }
-      return CmdEnv.RETURN_OK;
+            if(cmdenv.setAtom("_$$$alias", list.get(0).toString(), stringbuffer.toString()))
+                return com.maddox.rts.CmdEnv.RETURN_OK;
+        }
+        return null;
     }
-    return null;
-  }
 
-  public CmdAlias() {
-    this.param.put("REMOVE", null);
-    this._properties.put("NAME", "alias");
-    this._levelAccess = 2;
-  }
+    private java.lang.Object show(com.maddox.rts.CmdEnv cmdenv, java.lang.String s)
+    {
+        java.util.Map map = (java.util.Map)cmdenv.area().get("_$$$alias");
+        if(map != null)
+        {
+            java.util.Set set = map.keySet();
+            java.lang.String s1;
+            java.lang.String s2;
+            for(java.util.Iterator iterator = set.iterator(); iterator.hasNext(); INFO_HARD(s1 + " is " + s2))
+            {
+                s1 = (java.lang.String)iterator.next();
+                s2 = (java.lang.String)map.get(s1);
+            }
+
+            return com.maddox.rts.CmdEnv.RETURN_OK;
+        } else
+        {
+            return null;
+        }
+    }
+
+    public CmdAlias()
+    {
+        param.put("REMOVE", null);
+        _properties.put("NAME", "alias");
+        _levelAccess = 2;
+    }
+
+    public static final java.lang.String REMOVE = "REMOVE";
 }

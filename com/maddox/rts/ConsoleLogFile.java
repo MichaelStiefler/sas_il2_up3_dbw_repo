@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Console.java
+
 package com.maddox.rts;
 
 import java.io.FileNotFoundException;
@@ -6,49 +11,52 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.util.Calendar;
 
+// Referenced classes of package com.maddox.rts:
+//            ConsoleOut, Console, HomePath
+
 class ConsoleLogFile
-  implements ConsoleOut
+    implements com.maddox.rts.ConsoleOut
 {
-  private static final boolean useCalendar = true;
-  private PrintWriter f;
-  private DateFormat longDate;
-  private DateFormat shortDate;
 
-  public void flush()
-  {
-    this.f.flush();
-  }
-  public void println(String paramString) {
-    this.f.println(paramString);
-  }
-
-  public void type(String paramString) {
-    if (Console.bTypeTimeInLogFile) {
-      Calendar localCalendar = Calendar.getInstance();
-
-      this.f.print("[" + this.shortDate.format(localCalendar.getTime()) + "]\t");
+    public void flush()
+    {
+        f.flush();
     }
-    this.f.print(paramString);
-  }
 
-  public void close()
-  {
-    Calendar localCalendar = Calendar.getInstance();
+    public void println(java.lang.String s)
+    {
+        f.println(s);
+    }
 
-    this.f.println("[" + this.longDate.format(localCalendar.getTime()) + "] -------------- END log session -------------");
+    public void type(java.lang.String s)
+    {
+        if(com.maddox.rts.Console.bTypeTimeInLogFile)
+        {
+            java.util.Calendar calendar = java.util.Calendar.getInstance();
+            f.print("[" + shortDate.format(calendar.getTime()) + "]\t");
+        }
+        f.print(s);
+    }
 
-    this.f.close();
-  }
+    public void close()
+    {
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        f.println("[" + longDate.format(calendar.getTime()) + "] -------------- END log session -------------");
+        f.close();
+    }
 
-  public ConsoleLogFile(String paramString)
-    throws FileNotFoundException
-  {
-    this.f = new PrintWriter(new FileOutputStream(HomePath.toFileSystemName(paramString, 0), true));
+    public ConsoleLogFile(java.lang.String s)
+        throws java.io.FileNotFoundException
+    {
+        f = new PrintWriter(new FileOutputStream(com.maddox.rts.HomePath.toFileSystemName(s, 0), true));
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        longDate = java.text.DateFormat.getDateTimeInstance(2, 2);
+        shortDate = java.text.DateFormat.getTimeInstance(2);
+        f.println("[" + longDate.format(calendar.getTime()) + "] ------------ BEGIN log session -------------");
+    }
 
-    Calendar localCalendar = Calendar.getInstance();
-
-    this.longDate = DateFormat.getDateTimeInstance(2, 2);
-    this.shortDate = DateFormat.getTimeInstance(2);
-    this.f.println("[" + this.longDate.format(localCalendar.getTime()) + "] ------------ BEGIN log session -------------");
-  }
+    private static final boolean useCalendar = true;
+    private java.io.PrintWriter f;
+    private java.text.DateFormat longDate;
+    private java.text.DateFormat shortDate;
 }

@@ -1,40 +1,56 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GLUNurbs.java
+
 package com.maddox.opengl;
+
+
+// Referenced classes of package com.maddox.opengl:
+//            gl
 
 public class GLUNurbs
 {
-  private int pData;
 
-  public GLUNurbs()
-  {
-    this.pData = 0; New(); } 
-  public native void Delete();
+    public GLUNurbs()
+    {
+        pData = 0;
+        New();
+    }
 
-  public native void Property(int paramInt, float paramFloat);
+    public native void Delete();
 
-  public native void GetProperty(int paramInt, float[] paramArrayOfFloat);
+    public native void Property(int i, float f);
 
-  public native void LoadSamplingMatrices(float[] paramArrayOfFloat1, float[] paramArrayOfFloat2, int[] paramArrayOfInt);
+    public native void GetProperty(int i, float af[]);
 
-  public native void BeginSurface();
+    public native void LoadSamplingMatrices(float af[], float af1[], int ai[]);
 
-  public native void EndSurface();
+    public native void BeginSurface();
 
-  public native void Surface(int paramInt1, float[] paramArrayOfFloat1, int paramInt2, float[] paramArrayOfFloat2, int paramInt3, int paramInt4, float[] paramArrayOfFloat3, int paramInt5, int paramInt6, int paramInt7);
+    public native void EndSurface();
 
-  public native void BeginCurve();
+    public native void Surface(int i, float af[], int j, float af1[], int k, int l, float af2[], 
+            int i1, int j1, int k1);
 
-  public native void EndCurve();
+    public native void BeginCurve();
 
-  public native void Curve(int paramInt1, float[] paramArrayOfFloat1, int paramInt2, float[] paramArrayOfFloat2, int paramInt3, int paramInt4);
+    public native void EndCurve();
 
-  public native void BeginTrim();
+    public native void Curve(int i, float af[], int j, float af1[], int k, int l);
 
-  public native void EndTrim();
+    public native void BeginTrim();
 
-  public native void PwlCurve(int paramInt1, float[] paramArrayOfFloat, int paramInt2, int paramInt3);
+    public native void EndTrim();
 
-  private native void New();
+    public native void PwlCurve(int i, float af[], int j, int k);
 
-  static { gl.loadNative();
-  }
+    private native void New();
+
+    private int pData;
+
+    static 
+    {
+        com.maddox.opengl.gl.loadNative();
+    }
 }

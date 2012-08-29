@@ -1,106 +1,116 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   LandConf.java
+
 package com.maddox.il2.engine;
 
 import com.maddox.il2.fm.Atmosphere;
 import com.maddox.rts.IniFile;
 
+// Referenced classes of package com.maddox.il2.engine:
+//            CollideEnvXY
+
 public class LandConf
 {
-  public String heightMap;
-  public String typeMap;
-  public String camouflage = "SUMMER";
-  public int declin = 45;
-  public int month = 6;
-  public String country;
-  public String city;
-  public String rail;
-  public String road;
-  public String highway;
-  public boolean bBig = false;
-  public int outsideMapCell = 2;
-  public String HeightMap;
-  public String[] Fields = new String[32];
-  public String zutiWaterState;
 
-  public int getDefaultMonth(String paramString)
-  {
-    IniFile localIniFile = new IniFile(paramString, 0);
-    return localIniFile.get("WORLDPOS", "MONTH", 6);
-  }
-
-  public void set(String paramString) {
-    IniFile localIniFile = new IniFile(paramString, 0);
-    this.heightMap = localIniFile.getValue("MAP", "HeightMap");
-    this.typeMap = localIniFile.getValue("MAP", "TypeMap");
-
-    this.camouflage = localIniFile.get("WORLDPOS", "CAMOUFLAGE", "SUMMER");
-
-    this.zutiWaterState = localIniFile.get("WORLDPOS", "WATER_STATE", "");
-    if ((this.zutiWaterState == null) || (this.zutiWaterState.trim().length() == 0))
+    public LandConf()
     {
-      if ("WINTER".equals(this.camouflage))
-        this.zutiWaterState = "ICE";
-      else {
-        this.zutiWaterState = "LIQUID";
-      }
+        camouflage = "SUMMER";
+        declin = 45;
+        month = 6;
+        bBig = false;
+        outsideMapCell = 2;
+        Fields = new java.lang.String[32];
     }
 
-    this.declin = localIniFile.get("WORLDPOS", "DECLIN", 45);
-    this.month = localIniFile.get("WORLDPOS", "MONTH", 6);
-
-    int i = localIniFile.get("WORLDPOS", "PRESSURE", 760, 680, 800);
-    int j = localIniFile.get("WORLDPOS", "TEMPERATURE", 15, -50, 50);
-    Atmosphere.set(i, j);
-
-    this.rail = localIniFile.getValue("ROADS", "Rail");
-    this.road = localIniFile.getValue("ROADS", "Road");
-    this.highway = localIniFile.getValue("ROADS", "Highway");
-
-    this.country = localIniFile.getValue("OBJECTS", "Country");
-    this.city = localIniFile.getValue("OBJECTS", "City");
-
-    this.HeightMap = localIniFile.getValue("MAP", "HeightMap");
-
-    this.Fields[0] = localIniFile.getValue("FIELDS", "LowLand0");
-    this.Fields[1] = localIniFile.getValue("FIELDS", "LowLand1");
-    this.Fields[2] = localIniFile.getValue("FIELDS", "LowLand2");
-    this.Fields[3] = localIniFile.getValue("FIELDS", "LowLand3");
-    this.Fields[4] = localIniFile.getValue("FIELDS", "MidLand0");
-    this.Fields[5] = localIniFile.getValue("FIELDS", "MidLand1");
-    this.Fields[6] = localIniFile.getValue("FIELDS", "MidLand2");
-    this.Fields[7] = localIniFile.getValue("FIELDS", "MidLand3");
-    this.Fields[8] = localIniFile.getValue("FIELDS", "Mount0");
-    this.Fields[9] = localIniFile.getValue("FIELDS", "Mount1");
-    this.Fields[10] = localIniFile.getValue("FIELDS", "Mount2");
-    this.Fields[11] = localIniFile.getValue("FIELDS", "Mount3");
-    this.Fields[12] = localIniFile.getValue("FIELDS", "Country0");
-    this.Fields[13] = localIniFile.getValue("FIELDS", "Country1");
-    this.Fields[14] = localIniFile.getValue("FIELDS", "Country2");
-    this.Fields[15] = localIniFile.getValue("FIELDS", "Country3");
-    this.Fields[16] = localIniFile.getValue("FIELDS", "City0");
-    this.Fields[17] = localIniFile.getValue("FIELDS", "City1");
-    this.Fields[18] = localIniFile.getValue("FIELDS", "City2");
-    this.Fields[19] = localIniFile.getValue("FIELDS", "City3");
-    this.Fields[20] = localIniFile.getValue("FIELDS", "AirField0");
-    this.Fields[21] = localIniFile.getValue("FIELDS", "AirField1");
-    this.Fields[22] = localIniFile.getValue("FIELDS", "AirField2");
-    this.Fields[23] = localIniFile.getValue("FIELDS", "AirField3");
-    this.Fields[24] = localIniFile.getValue("FIELDS", "Wood0");
-    this.Fields[25] = localIniFile.getValue("FIELDS", "Wood1");
-    this.Fields[26] = localIniFile.getValue("FIELDS", "Wood2");
-    this.Fields[27] = localIniFile.getValue("FIELDS", "Wood3");
-    this.Fields[28] = localIniFile.getValue("FIELDS", "Water0");
-    this.Fields[29] = localIniFile.getValue("FIELDS", "Water1");
-    this.Fields[30] = localIniFile.getValue("FIELDS", "Water2");
-    this.Fields[31] = localIniFile.getValue("FIELDS", "Water3");
-
-    int k = localIniFile.get("MAP2D_BIG", "OutsideMapCell", -1);
-    if ((k == 8) || (k == 28)) {
-      this.bBig = true;
-      this.outsideMapCell = k;
-    } else {
-      this.bBig = false;
-      this.outsideMapCell = 2;
+    public int getDefaultMonth(java.lang.String s)
+    {
+        com.maddox.rts.IniFile inifile = new IniFile(s, 0);
+        return inifile.get("WORLDPOS", "MONTH", 6);
     }
-    CollideEnvXY.STATIC_HMAX = localIniFile.get("MAP", "STATIC_HMAX", 50.0F, 50.0F, 3000.0F);
-  }
+
+    public void set(java.lang.String s)
+    {
+        com.maddox.rts.IniFile inifile = new IniFile(s, 0);
+        heightMap = inifile.getValue("MAP", "HeightMap");
+        typeMap = inifile.getValue("MAP", "TypeMap");
+        camouflage = inifile.get("WORLDPOS", "CAMOUFLAGE", "SUMMER");
+        zutiWaterState = inifile.get("WORLDPOS", "WATER_STATE", "");
+        if(zutiWaterState == null || zutiWaterState.trim().length() == 0)
+            if("WINTER".equals(camouflage))
+                zutiWaterState = "ICE";
+            else
+                zutiWaterState = "LIQUID";
+        declin = inifile.get("WORLDPOS", "DECLIN", 45);
+        month = inifile.get("WORLDPOS", "MONTH", 6);
+        int i = inifile.get("WORLDPOS", "PRESSURE", 760, 680, 800);
+        int j = inifile.get("WORLDPOS", "TEMPERATURE", 15, -50, 50);
+        com.maddox.il2.fm.Atmosphere.set(i, j);
+        rail = inifile.getValue("ROADS", "Rail");
+        road = inifile.getValue("ROADS", "Road");
+        highway = inifile.getValue("ROADS", "Highway");
+        country = inifile.getValue("OBJECTS", "Country");
+        city = inifile.getValue("OBJECTS", "City");
+        HeightMap = inifile.getValue("MAP", "HeightMap");
+        Fields[0] = inifile.getValue("FIELDS", "LowLand0");
+        Fields[1] = inifile.getValue("FIELDS", "LowLand1");
+        Fields[2] = inifile.getValue("FIELDS", "LowLand2");
+        Fields[3] = inifile.getValue("FIELDS", "LowLand3");
+        Fields[4] = inifile.getValue("FIELDS", "MidLand0");
+        Fields[5] = inifile.getValue("FIELDS", "MidLand1");
+        Fields[6] = inifile.getValue("FIELDS", "MidLand2");
+        Fields[7] = inifile.getValue("FIELDS", "MidLand3");
+        Fields[8] = inifile.getValue("FIELDS", "Mount0");
+        Fields[9] = inifile.getValue("FIELDS", "Mount1");
+        Fields[10] = inifile.getValue("FIELDS", "Mount2");
+        Fields[11] = inifile.getValue("FIELDS", "Mount3");
+        Fields[12] = inifile.getValue("FIELDS", "Country0");
+        Fields[13] = inifile.getValue("FIELDS", "Country1");
+        Fields[14] = inifile.getValue("FIELDS", "Country2");
+        Fields[15] = inifile.getValue("FIELDS", "Country3");
+        Fields[16] = inifile.getValue("FIELDS", "City0");
+        Fields[17] = inifile.getValue("FIELDS", "City1");
+        Fields[18] = inifile.getValue("FIELDS", "City2");
+        Fields[19] = inifile.getValue("FIELDS", "City3");
+        Fields[20] = inifile.getValue("FIELDS", "AirField0");
+        Fields[21] = inifile.getValue("FIELDS", "AirField1");
+        Fields[22] = inifile.getValue("FIELDS", "AirField2");
+        Fields[23] = inifile.getValue("FIELDS", "AirField3");
+        Fields[24] = inifile.getValue("FIELDS", "Wood0");
+        Fields[25] = inifile.getValue("FIELDS", "Wood1");
+        Fields[26] = inifile.getValue("FIELDS", "Wood2");
+        Fields[27] = inifile.getValue("FIELDS", "Wood3");
+        Fields[28] = inifile.getValue("FIELDS", "Water0");
+        Fields[29] = inifile.getValue("FIELDS", "Water1");
+        Fields[30] = inifile.getValue("FIELDS", "Water2");
+        Fields[31] = inifile.getValue("FIELDS", "Water3");
+        int k = inifile.get("MAP2D_BIG", "OutsideMapCell", -1);
+        if(k == 8 || k == 28)
+        {
+            bBig = true;
+            outsideMapCell = k;
+        } else
+        {
+            bBig = false;
+            outsideMapCell = 2;
+        }
+        com.maddox.il2.engine.CollideEnvXY.STATIC_HMAX = inifile.get("MAP", "STATIC_HMAX", 50F, 50F, 3000F);
+    }
+
+    public java.lang.String heightMap;
+    public java.lang.String typeMap;
+    public java.lang.String camouflage;
+    public int declin;
+    public int month;
+    public java.lang.String country;
+    public java.lang.String city;
+    public java.lang.String rail;
+    public java.lang.String road;
+    public java.lang.String highway;
+    public boolean bBig;
+    public int outsideMapCell;
+    public java.lang.String HeightMap;
+    public java.lang.String Fields[];
+    public java.lang.String zutiWaterState;
 }

@@ -1,34 +1,108 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Property.java
+
 package com.maddox.rts;
 
-class PropertyString extends Property
+
+// Referenced classes of package com.maddox.rts:
+//            Property, Finger
+
+class PropertyString extends com.maddox.rts.Property
 {
-  private String value = "";
 
-  public PropertyString(Object paramObject, String paramString) { super(paramObject, paramString);
-    invokeObserver(lastMapInt, lastAction); }
+    public PropertyString(java.lang.Object obj, java.lang.String s)
+    {
+        super(obj, s);
+        value = "";
+        invokeObserver(lastMapInt, lastAction);
+    }
 
-  public PropertyString(Object paramObject, String paramString1, String paramString2) {
-    super(paramObject, paramString1);
-    this.value = paramString2;
-    invokeObserver(lastMapInt, lastAction);
-  }
-  public Class classValue() { return String.class; } 
-  public int intValue() { try { return Integer.parseInt(this.value); } catch (Exception localException) {  }
-    return super.intValue(); } 
-  public float floatValue() { try { return Float.parseFloat(this.value); } catch (Exception localException) {  }
-    return super.floatValue(); } 
-  public long longValue() { try { return Long.parseLong(this.value); } catch (Exception localException) {  }
-    return super.longValue(); } 
-  public double doubleValue() { try { return Double.parseDouble(this.value); } catch (Exception localException) {  }
-    return super.doubleValue(); } 
-  public Object value() { return this.value; } 
-  public String stringValue() { return this.value; } 
-  public long fingerValue(long paramLong) { return Finger.incLong(paramLong, this.value); } 
-  public void set(int paramInt) { this.value = Integer.toString(paramInt); } 
-  public void set(float paramFloat) { this.value = Float.toString(paramFloat); } 
-  public void set(long paramLong) { this.value = Long.toString(paramLong); } 
-  public void set(double paramDouble) { this.value = Double.toString(paramDouble); } 
-  public void set(String paramString) {
-    this.value = paramString;
-  }
+    public PropertyString(java.lang.Object obj, java.lang.String s, java.lang.String s1)
+    {
+        super(obj, s);
+        value = "";
+        value = s1;
+        invokeObserver(lastMapInt, lastAction);
+    }
+
+    public java.lang.Class classValue()
+    {
+        return java.lang.String.class;
+    }
+
+    public int intValue()
+    {
+        return java.lang.Integer.parseInt(value);
+        java.lang.Exception exception;
+        exception;
+        return super.intValue();
+    }
+
+    public float floatValue()
+    {
+        return java.lang.Float.parseFloat(value);
+        java.lang.Exception exception;
+        exception;
+        return super.floatValue();
+    }
+
+    public long longValue()
+    {
+        return java.lang.Long.parseLong(value);
+        java.lang.Exception exception;
+        exception;
+        return super.longValue();
+    }
+
+    public double doubleValue()
+    {
+        return java.lang.Double.parseDouble(value);
+        java.lang.Exception exception;
+        exception;
+        return super.doubleValue();
+    }
+
+    public java.lang.Object value()
+    {
+        return value;
+    }
+
+    public java.lang.String stringValue()
+    {
+        return value;
+    }
+
+    public long fingerValue(long l)
+    {
+        return com.maddox.rts.Finger.incLong(l, value);
+    }
+
+    public void set(int i)
+    {
+        value = java.lang.Integer.toString(i);
+    }
+
+    public void set(float f)
+    {
+        value = java.lang.Float.toString(f);
+    }
+
+    public void set(long l)
+    {
+        value = java.lang.Long.toString(l);
+    }
+
+    public void set(double d)
+    {
+        value = java.lang.Double.toString(d);
+    }
+
+    public void set(java.lang.String s)
+    {
+        value = s;
+    }
+
+    private java.lang.String value;
 }

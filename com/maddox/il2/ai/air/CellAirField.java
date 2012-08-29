@@ -1,214 +1,288 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CellAirField.java
+
 package com.maddox.il2.ai.air;
 
 import com.maddox.JGP.Point3d;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class CellAirField extends CellObject
-  implements Serializable
+// Referenced classes of package com.maddox.il2.ai.air:
+//            CellObject, CellAirPlane, CellTools
+
+public class CellAirField extends com.maddox.il2.ai.air.CellObject
+    implements java.io.Serializable
 {
-  private Point3d leftUpperCorner = new Point3d();
 
-  private int resX = 0; private int resY = 0;
-
-  public Point3d leftUpperCorner()
-  {
-    return this.leftUpperCorner; } 
-  public void setLeftUpperCorner(Point3d paramPoint3d) { this.leftUpperCorner.set(paramPoint3d);
-  }
-
-  public boolean findPlaceForAirPlane(CellAirPlane paramCellAirPlane)
-  {
-    if (!paramCellAirPlane.checkAirFieldSize(this)) return false;
-    if (!paramCellAirPlane.checkAirFieldCapacity(this)) return false;
-    for (int i = 0; i <= getHeight() - paramCellAirPlane.getHeight(); i++) {
-      for (int j = 0; j <= getWidth() - paramCellAirPlane.getWidth(); j++) {
-        if (isThereFreePlace(paramCellAirPlane, j, i)) {
-          this.resX = j;
-          this.resY = i;
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  public int resX()
-  {
-    return this.resX; } 
-  public int resY() { return this.resY;
-  }
-
-  public boolean isThereFreePlace(CellAirPlane paramCellAirPlane, int paramInt1, int paramInt2)
-  {
-    if (getCells() == null) return false;
-    for (int i = paramInt2; i < paramInt2 + paramCellAirPlane.getHeight(); i++) {
-      for (int j = paramInt1; j < paramInt1 + paramCellAirPlane.getWidth(); j++) {
-        if ((getCells()[j][i] != null) && (paramCellAirPlane.getCells()[(j - paramInt1)][(i - paramInt2)] != null)) return false;
-        if (paramCellAirPlane.getCells()[(j - paramInt1)][(i - paramInt2)] == null)
-          continue;
-        for (int k = i; k < getHeight(); k++) {
-          if ((getCells()[j][k] != null) && 
-            (getCells()[j][k] != this)) return false;
-        }
-      }
+    public com.maddox.JGP.Point3d leftUpperCorner()
+    {
+        return leftUpperCorner;
     }
 
-    return true;
-  }
-
-  public void placeAirPlane(CellAirPlane paramCellAirPlane, int paramInt1, int paramInt2)
-  {
-    if (getCells() == null) return;
-    paramCellAirPlane.setWorldCoordinates(getXCoordinate() + paramInt1 * getCellSize(), getYCoordinate() + paramInt2 * getCellSize());
-    for (int i = 0; i < paramCellAirPlane.getHeight(); i++)
-      for (int j = 0; j < paramCellAirPlane.getWidth(); j++) {
-        if (paramCellAirPlane.getCells()[j][i] == null) continue; getCells()[(paramInt1 + j)][(paramInt2 + i)] = paramCellAirPlane;
-      }
-  }
-
-  public void placeAirPlaneId(CellAirPlane paramCellAirPlane, int paramInt1, int paramInt2, String paramString) {
-    if (getCells() == null) return;
-    paramCellAirPlane.setWorldCoordinates(getXCoordinate() + paramInt1 * getCellSize(), getYCoordinate() + paramInt2 * getCellSize());
-    for (int i = 0; i < paramCellAirPlane.getHeight(); i++)
-      for (int j = 0; j < paramCellAirPlane.getWidth(); j++)
-        if (paramCellAirPlane.getCells()[j][i] != null) {
-          getCells()[(paramInt1 + j)][(paramInt2 + i)] = paramCellAirPlane;
-          getCells()[(paramInt1 + j)][(paramInt2 + i)].setId(paramString);
-        }
-  }
-
-  public boolean removeAirPlane(CellAirPlane paramCellAirPlane)
-  {
-    if (getCells() == null) return false;
-    int i = 0;
-    for (int j = 0; j < getCells().length; j++) {
-      for (int k = 0; k < getCells()[0].length; k++) {
-        if (getCells()[j][k] != paramCellAirPlane)
-          continue;
-        getCells()[j][k] = null;
-        i = 1;
-      }
+    public void setLeftUpperCorner(com.maddox.JGP.Point3d point3d)
+    {
+        leftUpperCorner.set(point3d);
     }
 
-    return i;
-  }
-
-  public void replaceAirPlane(CellAirPlane paramCellAirPlane, int paramInt1, int paramInt2)
-  {
-    if (getCells() == null) return;
-    for (int i = 0; i < paramCellAirPlane.getWidth(); i++)
-      for (int j = 0; j < paramCellAirPlane.getHeight(); j++) {
-        if (getCells()[i][j] != paramCellAirPlane) continue; getCells()[(paramInt1 + i)][(paramInt2 + j)] = null;
-      }
-  }
-
-  public void freeCells()
-  {
-    if (getCells() == null) return;
-    for (int i = 0; i < getCells().length; i++)
-      for (int j = 0; j < getCells()[0].length; j++)
-        if (getCells()[i][j] != this)
-          getCells()[i][j] = null;
-  }
-
-  public Point3d getLeftUpperPoint(ArrayList paramArrayList)
-  {
-    Point3d localPoint3d1 = new Point3d();
-    double d1 = 1000.0D; double d2 = -1000.0D;
-    for (int i = 0; i < paramArrayList.size(); i++) {
-      Point3d localPoint3d2 = (Point3d)paramArrayList.get(i);
-      if (localPoint3d2.x < d1) d1 = localPoint3d2.x;
-      if (localPoint3d2.y <= d2) continue; d2 = localPoint3d2.y;
-    }
-    localPoint3d1.set(d1, d2, 0.0D);
-    return localPoint3d1;
-  }
-
-  public Point3d getRightDownPoint(ArrayList paramArrayList)
-  {
-    Point3d localPoint3d1 = new Point3d();
-    double d1 = -1000.0D; double d2 = 1000.0D;
-    for (int i = 0; i < paramArrayList.size(); i++) {
-      Point3d localPoint3d2 = (Point3d)paramArrayList.get(i);
-      if (localPoint3d2.x > d1) d1 = localPoint3d2.x;
-      if (localPoint3d2.y >= d2) continue; d2 = localPoint3d2.y;
-    }
-    localPoint3d1.set(d1, d2, 0.0D);
-    return localPoint3d1;
-  }
-
-  public void fieldInitWithComplexPoly(ArrayList paramArrayList, double paramDouble)
-  {
-    Point3d localPoint3d1 = new Point3d();
-    Point3d localPoint3d2 = new Point3d();
-    Point3d localPoint3d3 = new Point3d();
-    Point3d localPoint3d4 = new Point3d();
-    setCellSize(paramDouble);
-
-    Point3d localPoint3d5 = getLeftUpperPoint(paramArrayList);
-    setLeftUpperCorner(localPoint3d5);
-
-    Point3d localPoint3d6 = getRightDownPoint(paramArrayList);
-
-    int i = (int)(Math.abs(localPoint3d6.x - localPoint3d5.x) / paramDouble);
-    int j = (int)(Math.abs(localPoint3d6.y - localPoint3d5.y) / paramDouble);
-
-    CellObject[][] arrayOfCellObject = new CellObject[i][j];
-    setCells(arrayOfCellObject);
-    clearCells();
-
-    for (int k = 0; k < getWidth(); k++)
-      for (int m = 0; m < getHeight(); m++)
-      {
-        localPoint3d5.x += k * paramDouble;
-        localPoint3d5.y -= m * paramDouble;
-
-        localPoint3d2.x = (localPoint3d5.x + k * paramDouble + paramDouble);
-        localPoint3d5.y -= m * paramDouble;
-
-        localPoint3d5.x += k * paramDouble;
-        localPoint3d3.y = (localPoint3d5.y - m * paramDouble + paramDouble);
-
-        localPoint3d4.x = (localPoint3d5.x + k * paramDouble + paramDouble);
-        localPoint3d4.y = (localPoint3d5.y - m * paramDouble + paramDouble);
-
-        if ((CellTools.belongsToComplex(paramArrayList, localPoint3d1)) && (CellTools.belongsToComplex(paramArrayList, localPoint3d2)) && (CellTools.belongsToComplex(paramArrayList, localPoint3d3)) && (CellTools.belongsToComplex(paramArrayList, localPoint3d4)))
+    public boolean findPlaceForAirPlane(com.maddox.il2.ai.air.CellAirPlane cellairplane)
+    {
+        if(!cellairplane.checkAirFieldSize(this))
+            return false;
+        if(!cellairplane.checkAirFieldCapacity(this))
+            return false;
+        for(int i = 0; i <= getHeight() - cellairplane.getHeight(); i++)
         {
-          getCells()[k][m] = null;
+            for(int j = 0; j <= getWidth() - cellairplane.getWidth(); j++)
+                if(isThereFreePlace(cellairplane, j, i))
+                {
+                    resX = j;
+                    resY = i;
+                    return true;
+                }
+
         }
-        else getCells()[k][m] = this;
-      }
-  }
 
-  public CellObject getClone()
-  {
-    if (getCells() == null) return null;
-    CellObject[][] arrayOfCellObject = new CellObject[getWidth()][getHeight()];
-    for (int i = 0; i < getCells().length; i++) {
-      for (int j = 0; j < getCells()[0].length; j++) {
-        arrayOfCellObject[i][j] = getCells()[i][j];
-      }
+        return false;
     }
-    CellAirField localCellAirField = new CellAirField(arrayOfCellObject, leftUpperCorner());
-    localCellAirField.setCellSize(getCellSize());
-    return localCellAirField;
-  }
 
-  public CellAirField(CellObject[][] paramArrayOfCellObject)
-  {
-    super(paramArrayOfCellObject);
-  }
+    public int resX()
+    {
+        return resX;
+    }
 
-  public CellAirField(CellObject[][] paramArrayOfCellObject, Point3d paramPoint3d)
-  {
-    super(paramArrayOfCellObject);
-    setLeftUpperCorner(paramPoint3d);
-  }
+    public int resY()
+    {
+        return resY;
+    }
 
-  public CellAirField(CellObject[][] paramArrayOfCellObject, ArrayList paramArrayList, double paramDouble)
-  {
-    super(paramArrayOfCellObject);
-    fieldInitWithComplexPoly(paramArrayList, paramDouble);
-  }
+    public boolean isThereFreePlace(com.maddox.il2.ai.air.CellAirPlane cellairplane, int i, int j)
+    {
+        if(getCells() == null)
+            return false;
+        for(int k = j; k < j + cellairplane.getHeight(); k++)
+        {
+label0:
+            for(int l = i; l < i + cellairplane.getWidth(); l++)
+            {
+                if(getCells()[l][k] != null && cellairplane.getCells()[l - i][k - j] != null)
+                    return false;
+                if(cellairplane.getCells()[l - i][k - j] == null)
+                    continue;
+                int i1 = k;
+                do
+                {
+                    if(i1 >= getHeight())
+                        continue label0;
+                    if(getCells()[l][i1] != null && getCells()[l][i1] != this)
+                        return false;
+                    i1++;
+                } while(true);
+            }
+
+        }
+
+        return true;
+    }
+
+    public void placeAirPlane(com.maddox.il2.ai.air.CellAirPlane cellairplane, int i, int j)
+    {
+        if(getCells() == null)
+            return;
+        cellairplane.setWorldCoordinates(getXCoordinate() + (double)i * getCellSize(), getYCoordinate() + (double)j * getCellSize());
+        for(int k = 0; k < cellairplane.getHeight(); k++)
+        {
+            for(int l = 0; l < cellairplane.getWidth(); l++)
+                if(cellairplane.getCells()[l][k] != null)
+                    getCells()[i + l][j + k] = cellairplane;
+
+        }
+
+    }
+
+    public void placeAirPlaneId(com.maddox.il2.ai.air.CellAirPlane cellairplane, int i, int j, java.lang.String s)
+    {
+        if(getCells() == null)
+            return;
+        cellairplane.setWorldCoordinates(getXCoordinate() + (double)i * getCellSize(), getYCoordinate() + (double)j * getCellSize());
+        for(int k = 0; k < cellairplane.getHeight(); k++)
+        {
+            for(int l = 0; l < cellairplane.getWidth(); l++)
+                if(cellairplane.getCells()[l][k] != null)
+                {
+                    getCells()[i + l][j + k] = cellairplane;
+                    getCells()[i + l][j + k].setId(s);
+                }
+
+        }
+
+    }
+
+    public boolean removeAirPlane(com.maddox.il2.ai.air.CellAirPlane cellairplane)
+    {
+        if(getCells() == null)
+            return false;
+        boolean flag = false;
+        for(int i = 0; i < getCells().length; i++)
+        {
+            for(int j = 0; j < getCells()[0].length; j++)
+                if(getCells()[i][j] == cellairplane)
+                {
+                    getCells()[i][j] = null;
+                    flag = true;
+                }
+
+        }
+
+        return flag;
+    }
+
+    public void replaceAirPlane(com.maddox.il2.ai.air.CellAirPlane cellairplane, int i, int j)
+    {
+        if(getCells() == null)
+            return;
+        for(int k = 0; k < cellairplane.getWidth(); k++)
+        {
+            for(int l = 0; l < cellairplane.getHeight(); l++)
+                if(getCells()[k][l] == cellairplane)
+                    getCells()[i + k][j + l] = null;
+
+        }
+
+    }
+
+    public void freeCells()
+    {
+        if(getCells() == null)
+            return;
+        for(int i = 0; i < getCells().length; i++)
+        {
+            for(int j = 0; j < getCells()[0].length; j++)
+                if(getCells()[i][j] != this)
+                    getCells()[i][j] = null;
+
+        }
+
+    }
+
+    public com.maddox.JGP.Point3d getLeftUpperPoint(java.util.ArrayList arraylist)
+    {
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        double d = 1000D;
+        double d1 = -1000D;
+        for(int i = 0; i < arraylist.size(); i++)
+        {
+            com.maddox.JGP.Point3d point3d1 = (com.maddox.JGP.Point3d)arraylist.get(i);
+            if(point3d1.x < d)
+                d = point3d1.x;
+            if(point3d1.y > d1)
+                d1 = point3d1.y;
+        }
+
+        point3d.set(d, d1, 0.0D);
+        return point3d;
+    }
+
+    public com.maddox.JGP.Point3d getRightDownPoint(java.util.ArrayList arraylist)
+    {
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        double d = -1000D;
+        double d1 = 1000D;
+        for(int i = 0; i < arraylist.size(); i++)
+        {
+            com.maddox.JGP.Point3d point3d1 = (com.maddox.JGP.Point3d)arraylist.get(i);
+            if(point3d1.x > d)
+                d = point3d1.x;
+            if(point3d1.y < d1)
+                d1 = point3d1.y;
+        }
+
+        point3d.set(d, d1, 0.0D);
+        return point3d;
+    }
+
+    public void fieldInitWithComplexPoly(java.util.ArrayList arraylist, double d)
+    {
+        com.maddox.JGP.Point3d point3d = new Point3d();
+        com.maddox.JGP.Point3d point3d1 = new Point3d();
+        com.maddox.JGP.Point3d point3d2 = new Point3d();
+        com.maddox.JGP.Point3d point3d3 = new Point3d();
+        setCellSize(d);
+        com.maddox.JGP.Point3d point3d4 = getLeftUpperPoint(arraylist);
+        setLeftUpperCorner(point3d4);
+        com.maddox.JGP.Point3d point3d5 = getRightDownPoint(arraylist);
+        int i = (int)(java.lang.Math.abs(point3d5.x - point3d4.x) / d);
+        int j = (int)(java.lang.Math.abs(point3d5.y - point3d4.y) / d);
+        com.maddox.il2.ai.air.CellObject acellobject[][] = new com.maddox.il2.ai.air.CellObject[i][j];
+        setCells(acellobject);
+        clearCells();
+        for(int k = 0; k < getWidth(); k++)
+        {
+            for(int l = 0; l < getHeight(); l++)
+            {
+                point3d.x = point3d4.x + (double)k * d;
+                point3d.y = point3d4.y - (double)l * d;
+                point3d1.x = point3d4.x + (double)k * d + d;
+                point3d1.y = point3d4.y - (double)l * d;
+                point3d2.x = point3d4.x + (double)k * d;
+                point3d2.y = (point3d4.y - (double)l * d) + d;
+                point3d3.x = point3d4.x + (double)k * d + d;
+                point3d3.y = (point3d4.y - (double)l * d) + d;
+                if(com.maddox.il2.ai.air.CellTools.belongsToComplex(arraylist, point3d) && com.maddox.il2.ai.air.CellTools.belongsToComplex(arraylist, point3d1) && com.maddox.il2.ai.air.CellTools.belongsToComplex(arraylist, point3d2) && com.maddox.il2.ai.air.CellTools.belongsToComplex(arraylist, point3d3))
+                    getCells()[k][l] = null;
+                else
+                    getCells()[k][l] = this;
+            }
+
+        }
+
+    }
+
+    public com.maddox.il2.ai.air.CellObject getClone()
+    {
+        if(getCells() == null)
+            return null;
+        com.maddox.il2.ai.air.CellObject acellobject[][] = new com.maddox.il2.ai.air.CellObject[getWidth()][getHeight()];
+        for(int i = 0; i < getCells().length; i++)
+        {
+            for(int j = 0; j < getCells()[0].length; j++)
+                acellobject[i][j] = getCells()[i][j];
+
+        }
+
+        com.maddox.il2.ai.air.CellAirField cellairfield = new CellAirField(acellobject, leftUpperCorner());
+        cellairfield.setCellSize(getCellSize());
+        return cellairfield;
+    }
+
+    public CellAirField(com.maddox.il2.ai.air.CellObject acellobject[][])
+    {
+        super(acellobject);
+        leftUpperCorner = new Point3d();
+        resX = 0;
+        resY = 0;
+    }
+
+    public CellAirField(com.maddox.il2.ai.air.CellObject acellobject[][], com.maddox.JGP.Point3d point3d)
+    {
+        super(acellobject);
+        leftUpperCorner = new Point3d();
+        resX = 0;
+        resY = 0;
+        setLeftUpperCorner(point3d);
+    }
+
+    public CellAirField(com.maddox.il2.ai.air.CellObject acellobject[][], java.util.ArrayList arraylist, double d)
+    {
+        super(acellobject);
+        leftUpperCorner = new Point3d();
+        resX = 0;
+        resY = 0;
+        fieldInitWithComplexPoly(arraylist, d);
+    }
+
+    private com.maddox.JGP.Point3d leftUpperCorner;
+    private int resX;
+    private int resY;
 }

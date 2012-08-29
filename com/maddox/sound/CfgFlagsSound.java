@@ -1,154 +1,173 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   CfgFlagsSound.java
+
 package com.maddox.sound;
 
 import com.maddox.rts.CfgFlags;
 import com.maddox.rts.CfgTools;
 import com.maddox.rts.IniFile;
 
+// Referenced classes of package com.maddox.sound:
+//            CfgFlagsInfo, AudioDevice
+
 public class CfgFlagsSound
-  implements CfgFlags
+    implements com.maddox.rts.CfgFlags
 {
-  String name;
-  CfgFlagsInfo[] flags;
-  boolean[] applyState;
-  String sectName = null;
-  IniFile ini = null;
 
-  public CfgFlagsSound(String paramString, CfgFlagsInfo[] paramArrayOfCfgFlagsInfo)
-  {
-    this.name = paramString;
-    this.flags = paramArrayOfCfgFlagsInfo;
-    this.applyState = new boolean[paramArrayOfCfgFlagsInfo.length];
-    for (int i = 0; i < paramArrayOfCfgFlagsInfo.length; i++) {
-      this.applyState[i] = true;
-      paramArrayOfCfgFlagsInfo[i].value = (AudioDevice.getControl(paramArrayOfCfgFlagsInfo[i].code) != 0);
+    public CfgFlagsSound(java.lang.String s, com.maddox.sound.CfgFlagsInfo acfgflagsinfo[])
+    {
+        sectName = null;
+        ini = null;
+        name = s;
+        flags = acfgflagsinfo;
+        applyState = new boolean[acfgflagsinfo.length];
+        for(int i = 0; i < acfgflagsinfo.length; i++)
+        {
+            applyState[i] = true;
+            acfgflagsinfo[i].value = com.maddox.sound.AudioDevice.getControl(acfgflagsinfo[i].code) != 0;
+        }
+
     }
-  }
 
-  public int firstFlag()
-  {
-    return 0;
-  }
-
-  public int countFlags()
-  {
-    return this.flags.length;
-  }
-
-  public boolean defaultFlag(int paramInt)
-  {
-    return this.flags[paramInt].isDefault;
-  }
-
-  public String nameFlag(int paramInt)
-  {
-    return this.flags[paramInt].name;
-  }
-
-  public boolean isPermanentFlag(int paramInt)
-  {
-    return true;
-  }
-
-  public boolean isEnabledFlag(int paramInt)
-  {
-    return (AudioDevice.isControlEnabled(this.flags[paramInt].code)) && (AudioDevice._cur_en);
-  }
-
-  public boolean get(int paramInt)
-  {
-    return this.flags[paramInt].value;
-  }
-
-  public void set(int paramInt, boolean paramBoolean)
-  {
-    this.flags[paramInt].value = paramBoolean;
-  }
-
-  public int apply(int paramInt)
-  {
-    this.applyState[paramInt] = AudioDevice.setControl(this.flags[paramInt].code, this.flags[paramInt].value ? 1 : 0);
-    return 0;
-  }
-
-  public boolean needApply()
-  {
-    int i = 0;
-    for (int j = 0; j < this.flags.length; j++) {
-      if (this.applyState[j] == 0) {
-        i = 1;
-        break;
-      }
+    public int firstFlag()
+    {
+        return 0;
     }
-    return i;
-  }
 
-  public int applyStatus(int paramInt)
-  {
-    return 0;
-  }
-
-  public String name()
-  {
-    return this.name;
-  }
-
-  public boolean isPermanent()
-  {
-    return true;
-  }
-
-  public boolean isEnabled()
-  {
-    return true;
-  }
-
-  public void load(IniFile paramIniFile, String paramString)
-  {
-    this.ini = paramIniFile;
-    this.sectName = paramString;
-    CfgTools.load(this, paramIniFile, paramString);
-  }
-
-  public IniFile loadedSectFile()
-  {
-    return this.ini;
-  }
-
-  public String loadedSectName()
-  {
-    return this.sectName;
-  }
-
-  public void save()
-  {
-    save(this.ini, this.sectName);
-  }
-
-  public void save(IniFile paramIniFile, String paramString)
-  {
-    this.ini = paramIniFile;
-    this.sectName = paramString;
-    CfgTools.save(false, this, paramIniFile, paramString);
-  }
-
-  public int apply()
-  {
-    for (int i = 0; i < this.flags.length; i++) {
-      apply(i);
+    public int countFlags()
+    {
+        return flags.length;
     }
-    return 0;
-  }
 
-  public int applyStatus()
-  {
-    return 0;
-  }
+    public boolean defaultFlag(int i)
+    {
+        return flags[i].isDefault;
+    }
 
-  public void applyExtends(int paramInt)
-  {
-  }
+    public java.lang.String nameFlag(int i)
+    {
+        return flags[i].name;
+    }
 
-  public void reset()
-  {
-  }
+    public boolean isPermanentFlag(int i)
+    {
+        return true;
+    }
+
+    public boolean isEnabledFlag(int i)
+    {
+        return com.maddox.sound.AudioDevice.isControlEnabled(flags[i].code) && com.maddox.sound.AudioDevice._cur_en;
+    }
+
+    public boolean get(int i)
+    {
+        return flags[i].value;
+    }
+
+    public void set(int i, boolean flag)
+    {
+        flags[i].value = flag;
+    }
+
+    public int apply(int i)
+    {
+        applyState[i] = com.maddox.sound.AudioDevice.setControl(flags[i].code, flags[i].value ? 1 : 0);
+        return 0;
+    }
+
+    public boolean needApply()
+    {
+        boolean flag = false;
+        int i = 0;
+        do
+        {
+            if(i >= flags.length)
+                break;
+            if(!applyState[i])
+            {
+                flag = true;
+                break;
+            }
+            i++;
+        } while(true);
+        return flag;
+    }
+
+    public int applyStatus(int i)
+    {
+        return 0;
+    }
+
+    public java.lang.String name()
+    {
+        return name;
+    }
+
+    public boolean isPermanent()
+    {
+        return true;
+    }
+
+    public boolean isEnabled()
+    {
+        return true;
+    }
+
+    public void load(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        ini = inifile;
+        sectName = s;
+        com.maddox.rts.CfgTools.load(this, inifile, s);
+    }
+
+    public com.maddox.rts.IniFile loadedSectFile()
+    {
+        return ini;
+    }
+
+    public java.lang.String loadedSectName()
+    {
+        return sectName;
+    }
+
+    public void save()
+    {
+        save(ini, sectName);
+    }
+
+    public void save(com.maddox.rts.IniFile inifile, java.lang.String s)
+    {
+        ini = inifile;
+        sectName = s;
+        com.maddox.rts.CfgTools.save(false, this, inifile, s);
+    }
+
+    public int apply()
+    {
+        for(int i = 0; i < flags.length; i++)
+            apply(i);
+
+        return 0;
+    }
+
+    public int applyStatus()
+    {
+        return 0;
+    }
+
+    public void applyExtends(int i)
+    {
+    }
+
+    public void reset()
+    {
+    }
+
+    java.lang.String name;
+    com.maddox.sound.CfgFlagsInfo flags[];
+    boolean applyState[];
+    java.lang.String sectName;
+    com.maddox.rts.IniFile ini;
 }

@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   Ship.java
+
 package com.maddox.il2.objects.ships;
 
 import com.maddox.il2.ai.ground.TgtShip;
@@ -5,1313 +10,1330 @@ import com.maddox.il2.objects.vehicles.radios.TypeHasBeacon;
 import com.maddox.il2.objects.vehicles.radios.TypeHasHayRake;
 import com.maddox.rts.SectFile;
 
+// Referenced classes of package com.maddox.il2.objects.ships:
+//            BigshipGeneric, ShipGeneric, TestRunway, WeakBody
+
 public abstract class Ship
 {
-  static
-  {
-    new BigshipGeneric.SPAWN(G5.class);
-
-    new BigshipGeneric.SPAWN(MO4.class);
+    public static class RwyTranspSqr extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.ships.TestRunway
+    {
 
-    new BigshipGeneric.SPAWN(BBK_1942.class);
+        public RwyTranspSqr()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(BBK1124_1943.class);
+        public RwyTranspSqr(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(Destroyer_USSR_Type7.class);
+    public static class RwyTranspWide extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.ships.TestRunway
+    {
 
-    new BigshipGeneric.SPAWN(Destroyer_USSR_Type7_44.class);
+        public RwyTranspWide()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(Tral.class);
+        public RwyTranspWide(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new ShipGeneric.SPAWN(Shuka.class);
+    public static class RwyTransp extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.ships.TestRunway
+    {
 
-    new BigshipGeneric.SPAWN(ShukaP.class);
+        public RwyTransp()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(Aurora.class);
+        public RwyTransp(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(Marat.class);
+    public static class RwySteelLow extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.ships.TestRunway
+    {
 
-    new BigshipGeneric.SPAWN(Kirov.class);
+        public RwySteelLow()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(Tashkent.class);
+        public RwySteelLow(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(Tramp.class);
+    public static class RwySteel extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.ships.TestRunway
+    {
 
-    new BigshipGeneric.SPAWN(Tanker.class);
+        public RwySteel()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(USSLexingtonCV2.class);
+        public RwySteel(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(USSSaratogaCV3.class);
+    public static class RwyCon extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.ships.TestRunway
+    {
 
-    new BigshipGeneric.SPAWN(USSCVGeneric.class);
+        public RwyCon()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(USSBBGeneric.class);
+        public RwyCon(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(USSIndianapolisCA35.class);
+    public static class PilotWater_JA extends com.maddox.il2.objects.ships.ShipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.ships.WeakBody
+    {
 
-    new ShipGeneric.SPAWN(LVT_2WAT.class);
+        public PilotWater_JA()
+        {
+        }
 
-    new ShipGeneric.SPAWN(DUKW_WAT.class);
+        public PilotWater_JA(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new ShipGeneric.SPAWN(LCVP.class);
+    public static class DaihatsuLC extends com.maddox.il2.objects.ships.ShipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(USSGreenlingSS213_Srf.class);
+        public DaihatsuLC()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(USSGreenlingSS213_Sub.class);
+        public DaihatsuLC(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(USSGatoSS212_Srf.class);
+    public static class IJNFishJunkA extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(USSGatoSS212_Sub.class);
+        public IJNFishJunkA()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(USSWardDD139.class);
+        public IJNFishJunkA(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(USSDentDD116.class);
+    public static class IJNFishJunk extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(USSFletcherDD445.class);
+        public IJNFishJunk()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(USSOBannonDD450.class);
+        public IJNFishJunk(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(USSKiddDD661.class);
+    public static class IJNYukikazeDD45 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(USSCasablancaCVE55.class);
+        public IJNYukikazeDD45()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(USSKitkunBayCVE71.class);
+        public IJNYukikazeDD45(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(USSShamrockBayCVE84.class);
+    public static class IJNAmatsukazeDD45 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(USSEssexCV9.class);
+        public IJNAmatsukazeDD45()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(USSIntrepidCV11.class);
+        public IJNAmatsukazeDD45(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new ShipGeneric.SPAWN(PilotWater_US.class);
+    public static class IJNYukikazeDD43 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new ShipGeneric.SPAWN(PilotBoatWater_US.class);
+        public IJNYukikazeDD43()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(HMSIllustriousCV.class);
+        public IJNYukikazeDD43(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(HMSPoWBB.class);
+    public static class IJNNowakiDD43 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(HMSKingGeorgeVBB.class);
+        public IJNNowakiDD43()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(HMSDukeOfYorkBB.class);
+        public IJNNowakiDD43(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(S80.class);
+    public static class IJNAmatsukazeDD43WithBeacon extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasBeacon
+    {
 
-    new BigshipGeneric.SPAWN(MFP.class);
+        public IJNAmatsukazeDD43WithBeacon()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(MFP2.class);
+        public IJNAmatsukazeDD43WithBeacon(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(MAS501.class);
+    public static class IJNAmatsukazeDD43 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(Murgesku.class);
+        public IJNAmatsukazeDD43()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(MBoat.class);
+        public IJNAmatsukazeDD43(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new ShipGeneric.SPAWN(Submarine.class);
+    public static class IJNYukikazeDD41 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(SubmarineP.class);
+        public IJNYukikazeDD41()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(Niobe.class);
+        public IJNYukikazeDD41(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(NiobeWithBeacon.class);
+    public static class IJNNowakiDD41 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(SubTypeVIIC_Srf.class);
+        public IJNNowakiDD41()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(SubTypeVIIC_SrfWithBeacon.class);
+        public IJNNowakiDD41(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(SubTypeVIIC_Sub.class);
+    public static class IJNKageroDD41 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(Illmarinen.class);
+        public IJNKageroDD41()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(Vainamoinen.class);
+        public IJNKageroDD41(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(Tirpitz.class);
+    public static class IJNArashiDD41 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(PAM.class);
+        public IJNArashiDD41()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(IJNAkagiCV.class);
+        public IJNArashiDD41(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(IJNShokakuCV.class);
+    public static class IJNAmatsukazeDD41 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(IJNZuikakuCV.class);
+        public IJNAmatsukazeDD41()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(IJNCVGeneric.class);
+        public IJNAmatsukazeDD41(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(IJNBBGeneric.class);
+    public static class IJNAkizukiDD42 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(IJNAkizukiDD42.class);
+        public IJNAkizukiDD42()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(IJNAmatsukazeDD41.class);
+        public IJNAkizukiDD42(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(IJNArashiDD41.class);
+    public static class IJNBBGeneric extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(IJNKageroDD41.class);
+        public IJNBBGeneric()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(IJNNowakiDD41.class);
+        public IJNBBGeneric(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(IJNYukikazeDD41.class);
+    public static class IJNCVGeneric extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasBeacon
+    {
 
-    new BigshipGeneric.SPAWN(IJNAmatsukazeDD43.class);
+        public IJNCVGeneric()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(IJNAmatsukazeDD43WithBeacon.class);
+        public IJNCVGeneric(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(IJNNowakiDD43.class);
+    public static class IJNZuikakuCV extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasBeacon
+    {
 
-    new BigshipGeneric.SPAWN(IJNYukikazeDD43.class);
+        public IJNZuikakuCV()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(IJNAmatsukazeDD45.class);
+        public IJNZuikakuCV(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(IJNYukikazeDD45.class);
+    public static class IJNShokakuCV extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasBeacon
+    {
 
-    new BigshipGeneric.SPAWN(IJNFishJunk.class);
+        public IJNShokakuCV()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(IJNFishJunkA.class);
+        public IJNShokakuCV(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new ShipGeneric.SPAWN(DaihatsuLC.class);
+    public static class IJNAkagiCV extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasBeacon
+    {
 
-    new ShipGeneric.SPAWN(PilotWater_JA.class);
+        public IJNAkagiCV()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(RwyCon.class);
+        public IJNAkagiCV(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(RwySteel.class);
+    public static class PAM extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(RwySteelLow.class);
+        public PAM()
+        {
+        }
 
-    new BigshipGeneric.SPAWN(RwyTransp.class);
+        public PAM(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
+    }
 
-    new BigshipGeneric.SPAWN(RwyTranspWide.class);
+    public static class Tirpitz extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
+    {
 
-    new BigshipGeneric.SPAWN(RwyTranspSqr.class);
-  }
+        public Tirpitz()
+        {
+        }
 
-  public static class RwyTranspSqr extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwyTranspSqr()
-    {
+        public Tirpitz(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public RwyTranspSqr(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class Vainamoinen extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class RwyTranspWide extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwyTranspWide()
-    {
-    }
+        public Vainamoinen()
+        {
+        }
 
-    public RwyTranspWide(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public Vainamoinen(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class RwyTransp extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwyTransp()
+    public static class Illmarinen extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public RwyTransp(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public Illmarinen()
+        {
+        }
 
-  public static class RwySteelLow extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwySteelLow()
-    {
+        public Illmarinen(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public RwySteelLow(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class SubTypeVIIC_Sub extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class RwySteel extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwySteel()
-    {
-    }
+        public SubTypeVIIC_Sub()
+        {
+        }
 
-    public RwySteel(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public SubTypeVIIC_Sub(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class RwyCon extends BigshipGeneric
-    implements TgtShip, TestRunway
-  {
-    public RwyCon()
+    public static class SubTypeVIIC_SrfWithBeacon extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasBeacon
     {
-    }
 
-    public RwyCon(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public SubTypeVIIC_SrfWithBeacon()
+        {
+        }
 
-  public static class PilotWater_JA extends ShipGeneric
-    implements TgtShip, WeakBody
-  {
-    public PilotWater_JA()
-    {
+        public SubTypeVIIC_SrfWithBeacon(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public PilotWater_JA(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class SubTypeVIIC_Srf extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class DaihatsuLC extends ShipGeneric
-    implements TgtShip
-  {
-    public DaihatsuLC()
-    {
-    }
+        public SubTypeVIIC_Srf()
+        {
+        }
 
-    public DaihatsuLC(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public SubTypeVIIC_Srf(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class IJNFishJunkA extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNFishJunkA()
+    public static class NiobeWithBeacon extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasBeacon
     {
-    }
 
-    public IJNFishJunkA(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public NiobeWithBeacon()
+        {
+        }
 
-  public static class IJNFishJunk extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNFishJunk()
-    {
+        public NiobeWithBeacon(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public IJNFishJunk(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class Niobe extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class IJNYukikazeDD45 extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNYukikazeDD45()
-    {
-    }
+        public Niobe()
+        {
+        }
 
-    public IJNYukikazeDD45(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public Niobe(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class IJNAmatsukazeDD45 extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNAmatsukazeDD45()
+    public static class SubmarineP extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public IJNAmatsukazeDD45(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public SubmarineP()
+        {
+        }
 
-  public static class IJNYukikazeDD43 extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNYukikazeDD43()
-    {
+        public SubmarineP(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public IJNYukikazeDD43(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class Submarine extends com.maddox.il2.objects.ships.ShipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class IJNNowakiDD43 extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNNowakiDD43()
-    {
-    }
+        public Submarine()
+        {
+        }
 
-    public IJNNowakiDD43(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public Submarine(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class IJNAmatsukazeDD43WithBeacon extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public IJNAmatsukazeDD43WithBeacon()
+    public static class MBoat extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public IJNAmatsukazeDD43WithBeacon(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public MBoat()
+        {
+        }
 
-  public static class IJNAmatsukazeDD43 extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNAmatsukazeDD43()
-    {
+        public MBoat(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public IJNAmatsukazeDD43(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class Murgesku extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class IJNYukikazeDD41 extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNYukikazeDD41()
-    {
-    }
+        public Murgesku()
+        {
+        }
 
-    public IJNYukikazeDD41(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public Murgesku(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class IJNNowakiDD41 extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNNowakiDD41()
+    public static class MAS501 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public IJNNowakiDD41(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public MAS501()
+        {
+        }
 
-  public static class IJNKageroDD41 extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNKageroDD41()
-    {
+        public MAS501(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public IJNKageroDD41(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class MFP2 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class IJNArashiDD41 extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNArashiDD41()
-    {
-    }
+        public MFP2()
+        {
+        }
 
-    public IJNArashiDD41(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public MFP2(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class IJNAmatsukazeDD41 extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNAmatsukazeDD41()
+    public static class MFP extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public IJNAmatsukazeDD41(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public MFP()
+        {
+        }
 
-  public static class IJNAkizukiDD42 extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNAkizukiDD42()
-    {
+        public MFP(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public IJNAkizukiDD42(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class S80 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class IJNBBGeneric extends BigshipGeneric
-    implements TgtShip
-  {
-    public IJNBBGeneric()
-    {
-    }
+        public S80()
+        {
+        }
 
-    public IJNBBGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public S80(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class IJNCVGeneric extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public IJNCVGeneric()
+    public static class HMSDukeOfYorkBB extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public IJNCVGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public HMSDukeOfYorkBB()
+        {
+        }
 
-  public static class IJNZuikakuCV extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public IJNZuikakuCV()
-    {
+        public HMSDukeOfYorkBB(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public IJNZuikakuCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class HMSKingGeorgeVBB extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class IJNShokakuCV extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public IJNShokakuCV()
-    {
-    }
+        public HMSKingGeorgeVBB()
+        {
+        }
 
-    public IJNShokakuCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public HMSKingGeorgeVBB(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class IJNAkagiCV extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public IJNAkagiCV()
+    public static class HMSPoWBB extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public IJNAkagiCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public HMSPoWBB()
+        {
+        }
 
-  public static class PAM extends BigshipGeneric
-    implements TgtShip
-  {
-    public PAM()
-    {
+        public HMSPoWBB(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public PAM(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class HMSIllustriousCV extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasHayRake
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class Tirpitz extends BigshipGeneric
-    implements TgtShip
-  {
-    public Tirpitz()
-    {
-    }
+        public HMSIllustriousCV()
+        {
+        }
 
-    public Tirpitz(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public HMSIllustriousCV(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class Vainamoinen extends BigshipGeneric
-    implements TgtShip
-  {
-    public Vainamoinen()
+    public static class PilotBoatWater_US extends com.maddox.il2.objects.ships.ShipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.ships.WeakBody
     {
-    }
 
-    public Vainamoinen(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public PilotBoatWater_US()
+        {
+        }
 
-  public static class Illmarinen extends BigshipGeneric
-    implements TgtShip
-  {
-    public Illmarinen()
-    {
+        public PilotBoatWater_US(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public Illmarinen(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class PilotWater_US extends com.maddox.il2.objects.ships.ShipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class SubTypeVIIC_Sub extends BigshipGeneric
-    implements TgtShip
-  {
-    public SubTypeVIIC_Sub()
-    {
-    }
+        public PilotWater_US()
+        {
+        }
 
-    public SubTypeVIIC_Sub(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public PilotWater_US(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class SubTypeVIIC_SrfWithBeacon extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public SubTypeVIIC_SrfWithBeacon()
+    public static class USSIntrepidCV11 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasHayRake
     {
-    }
 
-    public SubTypeVIIC_SrfWithBeacon(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public USSIntrepidCV11()
+        {
+        }
 
-  public static class SubTypeVIIC_Srf extends BigshipGeneric
-    implements TgtShip
-  {
-    public SubTypeVIIC_Srf()
-    {
+        public USSIntrepidCV11(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public SubTypeVIIC_Srf(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class USSEssexCV9 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasHayRake
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class NiobeWithBeacon extends BigshipGeneric
-    implements TgtShip, TypeHasBeacon
-  {
-    public NiobeWithBeacon()
-    {
-    }
+        public USSEssexCV9()
+        {
+        }
 
-    public NiobeWithBeacon(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public USSEssexCV9(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class Niobe extends BigshipGeneric
-    implements TgtShip
-  {
-    public Niobe()
+    public static class USSShamrockBayCVE84 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasHayRake
     {
-    }
 
-    public Niobe(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public USSShamrockBayCVE84()
+        {
+        }
 
-  public static class SubmarineP extends BigshipGeneric
-    implements TgtShip
-  {
-    public SubmarineP()
-    {
+        public USSShamrockBayCVE84(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public SubmarineP(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class USSKitkunBayCVE71 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasHayRake
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class Submarine extends ShipGeneric
-    implements TgtShip
-  {
-    public Submarine()
-    {
-    }
+        public USSKitkunBayCVE71()
+        {
+        }
 
-    public Submarine(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public USSKitkunBayCVE71(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class MBoat extends BigshipGeneric
-    implements TgtShip
-  {
-    public MBoat()
+    public static class USSCasablancaCVE55 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasHayRake
     {
-    }
 
-    public MBoat(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public USSCasablancaCVE55()
+        {
+        }
 
-  public static class Murgesku extends BigshipGeneric
-    implements TgtShip
-  {
-    public Murgesku()
-    {
+        public USSCasablancaCVE55(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public Murgesku(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class USSKiddDD661 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class MAS501 extends BigshipGeneric
-    implements TgtShip
-  {
-    public MAS501()
-    {
-    }
+        public USSKiddDD661()
+        {
+        }
 
-    public MAS501(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public USSKiddDD661(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class MFP2 extends BigshipGeneric
-    implements TgtShip
-  {
-    public MFP2()
+    public static class USSOBannonDD450 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public MFP2(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public USSOBannonDD450()
+        {
+        }
 
-  public static class MFP extends BigshipGeneric
-    implements TgtShip
-  {
-    public MFP()
-    {
+        public USSOBannonDD450(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public MFP(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class USSFletcherDD445 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class S80 extends BigshipGeneric
-    implements TgtShip
-  {
-    public S80()
-    {
-    }
+        public USSFletcherDD445()
+        {
+        }
 
-    public S80(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public USSFletcherDD445(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class HMSDukeOfYorkBB extends BigshipGeneric
-    implements TgtShip
-  {
-    public HMSDukeOfYorkBB()
+    public static class USSDentDD116 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public HMSDukeOfYorkBB(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public USSDentDD116()
+        {
+        }
 
-  public static class HMSKingGeorgeVBB extends BigshipGeneric
-    implements TgtShip
-  {
-    public HMSKingGeorgeVBB()
-    {
+        public USSDentDD116(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public HMSKingGeorgeVBB(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class USSWardDD139 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class HMSPoWBB extends BigshipGeneric
-    implements TgtShip
-  {
-    public HMSPoWBB()
-    {
-    }
+        public USSWardDD139()
+        {
+        }
 
-    public HMSPoWBB(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public USSWardDD139(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class HMSIllustriousCV extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public HMSIllustriousCV()
+    public static class USSGatoSS212_Sub extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public HMSIllustriousCV(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public USSGatoSS212_Sub()
+        {
+        }
 
-  public static class PilotBoatWater_US extends ShipGeneric
-    implements TgtShip, WeakBody
-  {
-    public PilotBoatWater_US()
-    {
+        public USSGatoSS212_Sub(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public PilotBoatWater_US(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class USSGatoSS212_Srf extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class PilotWater_US extends ShipGeneric
-    implements TgtShip
-  {
-    public PilotWater_US()
-    {
-    }
+        public USSGatoSS212_Srf()
+        {
+        }
 
-    public PilotWater_US(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public USSGatoSS212_Srf(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class USSIntrepidCV11 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSIntrepidCV11()
+    public static class USSGreenlingSS213_Sub extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public USSIntrepidCV11(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public USSGreenlingSS213_Sub()
+        {
+        }
 
-  public static class USSEssexCV9 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSEssexCV9()
-    {
+        public USSGreenlingSS213_Sub(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public USSEssexCV9(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class USSGreenlingSS213_Srf extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class USSShamrockBayCVE84 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSShamrockBayCVE84()
-    {
-    }
+        public USSGreenlingSS213_Srf()
+        {
+        }
 
-    public USSShamrockBayCVE84(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public USSGreenlingSS213_Srf(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class USSKitkunBayCVE71 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSKitkunBayCVE71()
+    public static class LCVP extends com.maddox.il2.objects.ships.ShipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public USSKitkunBayCVE71(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public LCVP()
+        {
+        }
 
-  public static class USSCasablancaCVE55 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSCasablancaCVE55()
-    {
+        public LCVP(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public USSCasablancaCVE55(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class DUKW_WAT extends com.maddox.il2.objects.ships.ShipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class USSKiddDD661 extends BigshipGeneric
-    implements TgtShip
-  {
-    public USSKiddDD661()
-    {
-    }
+        public DUKW_WAT()
+        {
+        }
 
-    public USSKiddDD661(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public DUKW_WAT(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class USSOBannonDD450 extends BigshipGeneric
-    implements TgtShip
-  {
-    public USSOBannonDD450()
+    public static class LVT_2WAT extends com.maddox.il2.objects.ships.ShipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public USSOBannonDD450(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public LVT_2WAT()
+        {
+        }
 
-  public static class USSFletcherDD445 extends BigshipGeneric
-    implements TgtShip
-  {
-    public USSFletcherDD445()
-    {
+        public LVT_2WAT(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public USSFletcherDD445(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class USSIndianapolisCA35 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class USSDentDD116 extends BigshipGeneric
-    implements TgtShip
-  {
-    public USSDentDD116()
-    {
-    }
+        public USSIndianapolisCA35()
+        {
+        }
 
-    public USSDentDD116(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public USSIndianapolisCA35(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class USSWardDD139 extends BigshipGeneric
-    implements TgtShip
-  {
-    public USSWardDD139()
+    public static class USSBBGeneric extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public USSWardDD139(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public USSBBGeneric()
+        {
+        }
 
-  public static class USSGatoSS212_Sub extends BigshipGeneric
-    implements TgtShip
-  {
-    public USSGatoSS212_Sub()
-    {
+        public USSBBGeneric(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public USSGatoSS212_Sub(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class USSCVGeneric extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasHayRake
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class USSGatoSS212_Srf extends BigshipGeneric
-    implements TgtShip
-  {
-    public USSGatoSS212_Srf()
-    {
-    }
+        public USSCVGeneric()
+        {
+        }
 
-    public USSGatoSS212_Srf(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public USSCVGeneric(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class USSGreenlingSS213_Sub extends BigshipGeneric
-    implements TgtShip
-  {
-    public USSGreenlingSS213_Sub()
+    public static class USSSaratogaCV3 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasHayRake
     {
-    }
 
-    public USSGreenlingSS213_Sub(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public USSSaratogaCV3()
+        {
+        }
 
-  public static class USSGreenlingSS213_Srf extends BigshipGeneric
-    implements TgtShip
-  {
-    public USSGreenlingSS213_Srf()
-    {
+        public USSSaratogaCV3(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public USSGreenlingSS213_Srf(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class USSLexingtonCV2 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip, com.maddox.il2.objects.vehicles.radios.TypeHasHayRake
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class LCVP extends ShipGeneric
-    implements TgtShip
-  {
-    public LCVP()
-    {
-    }
+        public USSLexingtonCV2()
+        {
+        }
 
-    public LCVP(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public USSLexingtonCV2(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class DUKW_WAT extends ShipGeneric
-    implements TgtShip
-  {
-    public DUKW_WAT()
+    public static class Tanker extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public DUKW_WAT(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public Tanker()
+        {
+        }
 
-  public static class LVT_2WAT extends ShipGeneric
-    implements TgtShip
-  {
-    public LVT_2WAT()
-    {
+        public Tanker(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public LVT_2WAT(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class Tramp extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class USSIndianapolisCA35 extends BigshipGeneric
-    implements TgtShip
-  {
-    public USSIndianapolisCA35()
-    {
-    }
+        public Tramp()
+        {
+        }
 
-    public USSIndianapolisCA35(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public Tramp(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class USSBBGeneric extends BigshipGeneric
-    implements TgtShip
-  {
-    public USSBBGeneric()
+    public static class Tashkent extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public USSBBGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public Tashkent()
+        {
+        }
 
-  public static class USSCVGeneric extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSCVGeneric()
-    {
+        public Tashkent(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public USSCVGeneric(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class Kirov extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class USSSaratogaCV3 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSSaratogaCV3()
-    {
-    }
+        public Kirov()
+        {
+        }
 
-    public USSSaratogaCV3(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public Kirov(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class USSLexingtonCV2 extends BigshipGeneric
-    implements TgtShip, TypeHasHayRake
-  {
-    public USSLexingtonCV2()
+    public static class Marat extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public USSLexingtonCV2(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public Marat()
+        {
+        }
 
-  public static class Tanker extends BigshipGeneric
-    implements TgtShip
-  {
-    public Tanker()
-    {
+        public Marat(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public Tanker(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class Aurora extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class Tramp extends BigshipGeneric
-    implements TgtShip
-  {
-    public Tramp()
-    {
-    }
+        public Aurora()
+        {
+        }
 
-    public Tramp(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public Aurora(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class Tashkent extends BigshipGeneric
-    implements TgtShip
-  {
-    public Tashkent()
+    public static class ShukaP extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public Tashkent(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public ShukaP()
+        {
+        }
 
-  public static class Kirov extends BigshipGeneric
-    implements TgtShip
-  {
-    public Kirov()
-    {
+        public ShukaP(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public Kirov(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class Shuka extends com.maddox.il2.objects.ships.ShipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class Marat extends BigshipGeneric
-    implements TgtShip
-  {
-    public Marat()
-    {
-    }
+        public Shuka()
+        {
+        }
 
-    public Marat(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public Shuka(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class Aurora extends BigshipGeneric
-    implements TgtShip
-  {
-    public Aurora()
+    public static class Tral extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public Aurora(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public Tral()
+        {
+        }
 
-  public static class ShukaP extends BigshipGeneric
-    implements TgtShip
-  {
-    public ShukaP()
-    {
+        public Tral(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public ShukaP(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class Destroyer_USSR_Type7_44 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class Shuka extends ShipGeneric
-    implements TgtShip
-  {
-    public Shuka()
-    {
-    }
+        public Destroyer_USSR_Type7_44()
+        {
+        }
 
-    public Shuka(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public Destroyer_USSR_Type7_44(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class Tral extends BigshipGeneric
-    implements TgtShip
-  {
-    public Tral()
+    public static class Destroyer_USSR_Type7 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public Tral(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public Destroyer_USSR_Type7()
+        {
+        }
 
-  public static class Destroyer_USSR_Type7_44 extends BigshipGeneric
-    implements TgtShip
-  {
-    public Destroyer_USSR_Type7_44()
-    {
+        public Destroyer_USSR_Type7(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public Destroyer_USSR_Type7_44(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class BBK1124_1943 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
 
-  public static class Destroyer_USSR_Type7 extends BigshipGeneric
-    implements TgtShip
-  {
-    public Destroyer_USSR_Type7()
-    {
-    }
+        public BBK1124_1943()
+        {
+        }
 
-    public Destroyer_USSR_Type7(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        public BBK1124_1943(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class BBK1124_1943 extends BigshipGeneric
-    implements TgtShip
-  {
-    public BBK1124_1943()
+    public static class BBK_1942 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-    }
 
-    public BBK1124_1943(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-    {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
-    }
-  }
+        public BBK_1942()
+        {
+        }
 
-  public static class BBK_1942 extends BigshipGeneric
-    implements TgtShip
-  {
-    public BBK_1942()
-    {
+        public BBK_1942(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
 
-    public BBK_1942(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public static class MO4 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+
+        public MO4()
+        {
+        }
+
+        public MO4(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
-  }
 
-  public static class MO4 extends BigshipGeneric
-    implements TgtShip
-  {
-    public MO4()
+    public static class G5 extends com.maddox.il2.objects.ships.BigshipGeneric
+        implements com.maddox.il2.ai.ground.TgtShip
     {
+
+        public G5()
+        {
+        }
+
+        public G5(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
+        {
+            super(s, i, sectfile, s1, sectfile1, s2);
+        }
     }
+
 
-    public MO4(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    public Ship()
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
     }
-  }
 
-  public static class G5 extends BigshipGeneric
-    implements TgtShip
-  {
-    public G5()
+    static java.lang.Class _mthclass$(java.lang.String s)
     {
+        return java.lang.Class.forName(s);
+        java.lang.ClassNotFoundException classnotfoundexception;
+        classnotfoundexception;
+        throw new NoClassDefFoundError(classnotfoundexception.getMessage());
     }
 
-    public G5(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
+    static 
     {
-      super(paramInt, paramSectFile1, paramString2, paramSectFile2, paramString3);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$G5.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$MO4.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$BBK_1942.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$BBK1124_1943.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Destroyer_USSR_Type7.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Destroyer_USSR_Type7_44.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Tral.class);
+        new ShipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Shuka.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$ShukaP.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Aurora.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Marat.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Kirov.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Tashkent.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Tramp.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Tanker.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSLexingtonCV2.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSSaratogaCV3.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSCVGeneric.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSBBGeneric.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSIndianapolisCA35.class);
+        new ShipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$LVT_2WAT.class);
+        new ShipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$DUKW_WAT.class);
+        new ShipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$LCVP.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSGreenlingSS213_Srf.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSGreenlingSS213_Sub.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSGatoSS212_Srf.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSGatoSS212_Sub.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSWardDD139.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSDentDD116.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSFletcherDD445.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSOBannonDD450.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSKiddDD661.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSCasablancaCVE55.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSKitkunBayCVE71.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSShamrockBayCVE84.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSEssexCV9.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$USSIntrepidCV11.class);
+        new ShipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$PilotWater_US.class);
+        new ShipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$PilotBoatWater_US.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$HMSIllustriousCV.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$HMSPoWBB.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$HMSKingGeorgeVBB.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$HMSDukeOfYorkBB.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$S80.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$MFP.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$MFP2.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$MAS501.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Murgesku.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$MBoat.class);
+        new ShipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Submarine.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$SubmarineP.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Niobe.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$NiobeWithBeacon.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$SubTypeVIIC_Srf.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$SubTypeVIIC_SrfWithBeacon.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$SubTypeVIIC_Sub.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Illmarinen.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Vainamoinen.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$Tirpitz.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$PAM.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNAkagiCV.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNShokakuCV.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNZuikakuCV.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNCVGeneric.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNBBGeneric.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNAkizukiDD42.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNAmatsukazeDD41.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNArashiDD41.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNKageroDD41.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNNowakiDD41.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNYukikazeDD41.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNAmatsukazeDD43.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNAmatsukazeDD43WithBeacon.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNNowakiDD43.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNYukikazeDD43.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNAmatsukazeDD45.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNYukikazeDD45.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNFishJunk.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$IJNFishJunkA.class);
+        new ShipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$DaihatsuLC.class);
+        new ShipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$PilotWater_JA.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$RwyCon.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$RwySteel.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$RwySteelLow.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$RwyTransp.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$RwyTranspWide.class);
+        new BigshipGeneric.SPAWN(com.maddox.il2.objects.ships.Ship$RwyTranspSqr.class);
     }
-  }
 }

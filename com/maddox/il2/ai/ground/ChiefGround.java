@@ -1,3 +1,8 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   ChiefGround.java
+
 package com.maddox.il2.ai.ground;
 
 import com.maddox.JGP.Geom;
@@ -29,1368 +34,1376 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ChiefGround extends Chief
-  implements MsgDreamListener
+// Referenced classes of package com.maddox.il2.ai.ground:
+//            RoadPath, UnitInPackedForm, UnitInterface, Predator, 
+//            Prey, UnitSpawn, RoadPart, UnitMove, 
+//            RoadSegment, UnitData, NearestEnemies, StaticObstacle
+
+public class ChiefGround extends com.maddox.il2.ai.Chief
+    implements com.maddox.il2.engine.MsgDreamListener
 {
-  private static final int PEACE = 0;
-  private static final int FIGHT = 1;
-  private static final int SHIFT = 2;
-  private static final int BRAKE = 3;
-  private int curState;
-  private int stateCountdown;
-  private boolean shift_ToRightSide;
-  private boolean shift_SwitchToBrakeWhenDone;
-  private ArrayList unitsPacked;
-  private RoadPath road;
-  private int minGrabSeg;
-  private int maxGrabSeg;
-  private int chiefSeg;
-  private double chiefAlong;
-  private int minSeg;
-  private int maxSeg;
-  private float groupSpeed;
-  private float maxSpace;
-  private boolean withPreys;
-  private long waitTime;
-  private int posCountdown;
-  private Vector3d estim_speed;
-  private Point3d tmpp = new Point3d();
-  private int[] curForm;
-
-  private static final void ERR_NO_UNITS(String paramString)
-  {
-    String str = "INTERNAL ERROR IN ChiefGround." + paramString + "(): No units";
-    System.out.println(str);
-    throw new ActorException(str);
-  }
-
-  private static final void ERR(String paramString) {
-    String str = "INTERNAL ERROR IN ChiefGround: " + paramString;
-    System.out.println(str);
-    throw new ActorException(str);
-  }
-
-  private static final void ConstructorFailure() {
-    throw new ActorException();
-  }
-
-  public boolean isPacked() {
-    return (this.unitsPacked == null) || (this.unitsPacked.size() > 0);
-  }
-
-  public Object getSwitchListener(Message paramMessage) {
-    return this;
-  }
-  private void SetPosition(Point3d paramPoint3d, float paramFloat) {
-    this.pos.getAbs(this.tmpp);
-    this.pos.setAbs(paramPoint3d);
-    this.estim_speed.sub(paramPoint3d, this.tmpp);
-    if (paramFloat <= 1.0E-004F)
-      this.estim_speed.set(0.0D, 0.0D, 0.0D);
-    else
-      this.estim_speed.scale(1.0D / paramFloat);
-  }
-
-  public double getSpeed(Vector3d paramVector3d)
-  {
-    double d = this.estim_speed.length();
-    if (paramVector3d == null)
+    class Move extends com.maddox.il2.engine.Interpolate
     {
-      return d;
-    }
-    paramVector3d.set(this.estim_speed);
-    if (d <= 0.0001D) {
-      paramVector3d.set(0.0D, 0.0D, 0.0001D);
-    }
 
-    return d;
-  }
+        public boolean tick()
+        {
+            if(waitTime > 0L && com.maddox.rts.Time.tick() >= waitTime)
+                waitTime = 0L;
+            if(unitsPacked.size() > 0)
+            {
+                moveChiefPacked(com.maddox.rts.Time.tickLenFs());
+                return true;
+            }
+            if(--stateCountdown <= 0)
+            {
+                int i = com.maddox.il2.ai.ground.ChiefGround.SecsToTicks(com.maddox.il2.ai.World.Rnd().nextFloat(300F, 500F));
+                switch(curState)
+                {
+                default:
+                    break;
 
-  public ChiefGround(String paramString1, int paramInt, SectFile paramSectFile1, String paramString2, SectFile paramSectFile2, String paramString3)
-  {
-    try
-    {
-      this.road = new RoadPath(paramSectFile2, paramString3);
+                case 0: // '\0'
+                    stateCountdown = i;
+                    break;
 
-      this.road.RegisterTravellerToBridges(this);
+                case 1: // '\001'
+                    curState = 0;
+                    stateCountdown = i;
+                    reformIfNeed(false);
+                    break;
 
-      setName(paramString1);
-      setArmy(paramInt);
-      this.chiefSeg = 0;
-      this.chiefAlong = 0.0D;
-      this.minSeg = -1;
-      this.maxSeg = -1;
-      this.waitTime = 0L;
-      this.curForm = null;
+                case 2: // '\002'
+                    if(shift_SwitchToBrakeWhenDone)
+                    {
+                        curState = 3;
+                        stateCountdown = com.maddox.il2.ai.ground.ChiefGround.SecsToTicks(com.maddox.il2.ai.World.Rnd().nextFloat(38F, 65F));
+                    } else
+                    {
+                        curState = 0;
+                        stateCountdown = i;
+                    }
+                    reformIfNeed(false);
+                    break;
 
-      this.minGrabSeg = (this.maxGrabSeg = -1);
-
-      this.pos = new ActorPosMove(this);
-      this.pos.setAbs(this.road.get(0).start);
-      this.pos.reset();
-      this.posCountdown = 0;
-      this.estim_speed = new Vector3d(0.0D, 0.0D, 0.0D);
-
-      int i = paramSectFile1.sectionIndex(paramString2);
-      int j = paramSectFile1.vars(i);
-      if (j <= 0)
-        throw new ActorException("ChiefGround: Missing units");
-      this.unitsPacked = new ArrayList();
-      for (int k = 0; k < j; k++) {
-        String str = paramSectFile1.var(i, k);
-
-        Object localObject = Spawn.get(str);
-        if (localObject == null) {
-          throw new ActorException("ChiefGround: Unknown type of object (" + str + ")");
+                case 3: // '\003'
+                    curState = 0;
+                    stateCountdown = i;
+                    reformIfNeed(true);
+                    break;
+                }
+            }
+            if(--posCountdown <= 0)
+                recomputeAveragePosition();
+            return true;
         }
 
-        int m = Finger.Int(str);
-        int n = 0;
-        this.unitsPacked.add(new UnitInPackedForm(k, m, n));
-      }
-
-      this.withPreys = false;
-
-      unpackUnits();
-
-      recomputeAveragePosition();
-
-      if (!interpEnd("move"))
-        interpPut(new Move(), "move", Time.current(), null);
-    }
-    catch (Exception localException) {
-      System.out.println("ChiefGround creation failure:");
-      System.out.println(localException.getMessage());
-      localException.printStackTrace();
-      ConstructorFailure();
-    }
-  }
-
-  public int getCodeOfBridgeSegment(UnitInterface paramUnitInterface)
-  {
-    int i = paramUnitInterface.GetUnitData().segmentIdx;
-    return this.road.getCodeOfBridgeSegment(i);
-  }
-
-  public void BridgeSegmentDestroyed(int paramInt1, int paramInt2, Actor paramActor)
-  {
-    boolean bool = this.road.MarkDestroyedSegments(paramInt1, paramInt2);
-    if (!bool) {
-      return;
-    }
-
-    if (this.unitsPacked.size() > 0)
-    {
-      return;
-    }
-
-    Object[] arrayOfObject = getOwnerAttached();
-    if (arrayOfObject.length <= 0) ERR_NO_UNITS("BridgeSegmentDestroyed");
-
-    for (int i = 0; i < arrayOfObject.length; i++) {
-      int j = ((UnitInterface)arrayOfObject[i]).GetUnitData().segmentIdx;
-      if (!this.road.segIsWrongOrDamaged(j))
-        continue;
-      ((UnitInterface)arrayOfObject[i]).absoluteDeath(paramActor);
-    }
-  }
-
-  private void recomputeAveragePosition()
-  {
-    if (this.unitsPacked.size() > 0) ERR("average position when PACKED");
-
-    Object[] arrayOfObject = getOwnerAttached();
-
-    if (arrayOfObject.length <= 0) ERR_NO_UNITS("recomputeAveragePosition");
-
-    int i = arrayOfObject.length;
-    int j = 10000;
-    int k = -10000;
-    for (int m = 0; m < i; m++)
-    {
-      int n = ((UnitInterface)arrayOfObject[m]).GetUnitData().segmentIdx;
-      if (n < j) j = n;
-      if (n <= k) continue; k = n;
-    }
-
-    Point3d localPoint3d = new Point3d(((Actor)arrayOfObject[0]).pos.getAbsPoint());
-    double d = World.land().HQ(localPoint3d.x, localPoint3d.y);
-    if (localPoint3d.z < d) {
-      localPoint3d.z = d;
-    }
-
-    SetPosition(localPoint3d, 1.05F);
-
-    this.posCountdown = SecsToTicks(World.Rnd().nextFloat(0.9F, 1.2F));
-
-    this.road.unlockBridges(this, this.minGrabSeg, this.maxGrabSeg);
-    this.minGrabSeg = j;
-    this.maxGrabSeg = k;
-    this.road.lockBridges(this, this.minGrabSeg, this.maxGrabSeg);
-  }
-
-  private void computePositionForPacked()
-  {
-    if (this.unitsPacked.size() > 0) ERR("advanced position when PACKED");
-
-    Point3d localPoint3d = this.pos.getAbsPoint();
-    double d1 = 999999.90000000002D;
-    this.chiefSeg = this.minSeg;
-    for (int i = this.minSeg; i <= this.maxSeg; i++) {
-      double d2 = this.road.get(i).computePosAlong(localPoint3d);
-      double d3 = this.road.get(i).computePosSide(localPoint3d);
-      double d4 = d2 * d2 + d3 * d3;
-      if (d1 >= d4) {
-        d1 = d4;
-        this.chiefSeg = i;
-      }
-
-    }
-
-    this.chiefAlong = this.road.get(this.chiefSeg).computePosAlong_Fit(localPoint3d);
-    SetPosition(this.road.get(this.chiefSeg).computePos_Fit(this.chiefAlong, 0.0D, 0.0F), 0.0F);
-
-    this.posCountdown = SecsToTicks(World.Rnd().nextFloat(0.9F, 1.2F));
-
-    this.road.unlockBridges(this, this.minGrabSeg, this.maxGrabSeg);
-    this.minGrabSeg = (this.maxGrabSeg = this.chiefSeg);
-    this.road.lockBridges(this, this.minGrabSeg, this.maxGrabSeg);
-  }
-
-  private void recomputeChiefWaitTime(int paramInt)
-  {
-    long l1 = this.road.getMaxWaitTime(paramInt, paramInt);
-    long l2 = Time.tick();
-    if ((l1 > l2) && (l1 > this.waitTime))
-      this.waitTime = l1;
-  }
-
-  private void recomputeMinMaxSegments()
-  {
-    if (this.unitsPacked.size() > 0) ERR("min/max seg when PACKED");
-    Object[] arrayOfObject = getOwnerAttached();
-    if (arrayOfObject.length <= 0) ERR_NO_UNITS("recomputeMinMaxSegments");
-
-    int i = arrayOfObject.length;
-    int j = 10000;
-    int k = -10000;
-    for (int m = 0; m < i; m++) {
-      int n = ((UnitInterface)arrayOfObject[m]).GetUnitData().segmentIdx;
-      if (n < j) j = n;
-      if (n <= k) continue; k = n;
-    }
-
-    this.road.unlockBridges(this, this.minGrabSeg, this.maxGrabSeg);
-    this.minGrabSeg = j;
-    this.maxGrabSeg = k;
-    this.road.lockBridges(this, this.minGrabSeg, this.maxGrabSeg);
-
-    if ((j == this.minSeg) && (k == this.maxSeg)) {
-      return;
-    }
-
-    long l1 = this.road.getMaxWaitTime(Math.min(j, this.minSeg), k);
-    long l2 = Time.tick();
-    if ((l1 > l2) && (l1 > this.waitTime)) {
-      this.waitTime = l1;
-    }
-
-    this.minSeg = j;
-    this.maxSeg = k;
-  }
-
-  private void recomputeUnitsProperties_Packed()
-  {
-    int i = this.unitsPacked.size();
-    if (i <= 0) {
-      recomputeUnitsProperties();
-      return;
-    }
-
-    this.groupSpeed = 100000.0F;
-    this.maxSpace = -1.0F;
-    this.weaponsMask = 0;
-    this.hitbyMask = 0;
-
-    for (int j = 0; j < i; j++) {
-      UnitInPackedForm localUnitInPackedForm = (UnitInPackedForm)this.unitsPacked.get(j);
-
-      float f = localUnitInPackedForm.SPEED_AVERAGE;
-      if (f < this.groupSpeed) this.groupSpeed = f;
-
-      f = localUnitInPackedForm.BEST_SPACE;
-      if (f > this.maxSpace) this.maxSpace = f;
-
-      this.weaponsMask |= localUnitInPackedForm.WEAPONS_MASK;
-      this.hitbyMask |= localUnitInPackedForm.HITBY_MASK;
-    }
-
-    if ((this.groupSpeed < 0.001F) || (this.groupSpeed > 10000.0F)) {
-      ERR("group speed is too small");
-    }
-    if (this.maxSpace <= 0.01F)
-      ERR("maxSpace is too small");
-  }
-
-  public void recomputeUnitsProperties()
-  {
-    if (this.unitsPacked.size() > 0) {
-      recomputeUnitsProperties_Packed();
-      return;
-    }
-    Object[] arrayOfObject = getOwnerAttached();
-    if (arrayOfObject.length <= 0) ERR_NO_UNITS("recomputeUnitsProperties");
-
-    int i = arrayOfObject.length;
-    this.groupSpeed = 10000.0F;
-    this.maxSpace = -1.0F;
-    this.weaponsMask = 0;
-    this.hitbyMask = 0;
-    this.withPreys = false;
-    for (int j = 0; j < i; j++) {
-      UnitInterface localUnitInterface = (UnitInterface)arrayOfObject[j];
-      float f = localUnitInterface.SpeedAverage();
-      if (f < this.groupSpeed) this.groupSpeed = f;
-      f = localUnitInterface.BestSpace();
-      if (f > this.maxSpace) this.maxSpace = f;
-      if ((localUnitInterface instanceof Predator))
-        this.weaponsMask |= ((Predator)localUnitInterface).WeaponsMask();
-      if ((localUnitInterface instanceof Prey)) {
-        this.hitbyMask |= ((Prey)localUnitInterface).HitbyMask();
-        if (!(localUnitInterface instanceof Predator)) {
-          this.withPreys = true;
+        Move()
+        {
         }
-      }
-    }
-    if (this.groupSpeed <= 0.001F) {
-      ERR("group speed is too small");
-    }
-    if (this.maxSpace <= 0.01F)
-      ERR("maxSpace is too small");
-  }
-
-  private float computeMaxSpace(ArrayList paramArrayList, int paramInt1, int paramInt2)
-  {
-    float f1 = -1.0F;
-    while (paramInt2-- > 0) {
-      float f2 = ((UnitInterface)paramArrayList.get(paramInt1++)).BestSpace();
-      if (f2 > f1) f1 = f2;
-    }
-    if (f1 <= 0.01F) {
-      ERR("maxSpace is too small");
-    }
-    return f1;
-  }
-
-  private float computeMaxSpace(Object[] paramArrayOfObject, int paramInt1, int paramInt2) {
-    float f1 = -1.0F;
-    while (paramInt2-- > 0) {
-      float f2 = ((UnitInterface)paramArrayOfObject[(paramInt1++)]).BestSpace();
-      if (f2 > f1) f1 = f2;
-    }
-    if (f1 <= 0.01F) {
-      ERR("maxSpace is too small");
-    }
-    return f1;
-  }
-
-  private static final int SecsToTicks(float paramFloat) {
-    int i = (int)(0.5D + paramFloat / Time.tickLenFs());
-    return i <= 0 ? 0 : i;
-  }
-
-  public Actor GetNearestEnemy(Point3d paramPoint3d, double paramDouble, int paramInt, float paramFloat)
-  {
-    if (this.unitsPacked.size() > 0) {
-      return null;
     }
 
-    if (paramFloat < 0.0F)
-      NearestEnemies.set(paramInt);
-    else {
-      NearestEnemies.set(paramInt, -9999.9004F, paramFloat);
-    }
 
-    Actor localActor = NearestEnemies.getAFoundEnemy(paramPoint3d, paramDouble, getArmy());
-
-    if (localActor == null) {
-      return null;
-    }
-
-    if (!(localActor instanceof Prey)) {
-      System.out.println("chiefg: nearest enemies: non-Prey");
-      return null;
-    }
-
-    switch (this.curState) {
-    case 0:
-      if (this.withPreys) break;
-      this.curState = 1;
-      this.stateCountdown = SecsToTicks(World.Rnd().nextFloat(50.0F, 90.0F));
-      reformIfNeed(false); break;
-    case 1:
-      this.stateCountdown = SecsToTicks(World.Rnd().nextFloat(50.0F, 90.0F));
-      break;
-    case 2:
-    case 3:
-    }
-
-    return localActor;
-  }
-
-  public void Detach(Actor paramActor1, Actor paramActor2)
-  {
-    if (this.unitsPacked.size() > 0) ERR("Detaching when PACKED");
-    Object[] arrayOfObject = getOwnerAttached();
-    if (arrayOfObject.length <= 0) ERR_NO_UNITS("Detach");
-
-    int i = arrayOfObject.length;
-
-    for (int j = 0; (j < i) && 
-      (paramActor1 != (Actor)arrayOfObject[j]); j++);
-    if (j >= i) ERR("Detaching unknown unit");
-
-    UnitInterface localUnitInterface1 = (UnitInterface)paramActor1;
-    UnitData localUnitData1 = localUnitInterface1.GetUnitData();
-    if (j < i - 1) {
-      Actor localActor = (Actor)arrayOfObject[(j + 1)];
-      UnitInterface localUnitInterface2 = (UnitInterface)localActor;
-      UnitData localUnitData2 = localUnitInterface2.GetUnitData();
-      localUnitData2.leader = localUnitData1.leader;
-    }
-    localUnitData1.leader = null;
-    paramActor1.setOwner(null);
-
-    if (i > 1) {
-      recomputeUnitsProperties();
-      recomputeMinMaxSegments();
-      reformIfNeed(true);
-      recomputeAveragePosition();
-    }
-
-    if (i <= 1)
+    private static final void ERR_NO_UNITS(java.lang.String s)
     {
-      this.road.UnregisterTravellerFromBridges(this);
-
-      this.road.unlockBridges(this, this.minGrabSeg, this.maxGrabSeg);
-      this.minGrabSeg = (this.maxGrabSeg = -1);
-
-      World.onActorDied(this, paramActor2);
-
-      destroy();
+        java.lang.String s1 = "INTERNAL ERROR IN ChiefGround." + s + "(): No units";
+        java.lang.System.out.println(s1);
+        throw new ActorException(s1);
     }
-  }
 
-  public void msgDream(boolean paramBoolean)
-  {
-    int i = this.unitsPacked.size() > 0 ? 1 : 0;
-    if (paramBoolean)
+    private static final void ERR(java.lang.String s)
     {
-      if (i == 0) {
-        ERR("Wakeup out of place");
-      }
-      unpackUnits();
-    }
-    else {
-      if (i != 0) {
-        ERR("Sleeping out of place");
-      }
-      packUnits();
-    }
-  }
-
-  public void packUnits()
-  {
-    if (this.unitsPacked.size() > 0) return;
-    Object[] arrayOfObject = getOwnerAttached();
-    if (arrayOfObject.length <= 0) ERR_NO_UNITS("packUnits");
-
-    computePositionForPacked();
-
-    int i = arrayOfObject.length;
-    for (int j = 0; j < i; j++) {
-      this.unitsPacked.add(((UnitInterface)arrayOfObject[j]).Pack());
-      ((Actor)arrayOfObject[j]).destroy();
+        java.lang.String s1 = "INTERNAL ERROR IN ChiefGround: " + s;
+        java.lang.System.out.println(s1);
+        throw new ActorException(s1);
     }
 
-    recomputeUnitsProperties();
-  }
-
-  public void unpackUnits()
-  {
-    int i = this.unitsPacked.size();
-    if (i <= 0) return;
-    if (getOwnerAttached().length > 0) ERR("unpack units");
-    for (int j = 0; j < i; j++) {
-      int k = ((UnitInPackedForm)this.unitsPacked.get(j)).CodeName();
-      int m = ((UnitInPackedForm)this.unitsPacked.get(j)).CodeType();
-      Object localObject = Spawn.get(m);
-
-      int n = ((UnitInPackedForm)this.unitsPacked.get(j)).State();
-      ((UnitSpawn)localObject).unitSpawn(k, n, this);
-    }
-    this.unitsPacked.clear();
-
-    this.curState = 0;
-    this.stateCountdown = 0;
-
-    this.road.unlockBridges(this, this.minGrabSeg, this.maxGrabSeg);
-    this.minGrabSeg = (this.maxGrabSeg = -1);
-
-    recomputeUnitsProperties();
-
-    formUnitsAfterUnpacking();
-  }
-
-  private static void AutoChooseFormation(int paramInt1, boolean paramBoolean, int paramInt2, float paramFloat, double paramDouble, int[] paramArrayOfInt)
-  {
-    if (paramInt2 <= 0) return;
-
-    if ((paramInt1 == 2) || (paramInt1 == 3)) {
-      paramArrayOfInt[0] = (paramBoolean ? 2 : 3);
-      paramArrayOfInt[1] = 1;
-      paramArrayOfInt[2] = paramInt2;
-      return;
-    }
-
-    paramArrayOfInt[0] = 0;
-    int i = (int)(paramDouble / paramFloat);
-    if (i <= 0) i = 1;
-    if (i > paramInt2) i = paramInt2;
-
-    if (i <= 1) {
-      paramArrayOfInt[1] = 1;
-      paramArrayOfInt[2] = paramInt2;
-      return;
-    }
-    if (paramInt1 == 0) {
-      paramArrayOfInt[1] = 1;
-      paramArrayOfInt[2] = paramInt2;
-      return;
-    }
-
-    paramArrayOfInt[0] = 1;
-
-    if ((i >= 3) && (paramInt2 < i - 1 + i - 1))
+    private static final void ConstructorFailure()
     {
-      i /= 2;
-      if (i < 2) i = 2;
+        throw new ActorException();
     }
-    paramArrayOfInt[1] = i;
-    int j = 2 * i - 1;
-    int k = (paramInt2 + j - 1) / j;
-    paramArrayOfInt[2] = (k * 2);
-    if ((paramInt2 + j - 1) % j < i - 1) paramArrayOfInt[2] -= 1;
-  }
 
-  private void formUnitsAfterUnpacking()
-  {
-    if (this.unitsPacked.size() > 0) return;
-    Object[] arrayOfObject = getOwnerAttached();
-    if (arrayOfObject.length <= 0) ERR_NO_UNITS("formUnitsAfterUnpacking");
+    public boolean isPacked()
+    {
+        return unitsPacked == null || unitsPacked.size() > 0;
+    }
 
-    float f1 = (arrayOfObject.length - 1) * this.maxSpace;
+    public java.lang.Object getSwitchListener(com.maddox.rts.Message message)
+    {
+        return this;
+    }
 
-    double d1 = this.road.get(this.chiefSeg).computePosAlong_Fit(this.pos.getAbsPoint());
-    RoadPart localRoadPart = new RoadPart();
-    this.road.FindFreeSpace(f1, this.chiefSeg, d1, localRoadPart);
-
-    int[] arrayOfInt = new int[3];
-    AutoChooseFormation(this.curState, this.shift_ToRightSide, arrayOfObject.length, this.maxSpace, this.road.ComputeMinRoadWidth(localRoadPart.begseg, localRoadPart.endseg), arrayOfInt);
-
-    this.curForm = arrayOfInt;
-
-    f1 = (arrayOfInt[2] - 1) * this.maxSpace;
-    this.road.FindFreeSpace(f1, this.chiefSeg, d1, localRoadPart);
-
-    double d2 = 1.0D;
-
-    int i = localRoadPart.begseg;
-    double d3 = localRoadPart.begt;
-
-    int j = 0;
-    float f2 = 0.0F;
-    for (int k = 0; k < arrayOfInt[2]; k++) {
-      int m = arrayOfInt[1];
-      if (((k & 0x1) == 0) && (arrayOfInt[0] == 1)) m--;
-      int n = m;
-      if (j + n > arrayOfObject.length) n = arrayOfObject.length - j;
-      float f3 = computeMaxSpace(arrayOfObject, j, n);
-      float f4 = 0.0F;
-
-      if (k > 0) {
-        f4 = Math.max(f2, f3);
-        double d4 = f4;
-        d3 -= d4;
-        while (d3 < 0.0D) {
-          d4 = -d3;
-          d3 = 0.0D;
-          if (!this.road.segIsWrongOrDamaged(i - 1)) {
-            i--;
-            d3 = this.road.get(i).length2D - d4; continue;
-          }
-
-          d3 = -1.0D;
-        }
-
-        if (d3 < 0.0D)
-          break;
-      }
-      for (int i1 = 0; i1 < n; i1++) {
-        UnitData localUnitData = ((UnitInterface)arrayOfObject[j]).GetUnitData();
-
-        localUnitData.segmentIdx = i;
-        localUnitData.leaderDist = f4;
-        if (j == 0) {
-          localUnitData.leader = null;
-        } else if (k == 0) {
-          localUnitData.leader = ((Actor)arrayOfObject[0]);
-          localUnitData.leaderDist = 0.0F;
-        }
-        else if ((arrayOfInt[0] == 0) || ((k & 0x1) == 0) || (i1 > 0)) {
-          localUnitData.leader = ((Actor)arrayOfObject[(j - arrayOfInt[1])]);
-        } else {
-          localUnitData.leader = ((Actor)arrayOfObject[(j - arrayOfInt[1] + 1)]);
-        }float f5 = arrayOfInt[0] == 0 ? f3 : this.maxSpace;
-        float f6 = (arrayOfInt[1] - 1) * f5;
-        if ((arrayOfInt[0] == 1) && ((k & 0x1) == 0)) f6 -= f5;
-        localUnitData.sideOffset = (-f6 / 2.0F + i1 * f5);
-
-        Actor localActor = (Actor)arrayOfObject[j];
-
-        Point3d localPoint3d = this.road.get(i).computePos_Fit(d3, localUnitData.sideOffset, localActor.collisionR());
-
-        localPoint3d.z += ((UnitInterface)localActor).HeightAboveLandSurface();
-        localActor.pos.setAbs(localPoint3d);
-
-        Vector3f localVector3f = new Vector3f();
-        if (this.road.get(i).IsLandAligned())
-          Engine.land().N(localPoint3d.x, localPoint3d.y, localVector3f);
+    private void SetPosition(com.maddox.JGP.Point3d point3d, float f)
+    {
+        pos.getAbs(tmpp);
+        pos.setAbs(point3d);
+        estim_speed.sub(point3d, tmpp);
+        if(f <= 0.0001F)
+            estim_speed.set(0.0D, 0.0D, 0.0D);
         else
-          localVector3f.set(this.road.get(i).normal);
-        Orient localOrient = new Orient();
-        localOrient.setYPR(this.road.get(i).yaw, 0.0F, 0.0F);
-        localOrient.orient(localVector3f);
-        localActor.pos.setAbs(localOrient);
-        localActor.pos.reset();
-
-        ((UnitInterface)arrayOfObject[j]).startMove();
-
-        j++;
-      }
-      if (j >= arrayOfObject.length) break;
-      f2 = f3;
+            estim_speed.scale(1.0D / (double)f);
     }
 
-    if (j <= 0) {
-      ERR("No room to place units");
-    }
-
-    for (; j < arrayOfObject.length; j++) {
-      ((Actor)arrayOfObject[j]).destroy();
-    }
-
-    recomputeMinMaxSegments();
-  }
-
-  private void reformForSHIFT(Object[] paramArrayOfObject, float paramFloat, boolean paramBoolean)
-  {
-    if (paramArrayOfObject == null) return;
-
-    ArrayList localArrayList = new ArrayList(paramArrayOfObject.length);
-    for (int i = 0; i < paramArrayOfObject.length; i++) {
-      localArrayList.add(paramArrayOfObject[i]);
-    }
-
-    Collections.sort(localArrayList, new Comparator()
+    public double getSpeed(com.maddox.JGP.Vector3d vector3d)
     {
-      public int compare(Object paramObject1, Object paramObject2)
-      {
-        UnitData localUnitData1 = ((UnitInterface)paramObject1).GetUnitData();
-        UnitData localUnitData2 = ((UnitInterface)paramObject2).GetUnitData();
-        RoadSegment localRoadSegment1 = ChiefGround.this.road.get(localUnitData1.segmentIdx);
-        RoadSegment localRoadSegment2 = ChiefGround.this.road.get(localUnitData2.segmentIdx);
-        double d = localRoadSegment2.length2Dallprev + localRoadSegment2.computePosAlong(((Actor)paramObject2).pos.getAbsPoint()) - localRoadSegment1.length2Dallprev - localRoadSegment1.computePosAlong(((Actor)paramObject1).pos.getAbsPoint());
-
-        return d > 0.0D ? 1 : d == 0.0D ? 0 : -1;
-      }
-    });
-    float f = paramBoolean ? 5000.0F : -5000.0F;
-    for (int j = 0; j < localArrayList.size(); j++) {
-      UnitData localUnitData = ((UnitInterface)localArrayList.get(j)).GetUnitData();
-      if (j == 0) {
-        localUnitData.leaderDist = 0.0F;
-        localUnitData.leader = null;
-      } else {
-        localUnitData.leaderDist = paramFloat;
-        localUnitData.leader = ((Actor)localArrayList.get(j - 1));
-      }
-      localUnitData.sideOffset = f;
+        double d = estim_speed.length();
+        if(vector3d == null)
+            return d;
+        vector3d.set(estim_speed);
+        if(d <= 0.0001D)
+            vector3d.set(0.0D, 0.0D, 0.0001D);
+        return d;
     }
 
-    for (j = 0; j < paramArrayOfObject.length; j++)
-      ((UnitInterface)paramArrayOfObject[j]).forceReaskMove();
-  }
-
-  private void reform(Object[] paramArrayOfObject, int[] paramArrayOfInt)
-  {
-    if (paramArrayOfObject == null) return;
-
-    if ((paramArrayOfInt[0] == 2) || (paramArrayOfInt[0] == 3)) {
-      reformForSHIFT(paramArrayOfObject, this.maxSpace, paramArrayOfInt[0] == 2);
-      return;
-    }
-
-    ArrayList localArrayList = new ArrayList(paramArrayOfObject.length);
-    for (int i = 0; i < paramArrayOfObject.length; i++) {
-      localArrayList.add(paramArrayOfObject[i]);
-    }
-
-    Collections.sort(localArrayList, new Comparator()
+    public ChiefGround(java.lang.String s, int i, com.maddox.rts.SectFile sectfile, java.lang.String s1, com.maddox.rts.SectFile sectfile1, java.lang.String s2)
     {
-      public int compare(Object paramObject1, Object paramObject2)
-      {
-        UnitData localUnitData1 = ((UnitInterface)paramObject1).GetUnitData();
-        UnitData localUnitData2 = ((UnitInterface)paramObject2).GetUnitData();
-        RoadSegment localRoadSegment1 = ChiefGround.this.road.get(localUnitData1.segmentIdx);
-        RoadSegment localRoadSegment2 = ChiefGround.this.road.get(localUnitData2.segmentIdx);
-        double d = localRoadSegment2.length2Dallprev + localRoadSegment2.computePosAlong(((Actor)paramObject2).pos.getAbsPoint()) - localRoadSegment1.length2Dallprev - localRoadSegment1.computePosAlong(((Actor)paramObject1).pos.getAbsPoint());
+        tmpp = new Point3d();
+        try
+        {
+            road = new RoadPath(sectfile1, s2);
+            road.RegisterTravellerToBridges(this);
+            setName(s);
+            setArmy(i);
+            chiefSeg = 0;
+            chiefAlong = 0.0D;
+            minSeg = -1;
+            maxSeg = -1;
+            waitTime = 0L;
+            curForm = null;
+            minGrabSeg = maxGrabSeg = -1;
+            pos = new ActorPosMove(this);
+            pos.setAbs(road.get(0).start);
+            pos.reset();
+            posCountdown = 0;
+            estim_speed = new Vector3d(0.0D, 0.0D, 0.0D);
+            int j = sectfile.sectionIndex(s1);
+            int k = sectfile.vars(j);
+            if(k <= 0)
+                throw new ActorException("ChiefGround: Missing units");
+            unitsPacked = new ArrayList();
+            for(int l = 0; l < k; l++)
+            {
+                java.lang.String s3 = sectfile.var(j, l);
+                java.lang.Object obj = com.maddox.rts.Spawn.get(s3);
+                if(obj == null)
+                    throw new ActorException("ChiefGround: Unknown type of object (" + s3 + ")");
+                int i1 = com.maddox.rts.Finger.Int(s3);
+                int j1 = 0;
+                unitsPacked.add(new UnitInPackedForm(l, i1, j1));
+            }
 
-        return d > 0.0D ? 1 : d == 0.0D ? 0 : -1;
-      }
-    });
-    for (i = 0; i < localArrayList.size(); i++) {
-      UnitData localUnitData1 = ((UnitInterface)localArrayList.get(i)).GetUnitData();
-      if (paramArrayOfInt[0] == 0) {
-        localUnitData1.leaderDist = (i / paramArrayOfInt[1]);
-      } else {
-        j = i / (paramArrayOfInt[1] * 2 - 1);
-        j = i % (paramArrayOfInt[1] * 2 - 1) < paramArrayOfInt[1] - 1 ? j * 2 : j * 2 + 1;
-        localUnitData1.leaderDist = j;
-      }
-
-    }
-
-    Collections.sort(localArrayList, new Comparator()
-    {
-      public int compare(Object paramObject1, Object paramObject2)
-      {
-        UnitData localUnitData1 = ((UnitInterface)paramObject1).GetUnitData();
-        UnitData localUnitData2 = ((UnitInterface)paramObject2).GetUnitData();
-        if (localUnitData1.leaderDist != localUnitData2.leaderDist) {
-          double d1 = localUnitData1.leaderDist - localUnitData2.leaderDist;
-          return d1 > 0.0D ? 1 : d1 == 0.0D ? 0 : -1;
+            withPreys = false;
+            unpackUnits();
+            recomputeAveragePosition();
+            if(!interpEnd("move"))
+                interpPut(new Move(), "move", com.maddox.rts.Time.current(), null);
         }
-        RoadSegment localRoadSegment1 = ChiefGround.this.road.get(localUnitData1.segmentIdx);
-        RoadSegment localRoadSegment2 = ChiefGround.this.road.get(localUnitData2.segmentIdx);
-        double d2 = localRoadSegment1.computePosSide(((Actor)paramObject1).pos.getAbsPoint()) - localRoadSegment2.computePosSide(((Actor)paramObject2).pos.getAbsPoint());
-
-        return d2 > 0.0D ? 1 : d2 == 0.0D ? 0 : -1;
-      }
-    });
-    i = 0;
-    float f1 = 0.0F;
-    for (int j = 0; j < paramArrayOfInt[2]; j++) {
-      int k = paramArrayOfInt[1];
-      if (((j & 0x1) == 0) && (paramArrayOfInt[0] == 1)) k--;
-      int m = k;
-      if (i + m > localArrayList.size()) m = localArrayList.size() - i;
-      float f2 = computeMaxSpace(localArrayList, i, m);
-      float f3 = 0.0F;
-      if (j > 0) f3 = Math.max(f1, f2);
-
-      for (int n = 0; n < m; n++) {
-        UnitData localUnitData2 = ((UnitInterface)localArrayList.get(i)).GetUnitData();
-
-        localUnitData2.leaderDist = f3;
-        int i1;
-        if (i == 0) {
-          i1 = -1;
-        } else if (j == 0) {
-          i1 = 0;
-          localUnitData2.leaderDist = 0.0F;
+        catch(java.lang.Exception exception)
+        {
+            java.lang.System.out.println("ChiefGround creation failure:");
+            java.lang.System.out.println(exception.getMessage());
+            exception.printStackTrace();
+            com.maddox.il2.ai.ground.ChiefGround.ConstructorFailure();
         }
-        else if ((paramArrayOfInt[0] == 0) || ((j & 0x1) == 0) || (n > 0)) {
-          i1 = i - paramArrayOfInt[1];
-        } else {
-          i1 = i - paramArrayOfInt[1] + 1;
-        }localUnitData2.leader = (i1 < 0 ? null : (Actor)localArrayList.get(i1));
-        float f4 = paramArrayOfInt[0] == 0 ? f2 : this.maxSpace;
-        float f5 = (paramArrayOfInt[1] - 1) * f4;
-        if ((paramArrayOfInt[0] == 1) && ((j & 0x1) == 0)) f5 -= f4;
-        localUnitData2.sideOffset = (-f5 / 2.0F + n * f4);
-
-        i++;
-      }
-      if (i >= localArrayList.size()) break;
-      f1 = f2;
     }
 
-    for (i = 0; i < paramArrayOfObject.length; i++)
-      ((UnitInterface)paramArrayOfObject[i]).forceReaskMove();
-  }
-
-  private int[] FindBestFormation(int paramInt)
-  {
-    float f = (paramInt - 1) * this.maxSpace;
-
-    int[] arrayOfInt = new int[3];
-    AutoChooseFormation(this.curState, this.shift_ToRightSide, paramInt, this.maxSpace, this.road.ComputeMinRoadWidth(this.maxSeg, this.minSeg), arrayOfInt);
-
-    return arrayOfInt;
-  }
-
-  private void reformIfNeed(boolean paramBoolean)
-  {
-    Object[] arrayOfObject = getOwnerAttached();
-    if (arrayOfObject.length <= 0) ERR_NO_UNITS("reformIfNeed");
-    if (paramBoolean) {
-      this.curForm = FindBestFormation(arrayOfObject.length);
-      reform(arrayOfObject, this.curForm);
-    } else {
-      int[] arrayOfInt = FindBestFormation(arrayOfObject.length);
-      if ((arrayOfInt[0] != this.curForm[0]) || (arrayOfInt[1] != this.curForm[1])) {
-        this.curForm = arrayOfInt;
-        reform(arrayOfObject, this.curForm);
-      }
-    }
-  }
-
-  public void CollisionOccured(UnitInterface paramUnitInterface, Actor paramActor)
-  {
-    if (!(paramActor instanceof UnitInterface)) {
-      return;
-    }
-    if ((paramActor.getArmy() != getArmy()) && (paramActor.isAlive()) && (paramActor.getArmy() != 0) && (isAlive()) && (getArmy() != 0))
+    public int getCodeOfBridgeSegment(com.maddox.il2.ai.ground.UnitInterface unitinterface)
     {
-      return;
-    }
-    Actor localActor = paramActor.getOwner();
-    if (localActor == null) {
-      return;
-    }
-    if (localActor == this) {
-      return;
-    }
-    if (!(localActor instanceof ChiefGround)) {
-      throw new ActorException("ChiefGround: ground unit with wrong owner");
+        int i = unitinterface.GetUnitData().segmentIdx;
+        return road.getCodeOfBridgeSegment(i);
     }
 
-    ChiefGround localChiefGround = (ChiefGround)localActor;
-    UnitInterface localUnitInterface = (UnitInterface)paramActor;
-
-    Vector2d localVector2d1 = this.road.get(paramUnitInterface.GetUnitData().segmentIdx).dir2D;
-
-    Vector2d localVector2d2 = localChiefGround.road.get(localUnitInterface.GetUnitData().segmentIdx).dir2D;
-
-    int i = localVector2d1.x * localVector2d2.x + localVector2d1.y * localVector2d2.y < 0.0D ? 1 : 0;
-
-    boolean bool = false;
-    if (localChiefGround.waitTime < this.waitTime)
-      bool = true;
-    else if (localChiefGround.waitTime == this.waitTime) {
-      if (localChiefGround.groupSpeed > this.groupSpeed)
-        bool = true;
-      else if ((localChiefGround.groupSpeed == this.groupSpeed) && 
-        (localChiefGround.name().compareTo(name()) < 0)) {
-        bool = true;
-      }
-
-    }
-
-    this.curState = (localChiefGround.curState = 2);
-
-    int j = SecsToTicks(World.Rnd().nextFloat(47.0F, 72.0F));
-    int k = SecsToTicks(World.Rnd().nextFloat(47.0F, 72.0F));
-    if (i != 0) {
-      this.shift_ToRightSide = true;
-      this.shift_SwitchToBrakeWhenDone = false;
-      localChiefGround.shift_ToRightSide = true;
-      localChiefGround.shift_SwitchToBrakeWhenDone = false;
-      this.stateCountdown = j;
-      localChiefGround.stateCountdown = k;
-    } else {
-      this.shift_ToRightSide = bool;
-      this.shift_SwitchToBrakeWhenDone = bool;
-      localChiefGround.shift_ToRightSide = (!bool);
-      localChiefGround.shift_SwitchToBrakeWhenDone = (!bool);
-
-      int m = SecsToTicks(World.Rnd().nextFloat(18.0F, 25.0F));
-      if (bool) {
-        localChiefGround.stateCountdown = j;
-        localChiefGround.stateCountdown -= m;
-      } else {
-        this.stateCountdown = j;
-        this.stateCountdown -= m;
-      }
-    }
-
-    reformIfNeed(false);
-    localChiefGround.reformIfNeed(false);
-  }
-
-  public double computePosAlong_Fit(int paramInt, Point3d paramPoint3d)
-  {
-    return this.road.get(paramInt).computePosAlong_Fit(paramPoint3d);
-  }
-
-  public double computePosAlong(int paramInt, Point3d paramPoint3d) {
-    return this.road.get(paramInt).computePosAlong(paramPoint3d);
-  }
-
-  public double computePosSide(int paramInt, Point3d paramPoint3d) {
-    return this.road.get(paramInt).computePosSide(paramPoint3d);
-  }
-
-  private static final float distance2D(Point3d paramPoint3d1, Point3d paramPoint3d2) {
-    return (float)Math.sqrt((paramPoint3d1.x - paramPoint3d2.x) * (paramPoint3d1.x - paramPoint3d2.x) + (paramPoint3d1.y - paramPoint3d2.y) * (paramPoint3d1.y - paramPoint3d2.y));
-  }
-
-  private static boolean intersectLineCircle(float paramFloat1, float paramFloat2, float paramFloat3, float paramFloat4, float paramFloat5, float paramFloat6, float paramFloat7)
-  {
-    float f1 = paramFloat7 * paramFloat7;
-    float f2 = paramFloat3 - paramFloat1;
-    float f3 = paramFloat4 - paramFloat2;
-    float f4 = f2 * f2 + f3 * f3;
-    float f5 = ((paramFloat5 - paramFloat1) * f2 + (paramFloat6 - paramFloat2) * f3) / f4;
-    if ((f5 >= 0.0F) && (f5 <= 1.0F)) {
-      f6 = paramFloat1 + f5 * f2;
-      f7 = paramFloat2 + f5 * f3;
-      float f8 = (f6 - paramFloat5) * (f6 - paramFloat5) + (f7 - paramFloat6) * (f7 - paramFloat6);
-      return f1 - f8 >= 0.0F;
-    }
-    float f6 = (paramFloat3 - paramFloat5) * (paramFloat3 - paramFloat5) + (paramFloat4 - paramFloat6) * (paramFloat4 - paramFloat6);
-    float f7 = (paramFloat1 - paramFloat5) * (paramFloat1 - paramFloat5) + (paramFloat2 - paramFloat6) * (paramFloat2 - paramFloat6);
-    return (f6 <= f1) || (f7 <= f1);
-  }
-
-  private static boolean intersectCircle(Point3d paramPoint3d1, double paramDouble1, Point3d paramPoint3d2, double paramDouble2, float paramFloat)
-  {
-    float f1 = (float)(paramPoint3d2.x + paramDouble2 * Geom.cosDeg(paramFloat));
-    float f2 = (float)(paramPoint3d2.y + paramDouble2 * Geom.sinDeg(paramFloat));
-    return intersectLineCircle((float)paramPoint3d2.x, (float)paramPoint3d2.y, f1, f2, (float)paramPoint3d1.x, (float)paramPoint3d1.y, (float)paramDouble1);
-  }
-
-  private UnitMove createStay_UnitMove(float paramFloat, int paramInt)
-  {
-    RoadSegment localRoadSegment = this.road.get(paramInt);
-    if (localRoadSegment.IsLandAligned()) {
-      return new UnitMove(paramFloat, new Vector3f(0.0F, 0.0F, -1.0F));
-    }
-    return new UnitMove(paramFloat, localRoadSegment.normal);
-  }
-
-  private boolean cantEnterIntoSegment_checkComplete(int paramInt)
-  {
-    if (paramInt >= this.road.nsegments() - 1) {
-      int i = (this.waitTime > 0L) && (paramInt > this.maxSeg) ? 1 : 0;
-      if (i == 0) {
-        World.onTaskComplete(this);
-      }
-      return true;
-    }
-    return (!this.road.segIsPassableBy(paramInt, this)) || ((this.waitTime > 0L) && (paramInt > this.maxSeg));
-  }
-
-  private boolean cantEnterIntoSegment(int paramInt)
-  {
-    return (paramInt >= this.road.nsegments() - 1) || (!this.road.segIsPassableBy(paramInt, this)) || ((this.waitTime > 0L) && (paramInt > this.maxSeg));
-  }
-
-  private boolean cantEnterIntoSegmentPacked_checkComplete(int paramInt)
-  {
-    if (paramInt >= this.road.nsegments() - 1) {
-      int i = this.waitTime > 0L ? 1 : 0;
-      if (i == 0) {
-        World.onTaskComplete(this);
-      }
-      return true;
-    }
-    return (!this.road.segIsPassableBy(paramInt, this)) || (this.waitTime > 0L);
-  }
-
-  private void moveChiefPacked(float paramFloat)
-  {
-    RoadSegment localRoadSegment = this.road.get(this.chiefSeg);
-    double d = this.groupSpeed * paramFloat;
-    while (this.chiefAlong + d >= localRoadSegment.length2D)
+    public void BridgeSegmentDestroyed(int i, int j, com.maddox.il2.engine.Actor actor)
     {
-      if (cantEnterIntoSegmentPacked_checkComplete(this.chiefSeg + 1))
-      {
-        this.chiefAlong = localRoadSegment.length2D;
-        d = 0.0D;
-        break;
-      }
+        boolean flag = road.MarkDestroyedSegments(i, j);
+        if(!flag)
+            return;
+        if(unitsPacked.size() > 0)
+            return;
+        java.lang.Object aobj[] = getOwnerAttached();
+        if(aobj.length <= 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR_NO_UNITS("BridgeSegmentDestroyed");
+        for(int k = 0; k < aobj.length; k++)
+        {
+            int l = ((com.maddox.il2.ai.ground.UnitInterface)aobj[k]).GetUnitData().segmentIdx;
+            if(road.segIsWrongOrDamaged(l))
+                ((com.maddox.il2.ai.ground.UnitInterface)aobj[k]).absoluteDeath(actor);
+        }
 
-      this.chiefAlong = (this.chiefAlong + d - localRoadSegment.length2D);
-      this.chiefSeg += 1;
-      recomputeChiefWaitTime(this.chiefSeg);
-      localRoadSegment = this.road.get(this.chiefSeg);
-
-      this.road.unlockBridges(this, this.minGrabSeg, this.maxGrabSeg);
-      this.minGrabSeg = (this.maxGrabSeg = this.chiefSeg);
-      this.road.lockBridges(this, this.minGrabSeg, this.maxGrabSeg);
-    }
-    this.chiefAlong += d;
-    SetPosition(localRoadSegment.computePos_Fit(this.chiefAlong, 0.0D, 0.0F), paramFloat);
-  }
-
-  public UnitMove AskMoveCommand(Actor paramActor, Point3d paramPoint3d, StaticObstacle paramStaticObstacle)
-  {
-    UnitInterface localUnitInterface = (UnitInterface)paramActor;
-    UnitData localUnitData1 = localUnitInterface.GetUnitData();
-
-    int i = (paramPoint3d != null) && (paramPoint3d.z < 0.0D) ? 1 : 0;
-    int j = (paramPoint3d != null) && (paramPoint3d.z > 0.0D) ? 1 : 0;
-
-    if (((this.curState == 2) || (this.curState == 3)) && (j != 0)) {
-      j = 0;
     }
 
-    RoadSegment localRoadSegment1 = this.road.get(localUnitData1.segmentIdx);
-    Point3d localPoint3d1 = new Point3d(paramActor.pos.getAbsPoint());
-    int k;
-    double d5;
-    if (i != 0)
+    private void recomputeAveragePosition()
     {
-      k = 0;
-      double d1 = localRoadSegment1.computePosAlong(localPoint3d1);
-      if (d1 >= 0.0D)
-        d1 = d1 > localRoadSegment1.length2D ? d1 - localRoadSegment1.length2D : 0.0D;
-      while (true)
-      {
-        if (d1 > 0.0D)
-          cantEnterIntoSegment_checkComplete(localUnitData1.segmentIdx + 1);
-        RoadSegment localRoadSegment2;
-        if (k >= 0) {
-          if (cantEnterIntoSegment(localUnitData1.segmentIdx + 1)) {
-            if (k != 0) break; 
-          }
-          else {
-            localRoadSegment2 = this.road.get(localUnitData1.segmentIdx + 1);
-            d5 = localRoadSegment2.computePosAlong(localPoint3d1);
-            if (d5 >= 0.0D)
-              d5 = d5 > localRoadSegment2.length2D ? d5 - localRoadSegment2.length2D : 0.0D;
-            if (Math.abs(d5) < Math.abs(d1)) {
-              k = 1;
-              d1 = d5;
-              localUnitData1.segmentIdx += 1; } else {
-              if (k != 0)
+        if(unitsPacked.size() > 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("average position when PACKED");
+        java.lang.Object aobj[] = getOwnerAttached();
+        if(aobj.length <= 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR_NO_UNITS("recomputeAveragePosition");
+        int i = aobj.length;
+        int j = 10000;
+        int k = -10000;
+        for(int l = 0; l < i; l++)
+        {
+            int i1 = ((com.maddox.il2.ai.ground.UnitInterface)aobj[l]).GetUnitData().segmentIdx;
+            if(i1 < j)
+                j = i1;
+            if(i1 > k)
+                k = i1;
+        }
+
+        com.maddox.JGP.Point3d point3d = new Point3d(((com.maddox.il2.engine.Actor)aobj[0]).pos.getAbsPoint());
+        double d = com.maddox.il2.ai.World.land().HQ(point3d.x, point3d.y);
+        if(point3d.z < d)
+            point3d.z = d;
+        SetPosition(point3d, 1.05F);
+        posCountdown = com.maddox.il2.ai.ground.ChiefGround.SecsToTicks(com.maddox.il2.ai.World.Rnd().nextFloat(0.9F, 1.2F));
+        road.unlockBridges(this, minGrabSeg, maxGrabSeg);
+        minGrabSeg = j;
+        maxGrabSeg = k;
+        road.lockBridges(this, minGrabSeg, maxGrabSeg);
+    }
+
+    private void computePositionForPacked()
+    {
+        if(unitsPacked.size() > 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("advanced position when PACKED");
+        com.maddox.JGP.Point3d point3d = pos.getAbsPoint();
+        double d = 999999.90000000002D;
+        chiefSeg = minSeg;
+        for(int i = minSeg; i <= maxSeg; i++)
+        {
+            double d1 = road.get(i).computePosAlong(point3d);
+            double d2 = road.get(i).computePosSide(point3d);
+            double d3 = d1 * d1 + d2 * d2;
+            if(d >= d3)
+            {
+                d = d3;
+                chiefSeg = i;
+            }
+        }
+
+        chiefAlong = road.get(chiefSeg).computePosAlong_Fit(point3d);
+        SetPosition(road.get(chiefSeg).computePos_Fit(chiefAlong, 0.0D, 0.0F), 0.0F);
+        posCountdown = com.maddox.il2.ai.ground.ChiefGround.SecsToTicks(com.maddox.il2.ai.World.Rnd().nextFloat(0.9F, 1.2F));
+        road.unlockBridges(this, minGrabSeg, maxGrabSeg);
+        minGrabSeg = maxGrabSeg = chiefSeg;
+        road.lockBridges(this, minGrabSeg, maxGrabSeg);
+    }
+
+    private void recomputeChiefWaitTime(int i)
+    {
+        long l = road.getMaxWaitTime(i, i);
+        long l1 = com.maddox.rts.Time.tick();
+        if(l > l1 && l > waitTime)
+            waitTime = l;
+    }
+
+    private void recomputeMinMaxSegments()
+    {
+        if(unitsPacked.size() > 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("min/max seg when PACKED");
+        java.lang.Object aobj[] = getOwnerAttached();
+        if(aobj.length <= 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR_NO_UNITS("recomputeMinMaxSegments");
+        int i = aobj.length;
+        int j = 10000;
+        int k = -10000;
+        for(int l = 0; l < i; l++)
+        {
+            int i1 = ((com.maddox.il2.ai.ground.UnitInterface)aobj[l]).GetUnitData().segmentIdx;
+            if(i1 < j)
+                j = i1;
+            if(i1 > k)
+                k = i1;
+        }
+
+        road.unlockBridges(this, minGrabSeg, maxGrabSeg);
+        minGrabSeg = j;
+        maxGrabSeg = k;
+        road.lockBridges(this, minGrabSeg, maxGrabSeg);
+        if(j == minSeg && k == maxSeg)
+            return;
+        long l1 = road.getMaxWaitTime(java.lang.Math.min(j, minSeg), k);
+        long l2 = com.maddox.rts.Time.tick();
+        if(l1 > l2 && l1 > waitTime)
+            waitTime = l1;
+        minSeg = j;
+        maxSeg = k;
+    }
+
+    private void recomputeUnitsProperties_Packed()
+    {
+        int i = unitsPacked.size();
+        if(i <= 0)
+        {
+            recomputeUnitsProperties();
+            return;
+        }
+        groupSpeed = 100000F;
+        maxSpace = -1F;
+        weaponsMask = 0;
+        hitbyMask = 0;
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.ground.UnitInPackedForm unitinpackedform = (com.maddox.il2.ai.ground.UnitInPackedForm)unitsPacked.get(j);
+            float f = unitinpackedform.SPEED_AVERAGE;
+            if(f < groupSpeed)
+                groupSpeed = f;
+            f = unitinpackedform.BEST_SPACE;
+            if(f > maxSpace)
+                maxSpace = f;
+            weaponsMask |= unitinpackedform.WEAPONS_MASK;
+            hitbyMask |= unitinpackedform.HITBY_MASK;
+        }
+
+        if(groupSpeed < 0.001F || groupSpeed > 10000F)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("group speed is too small");
+        if(maxSpace <= 0.01F)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("maxSpace is too small");
+    }
+
+    public void recomputeUnitsProperties()
+    {
+        if(unitsPacked.size() > 0)
+        {
+            recomputeUnitsProperties_Packed();
+            return;
+        }
+        java.lang.Object aobj[] = getOwnerAttached();
+        if(aobj.length <= 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR_NO_UNITS("recomputeUnitsProperties");
+        int i = aobj.length;
+        groupSpeed = 10000F;
+        maxSpace = -1F;
+        weaponsMask = 0;
+        hitbyMask = 0;
+        withPreys = false;
+        for(int j = 0; j < i; j++)
+        {
+            com.maddox.il2.ai.ground.UnitInterface unitinterface = (com.maddox.il2.ai.ground.UnitInterface)aobj[j];
+            float f = unitinterface.SpeedAverage();
+            if(f < groupSpeed)
+                groupSpeed = f;
+            f = unitinterface.BestSpace();
+            if(f > maxSpace)
+                maxSpace = f;
+            if(unitinterface instanceof com.maddox.il2.ai.ground.Predator)
+                weaponsMask |= ((com.maddox.il2.ai.ground.Predator)unitinterface).WeaponsMask();
+            if(!(unitinterface instanceof com.maddox.il2.ai.ground.Prey))
+                continue;
+            hitbyMask |= ((com.maddox.il2.ai.ground.Prey)unitinterface).HitbyMask();
+            if(!(unitinterface instanceof com.maddox.il2.ai.ground.Predator))
+                withPreys = true;
+        }
+
+        if(groupSpeed <= 0.001F)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("group speed is too small");
+        if(maxSpace <= 0.01F)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("maxSpace is too small");
+    }
+
+    private float computeMaxSpace(java.util.ArrayList arraylist, int i, int j)
+    {
+        float f = -1F;
+        do
+        {
+            if(j-- <= 0)
+                break;
+            float f1 = ((com.maddox.il2.ai.ground.UnitInterface)arraylist.get(i++)).BestSpace();
+            if(f1 > f)
+                f = f1;
+        } while(true);
+        if(f <= 0.01F)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("maxSpace is too small");
+        return f;
+    }
+
+    private float computeMaxSpace(java.lang.Object aobj[], int i, int j)
+    {
+        float f = -1F;
+        do
+        {
+            if(j-- <= 0)
+                break;
+            float f1 = ((com.maddox.il2.ai.ground.UnitInterface)aobj[i++]).BestSpace();
+            if(f1 > f)
+                f = f1;
+        } while(true);
+        if(f <= 0.01F)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("maxSpace is too small");
+        return f;
+    }
+
+    private static final int SecsToTicks(float f)
+    {
+        int i = (int)(0.5D + (double)(f / com.maddox.rts.Time.tickLenFs()));
+        return i > 0 ? i : 0;
+    }
+
+    public com.maddox.il2.engine.Actor GetNearestEnemy(com.maddox.JGP.Point3d point3d, double d, int i, float f)
+    {
+        if(unitsPacked.size() > 0)
+            return null;
+        if(f < 0.0F)
+            com.maddox.il2.ai.ground.NearestEnemies.set(i);
+        else
+            com.maddox.il2.ai.ground.NearestEnemies.set(i, -9999.9F, f);
+        com.maddox.il2.engine.Actor actor = com.maddox.il2.ai.ground.NearestEnemies.getAFoundEnemy(point3d, d, getArmy());
+        if(actor == null)
+            return null;
+        if(!(actor instanceof com.maddox.il2.ai.ground.Prey))
+        {
+            java.lang.System.out.println("chiefg: nearest enemies: non-Prey");
+            return null;
+        }
+        switch(curState)
+        {
+        case 2: // '\002'
+        case 3: // '\003'
+        default:
+            break;
+
+        case 0: // '\0'
+            if(!withPreys)
+            {
+                curState = 1;
+                stateCountdown = com.maddox.il2.ai.ground.ChiefGround.SecsToTicks(com.maddox.il2.ai.World.Rnd().nextFloat(50F, 90F));
+                reformIfNeed(false);
+            }
+            break;
+
+        case 1: // '\001'
+            stateCountdown = com.maddox.il2.ai.ground.ChiefGround.SecsToTicks(com.maddox.il2.ai.World.Rnd().nextFloat(50F, 90F));
+            break;
+        }
+        return actor;
+    }
+
+    public void Detach(com.maddox.il2.engine.Actor actor, com.maddox.il2.engine.Actor actor1)
+    {
+        if(unitsPacked.size() > 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("Detaching when PACKED");
+        java.lang.Object aobj[] = getOwnerAttached();
+        if(aobj.length <= 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR_NO_UNITS("Detach");
+        int i = aobj.length;
+        int j;
+        for(j = 0; j < i && actor != (com.maddox.il2.engine.Actor)aobj[j]; j++);
+        if(j >= i)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("Detaching unknown unit");
+        com.maddox.il2.ai.ground.UnitInterface unitinterface = (com.maddox.il2.ai.ground.UnitInterface)actor;
+        com.maddox.il2.ai.ground.UnitData unitdata = unitinterface.GetUnitData();
+        if(j < i - 1)
+        {
+            com.maddox.il2.engine.Actor actor2 = (com.maddox.il2.engine.Actor)aobj[j + 1];
+            com.maddox.il2.ai.ground.UnitInterface unitinterface1 = (com.maddox.il2.ai.ground.UnitInterface)actor2;
+            com.maddox.il2.ai.ground.UnitData unitdata1 = unitinterface1.GetUnitData();
+            unitdata1.leader = unitdata.leader;
+        }
+        unitdata.leader = null;
+        actor.setOwner(null);
+        if(i > 1)
+        {
+            recomputeUnitsProperties();
+            recomputeMinMaxSegments();
+            reformIfNeed(true);
+            recomputeAveragePosition();
+        }
+        if(i <= 1)
+        {
+            road.UnregisterTravellerFromBridges(this);
+            road.unlockBridges(this, minGrabSeg, maxGrabSeg);
+            minGrabSeg = maxGrabSeg = -1;
+            com.maddox.il2.ai.World.onActorDied(this, actor1);
+            destroy();
+        }
+    }
+
+    public void msgDream(boolean flag)
+    {
+        boolean flag1 = unitsPacked.size() > 0;
+        if(flag)
+        {
+            if(!flag1)
+                com.maddox.il2.ai.ground.ChiefGround.ERR("Wakeup out of place");
+            unpackUnits();
+        } else
+        {
+            if(flag1)
+                com.maddox.il2.ai.ground.ChiefGround.ERR("Sleeping out of place");
+            packUnits();
+        }
+    }
+
+    public void packUnits()
+    {
+        if(unitsPacked.size() > 0)
+            return;
+        java.lang.Object aobj[] = getOwnerAttached();
+        if(aobj.length <= 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR_NO_UNITS("packUnits");
+        computePositionForPacked();
+        int i = aobj.length;
+        for(int j = 0; j < i; j++)
+        {
+            unitsPacked.add(((com.maddox.il2.ai.ground.UnitInterface)aobj[j]).Pack());
+            ((com.maddox.il2.engine.Actor)aobj[j]).destroy();
+        }
+
+        recomputeUnitsProperties();
+    }
+
+    public void unpackUnits()
+    {
+        int i = unitsPacked.size();
+        if(i <= 0)
+            return;
+        if(getOwnerAttached().length > 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("unpack units");
+        for(int j = 0; j < i; j++)
+        {
+            int k = ((com.maddox.il2.ai.ground.UnitInPackedForm)unitsPacked.get(j)).CodeName();
+            int l = ((com.maddox.il2.ai.ground.UnitInPackedForm)unitsPacked.get(j)).CodeType();
+            java.lang.Object obj = com.maddox.rts.Spawn.get(l);
+            int i1 = ((com.maddox.il2.ai.ground.UnitInPackedForm)unitsPacked.get(j)).State();
+            ((com.maddox.il2.ai.ground.UnitSpawn)obj).unitSpawn(k, i1, this);
+        }
+
+        unitsPacked.clear();
+        curState = 0;
+        stateCountdown = 0;
+        road.unlockBridges(this, minGrabSeg, maxGrabSeg);
+        minGrabSeg = maxGrabSeg = -1;
+        recomputeUnitsProperties();
+        formUnitsAfterUnpacking();
+    }
+
+    private static void AutoChooseFormation(int i, boolean flag, int j, float f, double d, int ai[])
+    {
+        if(j <= 0)
+            return;
+        if(i == 2 || i == 3)
+        {
+            ai[0] = flag ? 2 : 3;
+            ai[1] = 1;
+            ai[2] = j;
+            return;
+        }
+        ai[0] = 0;
+        int k = (int)(d / (double)f);
+        if(k <= 0)
+            k = 1;
+        if(k > j)
+            k = j;
+        if(k <= 1)
+        {
+            ai[1] = 1;
+            ai[2] = j;
+            return;
+        }
+        if(i == 0)
+        {
+            ai[1] = 1;
+            ai[2] = j;
+            return;
+        }
+        ai[0] = 1;
+        if(k >= 3 && j < ((k - 1) + k) - 1)
+        {
+            k /= 2;
+            if(k < 2)
+                k = 2;
+        }
+        ai[1] = k;
+        int l = 2 * k - 1;
+        int i1 = ((j + l) - 1) / l;
+        ai[2] = i1 * 2;
+        if(((j + l) - 1) % l < k - 1)
+            ai[2]--;
+    }
+
+    private void formUnitsAfterUnpacking()
+    {
+        if(unitsPacked.size() > 0)
+            return;
+        java.lang.Object aobj[] = getOwnerAttached();
+        if(aobj.length <= 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR_NO_UNITS("formUnitsAfterUnpacking");
+        float f = (float)(aobj.length - 1) * maxSpace;
+        double d = road.get(chiefSeg).computePosAlong_Fit(pos.getAbsPoint());
+        com.maddox.il2.ai.ground.RoadPart roadpart = new RoadPart();
+        road.FindFreeSpace(f, chiefSeg, d, roadpart);
+        int ai[] = new int[3];
+        com.maddox.il2.ai.ground.ChiefGround.AutoChooseFormation(curState, shift_ToRightSide, aobj.length, maxSpace, road.ComputeMinRoadWidth(roadpart.begseg, roadpart.endseg), ai);
+        curForm = ai;
+        f = (float)(ai[2] - 1) * maxSpace;
+        road.FindFreeSpace(f, chiefSeg, d, roadpart);
+        double d1 = 1.0D;
+        int i = roadpart.begseg;
+        double d2 = roadpart.begt;
+        int j = 0;
+        float f1 = 0.0F;
+        int k = 0;
+label0:
+        do
+        {
+            int i1;
+            float f2;
+            float f3;
+label1:
+            {
+label2:
+                {
+                    if(k >= ai[2])
+                        break label0;
+                    int l = ai[1];
+                    if((k & 1) == 0 && ai[0] == 1)
+                        l--;
+                    i1 = l;
+                    if(j + i1 > aobj.length)
+                        i1 = aobj.length - j;
+                    f2 = computeMaxSpace(aobj, j, i1);
+                    f3 = 0.0F;
+                    if(k <= 0)
+                        break label1;
+                    f3 = java.lang.Math.max(f1, f2);
+                    double d3 = f3;
+                    d2 -= d3;
+                    do
+                    {
+                        if(d2 >= 0.0D)
+                            break label2;
+                        double d4 = -d2;
+                        d2 = 0.0D;
+                        if(road.segIsWrongOrDamaged(i - 1))
+                            break;
+                        i--;
+                        d2 = road.get(i).length2D - d4;
+                    } while(true);
+                    d2 = -1D;
+                }
+                if(d2 < 0.0D)
+                    break label0;
+            }
+            for(int j1 = 0; j1 < i1; j1++)
+            {
+                com.maddox.il2.ai.ground.UnitData unitdata = ((com.maddox.il2.ai.ground.UnitInterface)aobj[j]).GetUnitData();
+                unitdata.segmentIdx = i;
+                unitdata.leaderDist = f3;
+                if(j == 0)
+                    unitdata.leader = null;
+                else
+                if(k == 0)
+                {
+                    unitdata.leader = (com.maddox.il2.engine.Actor)aobj[0];
+                    unitdata.leaderDist = 0.0F;
+                } else
+                if(ai[0] == 0 || (k & 1) == 0 || j1 > 0)
+                    unitdata.leader = (com.maddox.il2.engine.Actor)aobj[j - ai[1]];
+                else
+                    unitdata.leader = (com.maddox.il2.engine.Actor)aobj[(j - ai[1]) + 1];
+                float f4 = ai[0] != 0 ? maxSpace : f2;
+                float f5 = (float)(ai[1] - 1) * f4;
+                if(ai[0] == 1 && (k & 1) == 0)
+                    f5 -= f4;
+                unitdata.sideOffset = -f5 / 2.0F + (float)j1 * f4;
+                com.maddox.il2.engine.Actor actor = (com.maddox.il2.engine.Actor)aobj[j];
+                com.maddox.JGP.Point3d point3d = road.get(i).computePos_Fit(d2, unitdata.sideOffset, actor.collisionR());
+                point3d.z += ((com.maddox.il2.ai.ground.UnitInterface)actor).HeightAboveLandSurface();
+                actor.pos.setAbs(point3d);
+                com.maddox.JGP.Vector3f vector3f = new Vector3f();
+                if(road.get(i).IsLandAligned())
+                    com.maddox.il2.engine.Engine.land().N(point3d.x, point3d.y, vector3f);
+                else
+                    vector3f.set(road.get(i).normal);
+                com.maddox.il2.engine.Orient orient = new Orient();
+                orient.setYPR(road.get(i).yaw, 0.0F, 0.0F);
+                orient.orient(vector3f);
+                actor.pos.setAbs(orient);
+                actor.pos.reset();
+                ((com.maddox.il2.ai.ground.UnitInterface)aobj[j]).startMove();
+                j++;
+            }
+
+            if(j >= aobj.length)
+                break;
+            f1 = f2;
+            k++;
+        } while(true);
+        if(j <= 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR("No room to place units");
+        for(; j < aobj.length; j++)
+            ((com.maddox.il2.engine.Actor)aobj[j]).destroy();
+
+        recomputeMinMaxSegments();
+    }
+
+    private void reformForSHIFT(java.lang.Object aobj[], float f, boolean flag)
+    {
+        if(aobj == null)
+            return;
+        java.util.ArrayList arraylist = new ArrayList(aobj.length);
+        for(int i = 0; i < aobj.length; i++)
+            arraylist.add(aobj[i]);
+
+        java.util.Collections.sort(arraylist, new java.util.Comparator() {
+
+            public int compare(java.lang.Object obj, java.lang.Object obj1)
+            {
+                com.maddox.il2.ai.ground.UnitData unitdata1 = ((com.maddox.il2.ai.ground.UnitInterface)obj).GetUnitData();
+                com.maddox.il2.ai.ground.UnitData unitdata2 = ((com.maddox.il2.ai.ground.UnitInterface)obj1).GetUnitData();
+                com.maddox.il2.ai.ground.RoadSegment roadsegment = road.get(unitdata1.segmentIdx);
+                com.maddox.il2.ai.ground.RoadSegment roadsegment1 = road.get(unitdata2.segmentIdx);
+                double d = (roadsegment1.length2Dallprev + roadsegment1.computePosAlong(((com.maddox.il2.engine.Actor)obj1).pos.getAbsPoint())) - roadsegment.length2Dallprev - roadsegment.computePosAlong(((com.maddox.il2.engine.Actor)obj).pos.getAbsPoint());
+                return d != 0.0D ? d <= 0.0D ? -1 : 1 : 0;
+            }
+
+        }
+);
+        float f1 = flag ? 5000F : -5000F;
+        for(int j = 0; j < arraylist.size(); j++)
+        {
+            com.maddox.il2.ai.ground.UnitData unitdata = ((com.maddox.il2.ai.ground.UnitInterface)arraylist.get(j)).GetUnitData();
+            if(j == 0)
+            {
+                unitdata.leaderDist = 0.0F;
+                unitdata.leader = null;
+            } else
+            {
+                unitdata.leaderDist = f;
+                unitdata.leader = (com.maddox.il2.engine.Actor)arraylist.get(j - 1);
+            }
+            unitdata.sideOffset = f1;
+        }
+
+        for(int k = 0; k < aobj.length; k++)
+            ((com.maddox.il2.ai.ground.UnitInterface)aobj[k]).forceReaskMove();
+
+    }
+
+    private void reform(java.lang.Object aobj[], int ai[])
+    {
+        if(aobj == null)
+            return;
+        if(ai[0] == 2 || ai[0] == 3)
+        {
+            reformForSHIFT(aobj, maxSpace, ai[0] == 2);
+            return;
+        }
+        java.util.ArrayList arraylist = new ArrayList(aobj.length);
+        for(int i = 0; i < aobj.length; i++)
+            arraylist.add(aobj[i]);
+
+        java.util.Collections.sort(arraylist, new java.util.Comparator() {
+
+            public int compare(java.lang.Object obj, java.lang.Object obj1)
+            {
+                com.maddox.il2.ai.ground.UnitData unitdata2 = ((com.maddox.il2.ai.ground.UnitInterface)obj).GetUnitData();
+                com.maddox.il2.ai.ground.UnitData unitdata3 = ((com.maddox.il2.ai.ground.UnitInterface)obj1).GetUnitData();
+                com.maddox.il2.ai.ground.RoadSegment roadsegment = road.get(unitdata2.segmentIdx);
+                com.maddox.il2.ai.ground.RoadSegment roadsegment1 = road.get(unitdata3.segmentIdx);
+                double d = (roadsegment1.length2Dallprev + roadsegment1.computePosAlong(((com.maddox.il2.engine.Actor)obj1).pos.getAbsPoint())) - roadsegment.length2Dallprev - roadsegment.computePosAlong(((com.maddox.il2.engine.Actor)obj).pos.getAbsPoint());
+                return d != 0.0D ? d <= 0.0D ? -1 : 1 : 0;
+            }
+
+        }
+);
+        for(int j = 0; j < arraylist.size(); j++)
+        {
+            com.maddox.il2.ai.ground.UnitData unitdata = ((com.maddox.il2.ai.ground.UnitInterface)arraylist.get(j)).GetUnitData();
+            if(ai[0] == 0)
+            {
+                unitdata.leaderDist = j / ai[1];
+            } else
+            {
+                int i1 = j / (ai[1] * 2 - 1);
+                i1 = j % (ai[1] * 2 - 1) >= ai[1] - 1 ? i1 * 2 + 1 : i1 * 2;
+                unitdata.leaderDist = i1;
+            }
+        }
+
+        java.util.Collections.sort(arraylist, new java.util.Comparator() {
+
+            public int compare(java.lang.Object obj, java.lang.Object obj1)
+            {
+                com.maddox.il2.ai.ground.UnitData unitdata2 = ((com.maddox.il2.ai.ground.UnitInterface)obj).GetUnitData();
+                com.maddox.il2.ai.ground.UnitData unitdata3 = ((com.maddox.il2.ai.ground.UnitInterface)obj1).GetUnitData();
+                if(unitdata2.leaderDist != unitdata3.leaderDist)
+                {
+                    double d = unitdata2.leaderDist - unitdata3.leaderDist;
+                    return d != 0.0D ? d <= 0.0D ? -1 : 1 : 0;
+                } else
+                {
+                    com.maddox.il2.ai.ground.RoadSegment roadsegment = road.get(unitdata2.segmentIdx);
+                    com.maddox.il2.ai.ground.RoadSegment roadsegment1 = road.get(unitdata3.segmentIdx);
+                    double d1 = roadsegment.computePosSide(((com.maddox.il2.engine.Actor)obj).pos.getAbsPoint()) - roadsegment1.computePosSide(((com.maddox.il2.engine.Actor)obj1).pos.getAbsPoint());
+                    return d1 != 0.0D ? d1 <= 0.0D ? -1 : 1 : 0;
+                }
+            }
+
+        }
+);
+        int k = 0;
+        float f = 0.0F;
+        int j1 = 0;
+        do
+        {
+            if(j1 >= ai[2])
+                break;
+            int k1 = ai[1];
+            if((j1 & 1) == 0 && ai[0] == 1)
+                k1--;
+            int l1 = k1;
+            if(k + l1 > arraylist.size())
+                l1 = arraylist.size() - k;
+            float f1 = computeMaxSpace(arraylist, k, l1);
+            float f2 = 0.0F;
+            if(j1 > 0)
+                f2 = java.lang.Math.max(f, f1);
+            for(int i2 = 0; i2 < l1; i2++)
+            {
+                com.maddox.il2.ai.ground.UnitData unitdata1 = ((com.maddox.il2.ai.ground.UnitInterface)arraylist.get(k)).GetUnitData();
+                unitdata1.leaderDist = f2;
+                int j2;
+                if(k == 0)
+                    j2 = -1;
+                else
+                if(j1 == 0)
+                {
+                    j2 = 0;
+                    unitdata1.leaderDist = 0.0F;
+                } else
+                if(ai[0] == 0 || (j1 & 1) == 0 || i2 > 0)
+                    j2 = k - ai[1];
+                else
+                    j2 = (k - ai[1]) + 1;
+                unitdata1.leader = j2 >= 0 ? (com.maddox.il2.engine.Actor)arraylist.get(j2) : null;
+                float f3 = ai[0] != 0 ? maxSpace : f1;
+                float f4 = (float)(ai[1] - 1) * f3;
+                if(ai[0] == 1 && (j1 & 1) == 0)
+                    f4 -= f3;
+                unitdata1.sideOffset = -f4 / 2.0F + (float)i2 * f3;
+                k++;
+            }
+
+            if(k >= arraylist.size())
+                break;
+            f = f1;
+            j1++;
+        } while(true);
+        for(int l = 0; l < aobj.length; l++)
+            ((com.maddox.il2.ai.ground.UnitInterface)aobj[l]).forceReaskMove();
+
+    }
+
+    private int[] FindBestFormation(int i)
+    {
+        float f = (float)(i - 1) * maxSpace;
+        int ai[] = new int[3];
+        com.maddox.il2.ai.ground.ChiefGround.AutoChooseFormation(curState, shift_ToRightSide, i, maxSpace, road.ComputeMinRoadWidth(maxSeg, minSeg), ai);
+        return ai;
+    }
+
+    private void reformIfNeed(boolean flag)
+    {
+        java.lang.Object aobj[] = getOwnerAttached();
+        if(aobj.length <= 0)
+            com.maddox.il2.ai.ground.ChiefGround.ERR_NO_UNITS("reformIfNeed");
+        if(flag)
+        {
+            curForm = FindBestFormation(aobj.length);
+            reform(aobj, curForm);
+        } else
+        {
+            int ai[] = FindBestFormation(aobj.length);
+            if(ai[0] != curForm[0] || ai[1] != curForm[1])
+            {
+                curForm = ai;
+                reform(aobj, curForm);
+            }
+        }
+    }
+
+    public void CollisionOccured(com.maddox.il2.ai.ground.UnitInterface unitinterface, com.maddox.il2.engine.Actor actor)
+    {
+        if(!(actor instanceof com.maddox.il2.ai.ground.UnitInterface))
+            return;
+        if(actor.getArmy() != getArmy() && actor.isAlive() && actor.getArmy() != 0 && isAlive() && getArmy() != 0)
+            return;
+        com.maddox.il2.engine.Actor actor1 = actor.getOwner();
+        if(actor1 == null)
+            return;
+        if(actor1 == this)
+            return;
+        if(!(actor1 instanceof com.maddox.il2.ai.ground.ChiefGround))
+            throw new ActorException("ChiefGround: ground unit with wrong owner");
+        com.maddox.il2.ai.ground.ChiefGround chiefground = (com.maddox.il2.ai.ground.ChiefGround)actor1;
+        com.maddox.il2.ai.ground.UnitInterface unitinterface1 = (com.maddox.il2.ai.ground.UnitInterface)actor;
+        com.maddox.JGP.Vector2d vector2d = road.get(unitinterface.GetUnitData().segmentIdx).dir2D;
+        com.maddox.JGP.Vector2d vector2d1 = chiefground.road.get(unitinterface1.GetUnitData().segmentIdx).dir2D;
+        boolean flag = vector2d.x * vector2d1.x + vector2d.y * vector2d1.y < 0.0D;
+        boolean flag1 = false;
+        if(chiefground.waitTime < waitTime)
+            flag1 = true;
+        else
+        if(chiefground.waitTime == waitTime)
+            if(chiefground.groupSpeed > groupSpeed)
+                flag1 = true;
+            else
+            if(chiefground.groupSpeed == groupSpeed && chiefground.name().compareTo(name()) < 0)
+                flag1 = true;
+        curState = chiefground.curState = 2;
+        int i = com.maddox.il2.ai.ground.ChiefGround.SecsToTicks(com.maddox.il2.ai.World.Rnd().nextFloat(47F, 72F));
+        int j = com.maddox.il2.ai.ground.ChiefGround.SecsToTicks(com.maddox.il2.ai.World.Rnd().nextFloat(47F, 72F));
+        if(flag)
+        {
+            shift_ToRightSide = true;
+            shift_SwitchToBrakeWhenDone = false;
+            chiefground.shift_ToRightSide = true;
+            chiefground.shift_SwitchToBrakeWhenDone = false;
+            stateCountdown = i;
+            chiefground.stateCountdown = j;
+        } else
+        {
+            shift_ToRightSide = flag1;
+            shift_SwitchToBrakeWhenDone = flag1;
+            chiefground.shift_ToRightSide = !flag1;
+            chiefground.shift_SwitchToBrakeWhenDone = !flag1;
+            int k = com.maddox.il2.ai.ground.ChiefGround.SecsToTicks(com.maddox.il2.ai.World.Rnd().nextFloat(18F, 25F));
+            if(flag1)
+            {
+                chiefground.stateCountdown = i;
+                stateCountdown = chiefground.stateCountdown - k;
+            } else
+            {
+                stateCountdown = i;
+                chiefground.stateCountdown = stateCountdown - k;
+            }
+        }
+        reformIfNeed(false);
+        chiefground.reformIfNeed(false);
+    }
+
+    public double computePosAlong_Fit(int i, com.maddox.JGP.Point3d point3d)
+    {
+        return road.get(i).computePosAlong_Fit(point3d);
+    }
+
+    public double computePosAlong(int i, com.maddox.JGP.Point3d point3d)
+    {
+        return road.get(i).computePosAlong(point3d);
+    }
+
+    public double computePosSide(int i, com.maddox.JGP.Point3d point3d)
+    {
+        return road.get(i).computePosSide(point3d);
+    }
+
+    private static final float distance2D(com.maddox.JGP.Point3d point3d, com.maddox.JGP.Point3d point3d1)
+    {
+        return (float)java.lang.Math.sqrt((point3d.x - point3d1.x) * (point3d.x - point3d1.x) + (point3d.y - point3d1.y) * (point3d.y - point3d1.y));
+    }
+
+    private static boolean intersectLineCircle(float f, float f1, float f2, float f3, float f4, float f5, float f6)
+    {
+        float f7 = f6 * f6;
+        float f8 = f2 - f;
+        float f9 = f3 - f1;
+        float f10 = f8 * f8 + f9 * f9;
+        float f11 = ((f4 - f) * f8 + (f5 - f1) * f9) / f10;
+        if(f11 >= 0.0F && f11 <= 1.0F)
+        {
+            float f12 = f + f11 * f8;
+            float f14 = f1 + f11 * f9;
+            float f16 = (f12 - f4) * (f12 - f4) + (f14 - f5) * (f14 - f5);
+            return f7 - f16 >= 0.0F;
+        } else
+        {
+            float f13 = (f2 - f4) * (f2 - f4) + (f3 - f5) * (f3 - f5);
+            float f15 = (f - f4) * (f - f4) + (f1 - f5) * (f1 - f5);
+            return f13 <= f7 || f15 <= f7;
+        }
+    }
+
+    private static boolean intersectCircle(com.maddox.JGP.Point3d point3d, double d, com.maddox.JGP.Point3d point3d1, double d1, float f)
+    {
+        float f1 = (float)(point3d1.x + d1 * (double)com.maddox.JGP.Geom.cosDeg(f));
+        float f2 = (float)(point3d1.y + d1 * (double)com.maddox.JGP.Geom.sinDeg(f));
+        return com.maddox.il2.ai.ground.ChiefGround.intersectLineCircle((float)point3d1.x, (float)point3d1.y, f1, f2, (float)point3d.x, (float)point3d.y, (float)d);
+    }
+
+    private com.maddox.il2.ai.ground.UnitMove createStay_UnitMove(float f, int i)
+    {
+        com.maddox.il2.ai.ground.RoadSegment roadsegment = road.get(i);
+        if(roadsegment.IsLandAligned())
+            return new UnitMove(f, new Vector3f(0.0F, 0.0F, -1F));
+        else
+            return new UnitMove(f, roadsegment.normal);
+    }
+
+    private boolean cantEnterIntoSegment_checkComplete(int i)
+    {
+        if(i >= road.nsegments() - 1)
+        {
+            boolean flag = waitTime > 0L && i > maxSeg;
+            if(!flag)
+                com.maddox.il2.ai.World.onTaskComplete(this);
+            return true;
+        } else
+        {
+            return !road.segIsPassableBy(i, this) || waitTime > 0L && i > maxSeg;
+        }
+    }
+
+    private boolean cantEnterIntoSegment(int i)
+    {
+        return i >= road.nsegments() - 1 || !road.segIsPassableBy(i, this) || waitTime > 0L && i > maxSeg;
+    }
+
+    private boolean cantEnterIntoSegmentPacked_checkComplete(int i)
+    {
+        if(i >= road.nsegments() - 1)
+        {
+            boolean flag = waitTime > 0L;
+            if(!flag)
+                com.maddox.il2.ai.World.onTaskComplete(this);
+            return true;
+        } else
+        {
+            return !road.segIsPassableBy(i, this) || waitTime > 0L;
+        }
+    }
+
+    private void moveChiefPacked(float f)
+    {
+        com.maddox.il2.ai.ground.RoadSegment roadsegment = road.get(chiefSeg);
+        double d = groupSpeed * f;
+        do
+        {
+            if(chiefAlong + d < roadsegment.length2D)
+                break;
+            if(cantEnterIntoSegmentPacked_checkComplete(chiefSeg + 1))
+            {
+                chiefAlong = roadsegment.length2D;
+                d = 0.0D;
                 break;
             }
-          }
-        }
-        if (k <= 0) {
-          if (cantEnterIntoSegment(localUnitData1.segmentIdx - 1)) {
-            break;
-          }
-          localRoadSegment2 = this.road.get(localUnitData1.segmentIdx - 1);
-          d5 = localRoadSegment2.computePosAlong(localPoint3d1);
-          if (d5 >= 0.0D)
-            d5 = d5 > localRoadSegment2.length2D ? d5 - localRoadSegment2.length2D : 0.0D;
-          if (Math.abs(d5) >= Math.abs(d1)) break;
-          k = -1;
-          d1 = d5;
-          localUnitData1.segmentIdx -= 1;
-        }
-
-      }
-
-      if (k != 0) {
-        localRoadSegment1 = this.road.get(localUnitData1.segmentIdx);
-        recomputeMinMaxSegments();
-
-        reformIfNeed(false);
-      }
-
-    }
-    else
-    {
-      k = 0;
-      UnitMove localUnitMove = null;
-
-      while (localRoadSegment1.computePosAlong(paramActor.pos.getAbsPoint()) >= localRoadSegment1.length2D - 1.0D)
-      {
-        if (cantEnterIntoSegment_checkComplete(localUnitData1.segmentIdx + 1))
-        {
-          localUnitMove = createStay_UnitMove(5.0F, localUnitData1.segmentIdx);
-          break;
-        }
-
-        k = 1;
-        localUnitData1.segmentIdx += 1;
-        if ((localUnitData1.segmentIdx > this.maxSeg) || (localUnitData1.segmentIdx - 1 <= this.minSeg)) {
-          recomputeMinMaxSegments();
-        }
-        localRoadSegment1 = this.road.get(localUnitData1.segmentIdx);
-      }
-
-      if (k != 0) {
-        reformIfNeed(false);
-      }
-      if (localUnitMove != null) {
-        return localUnitMove;
-      }
-
+            chiefAlong = (chiefAlong + d) - roadsegment.length2D;
+            chiefSeg++;
+            recomputeChiefWaitTime(chiefSeg);
+            roadsegment = road.get(chiefSeg);
+            road.unlockBridges(this, minGrabSeg, maxGrabSeg);
+            minGrabSeg = maxGrabSeg = chiefSeg;
+            road.lockBridges(this, minGrabSeg, maxGrabSeg);
+        } while(true);
+        chiefAlong += d;
+        SetPosition(roadsegment.computePos_Fit(chiefAlong, 0.0D, 0.0F), f);
     }
 
-    Vector3d localVector3d = new Vector3d(localRoadSegment1.dir2D.x, localRoadSegment1.dir2D.y, 0.0D);
-    if ((i == 0) && (paramStaticObstacle.updateState()))
+    public com.maddox.il2.ai.ground.UnitMove AskMoveCommand(com.maddox.il2.engine.Actor actor, com.maddox.JGP.Point3d point3d, com.maddox.il2.ai.ground.StaticObstacle staticobstacle)
     {
-      double d2 = localRoadSegment1.computePosAlong(localPoint3d1);
-      double d4 = this.road.ComputeSignedDistAlong(localUnitData1.segmentIdx, d2, paramStaticObstacle.segIdx, paramStaticObstacle.along);
-
-      double d6 = paramActor.collisionR();
-      if (d6 <= 0.0D) d6 = 0.0D;
-      d6 += paramStaticObstacle.R;
-      if (d6 <= 0.0D) d6 = 2.0D;
-      d8 = d4;
-      if (d4 >= 0.0D) {
-        d8 -= d6;
-        if (d8 <= 0.0D) d8 = 0.0D; 
-      }
-      else {
-        d8 += d6;
-        if (d8 >= 0.0D) d8 = 0.0D;
-
-      }
-
-      if ((Math.abs(d4) <= 130.0D) || 
-        (d8 < -Math.max(7.0D * Math.abs(d6), 120.0D)))
-      {
-        paramStaticObstacle.clear();
-      }
-      else if (d4 <= 0.0D) {
-        if (d8 >= -1.5D) {
-          localVector3d.z = 2.5D;
-        }
-
-      }
-      else if (d8 > Math.max(3.0D * d6, 20.0D))
-      {
-        localVector3d.z = Math.max(d6, 3.0D);
-      }
-      else
-      {
-        double d9 = 0.5D * d6;
-        if (d9 < 0.01D)
+        com.maddox.il2.ai.ground.UnitInterface unitinterface = (com.maddox.il2.ai.ground.UnitInterface)actor;
+        com.maddox.il2.ai.ground.UnitData unitdata = unitinterface.GetUnitData();
+        boolean flag = point3d != null && point3d.z < 0.0D;
+        boolean flag1 = point3d != null && point3d.z > 0.0D;
+        if((curState == 2 || curState == 3) && flag1)
+            flag1 = false;
+        com.maddox.il2.ai.ground.RoadSegment roadsegment = road.get(unitdata.segmentIdx);
+        com.maddox.JGP.Point3d point3d1 = new Point3d(actor.pos.getAbsPoint());
+        if(flag)
         {
-          localVector3d.z = 1.0D;
-        }
-        else {
-          Vector2f localVector2f = new Vector2f((float)(paramStaticObstacle.pos.x - localPoint3d1.x), (float)(paramStaticObstacle.pos.y - localPoint3d1.y));
-
-          if (localVector2f.length() < 0.1F)
-          {
-            localVector3d.z = 4.0D;
-          }
-          else {
-            localVector2f.normalize();
-            AnglesFork localAnglesFork = new AnglesFork();
-            localAnglesFork.setSrcRad((float)Math.atan2(localVector2f.y, localVector2f.x));
-            localAnglesFork.setDstDeg(localAnglesFork.getSrcDeg() + (paramStaticObstacle.side > 0.0D ? 90.0F : -90.0F));
-            double d12 = d6 + 0.5D;
-            if (!intersectCircle(paramStaticObstacle.pos, d12, localPoint3d1, d9, localAnglesFork.getSrcDeg()))
+            int i = 0;
+            double d = roadsegment.computePosAlong(point3d1);
+            if(d >= 0.0D)
+                d = d <= roadsegment.length2D ? 0.0D : d - roadsegment.length2D;
+            do
             {
-              float f6 = localAnglesFork.getSrcDeg();
-              localVector3d.set(Geom.cosDeg(f6), Geom.sinDeg(f6), d9);
-            }
-            else if (intersectCircle(paramStaticObstacle.pos, d12, localPoint3d1, d9, localAnglesFork.getDstDeg()))
+                if(d > 0.0D)
+                    cantEnterIntoSegment_checkComplete(unitdata.segmentIdx + 1);
+                if(i >= 0)
+                    if(cantEnterIntoSegment(unitdata.segmentIdx + 1))
+                    {
+                        if(i != 0)
+                            break;
+                    } else
+                    {
+                        com.maddox.il2.ai.ground.RoadSegment roadsegment1 = road.get(unitdata.segmentIdx + 1);
+                        double d5 = roadsegment1.computePosAlong(point3d1);
+                        if(d5 >= 0.0D)
+                            d5 = d5 <= roadsegment1.length2D ? 0.0D : d5 - roadsegment1.length2D;
+                        if(java.lang.Math.abs(d5) < java.lang.Math.abs(d))
+                        {
+                            i = 1;
+                            d = d5;
+                            unitdata.segmentIdx++;
+                        } else
+                        if(i != 0)
+                            break;
+                    }
+                if(i > 0)
+                    continue;
+                if(cantEnterIntoSegment(unitdata.segmentIdx - 1))
+                    break;
+                com.maddox.il2.ai.ground.RoadSegment roadsegment2 = road.get(unitdata.segmentIdx - 1);
+                double d6 = roadsegment2.computePosAlong(point3d1);
+                if(d6 >= 0.0D)
+                    d6 = d6 <= roadsegment2.length2D ? 0.0D : d6 - roadsegment2.length2D;
+                if(java.lang.Math.abs(d6) >= java.lang.Math.abs(d))
+                    break;
+                i = -1;
+                d = d6;
+                unitdata.segmentIdx--;
+            } while(true);
+            if(i != 0)
             {
-              localVector3d.z = 2.0D;
+                roadsegment = road.get(unitdata.segmentIdx);
+                recomputeMinMaxSegments();
+                reformIfNeed(false);
             }
-            else {
-              for (int m = 0; m < 6; m++) {
-                float f8 = localAnglesFork.getDeg(0.5F);
-                if (intersectCircle(paramStaticObstacle.pos, d12, localPoint3d1, d9, f8))
-                  localAnglesFork.setSrcDeg(f8);
-                else
-                  localAnglesFork.setDstDeg(f8);
-              }
-              float f7 = localAnglesFork.getDstDeg();
-
-              localVector3d.set(Geom.cosDeg(f7), Geom.sinDeg(f7), d9);
-            }
-          }
-        }
-      }
-    }
-
-    if (localVector3d.z > 0.0D)
-    {
-      j = 0;
-      i = 1;
-      localVector3d.x *= localVector3d.z;
-      localVector3d.y *= localVector3d.z;
-      paramPoint3d = new Point3d(localVector3d);
-      paramPoint3d.z = -1.0D;
-    }
-    double d3;
-    double d7;
-    if (i != 0) {
-      Point3d localPoint3d2 = new Point3d(localPoint3d1);
-      localPoint3d2.x += paramPoint3d.x;
-      localPoint3d2.y += paramPoint3d.y;
-      d3 = localRoadSegment1.computePosAlong(localPoint3d2);
-      d5 = localRoadSegment1.computePosSide(localPoint3d2);
-      if (d3 >= localRoadSegment1.length2D - 0.2D)
-      {
-        localPoint3d2 = localRoadSegment1.computePos_Fit(localRoadSegment1.length2D, d5, paramActor.collisionR());
-        localPoint3d2.x += localRoadSegment1.dir2D.x * 0.2D;
-        localPoint3d2.y += localRoadSegment1.dir2D.y * 0.2D;
-      }
-      else {
-        localPoint3d2 = localRoadSegment1.computePos_Fit(d3, d5, paramActor.collisionR());
-      }
-      d7 = distance2D(localPoint3d2, localPoint3d1);
-      float f4 = (float)d7 / this.groupSpeed;
-
-      Vector3f localVector3f1 = this.road.get(localUnitData1.segmentIdx).IsLandAligned() ? new Vector3f(0.0F, 0.0F, -1.0F) : this.road.get(localUnitData1.segmentIdx).normal;
-
-      return new UnitMove(localUnitInterface.HeightAboveLandSurface(), localPoint3d2, f4, localVector3f1, this.groupSpeed);
-    }
-
-    if (this.curState == 3) {
-      return createStay_UnitMove(5.0F, localUnitData1.segmentIdx);
-    }
-
-    if (localUnitData1.leader == null)
-    {
-      float f1 = localUnitInterface.CommandInterval() * World.Rnd().nextFloat(0.8F, 1.0F);
-      d3 = this.groupSpeed * f1;
-      d5 = d3 + localRoadSegment1.computePosAlong(localPoint3d1);
-      d7 = localUnitData1.sideOffset;
-      if (j != 0) {
-        d5 += paramPoint3d.x;
-        d7 += paramPoint3d.y;
-      }
-      Point3d localPoint3d4;
-      if (d5 >= localRoadSegment1.length2D - 0.2D)
-      {
-        localPoint3d4 = localRoadSegment1.computePos_Fit(localRoadSegment1.length2D, d7, paramActor.collisionR());
-        localPoint3d4.x += localRoadSegment1.dir2D.x * 0.2D;
-        localPoint3d4.y += localRoadSegment1.dir2D.y * 0.2D;
-      } else {
-        localPoint3d4 = localRoadSegment1.computePos_Fit(d5, d7, paramActor.collisionR());
-      }
-      d3 = distance2D(localPoint3d4, localPoint3d1);
-      float f5 = (float)d3 / this.groupSpeed;
-      Vector3f localVector3f2 = this.road.get(localUnitData1.segmentIdx).IsLandAligned() ? new Vector3f(0.0F, 0.0F, -1.0F) : this.road.get(localUnitData1.segmentIdx).normal;
-
-      return new UnitMove(localUnitInterface.HeightAboveLandSurface(), localPoint3d4, f5, localVector3f2, this.groupSpeed);
-    }
-
-    Actor localActor = localUnitData1.leader;
-    UnitData localUnitData2 = ((UnitInterface)localActor).GetUnitData();
-    RoadSegment localRoadSegment3 = this.road.get(localUnitData2.segmentIdx);
-
-    Point3d localPoint3d3 = new Point3d();
-    float f2 = localUnitInterface.CommandInterval();
-    f2 *= World.Rnd().nextFloat(0.8F, 1.0F);
-    float f3 = localActor.futurePosition(f2, localPoint3d3);
-
-    f3 += 0.4F;
-
-    double d8 = localRoadSegment3.computePosAlong(localPoint3d3);
-
-    Point3d localPoint3d5 = new Point3d();
-    paramActor.pos.getAbs(localPoint3d5);
-    double d10 = localRoadSegment1.computePosAlong(localPoint3d5);
-
-    double d11 = this.road.ComputeSignedDistAlong(localUnitData1.segmentIdx, d10, localUnitData2.segmentIdx, d8);
-
-    double d13 = localUnitData1.leaderDist;
-    if (j != 0) d13 += paramPoint3d.x;
-
-    double d14 = d11 - d13;
-    if (d14 < 0.0D) {
-      f2 = localUnitInterface.StayInterval();
-      if (localRoadSegment1.IsLandAligned()) {
-        return new UnitMove(f2, new Vector3f(0.0F, 0.0F, -1.0F));
-      }
-      return new UnitMove(f2, this.road.get(localUnitData1.segmentIdx).normal);
-    }
-
-    double d15 = localRoadSegment1.length2D - d10;
-
-    if (d14 <= d15) {
-      d10 += d14;
-    }
-    else {
-      d10 = localRoadSegment1.length2D;
-      f3 = (float)(f3 * (d15 / d14));
-    }
-
-    f3 *= 1.05F;
-
-    double d16 = localUnitData1.sideOffset;
-    if (j != 0) d16 += paramPoint3d.y;
-
-    localPoint3d5 = localRoadSegment1.computePos_FitBegCirc(d10, d16, paramActor.collisionR());
-    if (d10 >= localRoadSegment1.length2D - 0.1D) {
-      localPoint3d5.x += localRoadSegment1.dir2D.x * 0.2D;
-      localPoint3d5.y += localRoadSegment1.dir2D.y * 0.2D;
-    }
-    d13 = distance2D(localPoint3d5, paramActor.pos.getAbsPoint());
-
-    Vector3f localVector3f3 = this.road.get(localUnitData1.segmentIdx).IsLandAligned() ? new Vector3f(0.0F, 0.0F, -1.0F) : this.road.get(localUnitData1.segmentIdx).normal;
-
-    return new UnitMove(localUnitInterface.HeightAboveLandSurface(), localPoint3d5, f3 < 0.3F ? 0.3F : f3, localVector3f3, -1.0F);
-  }
-
-  class Move extends Interpolate
-  {
-    Move()
-    {
-    }
-
-    public boolean tick()
-    {
-      if ((ChiefGround.this.waitTime > 0L) && 
-        (Time.tick() >= ChiefGround.this.waitTime)) {
-        ChiefGround.access$002(ChiefGround.this, 0L);
-      }
-      if (ChiefGround.this.unitsPacked.size() > 0) {
-        ChiefGround.this.moveChiefPacked(Time.tickLenFs());
-        return true;
-      }
-
-      if (ChiefGround.access$306(ChiefGround.this) <= 0) {
-        int i = ChiefGround.access$400(World.Rnd().nextFloat(300.0F, 500.0F));
-        switch (ChiefGround.this.curState)
+        } else
         {
-        case 0:
-          ChiefGround.access$302(ChiefGround.this, i);
-          break;
-        case 1:
-          ChiefGround.access$502(ChiefGround.this, 0);
-          ChiefGround.access$302(ChiefGround.this, i);
-          ChiefGround.this.reformIfNeed(false);
-          break;
-        case 2:
-          if (ChiefGround.this.shift_SwitchToBrakeWhenDone) {
-            ChiefGround.access$502(ChiefGround.this, 3);
+            boolean flag2 = false;
+            com.maddox.il2.ai.ground.UnitMove unitmove = null;
+            for(; roadsegment.computePosAlong(actor.pos.getAbsPoint()) >= roadsegment.length2D - 1.0D; roadsegment = road.get(unitdata.segmentIdx))
+            {
+                if(cantEnterIntoSegment_checkComplete(unitdata.segmentIdx + 1))
+                {
+                    unitmove = createStay_UnitMove(5F, unitdata.segmentIdx);
+                    break;
+                }
+                flag2 = true;
+                unitdata.segmentIdx++;
+                if(unitdata.segmentIdx > maxSeg || unitdata.segmentIdx - 1 <= minSeg)
+                    recomputeMinMaxSegments();
+            }
 
-            ChiefGround.access$302(ChiefGround.this, ChiefGround.access$400(World.Rnd().nextFloat(38.0F, 65.0F)));
-          } else {
-            ChiefGround.access$502(ChiefGround.this, 0);
-            ChiefGround.access$302(ChiefGround.this, i);
-          }
-          ChiefGround.this.reformIfNeed(false);
-          break;
-        case 3:
-          ChiefGround.access$502(ChiefGround.this, 0);
-          ChiefGround.access$302(ChiefGround.this, i);
-          ChiefGround.this.reformIfNeed(true);
+            if(flag2)
+                reformIfNeed(false);
+            if(unitmove != null)
+                return unitmove;
         }
+        com.maddox.JGP.Vector3d vector3d = new Vector3d(roadsegment.dir2D.x, roadsegment.dir2D.y, 0.0D);
+        if(!flag && staticobstacle.updateState())
+        {
+            double d1 = roadsegment.computePosAlong(point3d1);
+            double d4 = road.ComputeSignedDistAlong(unitdata.segmentIdx, d1, staticobstacle.segIdx, staticobstacle.along);
+            double d9 = actor.collisionR();
+            if(d9 <= 0.0D)
+                d9 = 0.0D;
+            d9 += staticobstacle.R;
+            if(d9 <= 0.0D)
+                d9 = 2D;
+            double d12 = d4;
+            if(d4 >= 0.0D)
+            {
+                d12 -= d9;
+                if(d12 <= 0.0D)
+                    d12 = 0.0D;
+            } else
+            {
+                d12 += d9;
+                if(d12 >= 0.0D)
+                    d12 = 0.0D;
+            }
+            if(java.lang.Math.abs(d4) <= 130D);
+            if(d12 < -java.lang.Math.max(7D * java.lang.Math.abs(d9), 120D))
+                staticobstacle.clear();
+            else
+            if(d4 <= 0.0D)
+            {
+                if(d12 >= -1.5D)
+                    vector3d.z = 2.5D;
+            } else
+            if(d12 > java.lang.Math.max(3D * d9, 20D))
+            {
+                vector3d.z = java.lang.Math.max(d9, 3D);
+            } else
+            {
+                double d14 = 0.5D * d9;
+                if(d14 < 0.01D)
+                {
+                    vector3d.z = 1.0D;
+                } else
+                {
+                    com.maddox.JGP.Vector2f vector2f = new Vector2f((float)(staticobstacle.pos.x - point3d1.x), (float)(staticobstacle.pos.y - point3d1.y));
+                    if(vector2f.length() < 0.1F)
+                    {
+                        vector3d.z = 4D;
+                    } else
+                    {
+                        vector2f.normalize();
+                        com.maddox.il2.ai.AnglesFork anglesfork = new AnglesFork();
+                        anglesfork.setSrcRad((float)java.lang.Math.atan2(vector2f.y, vector2f.x));
+                        anglesfork.setDstDeg(anglesfork.getSrcDeg() + (staticobstacle.side <= 0.0D ? -90F : 90F));
+                        double d17 = d9 + 0.5D;
+                        if(!com.maddox.il2.ai.ground.ChiefGround.intersectCircle(staticobstacle.pos, d17, point3d1, d14, anglesfork.getSrcDeg()))
+                        {
+                            float f6 = anglesfork.getSrcDeg();
+                            vector3d.set(com.maddox.JGP.Geom.cosDeg(f6), com.maddox.JGP.Geom.sinDeg(f6), d14);
+                        } else
+                        if(com.maddox.il2.ai.ground.ChiefGround.intersectCircle(staticobstacle.pos, d17, point3d1, d14, anglesfork.getDstDeg()))
+                        {
+                            vector3d.z = 2D;
+                        } else
+                        {
+                            for(int j = 0; j < 6; j++)
+                            {
+                                float f8 = anglesfork.getDeg(0.5F);
+                                if(com.maddox.il2.ai.ground.ChiefGround.intersectCircle(staticobstacle.pos, d17, point3d1, d14, f8))
+                                    anglesfork.setSrcDeg(f8);
+                                else
+                                    anglesfork.setDstDeg(f8);
+                            }
 
-      }
-
-      if (ChiefGround.access$806(ChiefGround.this) <= 0) {
-        ChiefGround.this.recomputeAveragePosition();
-      }
-
-      return true;
+                            float f7 = anglesfork.getDstDeg();
+                            vector3d.set(com.maddox.JGP.Geom.cosDeg(f7), com.maddox.JGP.Geom.sinDeg(f7), d14);
+                        }
+                    }
+                }
+            }
+        }
+        if(vector3d.z > 0.0D)
+        {
+            flag1 = false;
+            flag = true;
+            vector3d.x *= vector3d.z;
+            vector3d.y *= vector3d.z;
+            point3d = new Point3d(vector3d);
+            point3d.z = -1D;
+        }
+        if(flag)
+        {
+            com.maddox.JGP.Point3d point3d2 = new Point3d(point3d1);
+            point3d2.x += point3d.x;
+            point3d2.y += point3d.y;
+            double d2 = roadsegment.computePosAlong(point3d2);
+            double d7 = roadsegment.computePosSide(point3d2);
+            if(d2 >= roadsegment.length2D - 0.20000000000000001D)
+            {
+                point3d2 = roadsegment.computePos_Fit(roadsegment.length2D, d7, actor.collisionR());
+                point3d2.x += roadsegment.dir2D.x * 0.20000000000000001D;
+                point3d2.y += roadsegment.dir2D.y * 0.20000000000000001D;
+            } else
+            {
+                point3d2 = roadsegment.computePos_Fit(d2, d7, actor.collisionR());
+            }
+            double d10 = com.maddox.il2.ai.ground.ChiefGround.distance2D(point3d2, point3d1);
+            float f4 = (float)d10 / groupSpeed;
+            com.maddox.JGP.Vector3f vector3f = road.get(unitdata.segmentIdx).IsLandAligned() ? new Vector3f(0.0F, 0.0F, -1F) : road.get(unitdata.segmentIdx).normal;
+            return new UnitMove(unitinterface.HeightAboveLandSurface(), point3d2, f4, vector3f, groupSpeed);
+        }
+        if(curState == 3)
+            return createStay_UnitMove(5F, unitdata.segmentIdx);
+        if(unitdata.leader == null)
+        {
+            float f = unitinterface.CommandInterval() * com.maddox.il2.ai.World.Rnd().nextFloat(0.8F, 1.0F);
+            double d3 = groupSpeed * f;
+            double d8 = d3 + roadsegment.computePosAlong(point3d1);
+            double d11 = unitdata.sideOffset;
+            if(flag1)
+            {
+                d8 += point3d.x;
+                d11 += point3d.y;
+            }
+            com.maddox.JGP.Point3d point3d4;
+            if(d8 >= roadsegment.length2D - 0.20000000000000001D)
+            {
+                point3d4 = roadsegment.computePos_Fit(roadsegment.length2D, d11, actor.collisionR());
+                point3d4.x += roadsegment.dir2D.x * 0.20000000000000001D;
+                point3d4.y += roadsegment.dir2D.y * 0.20000000000000001D;
+            } else
+            {
+                point3d4 = roadsegment.computePos_Fit(d8, d11, actor.collisionR());
+            }
+            d3 = com.maddox.il2.ai.ground.ChiefGround.distance2D(point3d4, point3d1);
+            float f5 = (float)d3 / groupSpeed;
+            com.maddox.JGP.Vector3f vector3f1 = road.get(unitdata.segmentIdx).IsLandAligned() ? new Vector3f(0.0F, 0.0F, -1F) : road.get(unitdata.segmentIdx).normal;
+            return new UnitMove(unitinterface.HeightAboveLandSurface(), point3d4, f5, vector3f1, groupSpeed);
+        }
+        com.maddox.il2.engine.Actor actor1 = unitdata.leader;
+        com.maddox.il2.ai.ground.UnitData unitdata1 = ((com.maddox.il2.ai.ground.UnitInterface)actor1).GetUnitData();
+        com.maddox.il2.ai.ground.RoadSegment roadsegment3 = road.get(unitdata1.segmentIdx);
+        com.maddox.JGP.Point3d point3d3 = new Point3d();
+        float f1 = unitinterface.CommandInterval();
+        f1 *= com.maddox.il2.ai.World.Rnd().nextFloat(0.8F, 1.0F);
+        float f3 = actor1.futurePosition(f1, point3d3);
+        f3 += 0.4F;
+        double d13 = roadsegment3.computePosAlong(point3d3);
+        com.maddox.JGP.Point3d point3d5 = new Point3d();
+        actor.pos.getAbs(point3d5);
+        double d15 = roadsegment.computePosAlong(point3d5);
+        double d16 = road.ComputeSignedDistAlong(unitdata.segmentIdx, d15, unitdata1.segmentIdx, d13);
+        double d18 = unitdata.leaderDist;
+        if(flag1)
+            d18 += point3d.x;
+        double d19 = d16 - d18;
+        if(d19 < 0.0D)
+        {
+            float f2 = unitinterface.StayInterval();
+            if(roadsegment.IsLandAligned())
+                return new UnitMove(f2, new Vector3f(0.0F, 0.0F, -1F));
+            else
+                return new UnitMove(f2, road.get(unitdata.segmentIdx).normal);
+        }
+        double d20 = roadsegment.length2D - d15;
+        if(d19 <= d20)
+        {
+            d15 += d19;
+        } else
+        {
+            d15 = roadsegment.length2D;
+            f3 = (float)((double)f3 * (d20 / d19));
+        }
+        f3 *= 1.05F;
+        double d21 = unitdata.sideOffset;
+        if(flag1)
+            d21 += point3d.y;
+        point3d5 = roadsegment.computePos_FitBegCirc(d15, d21, actor.collisionR());
+        if(d15 >= roadsegment.length2D - 0.10000000000000001D)
+        {
+            point3d5.x += roadsegment.dir2D.x * 0.20000000000000001D;
+            point3d5.y += roadsegment.dir2D.y * 0.20000000000000001D;
+        }
+        d18 = com.maddox.il2.ai.ground.ChiefGround.distance2D(point3d5, actor.pos.getAbsPoint());
+        com.maddox.JGP.Vector3f vector3f2 = road.get(unitdata.segmentIdx).IsLandAligned() ? new Vector3f(0.0F, 0.0F, -1F) : road.get(unitdata.segmentIdx).normal;
+        return new UnitMove(unitinterface.HeightAboveLandSurface(), point3d5, f3 >= 0.3F ? f3 : 0.3F, vector3f2, -1F);
     }
-  }
+
+    private static final int PEACE = 0;
+    private static final int FIGHT = 1;
+    private static final int SHIFT = 2;
+    private static final int BRAKE = 3;
+    private int curState;
+    private int stateCountdown;
+    private boolean shift_ToRightSide;
+    private boolean shift_SwitchToBrakeWhenDone;
+    private java.util.ArrayList unitsPacked;
+    private com.maddox.il2.ai.ground.RoadPath road;
+    private int minGrabSeg;
+    private int maxGrabSeg;
+    private int chiefSeg;
+    private double chiefAlong;
+    private int minSeg;
+    private int maxSeg;
+    private float groupSpeed;
+    private float maxSpace;
+    private boolean withPreys;
+    private long waitTime;
+    private int posCountdown;
+    private com.maddox.JGP.Vector3d estim_speed;
+    private com.maddox.JGP.Point3d tmpp;
+    private int curForm[];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

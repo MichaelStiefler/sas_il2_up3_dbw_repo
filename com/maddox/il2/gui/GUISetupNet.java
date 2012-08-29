@@ -1,7 +1,11 @@
+// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: fullnames 
+// Source File Name:   GUISetupNet.java
+
 package com.maddox.il2.gui;
 
 import com.maddox.gwindow.GColor;
-import com.maddox.gwindow.GTexture;
 import com.maddox.gwindow.GWindow;
 import com.maddox.gwindow.GWindowComboControl;
 import com.maddox.gwindow.GWindowRoot;
@@ -14,140 +18,156 @@ import com.maddox.rts.NetEnv;
 import com.maddox.rts.NetSocket;
 import java.util.List;
 
-public class GUISetupNet extends GameState
+// Referenced classes of package com.maddox.il2.gui:
+//            GUIClient, GUIInfoMenu, GUIInfoName, GUILookAndFeel, 
+//            GUISwitchBox2, GUIButton, GUIDialogClient, GUISeparate
+
+public class GUISetupNet extends com.maddox.il2.game.GameState
 {
-  public GUIClient client;
-  public DialogClient dialogClient;
-  public GUIInfoMenu infoMenu;
-  public GUIInfoName infoName;
-  public GWindowComboControl comboSpeed;
-  public GUISwitchBox2 sSkinOn;
-  public GUIButton bExit;
-  private int[] speed = { 900, 1500, 3000, 5000, 10000, 25000, 100000, 200000 };
-
-  public void _enter() {
-    setComboSpeed();
-    this.sSkinOn.setChecked(Config.cur.netSkinDownload, false);
-
-    this.client.activateWindow();
-  }
-
-  public void _leave()
-  {
-    this.client.hideWindow();
-  }
-
-  private void setComboSpeed() {
-    int i = Config.cur.netSpeed;
-
-    for (int j = 0; (j < this.speed.length - 1) && 
-      (i >= (this.speed[j] + this.speed[(j + 1)]) / 2); j++);
-    if (j == this.speed.length - 1)
-      j = this.speed.length - 2;
-    this.comboSpeed.setSelected(j, true, false);
-  }
-
-  private void setSpeed(int paramInt) {
-    if (Config.cur.netSpeed == paramInt)
-      return;
-    Config.cur.netSpeed = paramInt;
-    List localList = NetEnv.socketsBlock();
-    Object localObject;
-    for (int i = 0; i < localList.size(); i++) {
-      localObject = (NetSocket)localList.get(i);
-      ((NetSocket)localObject).setMaxSpeed(paramInt / 1000.0F);
-    }
-    localList = NetEnv.socketsNoBlock();
-    for (i = 0; i < localList.size(); i++) {
-      localObject = (NetSocket)localList.get(i);
-      ((NetSocket)localObject).setMaxSpeed(paramInt / 1000.0F);
-    }
-
-    localList = NetEnv.channels();
-    for (i = 0; i < localList.size(); i++) {
-      localObject = (NetChannel)localList.get(i);
-      if (((NetChannel)localObject).isReady())
-        ((NetChannel)localObject).setMaxSpeed(paramInt / 1000.0F);
-    }
-  }
-
-  public GUISetupNet(GWindowRoot paramGWindowRoot)
-  {
-    super(52);
-    this.client = ((GUIClient)paramGWindowRoot.create(new GUIClient()));
-    this.dialogClient = ((DialogClient)this.client.create(new DialogClient()));
-
-    this.infoMenu = ((GUIInfoMenu)this.client.create(new GUIInfoMenu()));
-    this.infoMenu.info = i18n("setupNet.info");
-    this.infoName = ((GUIInfoName)this.client.create(new GUIInfoName()));
-
-    GTexture localGTexture = ((GUILookAndFeel)paramGWindowRoot.lookAndFeel()).buttons2;
-
-    this.dialogClient.addControl(this.comboSpeed = new GWindowComboControl(this.dialogClient, 0.0F, 0.0F, 1.0F));
-    this.comboSpeed.setEditable(false);
-    this.comboSpeed.resized();
-    this.comboSpeed.add(i18n("setupNet.Modem(9.6K)"));
-    this.comboSpeed.add(i18n("setupNet.Modem(14.4K)"));
-    this.comboSpeed.add(i18n("setupNet.Modem(28.8K)"));
-    this.comboSpeed.add(i18n("setupNet.Modem(56K)"));
-    this.comboSpeed.add(i18n("setupNet.ISDN"));
-    this.comboSpeed.add(i18n("setupNet.Cable,xDSL"));
-    this.comboSpeed.add(i18n("setupNet.LAN"));
-
-    this.sSkinOn = ((GUISwitchBox2)this.dialogClient.addControl(new GUISwitchBox2(this.dialogClient)));
-    this.bExit = ((GUIButton)this.dialogClient.addEscape(new GUIButton(this.dialogClient, localGTexture, 0.0F, 96.0F, 48.0F, 48.0F)));
-
-    this.dialogClient.activateWindow();
-    this.client.hideWindow();
-  }
-
-  public class DialogClient extends GUIDialogClient
-  {
-    public DialogClient()
+    public class DialogClient extends com.maddox.il2.gui.GUIDialogClient
     {
-    }
 
-    public boolean notify(GWindow paramGWindow, int paramInt1, int paramInt2)
-    {
-      if (paramInt1 != 2) return super.notify(paramGWindow, paramInt1, paramInt2);
-
-      if (paramGWindow == GUISetupNet.this.comboSpeed) {
-        int i = GUISetupNet.this.comboSpeed.getSelected();
-        if (i < 0) return true;
-        int j = GUISetupNet.this.speed[i];
-        GUISetupNet.this.setSpeed(j);
-        return true;
-      }
-      if (paramGWindow == GUISetupNet.this.bExit) {
-        boolean bool = GUISetupNet.this.sSkinOn.isChecked();
-        if (Config.cur.netSkinDownload != bool) {
-          Config.cur.netSkinDownload = bool;
+        public boolean notify(com.maddox.gwindow.GWindow gwindow, int i, int j)
+        {
+            if(i != 2)
+                return super.notify(gwindow, i, j);
+            if(gwindow == comboSpeed)
+            {
+                int k = comboSpeed.getSelected();
+                if(k < 0)
+                {
+                    return true;
+                } else
+                {
+                    int l = speed[k];
+                    setSpeed(l);
+                    return true;
+                }
+            }
+            if(gwindow == bExit)
+            {
+                boolean flag = sSkinOn.isChecked();
+                if(com.maddox.il2.engine.Config.cur.netSkinDownload != flag)
+                    com.maddox.il2.engine.Config.cur.netSkinDownload = flag;
+                com.maddox.il2.game.Main.stateStack().pop();
+                return true;
+            } else
+            {
+                return super.notify(gwindow, i, j);
+            }
         }
 
-        Main.stateStack().pop();
-        return true;
-      }
-      return super.notify(paramGWindow, paramInt1, paramInt2);
+        public void render()
+        {
+            super.render();
+            com.maddox.il2.gui.GUISeparate.draw(this, com.maddox.gwindow.GColor.Gray, x1024(32F), y1024(176F), x1024(512F), 2.0F);
+            setCanvasColor(com.maddox.gwindow.GColor.Gray);
+            setCanvasFont(0);
+            draw(x1024(32F), y1024(32F), x1024(208F), y1024(32F), 0, i18n("setupNet.Internet"));
+            draw(x1024(32F), y1024(96F), x1024(432F), y1024(48F), 2, i18n("setupNet.Skin"));
+            draw(x1024(88F), y1024(208F), x1024(136F), y1024(48F), 0, i18n("setupNet.Back"));
+        }
+
+        public void setPosSize()
+        {
+            set1024PosSize(224F, 176F, 576F, 288F);
+            comboSpeed.set1024PosSize(256F, 32F, 272F, 32F);
+            sSkinOn.setPosC(x1024(520F), y1024(120F));
+            bExit.setPosC(x1024(56F), y1024(232F));
+        }
+
+        public DialogClient()
+        {
+        }
     }
 
-    public void render() {
-      super.render();
-      GUISeparate.draw(this, GColor.Gray, x1024(32.0F), y1024(176.0F), x1024(512.0F), 2.0F);
-      setCanvasColor(GColor.Gray);
-      setCanvasFont(0);
-      draw(x1024(32.0F), y1024(32.0F), x1024(208.0F), y1024(32.0F), 0, GUISetupNet.this.i18n("setupNet.Internet"));
 
-      draw(x1024(32.0F), y1024(96.0F), x1024(432.0F), y1024(48.0F), 2, GUISetupNet.this.i18n("setupNet.Skin"));
-      draw(x1024(88.0F), y1024(208.0F), x1024(136.0F), y1024(48.0F), 0, GUISetupNet.this.i18n("setupNet.Back"));
+    public void _enter()
+    {
+        setComboSpeed();
+        sSkinOn.setChecked(com.maddox.il2.engine.Config.cur.netSkinDownload, false);
+        client.activateWindow();
     }
 
-    public void setPosSize() {
-      set1024PosSize(224.0F, 176.0F, 576.0F, 288.0F);
-
-      GUISetupNet.this.comboSpeed.set1024PosSize(256.0F, 32.0F, 272.0F, 32.0F);
-
-      GUISetupNet.this.sSkinOn.setPosC(x1024(520.0F), y1024(120.0F));
-      GUISetupNet.this.bExit.setPosC(x1024(56.0F), y1024(232.0F));
+    public void _leave()
+    {
+        client.hideWindow();
     }
-  }
+
+    private void setComboSpeed()
+    {
+        int i = com.maddox.il2.engine.Config.cur.netSpeed;
+        int j;
+        for(j = 0; j < speed.length - 1 && i >= (speed[j] + speed[j + 1]) / 2; j++);
+        if(j == speed.length - 1)
+            j = speed.length - 2;
+        comboSpeed.setSelected(j, true, false);
+    }
+
+    private void setSpeed(int i)
+    {
+        if(com.maddox.il2.engine.Config.cur.netSpeed == i)
+            return;
+        com.maddox.il2.engine.Config.cur.netSpeed = i;
+        java.util.List list = com.maddox.rts.NetEnv.socketsBlock();
+        for(int j = 0; j < list.size(); j++)
+        {
+            com.maddox.rts.NetSocket netsocket = (com.maddox.rts.NetSocket)list.get(j);
+            netsocket.setMaxSpeed((float)i / 1000F);
+        }
+
+        list = com.maddox.rts.NetEnv.socketsNoBlock();
+        for(int k = 0; k < list.size(); k++)
+        {
+            com.maddox.rts.NetSocket netsocket1 = (com.maddox.rts.NetSocket)list.get(k);
+            netsocket1.setMaxSpeed((float)i / 1000F);
+        }
+
+        list = com.maddox.rts.NetEnv.channels();
+        for(int l = 0; l < list.size(); l++)
+        {
+            com.maddox.rts.NetChannel netchannel = (com.maddox.rts.NetChannel)list.get(l);
+            if(netchannel.isReady())
+                netchannel.setMaxSpeed((float)i / 1000F);
+        }
+
+    }
+
+    public GUISetupNet(com.maddox.gwindow.GWindowRoot gwindowroot)
+    {
+        super(52);
+        client = (com.maddox.il2.gui.GUIClient)gwindowroot.create(new GUIClient());
+        dialogClient = (com.maddox.il2.gui.DialogClient)client.create(new DialogClient());
+        infoMenu = (com.maddox.il2.gui.GUIInfoMenu)client.create(new GUIInfoMenu());
+        infoMenu.info = i18n("setupNet.info");
+        infoName = (com.maddox.il2.gui.GUIInfoName)client.create(new GUIInfoName());
+        com.maddox.gwindow.GTexture gtexture = ((com.maddox.il2.gui.GUILookAndFeel)gwindowroot.lookAndFeel()).buttons2;
+        dialogClient.addControl(comboSpeed = new GWindowComboControl(dialogClient, 0.0F, 0.0F, 1.0F));
+        comboSpeed.setEditable(false);
+        comboSpeed.resized();
+        comboSpeed.add(i18n("setupNet.Modem(9.6K)"));
+        comboSpeed.add(i18n("setupNet.Modem(14.4K)"));
+        comboSpeed.add(i18n("setupNet.Modem(28.8K)"));
+        comboSpeed.add(i18n("setupNet.Modem(56K)"));
+        comboSpeed.add(i18n("setupNet.ISDN"));
+        comboSpeed.add(i18n("setupNet.Cable,xDSL"));
+        comboSpeed.add(i18n("setupNet.LAN"));
+        sSkinOn = (com.maddox.il2.gui.GUISwitchBox2)dialogClient.addControl(new GUISwitchBox2(dialogClient));
+        bExit = (com.maddox.il2.gui.GUIButton)dialogClient.addEscape(new GUIButton(dialogClient, gtexture, 0.0F, 96F, 48F, 48F));
+        dialogClient.activateWindow();
+        client.hideWindow();
+    }
+
+    public com.maddox.il2.gui.GUIClient client;
+    public com.maddox.il2.gui.DialogClient dialogClient;
+    public com.maddox.il2.gui.GUIInfoMenu infoMenu;
+    public com.maddox.il2.gui.GUIInfoName infoName;
+    public com.maddox.gwindow.GWindowComboControl comboSpeed;
+    public com.maddox.il2.gui.GUISwitchBox2 sSkinOn;
+    public com.maddox.il2.gui.GUIButton bExit;
+    private int speed[] = {
+        900, 1500, 3000, 5000, 10000, 25000, 0x186a0, 0x30d40
+    };
+
+
 }
